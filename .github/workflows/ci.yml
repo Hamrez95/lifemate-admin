@@ -37,6 +37,9 @@ jobs:
           npm run format
           git diff --exit-code
 
+      - name: Browser secret boundary
+        run: npm run security:check
+
       - name: Lint
         run: npm run lint
 
@@ -47,4 +50,8 @@ jobs:
         run: npm test
 
       - name: Production build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci_publishable_placeholder
+          NEXT_PUBLIC_ADMIN_API_URL: https://admin-api.ci-placeholder.test
         run: npm run build
