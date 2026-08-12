@@ -37,6 +37,9 @@ jobs:
           npm run format
           git diff --exit-code
 
+      - name: Browser secret boundary
+        run: npm run security:check
+
       - name: Lint
         run: npm run lint
 
