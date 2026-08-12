@@ -546,18 +546,23 @@ input:focus-visible,
 .sparkline-placeholder i:nth-child(1) {
   height: 26%;
 }
+
 .sparkline-placeholder i:nth-child(2) {
   height: 52%;
 }
+
 .sparkline-placeholder i:nth-child(3) {
   height: 38%;
 }
+
 .sparkline-placeholder i:nth-child(4) {
   height: 70%;
 }
+
 .sparkline-placeholder i:nth-child(5) {
   height: 50%;
 }
+
 .sparkline-placeholder i:nth-child(6) {
   height: 82%;
 }

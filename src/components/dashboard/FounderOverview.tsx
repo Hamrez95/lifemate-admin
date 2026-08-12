@@ -47,7 +47,10 @@ export function FounderOverview() {
                 </span>
                 <span>{metric.label}</span>
               </div>
-              <strong className="metric-card__value" aria-label={`${metric.label}: هنوز محاسبه نشده`}>
+              <strong
+                className="metric-card__value"
+                aria-label={`${metric.label}: هنوز محاسبه نشده`}
+              >
                 —
               </strong>
               <p>{metric.helper}</p>

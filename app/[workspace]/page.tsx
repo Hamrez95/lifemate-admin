@@ -16,7 +16,11 @@ export default async function WorkspacePage({ params }: WorkspacePageProps) {
   }
 
   return (
-    <AdminShell activeSlug={workspace.slug} title={workspace.label} subtitle={workspace.description}>
+    <AdminShell
+      activeSlug={workspace.slug}
+      title={workspace.label}
+      subtitle={workspace.description}
+    >
       <section className="workspace-placeholder" aria-labelledby="workspace-placeholder-title">
         <span className="workspace-placeholder__symbol" aria-hidden="true">
           {workspace.symbol}
