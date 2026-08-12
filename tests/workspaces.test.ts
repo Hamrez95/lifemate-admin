@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { findWorkspace, workspaceHref, workspaces } from "@/src/config/workspaces";
+import { findWorkspace, workspaceHref, workspaces } from "../src/config/workspaces";
 
 describe("workspace configuration", () => {
   it("contains the approved management workspaces without duplicate routes", () => {

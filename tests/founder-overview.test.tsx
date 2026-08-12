@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { FounderOverview } from "@/src/components/dashboard/FounderOverview";
+import { FounderOverview } from "../src/components/dashboard/FounderOverview";
 
 describe("FounderOverview", () => {
   it("explicitly prevents placeholder metrics from being presented as production facts", () => {

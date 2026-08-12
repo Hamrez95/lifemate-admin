@@ -13,11 +13,15 @@ type AdminShellProps = {
 export function AdminShell({ activeSlug, title, subtitle, children }: AdminShellProps) {
   return (
     <div className="app-shell">
-      <a className="skip-link" href="#main-content">رفتن به محتوای اصلی</a>
+      <a className="skip-link" href="#main-content">
+        رفتن به محتوای اصلی
+      </a>
       <Sidebar activeSlug={activeSlug} />
       <div className="app-shell__content">
         <Topbar title={title} subtitle={subtitle} />
-        <main id="main-content" className="main-content" tabIndex={-1}>{children}</main>
+        <main id="main-content" className="main-content" tabIndex={-1}>
+          {children}
+        </main>
       </div>
     </div>
   );
