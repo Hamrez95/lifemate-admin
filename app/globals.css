@@ -33,7 +33,14 @@
 html {
   background: var(--lm-bg);
   font-family:
-    Vazirmatn, "IRANSansX", Tahoma, Arial, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    Vazirmatn,
+    "IRANSansX",
+    Tahoma,
+    Arial,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
 }
 
 body {
@@ -41,8 +48,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 68% 0%, rgba(23, 173, 104, 0.055), transparent 34%),
-    var(--lm-bg);
+    radial-gradient(circle at 68% 0%, rgba(23, 173, 104, 0.055), transparent 34%), var(--lm-bg);
   color: var(--lm-text);
 }
 
