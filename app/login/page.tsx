@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { LifeMateLogo } from "@/src/components/brand/LifeMateLogo";
 import { AdminLoginFlow } from "@/src/components/auth/AdminLoginFlow";
+import { LifeMateLogo } from "@/src/components/brand/LifeMateLogo";
 
 export const metadata: Metadata = {
   title: "ورود امن",
@@ -26,7 +26,9 @@ export default function LoginPage() {
         <AdminLoginFlow />
         <div className="auth-card__security-note">
           <span aria-hidden="true">▱</span>
-          <p>این صفحه هیچ service-role، رمز دیتابیس یا کلید مدیریتی را دریافت یا نگهداری نمی‌کند.</p>
+          <p>
+            این صفحه هیچ service-role، رمز دیتابیس یا کلید مدیریتی را دریافت یا نگهداری نمی‌کند.
+          </p>
         </div>
       </section>
     </main>

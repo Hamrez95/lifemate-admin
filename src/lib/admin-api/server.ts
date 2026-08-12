@@ -16,8 +16,7 @@ async function parseProblem(response: Response): Promise<AdminApiProblem | null>
       status: value.status,
       code: value.code,
       title: typeof value.title === "string" ? value.title : "Admin API request failed.",
-      correlationId:
-        typeof value.correlationId === "string" ? value.correlationId : undefined,
+      correlationId: typeof value.correlationId === "string" ? value.correlationId : undefined,
     };
   } catch {
     return null;

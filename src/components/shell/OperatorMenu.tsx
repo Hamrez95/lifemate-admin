@@ -38,12 +38,20 @@ export function OperatorMenu() {
 
   return (
     <div className="operator-chip">
-      <span className="operator-chip__avatar" aria-hidden="true">LM</span>
+      <span className="operator-chip__avatar" aria-hidden="true">
+        LM
+      </span>
       <span className="operator-chip__copy">
         <strong>{role}</strong>
         <small>نشست مدیریتی AAL2</small>
       </span>
-      <button type="button" className="operator-chip__logout" onClick={signOut} disabled={pending} aria-label="خروج از نشست Command Center">
+      <button
+        type="button"
+        className="operator-chip__logout"
+        onClick={signOut}
+        disabled={pending}
+        aria-label="خروج از نشست Command Center"
+      >
         {pending ? "…" : "خروج"}
       </button>
     </div>

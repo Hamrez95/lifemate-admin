@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { canAccessWorkspace } from "../src/lib/admin-api/policy";
 import { findWorkspace } from "../src/config/workspaces";
+import { canAccessWorkspace } from "../src/lib/admin-api/policy";
 
 function workspace(slug: string) {
   const value = findWorkspace(slug);
@@ -12,7 +12,11 @@ function workspace(slug: string) {
 describe("workspace visibility policy", () => {
   it("does not expose Finance to Support navigation", () => {
     expect(
-      canAccessWorkspace(workspace("finance"), ["users.read.basic", "support.read", "support.write"]),
+      canAccessWorkspace(workspace("finance"), [
+        "users.read.basic",
+        "support.read",
+        "support.write",
+      ]),
     ).toBe(false);
   });
 

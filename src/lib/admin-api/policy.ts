@@ -9,9 +9,6 @@ export function hasAnyPermission(
   return required.some((permission) => current.has(permission));
 }
 
-export function canAccessWorkspace(
-  workspace: Workspace,
-  permissions: readonly string[],
-): boolean {
+export function canAccessWorkspace(workspace: Workspace, permissions: readonly string[]): boolean {
   return hasAnyPermission(permissions, workspace.requiredPermissions);
 }

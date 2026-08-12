@@ -14,9 +14,7 @@ export async function createServerSupabaseClient() {
       },
       setAll(cookiesToSet) {
         try {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options),
-          );
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
         } catch {
           // Server Components cannot always write cookies. `proxy.ts` is the
           // authoritative refresh path and will persist rotated sessions.

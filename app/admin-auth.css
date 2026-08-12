@@ -5,8 +5,7 @@
   padding: 32px 18px;
   background:
     radial-gradient(circle at 22% 18%, rgba(23, 173, 104, 0.11), transparent 31%),
-    radial-gradient(circle at 84% 82%, rgba(118, 87, 232, 0.08), transparent 28%),
-    var(--lm-bg);
+    radial-gradient(circle at 84% 82%, rgba(118, 87, 232, 0.08), transparent 28%), var(--lm-bg);
 }
 
 .auth-card {

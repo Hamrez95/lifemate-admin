@@ -32,8 +32,8 @@ export default async function WorkspacePage({ params }: WorkspacePageProps) {
           <p className="eyebrow">Vertical slice pending</p>
           <h2 id="workspace-placeholder-title">دسترسی این فضا از سمت سرور تأیید شد.</h2>
           <p>
-            مسیر آماده‌ی توسعه‌ی workflow واقعی است. داده و mutation هر workspace فقط از Admin API
-            و همراه با permission، validation، audit و تست denial اضافه می‌شود.
+            مسیر آماده‌ی توسعه‌ی workflow واقعی است. داده و mutation هر workspace فقط از Admin API و
+            همراه با permission، validation، audit و تست denial اضافه می‌شود.
           </p>
           <div className="workspace-placeholder__guardrail">
             <strong>Server authorized</strong>

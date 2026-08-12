@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
-import { createBrowserSupabaseClient } from "@/src/lib/supabase/client";
 import { normalizeAdminPhone } from "@/src/lib/auth/phone";
+import { createBrowserSupabaseClient } from "@/src/lib/supabase/client";
 
 type Step = "phone" | "otp" | "mfa-challenge" | "mfa-enroll" | "checking";
 
@@ -37,8 +37,7 @@ export function AdminLoginFlow() {
 
   const prepareMfa = useCallback(async () => {
     setMessage(null);
-    const { data: aal, error: aalError } =
-      await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    const { data: aal, error: aalError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
     if (aalError) throw aalError;
 
     if (aal.currentLevel === "aal2") {
@@ -101,7 +100,9 @@ export function AdminLoginFlow() {
     event.preventDefault();
     const normalized = normalizeAdminPhone(phoneInput);
     if (!normalized) {
-      setMessage("شماره موبایل را با فرمت معتبر وارد کنید؛ برای ایران می‌توانید با ۰۹ شروع کنید.");
+      setMessage(
+        "شماره موبایل را با فرمت معتبر وارد کنید؛ برای ایران می‌توانید با ۰۹ شروع کنید.",
+      );
       return;
     }
 
@@ -189,7 +190,9 @@ export function AdminLoginFlow() {
             dir="ltr"
             disabled={pending}
           />
-          <p className="auth-help">ورود حساب جدید از این صفحه ساخته نمی‌شود؛ فقط حساب موجود LifeMate پذیرفته است.</p>
+          <p className="auth-help">
+            ورود حساب جدید از این صفحه ساخته نمی‌شود؛ فقط حساب موجود LifeMate پذیرفته است.
+          </p>
           <button type="submit" className="primary-button" disabled={pending}>
             {pending ? "در حال ارسال..." : "دریافت کد ورود"}
           </button>
@@ -213,7 +216,12 @@ export function AdminLoginFlow() {
           <button type="submit" className="primary-button" disabled={pending}>
             {pending ? "در حال بررسی..." : "تأیید کد"}
           </button>
-          <button type="button" className="text-button" onClick={() => setStep("phone")} disabled={pending}>
+          <button
+            type="button"
+            className="text-button"
+            onClick={() => setStep("phone")}
+            disabled={pending}
+          >
             اصلاح شماره موبایل
           </button>
         </form>
@@ -221,9 +229,13 @@ export function AdminLoginFlow() {
 
       {step === "mfa-challenge" && (
         <form onSubmit={verifyMfa} className="auth-form">
-          <div className="auth-security-mark" aria-hidden="true">2FA</div>
+          <div className="auth-security-mark" aria-hidden="true">
+            2FA
+          </div>
           <h2>تأیید دومرحله‌ای</h2>
-          <p className="auth-help">کد فعلی برنامه Authenticator را وارد کنید. Command Center نشست AAL2 را الزامی می‌کند.</p>
+          <p className="auth-help">
+            کد فعلی برنامه Authenticator را وارد کنید. Command Center نشست AAL2 را الزامی می‌کند.
+          </p>
           <label htmlFor="admin-mfa-code">کد Authenticator</label>
           <input
             id="admin-mfa-code"
@@ -244,12 +256,22 @@ export function AdminLoginFlow() {
 
       {step === "mfa-enroll" && enrollment && (
         <form onSubmit={verifyMfa} className="auth-form">
-          <div className="auth-security-mark" aria-hidden="true">MFA</div>
+          <div className="auth-security-mark" aria-hidden="true">
+            MFA
+          </div>
           <h2>فعال‌سازی Authenticator</h2>
-          <p className="auth-help">این مرحله برای دسترسی مدیریتی اجباری است. QR را با یک برنامه TOTP اسکن کنید و سپس کد را وارد کنید.</p>
+          <p className="auth-help">
+            این مرحله برای دسترسی مدیریتی اجباری است. QR را با یک برنامه TOTP اسکن کنید و سپس کد را
+            وارد کنید.
+          </p>
           <div className="mfa-qr">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={enrollment.qrCode} alt="QR فعال‌سازی TOTP برای LifeMate Command Center" width="196" height="196" />
+            <img
+              src={enrollment.qrCode}
+              alt="QR فعال‌سازی TOTP برای LifeMate Command Center"
+              width="196"
+              height="196"
+            />
           </div>
           <details className="mfa-secret">
             <summary>ورود دستی کلید</summary>
@@ -273,7 +295,11 @@ export function AdminLoginFlow() {
         </form>
       )}
 
-      {message && <p className="auth-message" role="status" aria-live="polite">{message}</p>}
+      {message && (
+        <p className="auth-message" role="status" aria-live="polite">
+          {message}
+        </p>
+      )}
     </div>
   );
 }
