@@ -100,9 +100,7 @@ export function AdminLoginFlow() {
     event.preventDefault();
     const normalized = normalizeAdminPhone(phoneInput);
     if (!normalized) {
-      setMessage(
-        "شماره موبایل را با فرمت معتبر وارد کنید؛ برای ایران می‌توانید با ۰۹ شروع کنید.",
-      );
+      setMessage("شماره موبایل را با فرمت معتبر وارد کنید؛ برای ایران می‌توانید با ۰۹ شروع کنید.");
       return;
     }
 
