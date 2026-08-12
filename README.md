@@ -59,12 +59,12 @@ npm run build
 
 ## Version choices
 
-The foundation intentionally tracks supported stable releases rather than preview channels:
+The foundation uses stable supported versions that are compatible with the Next.js lint stack:
 
-- Next.js 16.2.11 (Active LTS security line at implementation time)
+- Next.js 16.2.11
 - React 19.2.7
 - TypeScript 6.x
-- ESLint 10.7
+- ESLint 9.39.5 (the compatible v9 line; ESLint 10 removes legacy rule-context APIs still used by the current Next.js React lint dependency chain)
 - Prettier 3.9
 - Vitest 4.1
 
