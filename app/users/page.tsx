@@ -20,10 +20,7 @@ import {
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
 import { AdminShell } from "@/src/components/shell/AdminShell";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
-import {
-  getUserDirectory,
-  type UserDirectoryItem,
-} from "@/src/lib/admin-api/user-directory";
+import { getUserDirectory, type UserDirectoryItem } from "@/src/lib/admin-api/user-directory";
 
 const filterRules = {
   status: { maxValues: 1, maxValueLength: 32 },
@@ -66,9 +63,7 @@ type DirectoryQuery = {
   filters: FilterState;
 };
 
-function toUrlSearchParams(
-  input: Record<string, string | string[] | undefined>,
-): URLSearchParams {
+function toUrlSearchParams(input: Record<string, string | string[] | undefined>): URLSearchParams {
   const params = new URLSearchParams();
   for (const [key, rawValue] of Object.entries(input)) {
     if (Array.isArray(rawValue)) {
@@ -287,7 +282,8 @@ async function DirectoryContent({ query }: { query: DirectoryQuery }) {
 
   const { data } = result;
   const previousHref = data.page > 1 ? pageHref(query, data.page - 1) : undefined;
-  const nextHref = data.page * data.pageSize < data.total ? pageHref(query, data.page + 1) : undefined;
+  const nextHref =
+    data.page * data.pageSize < data.total ? pageHref(query, data.page + 1) : undefined;
   const freshnessTime = formatDateTime(data.freshness.asOfUtc);
 
   return (
