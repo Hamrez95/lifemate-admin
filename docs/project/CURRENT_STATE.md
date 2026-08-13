@@ -1,80 +1,86 @@
 # LifeMate Command Center — Current State
 
-Last verified: 2026-08-13 (Asia/Tehran)
+Last verified: 2026-08-14 (Asia/Tehran)
 
-## Canonical repositories
+## Repositories
 
 - Admin web: `Hamrez95/lifemate-admin`
-- Core ecosystem/backend migrations: `Hamrez95/LifeMate`
+- Core: `Hamrez95/LifeMate`
+- Master roadmap: `Hamrez95/lifemate-admin#49`
 
-## GitHub state
+## Verified GitHub state
 
-- `lifemate-admin/main` HEAD: `39b397f6bd8131f3f9212ce7f4bb05003efca300`
-- Repository visibility: **public** (risk; must be reviewed before production rollout).
-- `main` branch protection: **disabled**.
-- Backlog branch: `chore/admin-project-backlog`, currently based on the same verified main HEAD before this documentation work.
-- No GitHub Issues existed in `lifemate-admin` at the beginning of the 2026-08-13 backlog migration.
+- Admin `main`: `f268bef54a606cbb370bda95439496e1e4361a82`
+- Core `main`: `8057db457b3ef52f25cd17fc12e49ec6b098bd52`
+- Admin repository remains public.
+- Admin `main` remains unprotected.
+- Repository hardening and delivery environments are tracked in `ADM-OPS-003` (#38).
 
-## Merged admin work
+## Completed source-control milestones
 
-### DONE
+### Foundation
 
-- Admin web foundation and CI.
-- Persian-first / RTL application shell.
-- LifeMate design tokens and responsive navigation.
-- Supabase SSR authentication client integration.
-- Existing-account phone OTP sign-in.
-- Mandatory TOTP MFA and AAL2 gate.
-- Server-side `/me` authorization through the Admin API boundary.
-- Permission-aware workspace navigation and server-side workspace gates.
-- Browser source secret-pattern checks.
-- Core admin RBAC schema/code merged in `Hamrez95/LifeMate` PR #130.
-- Restricted admin runtime model and append-oriented audit foundation merged in core.
-- Elevated-access database foundation merged in core.
-- Security denial tests for the merged foundation.
+- Admin web foundation and CI
+- Persian-first RTL shell and LifeMate design system
+- Supabase SSR authentication
+- phone OTP and mandatory TOTP MFA/AAL2
+- server-side Admin API authorization boundary
+- core admin RBAC and audit foundation
+- durable project memory via admin PR #50
 
-### NOT DEPLOYED / VERIFIED AS ABSENT IN PRODUCTION
+### ADM-PLAT-001
 
-Verified against the live Supabase project `lifemate` (`bwdvmniywyyijjauipnh`) on 2026-08-13:
+Admin PR #51 merged the shared table/filter/pagination/page-state primitives used by data-heavy pages.
 
-- Migration `20260813011500_admin_control_plane_foundation.sql` is **not** present in the production migration history.
-- Production `admin` schema has **no tables**.
-- Edge Function `lifemate-admin-api` is **not** deployed.
-- Founder bootstrap therefore cannot be considered complete in production.
+### ADM-USR-001
 
-These are intentionally gated under `ADM-OPS-002`; do not apply them ad hoc.
+Core PR #131 and admin PR #52 are merged.
 
-### STILL NEEDS VERIFICATION / OPERATIONAL WORK
+The secure user-directory source flow is now:
 
-- Production Admin Web hosting and environment configuration.
-- Repository privacy change.
-- Main-branch ruleset / branch protection.
-- Preview/staging deployment and CD policy.
+`Admin Web /users → authenticated Admin API → users.read.basic → approved user directory read model → restricted database runtime`
 
-## Security invariants
+Implemented:
 
-1. Browser code must never read or mutate sensitive Supabase tables directly.
-2. Browser must never receive service-role keys, privileged DB credentials, payment secrets, social provider tokens, AI gateway secrets, or other server secrets.
-3. Correct path: `Admin Web → Supabase Auth → MFA/AAL2 → lifemate-admin-api → restricted DB role → approved read models/tables`.
-4. Raw health data is default-deny.
-5. Women Health is treated as more sensitive than ordinary admin/account data.
-6. Ordinary roles, including Founder and Super Admin, do not imply raw health access.
-7. `health.read.elevated` and `women_health.read.elevated` are not assignable through ordinary role membership.
-8. Break-glass access requires purpose, explicit scope, target, TTL, approval, revocation/expiry and immutable audit before any elevated health viewer can ship.
-9. Admin Role, Relationship, Consent and Access Grant are distinct authorization concepts.
+- server-side search, filters, sort and pagination
+- basic account status and display-name fields
+- active product-enrollment summary
+- created and last-active timestamps when available
+- Persian RTL responsive presentation
+- Loading, Empty, Error, Forbidden and Unavailable states
+- no direct browser database reads
+- no sensitive medical records in the directory response
+- core query/RLS/security tests
+- admin formatting, secret-boundary, lint, TypeScript, unit-test and production-build CI
 
-## Current product state
+The visible User 360 link is intentionally completed by the next task, `ADM-USR-002`.
 
-The Command Center is a secured shell/foundation, not yet a data-operational admin product. The next real vertical slice is the secure user directory followed by User 360.
+## Production rollout
 
-Implementation order:
+Merged code is not proof of production deployment. The last live verification showed that the Admin Control Plane migration/API rollout and Founder bootstrap were still pending. Production work remains gated under `ADM-OPS-002` (#24) and must re-verify the live environment before any change.
 
-1. `ADM-PLAT-001` shared data table/filter/pagination/page-state primitives.
-2. `ADM-USR-001` secure user directory end-to-end.
-3. `ADM-USR-002` User 360.
-4. `ADM-DATA-001` canonical event taxonomy and KPI dictionary.
-5. `ADM-ANL-001` product KPI dashboard.
+## Security rules that remain active
+
+1. Admin Web does not query sensitive database tables directly.
+2. Authorization is enforced by the Admin API, not by navigation visibility.
+3. Medical data remains default-deny for ordinary admin roles.
+4. Women Health remains under a stricter sensitive-data boundary.
+5. Relationship, Consent, Access Grant and Admin Permission remain separate concepts.
+6. Elevated sensitive access remains blocked until the approved break-glass workflow is implemented.
+
+## Current implementation order
+
+Completed:
+
+1. `ADM-PLAT-001`
+2. `ADM-USR-001`
+
+Next:
+
+3. `ADM-USR-002` User 360
+4. `ADM-DATA-001` Event Taxonomy + KPI Dictionary + Analytics Read Models
+5. `ADM-ANL-001` Product KPI Dashboard
 
 ## Data-display rule
 
-Never fabricate production metrics. If data is unavailable, stale or uninstrumented, render `—` and a truthful freshness/unavailable state.
+Never fabricate production metrics or user records. If data is unavailable, stale or uninstrumented, render `—` and a truthful state.
