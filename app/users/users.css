@@ -1,0 +1,124 @@
+.user-directory {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-list-filter {
+  display: grid;
+  gap: 6px;
+  min-width: 140px;
+}
+
+.admin-list-filter--search {
+  flex: 1 1 280px;
+  min-width: min(300px, 100%);
+}
+
+.admin-list-filter--compact {
+  min-width: 110px;
+}
+
+.admin-list-filter label {
+  color: var(--lm-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-list-filter input,
+.admin-list-filter select {
+  min-height: 42px;
+  border: 1px solid var(--lm-border-strong);
+  border-radius: var(--lm-radius-sm);
+  background: var(--lm-surface);
+  color: var(--lm-text);
+  padding: 8px 11px;
+  font: inherit;
+}
+
+.admin-list-filter input:focus-visible,
+.admin-list-filter select:focus-visible {
+  border-color: var(--lm-green);
+  outline: 3px solid var(--lm-focus);
+  outline-offset: 2px;
+}
+
+.user-directory__identity {
+  display: grid;
+  gap: 3px;
+}
+
+.user-directory__identity strong {
+  color: var(--lm-text);
+  font-weight: 800;
+}
+
+.user-directory__identity code {
+  direction: ltr;
+  unicode-bidi: isolate;
+  color: var(--lm-text-muted);
+  font-size: 11px;
+}
+
+.user-directory__products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.user-directory__product,
+.user-directory__status {
+  display: inline-flex;
+  width: max-content;
+  min-height: 27px;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.user-directory__product {
+  border: 1px solid var(--lm-border);
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
+}
+
+.user-directory__status {
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
+}
+
+.user-directory__status[data-status="Active"] {
+  background: var(--lm-green-soft);
+  color: var(--lm-green-deep);
+}
+
+.user-directory__status[data-status="Disabled"] {
+  background: #fff1f1;
+  color: #a63d43;
+}
+
+.user-directory__status[data-status="DeletionPending"] {
+  background: var(--lm-orange-soft);
+  color: #8a511d;
+}
+
+.user-directory__detail-link {
+  color: var(--lm-green-deep);
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.user-directory__detail-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 720px) {
+  .admin-list-filter,
+  .admin-list-filter--search,
+  .admin-list-filter--compact {
+    width: 100%;
+    min-width: 0;
+  }
+}
