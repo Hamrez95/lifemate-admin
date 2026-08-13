@@ -34,7 +34,7 @@ export function AdminPagination({
       )}
 
       <span className={styles.pageStatus}>
-        صفحه {safePage.toLocaleString("fa-IR")} از {" "}
+        صفحه {safePage.toLocaleString("fa-IR")} از{" "}
         {totalPages ? totalPages.toLocaleString("fa-IR") : "—"}
       </span>
 
