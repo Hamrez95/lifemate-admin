@@ -1,12 +1,7 @@
 import styles from "./admin-data-table.module.css";
 
 export type AdminPageStateKind =
-  | "loading"
-  | "empty"
-  | "error"
-  | "forbidden"
-  | "stale"
-  | "unavailable";
+  "loading" | "empty" | "error" | "forbidden" | "stale" | "unavailable";
 
 const copy: Record<AdminPageStateKind, { title: string; description: string }> = {
   loading: {
