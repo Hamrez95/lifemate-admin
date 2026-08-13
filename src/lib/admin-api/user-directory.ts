@@ -90,9 +90,7 @@ async function parseCorrelationId(response: Response): Promise<string | undefine
   }
 }
 
-export async function getUserDirectory(
-  params: URLSearchParams,
-): Promise<UserDirectoryResult> {
+export async function getUserDirectory(params: URLSearchParams): Promise<UserDirectoryResult> {
   const supabase = await createServerSupabaseClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   if (claimsError || !claimsData?.claims?.sub) return { kind: "unauthenticated" };
