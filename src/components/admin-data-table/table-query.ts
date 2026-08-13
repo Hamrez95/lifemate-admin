@@ -41,9 +41,7 @@ export function parseTableQuery(
 
   const requestedSort = params.get("sort")?.trim();
   const sort =
-    requestedSort && options.allowedSorts?.includes(requestedSort)
-      ? requestedSort
-      : undefined;
+    requestedSort && options.allowedSorts?.includes(requestedSort) ? requestedSort : undefined;
 
   const requestedDirection = params.get("direction");
   const direction =
