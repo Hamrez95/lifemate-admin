@@ -12,10 +12,7 @@ import {
   toTableSearchParams,
   type AdminTableColumn,
 } from "@/src/components/admin-data-table";
-import {
-  parseFilterState,
-  type FilterState,
-} from "@/src/components/admin-data-table/filter-state";
+import { parseFilterState, type FilterState } from "@/src/components/admin-data-table/filter-state";
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
 import { AdminShell } from "@/src/components/shell/AdminShell";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
