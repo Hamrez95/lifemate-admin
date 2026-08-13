@@ -33,7 +33,14 @@ describe("shared table primitives", () => {
   });
 
   it("renders every standardized page state", () => {
-    for (const state of ["loading", "empty", "error", "forbidden", "stale", "unavailable"] as const) {
+    for (const state of [
+      "loading",
+      "empty",
+      "error",
+      "forbidden",
+      "stale",
+      "unavailable",
+    ] as const) {
       const html = renderToStaticMarkup(<AdminPageState state={state} />);
       expect(html).toContain(`data-state="${state}"`);
     }
