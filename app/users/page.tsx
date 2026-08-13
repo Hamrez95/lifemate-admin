@@ -13,7 +13,6 @@ import {
   type AdminTableColumn,
 } from "@/src/components/admin-data-table";
 import {
-  appendFilterState,
   parseFilterState,
   type FilterState,
 } from "@/src/components/admin-data-table/filter-state";
@@ -97,11 +96,11 @@ function toApiParams(query: DirectoryQuery): URLSearchParams {
 }
 
 function pageHref(query: DirectoryQuery, page: number): string {
-  const params = appendFilterState(
-    toTableSearchParams({ ...query.table, page: Math.max(1, page) }),
-    query.filters,
-    filterRules,
-  );
+  const params = toTableSearchParams({ ...query.table, page: Math.max(1, page) });
+  const status = query.filters.status?.[0];
+  const application = query.filters.application?.[0];
+  if (status) params.set("filter.status", status);
+  if (application) params.set("filter.application", application);
   return `/users?${params.toString()}`;
 }
 
