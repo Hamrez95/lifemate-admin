@@ -14,6 +14,7 @@ import {
   type UserDetailSection,
 } from "@/src/lib/admin-api/user-detail";
 
+import { UserActionMenu } from "./UserActionMenu";
 import styles from "./user-detail.module.css";
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -242,7 +243,7 @@ function ProductsCard({ data }: { data: UserDetailResponse }) {
               <span className={styles.softBadge}>{labelStatus(product.status)}</span>
             </div>
             <small>
-              عضویت: {formatDate(product.enrolledAtUtc)} · آخرین فعالیت:{" "}
+              عضویت: {formatDate(product.enrolledAtUtc)} · آخرین فعالیت: {" "}
               {formatDateTime(product.lastActiveAtUtc)}
             </small>
           </li>
@@ -280,7 +281,7 @@ function CommerceCard({ data }: { data: UserDetailResponse }) {
                     <span className={styles.softBadge}>{labelStatus(subscription.status)}</span>
                   </div>
                   <small>
-                    پلن: {subscription.planName} · پایان دوره:{" "}
+                    پلن: {subscription.planName} · پایان دوره: {" "}
                     {formatDate(subscription.currentPeriodEndUtc)}
                   </small>
                 </li>
@@ -532,12 +533,14 @@ function ActiveTabContent({
   activeTab,
   activityPage,
   canReadSupport,
+  canManageUsers,
 }: {
   data: UserDetailResponse;
   accountId: string;
   activeTab: UserDetailTab;
   activityPage: number;
   canReadSupport: boolean;
+  canManageUsers: boolean;
 }) {
   if (activeTab === "products") return <ProductsCard data={data} />;
   if (activeTab === "relationships") return <RelationshipsCard data={data} />;
@@ -555,6 +558,11 @@ function ActiveTabContent({
     <div className={styles.grid}>
       <AccountCard data={data} />
       <PersonCard data={data} />
+      <UserActionMenu
+        accountId={accountId}
+        accountStatus={data.account.data?.status ?? ""}
+        canManage={canManageUsers}
+      />
       <OverviewActivityPreview data={data} accountId={accountId} />
     </div>
   );
@@ -565,11 +573,13 @@ async function UserDetailContent({
   activeTab,
   activityPage,
   canReadSupport,
+  canManageUsers,
 }: {
   accountId: string;
   activeTab: UserDetailTab;
   activityPage: number;
   canReadSupport: boolean;
+  canManageUsers: boolean;
 }) {
   const result = await getUserDetail(accountId);
   if (result.kind === "unauthenticated") redirect("/login");
@@ -630,6 +640,7 @@ async function UserDetailContent({
         activeTab={activeTab}
         activityPage={activityPage}
         canReadSupport={canReadSupport}
+        canManageUsers={canManageUsers}
       />
     </div>
   );
@@ -642,6 +653,7 @@ export default async function UserDetailPage({ params, searchParams }: UserDetai
   const admin = await requireAdminAccess();
   const canReadUsers = admin.permissions.includes("users.read.basic");
   const canReadSupport = admin.permissions.includes("support.read");
+  const canManageUsers = admin.permissions.includes("users.suspend");
   const activeTab = parseTab(first(query.tab));
   const activityPage = parsePositiveInteger(first(query.page), 1);
 
@@ -661,6 +673,7 @@ export default async function UserDetailPage({ params, searchParams }: UserDetai
               activeTab={activeTab}
               activityPage={activityPage}
               canReadSupport={canReadSupport}
+              canManageUsers={canManageUsers}
             />
           </Suspense>
         )}
