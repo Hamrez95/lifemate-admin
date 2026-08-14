@@ -227,7 +227,10 @@ async function RelationshipsContent({ filters }: { filters: URLSearchParams }) {
         <div>
           <span className={styles.eyebrow}>نمای عملیاتی</span>
           <h3 id="relationship-filters-title">فیلتر رکوردها</h3>
-          <p>فقط metadata لازم نمایش داده می‌شود؛ نام و اطلاعات تماس طرف‌های رابطه در این overview نیست.</p>
+          <p>
+            فقط metadata لازم نمایش داده می‌شود؛ نام و اطلاعات تماس طرف‌های رابطه در این overview
+            نیست.
+          </p>
         </div>
         <form className={styles.filters} method="get">
           <label>
