@@ -71,8 +71,7 @@ export type SupportTicketActionResult =
   | { kind: "invalid"; code?: string; message?: string }
   | { kind: "unavailable"; correlationId?: string };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
 const SLA_STATES = new Set(["OnTrack", "DueSoon", "Breached", "Completed"]);
 const ACTION_PATHS: Record<SupportTicketAction, string> = {
@@ -128,7 +127,11 @@ function parseEvents(value: unknown): {
 } | null {
   if (!value || typeof value !== "object") return null;
   const body = value as Record<string, unknown>;
-  if (!Array.isArray(body.items) || !Number.isInteger(body.page) || !Number.isInteger(body.pageSize)) {
+  if (
+    !Array.isArray(body.items) ||
+    !Number.isInteger(body.page) ||
+    !Number.isInteger(body.pageSize)
+  ) {
     return null;
   }
   if (!Number.isInteger(body.total) || !body.freshness || typeof body.freshness !== "object") {
@@ -146,7 +149,11 @@ function parseEvents(value: unknown): {
     if (typeof row.eventType !== "string") return null;
     if (!nullableString(row.actorAccountId) || !nullableString(row.actorDisplayName)) return null;
     if (row.actorAccountId && !UUID_PATTERN.test(row.actorAccountId)) return null;
-    if (!nullableString(row.summary) || !nullableString(row.fromValue) || !nullableString(row.toValue)) {
+    if (
+      !nullableString(row.summary) ||
+      !nullableString(row.fromValue) ||
+      !nullableString(row.toValue)
+    ) {
       return null;
     }
     if (typeof row.occurredAtUtc !== "string") return null;
@@ -206,8 +213,7 @@ async function problem(response: Response): Promise<{
           : typeof body.message === "string"
             ? body.message
             : undefined,
-      correlationId:
-        typeof body.correlationId === "string" ? body.correlationId : undefined,
+      correlationId: typeof body.correlationId === "string" ? body.correlationId : undefined,
     };
   } catch {
     return {};
@@ -239,7 +245,12 @@ async function getJson(path: string): Promise<SupportTicketReadResult<unknown>> 
 
 export async function getSupportTicket(
   ticketId: string,
-): Promise<SupportTicketReadResult<{ ticket: SupportTicketDetail; freshness: { status: "fresh" | "stale"; asOfUtc: string } }>> {
+): Promise<
+  SupportTicketReadResult<{
+    ticket: SupportTicketDetail;
+    freshness: { status: "fresh" | "stale"; asOfUtc: string };
+  }>
+> {
   if (!UUID_PATTERN.test(ticketId)) return { kind: "not_found" };
   const result = await getJson(`/api/v1/support/tickets/${ticketId}`);
   if (result.kind !== "ok") return result;
@@ -329,14 +340,18 @@ export async function performSupportTicketAction(input: {
     ) {
       return { kind: "unavailable" };
     }
-    return { kind: "ok", data: body as SupportTicketActionResult & never } as SupportTicketActionResult;
+    return {
+      kind: "ok",
+      data: body as SupportTicketActionResult & never,
+    } as SupportTicketActionResult;
   }
 
   const issue = await problem(response);
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden", message: issue.message };
   if (response.status === 404) return { kind: "not_found", message: issue.message };
-  if (response.status === 409) return { kind: "conflict", code: issue.code, message: issue.message };
+  if (response.status === 409)
+    return { kind: "conflict", code: issue.code, message: issue.message };
   if (response.status === 400) return { kind: "invalid", code: issue.code, message: issue.message };
   return { kind: "unavailable", correlationId: issue.correlationId };
 }
