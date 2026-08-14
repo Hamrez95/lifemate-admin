@@ -17,8 +17,6 @@ type TicketOperationsProps = {
   requestSeed: string;
 };
 
-type ActionKind = "add_note" | "set_status" | "set_priority" | "set_assignee";
-
 function useIdempotencyKey(seed: string) {
   const [key, setKey] = useState(seed);
   return {
