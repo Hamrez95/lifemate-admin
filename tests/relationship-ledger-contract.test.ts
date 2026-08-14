@@ -46,7 +46,7 @@ describe("ADM-REL-002 Relationship Consent Access Grant Ledger", () => {
     expect(css).toContain("var(--lm-violet)");
     expect(css).toContain("var(--lm-blue)");
     expect(css).toContain("focus-visible");
-    expect(css).toContain("max-width:680px");
+    expect(css).toContain("max-width: 680px");
     expect(css).toContain("prefers-reduced-motion");
   });
 });
