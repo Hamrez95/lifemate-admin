@@ -12,7 +12,10 @@ import {
   toTableSearchParams,
   type AdminTableColumn,
 } from "@/src/components/admin-data-table";
-import { parseFilterState, type FilterState } from "@/src/components/admin-data-table/filter-state";
+import {
+  parseFilterState,
+  type FilterState,
+} from "@/src/components/admin-data-table/filter-state";
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
 import { AdminShell } from "@/src/components/shell/AdminShell";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
@@ -75,7 +78,9 @@ type SupportQuery = {
   filters: FilterState;
 };
 
-function toUrlSearchParams(input: Record<string, string | string[] | undefined>): URLSearchParams {
+function toUrlSearchParams(
+  input: Record<string, string | string[] | undefined>,
+): URLSearchParams {
   const params = new URLSearchParams();
   for (const [key, rawValue] of Object.entries(input)) {
     if (Array.isArray(rawValue)) {
@@ -99,7 +104,10 @@ function parseSupportQuery(params: URLSearchParams): SupportQuery {
   };
 }
 
-function filterValue(query: SupportQuery, key: keyof typeof filterRules): string | undefined {
+function filterValue(
+  query: SupportQuery,
+  key: keyof typeof filterRules,
+): string | undefined {
   return query.filters[key]?.[0];
 }
 
@@ -165,7 +173,9 @@ function SlaIndicator({ row }: { row: SupportTicketQueueItem }) {
         <span className="support-queue__sla-dot" aria-hidden="true" />
         {slaLabels[row.slaState]}
       </span>
-      <small>{row.nextDueAtUtc ? `سررسید: ${formatDateTime(row.nextDueAtUtc)}` : "بدون سررسید فعال"}</small>
+      <small>
+        {row.nextDueAtUtc ? `سررسید: ${formatDateTime(row.nextDueAtUtc)}` : "بدون سررسید فعال"}
+      </small>
     </div>
   );
 }
@@ -279,7 +289,11 @@ function SupportFilterBar({ query }: { query: SupportQuery }) {
       </div>
       <div className="admin-list-filter">
         <label htmlFor="support-status">وضعیت</label>
-        <select id="support-status" name="filter.status" defaultValue={filterValue(query, "status") ?? ""}>
+        <select
+          id="support-status"
+          name="filter.status"
+          defaultValue={filterValue(query, "status") ?? ""}
+        >
           <option value="">همه</option>
           <option value="Open">باز</option>
           <option value="Pending">در انتظار بررسی</option>
@@ -290,7 +304,11 @@ function SupportFilterBar({ query }: { query: SupportQuery }) {
       </div>
       <div className="admin-list-filter">
         <label htmlFor="support-priority">اولویت</label>
-        <select id="support-priority" name="filter.priority" defaultValue={filterValue(query, "priority") ?? ""}>
+        <select
+          id="support-priority"
+          name="filter.priority"
+          defaultValue={filterValue(query, "priority") ?? ""}
+        >
           <option value="">همه</option>
           <option value="Urgent">فوری</option>
           <option value="High">بالا</option>
@@ -300,7 +318,11 @@ function SupportFilterBar({ query }: { query: SupportQuery }) {
       </div>
       <div className="admin-list-filter">
         <label htmlFor="support-sla">SLA</label>
-        <select id="support-sla" name="filter.sla" defaultValue={filterValue(query, "sla") ?? ""}>
+        <select
+          id="support-sla"
+          name="filter.sla"
+          defaultValue={filterValue(query, "sla") ?? ""}
+        >
           <option value="">همه</option>
           <option value="Breached">نقض‌شده</option>
           <option value="DueSoon">نزدیک سررسید</option>
@@ -310,7 +332,11 @@ function SupportFilterBar({ query }: { query: SupportQuery }) {
       </div>
       <div className="admin-list-filter">
         <label htmlFor="support-product">محصول</label>
-        <select id="support-product" name="filter.product" defaultValue={filterValue(query, "product") ?? ""}>
+        <select
+          id="support-product"
+          name="filter.product"
+          defaultValue={filterValue(query, "product") ?? ""}
+        >
           <option value="">همه</option>
           <option value="wellmate">WellMate</option>
           <option value="caremate">CareMate</option>
@@ -318,14 +344,22 @@ function SupportFilterBar({ query }: { query: SupportQuery }) {
       </div>
       <div className="admin-list-filter">
         <label htmlFor="support-assignee">مسئول</label>
-        <select id="support-assignee" name="filter.assignee" defaultValue={filterValue(query, "assignee") ?? ""}>
+        <select
+          id="support-assignee"
+          name="filter.assignee"
+          defaultValue={filterValue(query, "assignee") ?? ""}
+        >
           <option value="">همه</option>
           <option value="unassigned">فقط تخصیص‌نیافته</option>
         </select>
       </div>
       <div className="admin-list-filter admin-list-filter--compact">
         <label htmlFor="support-page-size">تعداد در صفحه</label>
-        <select id="support-page-size" name="pageSize" defaultValue={String(query.table.pageSize)}>
+        <select
+          id="support-page-size"
+          name="pageSize"
+          defaultValue={String(query.table.pageSize)}
+        >
           <option value="25">۲۵</option>
           <option value="50">۵۰</option>
           <option value="100">۱۰۰</option>
@@ -403,7 +437,9 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           {!canReadSupport ? (
             <AdminPageState state="forbidden" />
           ) : (
-            <Suspense fallback={<AdminPageState state="loading" title="در حال دریافت صف پشتیبانی" />}>
+            <Suspense
+              fallback={<AdminPageState state="loading" title="در حال دریافت صف پشتیبانی" />}
+            >
               <SupportQueueContent query={query} />
             </Suspense>
           )}
