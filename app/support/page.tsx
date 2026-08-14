@@ -12,10 +12,7 @@ import {
   toTableSearchParams,
   type AdminTableColumn,
 } from "@/src/components/admin-data-table";
-import {
-  parseFilterState,
-  type FilterState,
-} from "@/src/components/admin-data-table/filter-state";
+import { parseFilterState, type FilterState } from "@/src/components/admin-data-table/filter-state";
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
 import { AdminShell } from "@/src/components/shell/AdminShell";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
@@ -78,9 +75,7 @@ type SupportQuery = {
   filters: FilterState;
 };
 
-function toUrlSearchParams(
-  input: Record<string, string | string[] | undefined>,
-): URLSearchParams {
+function toUrlSearchParams(input: Record<string, string | string[] | undefined>): URLSearchParams {
   const params = new URLSearchParams();
   for (const [key, rawValue] of Object.entries(input)) {
     if (Array.isArray(rawValue)) {
@@ -104,10 +99,7 @@ function parseSupportQuery(params: URLSearchParams): SupportQuery {
   };
 }
 
-function filterValue(
-  query: SupportQuery,
-  key: keyof typeof filterRules,
-): string | undefined {
+function filterValue(query: SupportQuery, key: keyof typeof filterRules): string | undefined {
   return query.filters[key]?.[0];
 }
 
@@ -318,11 +310,7 @@ function SupportFilterBar({ query }: { query: SupportQuery }) {
       </div>
       <div className="admin-list-filter">
         <label htmlFor="support-sla">SLA</label>
-        <select
-          id="support-sla"
-          name="filter.sla"
-          defaultValue={filterValue(query, "sla") ?? ""}
-        >
+        <select id="support-sla" name="filter.sla" defaultValue={filterValue(query, "sla") ?? ""}>
           <option value="">همه</option>
           <option value="Breached">نقض‌شده</option>
           <option value="DueSoon">نزدیک سررسید</option>
@@ -355,11 +343,7 @@ function SupportFilterBar({ query }: { query: SupportQuery }) {
       </div>
       <div className="admin-list-filter admin-list-filter--compact">
         <label htmlFor="support-page-size">تعداد در صفحه</label>
-        <select
-          id="support-page-size"
-          name="pageSize"
-          defaultValue={String(query.table.pageSize)}
-        >
+        <select id="support-page-size" name="pageSize" defaultValue={String(query.table.pageSize)}>
           <option value="25">۲۵</option>
           <option value="50">۵۰</option>
           <option value="100">۱۰۰</option>
