@@ -7,10 +7,7 @@ import {
   getAnalyticsCatalog,
   type AnalyticsKpiDefinition,
 } from "@/src/lib/admin-api/analytics-catalog";
-import {
-  getKpiValues,
-  type KpiValue,
-} from "@/src/lib/admin-api/analytics-kpis";
+import { getKpiValues, type KpiValue } from "@/src/lib/admin-api/analytics-kpis";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
 import styles from "./analytics.module.css";
@@ -46,7 +43,7 @@ const shortDateFormatter = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
 });
 
 function one(value: string | string[] | undefined): string {
-  return Array.isArray(value) ? value[0] ?? "" : value ?? "";
+  return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
 }
 
 function buildFilters(input: Record<string, string | string[] | undefined>) {
@@ -78,20 +75,16 @@ function freshnessLabel(value: KpiValue): string {
 function KpiCard({
   definition,
   value,
-  index,
 }: {
   definition: AnalyticsKpiDefinition;
   value: KpiValue;
-  index: number;
 }) {
   return (
-    <article
-      className={styles.kpiCard}
-      data-state={value.state}
-      style={{ "--card-index": index } as React.CSSProperties}
-    >
+    <article className={styles.kpiCard} data-state={value.state}>
       <div className={styles.kpiTopline}>
-        <span className={styles.versionBadge}>v{definition.definitionVersion.toLocaleString("fa-IR")}</span>
+        <span className={styles.versionBadge}>
+          v{definition.definitionVersion.toLocaleString("fa-IR")}
+        </span>
         <span className={styles.stateBadge} data-state={value.state}>
           {freshnessLabel(value)}
         </span>
@@ -103,7 +96,9 @@ function KpiCard({
       <dl className={styles.kpiMeta}>
         <div>
           <dt>منبع</dt>
-          <dd>{value.state === "unavailable" ? definition.eventSources.join(" + ") : value.source}</dd>
+          <dd>
+            {value.state === "unavailable" ? definition.eventSources.join(" + ") : value.source}
+          </dd>
         </div>
         <div>
           <dt>پنجره</dt>
@@ -196,7 +191,8 @@ function AccountsTrend({ value }: { value: KpiValue | undefined }) {
                   rx="5"
                 >
                   <title>
-                    {shortDateFormatter.format(new Date(`${point.date}T12:00:00Z`))}: {valueFormatter.format(point.value)}
+                    {shortDateFormatter.format(new Date(`${point.date}T12:00:00Z`))}:{" "}
+                    {valueFormatter.format(point.value)}
                   </title>
                 </rect>
               </g>
@@ -205,7 +201,8 @@ function AccountsTrend({ value }: { value: KpiValue | undefined }) {
         </svg>
       </div>
       <p className={styles.chartSummary}>
-        بیشترین مقدار روزانه {valueFormatter.format(maximum)} حساب است. وضعیت منبع: {freshnessLabel(value)}.
+        بیشترین مقدار روزانه {valueFormatter.format(maximum)} حساب است. وضعیت منبع:{" "}
+        {freshnessLabel(value)}.
       </p>
     </section>
   );
@@ -217,7 +214,8 @@ async function AnalyticsContent({ filters }: { filters: URLSearchParams }) {
     getKpiValues(filters),
   ]);
 
-  if (catalogResult.kind === "unauthenticated" || valuesResult.kind === "unauthenticated") redirect("/login");
+  if (catalogResult.kind === "unauthenticated" || valuesResult.kind === "unauthenticated")
+    redirect("/login");
   if (catalogResult.kind === "forbidden" || valuesResult.kind === "forbidden") {
     return <AdminPageState state="forbidden" />;
   }
@@ -259,7 +257,8 @@ async function AnalyticsContent({ filters }: { filters: URLSearchParams }) {
           <span className={styles.heroEyebrow}>Product Intelligence · LifeMate</span>
           <h2>داشبورد KPI محصول</h2>
           <p>
-            هر عددی که می‌بینی به تعریف نسخه‌دار و منبع مشخص وصل است. هر چیزی که هنوز قابل اندازه‌گیری نیست، عمداً «—» می‌ماند.
+            هر عددی که می‌بینی به تعریف نسخه‌دار و منبع مشخص وصل است. هر چیزی که هنوز قابل
+            اندازه‌گیری نیست، عمداً «—» می‌ماند.
           </p>
         </div>
         <div className={styles.heroStatus}>
@@ -322,7 +321,7 @@ async function AnalyticsContent({ filters }: { filters: URLSearchParams }) {
           </div>
         </div>
         <div className={styles.kpiGrid}>
-          {catalog.kpis.map((definition, index) => {
+          {catalog.kpis.map((definition) => {
             const value = byName.get(definition.name) ?? {
               name: definition.name,
               definitionVersion: definition.definitionVersion,
@@ -337,7 +336,7 @@ async function AnalyticsContent({ filters }: { filters: URLSearchParams }) {
               },
               reason: "برای این KPI مقدار معتبری از API دریافت نشد.",
             };
-            return <KpiCard key={definition.name} definition={definition} value={value} index={index} />;
+            return <KpiCard key={definition.name} definition={definition} value={value} />;
           })}
         </div>
       </section>
