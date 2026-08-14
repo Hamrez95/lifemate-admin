@@ -2,12 +2,7 @@ import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
 export type CommerceSubscriptionStatus =
-  | "Trial"
-  | "Active"
-  | "PastDue"
-  | "Cancelled"
-  | "Expired"
-  | "Refunded";
+  "Trial" | "Active" | "PastDue" | "Cancelled" | "Expired" | "Refunded";
 
 export type CommerceSubscriptionItem = {
   subscriptionId: string;
@@ -67,8 +62,7 @@ export type CommerceDashboardResult =
   | { kind: "invalid" }
   | { kind: "unavailable"; correlationId?: string };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const STATUSES = new Set<CommerceSubscriptionStatus>([
   "Trial",
   "Active",
@@ -103,7 +97,11 @@ function parseResponse(value: unknown): CommerceDashboardResponse | null {
   ) {
     return null;
   }
-  if (!Number.isInteger(value.page) || !Number.isInteger(value.pageSize) || !nonNegativeInteger(value.total)) {
+  if (
+    !Number.isInteger(value.page) ||
+    !Number.isInteger(value.pageSize) ||
+    !nonNegativeInteger(value.total)
+  ) {
     return null;
   }
   const freshness = value.freshness as Record<string, unknown>;
@@ -116,8 +114,10 @@ function parseResponse(value: unknown): CommerceDashboardResponse | null {
 
   for (const raw of value.subscriptions) {
     if (!isRecord(raw)) return null;
-    if (typeof raw.subscriptionId !== "string" || !UUID_PATTERN.test(raw.subscriptionId)) return null;
-    if (typeof raw.customerAccountId !== "string" || !UUID_PATTERN.test(raw.customerAccountId)) return null;
+    if (typeof raw.subscriptionId !== "string" || !UUID_PATTERN.test(raw.subscriptionId))
+      return null;
+    if (typeof raw.customerAccountId !== "string" || !UUID_PATTERN.test(raw.customerAccountId))
+      return null;
     if (!nullableString(raw.beneficiaryPersonId)) return null;
     if (raw.beneficiaryPersonId && !UUID_PATTERN.test(raw.beneficiaryPersonId)) return null;
     if (typeof raw.productCode !== "string" || typeof raw.productName !== "string") return null;
@@ -127,7 +127,8 @@ function parseResponse(value: unknown): CommerceDashboardResponse | null {
       return null;
     }
     if (typeof raw.startsAtUtc !== "string") return null;
-    if (!nullableString(raw.currentPeriodEndUtc) || !nullableString(raw.cancelledAtUtc)) return null;
+    if (!nullableString(raw.currentPeriodEndUtc) || !nullableString(raw.cancelledAtUtc))
+      return null;
   }
 
   return value as unknown as CommerceDashboardResponse;
