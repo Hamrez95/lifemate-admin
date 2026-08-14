@@ -148,12 +148,42 @@ function SummaryGrid({ data }: { data: CommerceOverviewResponse }) {
   const subscriptions = data.summary.subscriptions;
   return (
     <section className={styles.summaryGrid} aria-label="خلاصه وضعیت تجارت">
-      <SummaryCard label="اشتراک فعال" value={subscriptions.active} hint="Subscription · Active" tone="green" />
-      <SummaryCard label="آزمایشی" value={subscriptions.trial} hint="Subscription · Trial" tone="blue" />
-      <SummaryCard label="سررسید گذشته" value={subscriptions.pastDue} hint="نیازمند پیگیری عملیاتی" tone="orange" />
-      <SummaryCard label="لغوشده" value={subscriptions.cancelled} hint="Subscription · Cancelled" tone="neutral" />
-      <SummaryCard label="منقضی" value={subscriptions.expired} hint="Subscription · Expired" tone="violet" />
-      <SummaryCard label="Entitlement فعال" value={data.summary.entitlements.active} hint="دسترسی قابلیت، نه اشتراک" tone="blue" />
+      <SummaryCard
+        label="اشتراک فعال"
+        value={subscriptions.active}
+        hint="Subscription · Active"
+        tone="green"
+      />
+      <SummaryCard
+        label="آزمایشی"
+        value={subscriptions.trial}
+        hint="Subscription · Trial"
+        tone="blue"
+      />
+      <SummaryCard
+        label="سررسید گذشته"
+        value={subscriptions.pastDue}
+        hint="نیازمند پیگیری عملیاتی"
+        tone="orange"
+      />
+      <SummaryCard
+        label="لغوشده"
+        value={subscriptions.cancelled}
+        hint="Subscription · Cancelled"
+        tone="neutral"
+      />
+      <SummaryCard
+        label="منقضی"
+        value={subscriptions.expired}
+        hint="Subscription · Expired"
+        tone="violet"
+      />
+      <SummaryCard
+        label="Entitlement فعال"
+        value={data.summary.entitlements.active}
+        hint="دسترسی قابلیت، نه اشتراک"
+        tone="blue"
+      />
     </section>
   );
 }
@@ -173,7 +203,11 @@ function PlanDistribution({ rows }: { rows: CommercePlanDistribution[] }) {
       ) : (
         <div className={styles.planGrid}>
           {rows.map((row) => (
-            <Link className={styles.planCard} href={`/commerce/plans/${row.planId}`} key={row.planId}>
+            <Link
+              className={styles.planCard}
+              href={`/commerce/plans/${row.planId}`}
+              key={row.planId}
+            >
               <div>
                 <span className={styles.productBadge}>{row.productName}</span>
                 <span className={styles.statusPill} data-status={row.planStatus}>
@@ -207,7 +241,10 @@ function EntitlementCoverage({ rows }: { rows: CommerceEntitlementCoverage[] }) 
         <div>
           <span>Entitlement</span>
           <h3 id="entitlement-title">پوشش قابلیت‌ها</h3>
-          <p>Entitlement یعنی دسترسی واقعی به یک Feature؛ ممکن است از اشتراک، Trial، Gift یا منبع دیگر آمده باشد.</p>
+          <p>
+            Entitlement یعنی دسترسی واقعی به یک Feature؛ ممکن است از اشتراک، Trial، Gift یا منبع
+            دیگر آمده باشد.
+          </p>
         </div>
       </header>
       {rows.length === 0 ? (
@@ -227,11 +264,15 @@ function EntitlementCoverage({ rows }: { rows: CommerceEntitlementCoverage[] }) 
                   <code>{row.featureCode}</code>
                   <span>{row.active.toLocaleString("fa-IR")} فعال</span>
                 </div>
-                <div className={styles.entitlementMeter} aria-label={`${activePercent.toLocaleString("fa-IR")} درصد فعال`}>
+                <div
+                  className={styles.entitlementMeter}
+                  aria-label={`${activePercent.toLocaleString("fa-IR")} درصد فعال`}
+                >
                   <span style={{ width: `${activePercent}%` }} />
                 </div>
                 <small>
-                  {row.expired.toLocaleString("fa-IR")} منقضی · {row.revoked.toLocaleString("fa-IR")} لغوشده
+                  {row.expired.toLocaleString("fa-IR")} منقضی ·{" "}
+                  {row.revoked.toLocaleString("fa-IR")} لغوشده
                 </small>
               </Link>
             );
@@ -258,9 +299,13 @@ function Highlights({ data }: { data: CommerceOverviewResponse }) {
               <li key={item.subscriptionId}>
                 <div>
                   <strong>{item.planName}</strong>
-                  <small>{item.productCode} · {statusLabels[item.status] ?? item.status}</small>
+                  <small>
+                    {item.productCode} · {statusLabels[item.status] ?? item.status}
+                  </small>
                 </div>
-                <time dateTime={item.currentPeriodEndUtc}>{formatDateTime(item.currentPeriodEndUtc)}</time>
+                <time dateTime={item.currentPeriodEndUtc}>
+                  {formatDateTime(item.currentPeriodEndUtc)}
+                </time>
               </li>
             ))}
           </ul>
@@ -354,7 +399,9 @@ function Filters({ query, data }: { query: CommerceQuery; data: CommerceOverview
         <select id="commerce-status" name="status" defaultValue={query.status}>
           <option value="">همه وضعیت‌ها</option>
           {Object.entries(statusLabels).map(([value, label]) => (
-            <option key={value} value={value}>{label}</option>
+            <option key={value} value={value}>
+              {label}
+            </option>
           ))}
         </select>
       </div>
@@ -375,17 +422,29 @@ async function CommerceContent({ query }: { query: CommerceQuery }) {
   if (result.kind === "unauthenticated") redirect("/login");
   if (result.kind === "forbidden") return <AdminPageState state="forbidden" />;
   if (result.kind === "invalid") {
-    return <AdminPageState state="error" title="فیلتر تجارت معتبر نیست" description="محصول و وضعیت را از گزینه‌های مجاز انتخاب کن." />;
+    return (
+      <AdminPageState
+        state="error"
+        title="فیلتر تجارت معتبر نیست"
+        description="محصول و وضعیت را از گزینه‌های مجاز انتخاب کن."
+      />
+    );
   }
   if (result.kind === "unavailable") {
-    return <AdminPageState state="unavailable" description={result.correlationId ? `کد پیگیری: ${result.correlationId}` : undefined} />;
+    return (
+      <AdminPageState
+        state="unavailable"
+        description={result.correlationId ? `کد پیگیری: ${result.correlationId}` : undefined}
+      />
+    );
   }
 
   const { data } = result;
   const previousHref = data.page > 1 ? pageHref(query, data.page - 1) : undefined;
-  const nextHref = data.page * data.pageSize < data.subscriptions.total
-    ? pageHref(query, data.page + 1)
-    : undefined;
+  const nextHref =
+    data.page * data.pageSize < data.subscriptions.total
+      ? pageHref(query, data.page + 1)
+      : undefined;
 
   return (
     <div className={styles.page}>
