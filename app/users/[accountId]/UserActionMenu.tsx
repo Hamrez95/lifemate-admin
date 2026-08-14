@@ -64,13 +64,10 @@ export function UserActionMenu({ accountId, accountStatus, canManage }: UserActi
   const config = configForStatus(accountStatus);
 
   useEffect(() => {
-    if (state.status === "idle") return;
-    setIdempotencyKey(crypto.randomUUID());
-    if (state.status === "success") {
-      dialogRef.current?.close();
-      router.refresh();
-      requestAnimationFrame(() => triggerRef.current?.focus());
-    }
+    if (state.status !== "success") return;
+    dialogRef.current?.close();
+    router.refresh();
+    requestAnimationFrame(() => triggerRef.current?.focus());
   }, [router, state.status]);
 
   function openDialog() {
@@ -176,6 +173,9 @@ export function UserActionMenu({ accountId, accountStatus, canManage }: UserActi
               autoFocus
               placeholder="مثلاً: درخواست رسمی تیم پشتیبانی پس از بررسی مورد تکرارشونده..."
               disabled={pending}
+              onChange={() => {
+                if (!pending) setIdempotencyKey(crypto.randomUUID());
+              }}
             />
             <small>
               حداقل ۱۰ کاراکتر. از ثبت اطلاعات سلامت یا جزئیات حساس غیرضروری خودداری کنید.
