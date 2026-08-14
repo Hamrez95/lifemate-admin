@@ -72,13 +72,7 @@ function freshnessLabel(value: KpiValue): string {
   return "هنوز اندازه‌گیری نشده";
 }
 
-function KpiCard({
-  definition,
-  value,
-}: {
-  definition: AnalyticsKpiDefinition;
-  value: KpiValue;
-}) {
+function KpiCard({ definition, value }: { definition: AnalyticsKpiDefinition; value: KpiValue }) {
   return (
     <article className={styles.kpiCard} data-state={value.state}>
       <div className={styles.kpiTopline}>
