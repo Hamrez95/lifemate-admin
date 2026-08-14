@@ -79,8 +79,7 @@ export type UserDetailResult =
   | { kind: "not_found" }
   | { kind: "unavailable"; correlationId?: string };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function hasSectionState(value: unknown): value is UserDetailSectionState {
   return value === "ready" || value === "empty" || value === "forbidden" || value === "unavailable";
@@ -95,7 +94,8 @@ function parseResponse(value: unknown): UserDetailResponse | null {
   if (!value || typeof value !== "object") return null;
   const body = value as Record<string, unknown>;
   if (!isSection(body.account) || !isSection(body.person) || !isSection(body.products)) return null;
-  if (!isSection(body.commerce) || !isSection(body.relationships) || !isSection(body.adminActivity)) return null;
+  if (!isSection(body.commerce) || !isSection(body.relationships) || !isSection(body.adminActivity))
+    return null;
   if (!body.freshness || typeof body.freshness !== "object") return null;
 
   const freshness = body.freshness as Record<string, unknown>;
