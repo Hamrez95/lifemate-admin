@@ -149,7 +149,11 @@ function parseActivityResponse(value: unknown): UserActivityResponse | null {
   if (!value || typeof value !== "object") return null;
   const body = value as Record<string, unknown>;
   if (!Array.isArray(body.items) || !body.items.every(isActivityItem)) return null;
-  if (!Number.isInteger(body.page) || !Number.isInteger(body.pageSize) || !Number.isInteger(body.total)) {
+  if (
+    !Number.isInteger(body.page) ||
+    !Number.isInteger(body.pageSize) ||
+    !Number.isInteger(body.total)
+  ) {
     return null;
   }
   if (!isFreshness(body.freshness)) return null;

@@ -68,7 +68,11 @@ function parseResponse(value: unknown): RelationshipLedgerResponse | null {
   if (!value || typeof value !== "object") return null;
   const body = value as Record<string, unknown>;
   if (!Array.isArray(body.items) || !body.items.every(validItem)) return null;
-  if (typeof body.total !== "number" || typeof body.page !== "number" || typeof body.pageSize !== "number") {
+  if (
+    typeof body.total !== "number" ||
+    typeof body.page !== "number" ||
+    typeof body.pageSize !== "number"
+  ) {
     return null;
   }
   if (!body.filters || typeof body.filters !== "object") return null;
@@ -78,7 +82,10 @@ function parseResponse(value: unknown): RelationshipLedgerResponse | null {
   if (typeof filters.from !== "string" || typeof filters.to !== "string") return null;
   if (!body.freshness || typeof body.freshness !== "object") return null;
   const freshness = body.freshness as Record<string, unknown>;
-  if ((freshness.status !== "fresh" && freshness.status !== "stale") || typeof freshness.asOfUtc !== "string") {
+  if (
+    (freshness.status !== "fresh" && freshness.status !== "stale") ||
+    typeof freshness.asOfUtc !== "string"
+  ) {
     return null;
   }
   return body as unknown as RelationshipLedgerResponse;

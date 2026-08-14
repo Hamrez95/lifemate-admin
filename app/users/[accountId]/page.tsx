@@ -242,7 +242,8 @@ function ProductsCard({ data }: { data: UserDetailResponse }) {
               <span className={styles.softBadge}>{labelStatus(product.status)}</span>
             </div>
             <small>
-              عضویت: {formatDate(product.enrolledAtUtc)} · آخرین فعالیت: {formatDateTime(product.lastActiveAtUtc)}
+              عضویت: {formatDate(product.enrolledAtUtc)} · آخرین فعالیت:{" "}
+              {formatDateTime(product.lastActiveAtUtc)}
             </small>
           </li>
         ))}
@@ -279,7 +280,8 @@ function CommerceCard({ data }: { data: UserDetailResponse }) {
                     <span className={styles.softBadge}>{labelStatus(subscription.status)}</span>
                   </div>
                   <small>
-                    پلن: {subscription.planName} · پایان دوره: {formatDate(subscription.currentPeriodEndUtc)}
+                    پلن: {subscription.planName} · پایان دوره:{" "}
+                    {formatDate(subscription.currentPeriodEndUtc)}
                   </small>
                 </li>
               ))}
@@ -322,14 +324,20 @@ function RelationshipsCard({ data }: { data: UserDetailResponse }) {
   }
 
   return (
-    <SectionFrame title="روابط" description="Relationship به‌تنهایی Access Grant ایجاد نمی‌کند" wide>
+    <SectionFrame
+      title="روابط"
+      description="Relationship به‌تنهایی Access Grant ایجاد نمی‌کند"
+      wide
+    >
       <div>
         {data.relationships.data.map((relationship) => (
           <div
             className={styles.relationshipRow}
             key={`${relationship.direction}-${relationship.relationshipType}-${relationship.status}`}
           >
-            <span className={styles.softBadge}>{relationshipDirectionLabels[relationship.direction]}</span>
+            <span className={styles.softBadge}>
+              {relationshipDirectionLabels[relationship.direction]}
+            </span>
             <span>
               {relationship.relationshipType} · {labelStatus(relationship.status)}
             </span>
@@ -341,11 +349,21 @@ function RelationshipsCard({ data }: { data: UserDetailResponse }) {
   );
 }
 
-function OverviewActivityPreview({ data, accountId }: { data: UserDetailResponse; accountId: string }) {
+function OverviewActivityPreview({
+  data,
+  accountId,
+}: {
+  data: UserDetailResponse;
+  accountId: string;
+}) {
   if (data.adminActivity.state !== "ready" || !data.adminActivity.data) return null;
 
   return (
-    <SectionFrame title="آخرین فعالیت مدیریتی" description="پیش‌نمایش کوتاه؛ Timeline کامل در تب مستقل" wide>
+    <SectionFrame
+      title="آخرین فعالیت مدیریتی"
+      description="پیش‌نمایش کوتاه؛ Timeline کامل در تب مستقل"
+      wide
+    >
       <div className={styles.metaRow}>
         <span className={styles.softBadge}>
           مجموع رویدادها: {data.adminActivity.data.total.toLocaleString("fa-IR")}
@@ -390,7 +408,11 @@ function TabNavigation({ accountId, activeTab }: { accountId: string; activeTab:
 
 function SupportTab({ canReadSupport }: { canReadSupport: boolean }) {
   return (
-    <SectionFrame title="پشتیبانی کاربر" description="Ticketها در این بخش به User Detail متصل می‌شوند" wide>
+    <SectionFrame
+      title="پشتیبانی کاربر"
+      description="Ticketها در این بخش به User Detail متصل می‌شوند"
+      wide
+    >
       {canReadSupport ? (
         <AdminPageState
           state="unavailable"
@@ -460,10 +482,16 @@ async function ActivityTab({ accountId, page }: { accountId: string; page: numbe
   const nextHref = hasNext ? tabHref(accountId, "activity", data.page + 1) : undefined;
 
   return (
-    <SectionFrame title="Timeline مدیریتی" description="رویدادهای audit مرتبط با این حساب با صفحه‌بندی سروری" wide>
+    <SectionFrame
+      title="Timeline مدیریتی"
+      description="رویدادهای audit مرتبط با این حساب با صفحه‌بندی سروری"
+      wide
+    >
       <div className={styles.timelineHeader}>
         <span className={styles.softBadge}>کل رویدادها: {data.total.toLocaleString("fa-IR")}</span>
-        <span className={styles.softBadge}>آخرین دریافت: {formatDateTime(data.freshness.asOfUtc)}</span>
+        <span className={styles.softBadge}>
+          آخرین دریافت: {formatDateTime(data.freshness.asOfUtc)}
+        </span>
       </div>
       <ActivityTimeline data={data} />
       <AdminPagination
