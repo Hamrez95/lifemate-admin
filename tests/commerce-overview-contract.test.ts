@@ -25,7 +25,7 @@ describe("ADM-COM-001 Commerce Overview", () => {
 
     expect(page).toContain('admin.permissions.includes("commerce.read")');
     expect(page).toContain('activeSlug="commerce"');
-    expect(page).toContain("AdminPageState state=\"forbidden\"");
+    expect(page).toContain('AdminPageState state="forbidden"');
   });
 
   it("keeps plan subscription and entitlement semantics separate", () => {
@@ -36,7 +36,7 @@ describe("ADM-COM-001 Commerce Overview", () => {
     expect(page).toContain("Entitlement");
     expect(page).toContain("توزیع پلن‌ها");
     expect(page).toContain("پوشش قابلیت‌ها");
-    expect(page).toContain("title=\"Subscriptionها\"");
+    expect(page).toContain('title="Subscriptionها"');
   });
 
   it("uses real freshness and server pagination without fake revenue", () => {
