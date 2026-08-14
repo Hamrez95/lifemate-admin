@@ -21,8 +21,7 @@ export type UserAccountActionResult =
   | { kind: "invalid"; message?: string }
   | { kind: "unavailable"; correlationId?: string };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
 
 async function adminAccessToken(): Promise<string | null> {
@@ -51,8 +50,7 @@ async function readProblem(response: Response): Promise<{
           : typeof body.message === "string"
             ? body.message
             : undefined,
-      correlationId:
-        typeof body.correlationId === "string" ? body.correlationId : undefined,
+      correlationId: typeof body.correlationId === "string" ? body.correlationId : undefined,
     };
   } catch {
     return {};
