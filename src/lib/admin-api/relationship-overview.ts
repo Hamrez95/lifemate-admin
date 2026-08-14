@@ -70,7 +70,11 @@ function parseResponse(value: unknown): RelationshipOverviewResponse | null {
   if (!value || typeof value !== "object") return null;
   const body = value as Record<string, unknown>;
   if (!Array.isArray(body.summary) || !Array.isArray(body.items)) return null;
-  if (typeof body.total !== "number" || typeof body.page !== "number" || typeof body.pageSize !== "number") {
+  if (
+    typeof body.total !== "number" ||
+    typeof body.page !== "number" ||
+    typeof body.pageSize !== "number"
+  ) {
     return null;
   }
   if (!body.filters || typeof body.filters !== "object") return null;
@@ -81,14 +85,21 @@ function parseResponse(value: unknown): RelationshipOverviewResponse | null {
   if (filters.status !== null && typeof filters.status !== "string") return null;
 
   const freshness = body.freshness as Record<string, unknown>;
-  if ((freshness.status !== "fresh" && freshness.status !== "stale") || typeof freshness.asOfUtc !== "string") {
+  if (
+    (freshness.status !== "fresh" && freshness.status !== "stale") ||
+    typeof freshness.asOfUtc !== "string"
+  ) {
     return null;
   }
 
   for (const summary of body.summary) {
     if (!summary || typeof summary !== "object") return null;
     const item = summary as Record<string, unknown>;
-    if (!validKind(item.kind) || typeof item.status !== "string" || typeof item.total !== "number") {
+    if (
+      !validKind(item.kind) ||
+      typeof item.status !== "string" ||
+      typeof item.total !== "number"
+    ) {
       return null;
     }
   }
