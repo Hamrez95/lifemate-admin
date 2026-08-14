@@ -243,7 +243,7 @@ function ProductsCard({ data }: { data: UserDetailResponse }) {
               <span className={styles.softBadge}>{labelStatus(product.status)}</span>
             </div>
             <small>
-              عضویت: {formatDate(product.enrolledAtUtc)} · آخرین فعالیت: {" "}
+              عضویت: {formatDate(product.enrolledAtUtc)} · آخرین فعالیت:{" "}
               {formatDateTime(product.lastActiveAtUtc)}
             </small>
           </li>
@@ -281,7 +281,7 @@ function CommerceCard({ data }: { data: UserDetailResponse }) {
                     <span className={styles.softBadge}>{labelStatus(subscription.status)}</span>
                   </div>
                   <small>
-                    پلن: {subscription.planName} · پایان دوره: {" "}
+                    پلن: {subscription.planName} · پایان دوره:{" "}
                     {formatDate(subscription.currentPeriodEndUtc)}
                   </small>
                 </li>
