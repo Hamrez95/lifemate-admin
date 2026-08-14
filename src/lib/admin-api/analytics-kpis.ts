@@ -112,9 +112,7 @@ async function correlationId(response: Response): Promise<string | undefined> {
   }
 }
 
-export async function getKpiValues(
-  params: URLSearchParams,
-): Promise<AnalyticsKpiValuesResult> {
+export async function getKpiValues(params: URLSearchParams): Promise<AnalyticsKpiValuesResult> {
   const supabase = await createServerSupabaseClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   if (claimsError || !claimsData?.claims?.sub) return { kind: "unauthenticated" };
@@ -145,6 +143,7 @@ export async function getKpiValues(
   }
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden" };
-  if (response.status === 400) return { kind: "invalid", correlationId: await correlationId(response) };
+  if (response.status === 400)
+    return { kind: "invalid", correlationId: await correlationId(response) };
   return { kind: "unavailable", correlationId: await correlationId(response) };
 }
