@@ -243,9 +243,7 @@ async function getJson(path: string): Promise<SupportTicketReadResult<unknown>> 
   return { kind: "unavailable", correlationId: issue.correlationId };
 }
 
-export async function getSupportTicket(
-  ticketId: string,
-): Promise<
+export async function getSupportTicket(ticketId: string): Promise<
   SupportTicketReadResult<{
     ticket: SupportTicketDetail;
     freshness: { status: "fresh" | "stale"; asOfUtc: string };
