@@ -61,7 +61,7 @@ describe("ADM-SUP-001 Support Ticket Queue", () => {
   it("keeps the visual layer responsive, keyboard visible and motion-aware", () => {
     const css = source("app/support/support.css");
 
-    expect(css).toContain("var(--lm-green)");
+    expect(css).toContain("var(--lm-green-deep)");
     expect(css).toContain("var(--lm-orange)");
     expect(css).toContain("var(--lm-violet)");
     expect(css).toContain(":focus-visible");
