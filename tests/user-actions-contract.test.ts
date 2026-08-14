@@ -14,7 +14,7 @@ describe("ADM-USR-003 User Action Menu", () => {
     expect(client).toContain("/api/v1/users/${input.accountId}/actions/${input.action}");
     expect(client).toContain('method: "POST"');
     expect(client).toContain('"Idempotency-Key": input.idempotencyKey');
-    expect(client).toContain('Authorization: `Bearer ${token}`');
+    expect(client).toContain("Authorization: `Bearer ${token}`");
     expect(client).toContain('cache: "no-store"');
     expect(client).not.toContain(".from(");
     expect(client).not.toContain("service_role");
