@@ -7,11 +7,12 @@ function source(path: string): string {
   return readFileSync(resolve(process.cwd(), path), "utf8");
 }
 
-describe("ADM-USR-002 User 360", () => {
-  it("reads User 360 through the Admin API only", () => {
+describe("ADM-USR-002 / ADM-USR-004 User 360 detail", () => {
+  it("reads User Detail and its activity timeline through the Admin API only", () => {
     const client = source("src/lib/admin-api/user-detail.ts");
 
     expect(client).toContain("/api/v1/users/${accountId}");
+    expect(client).toContain("/api/v1/users/${accountId}/activity?");
     expect(client).toContain('cache: "no-store"');
     expect(client).not.toContain(".from(");
     expect(client).not.toContain("service_role");
@@ -25,6 +26,7 @@ describe("ADM-USR-002 User 360", () => {
     const page = source("app/users/[accountId]/page.tsx");
 
     expect(page).toContain('admin.permissions.includes("users.read.basic")');
+    expect(page).toContain('admin.permissions.includes("support.read")');
     expect(page).toContain('state="loading"');
     expect(page).toContain('state="forbidden"');
     expect(page).toContain('state="unavailable"');
@@ -34,7 +36,28 @@ describe("ADM-USR-002 User 360", () => {
     expect(page).toContain("data.adminActivity.state");
   });
 
-  it("keeps sensitive-health access outside ordinary User 360", () => {
+  it("provides deep-linkable Persian-first tabs without fabricating unavailable support data", () => {
+    const page = source("app/users/[accountId]/page.tsx");
+
+    for (const tab of ["overview", "products", "relationships", "commerce", "support", "activity"]) {
+      expect(page).toContain(`id: "${tab}"`);
+    }
+    expect(page).toContain('aria-current={tab.id === activeTab ? "page" : undefined}');
+    expect(page).toContain("ADM-SUP-001");
+    expect(page).toContain("داده ساختگی نمایش داده نمی‌شود");
+  });
+
+  it("paginates the admin activity timeline on the server", () => {
+    const page = source("app/users/[accountId]/page.tsx");
+    const client = source("src/lib/admin-api/user-detail.ts");
+
+    expect(page).toContain("<AdminPagination");
+    expect(page).toContain("getUserActivity(accountId, page, ACTIVITY_PAGE_SIZE)");
+    expect(client).toContain("pageSize: String(safePageSize)");
+    expect(client).toContain("signal: AbortSignal.timeout(10_000)");
+  });
+
+  it("keeps sensitive-health access outside ordinary User Detail", () => {
     const page = source("app/users/[accountId]/page.tsx");
 
     expect(page).toContain("مرز حریم خصوصی");
@@ -43,11 +66,15 @@ describe("ADM-USR-002 User 360", () => {
     expect(page).not.toContain("women_health.read.elevated");
   });
 
-  it("provides keyboard and semantic loading cues", () => {
+  it("provides keyboard, semantic timeline and reduced-motion styling", () => {
     const page = source("app/users/[accountId]/page.tsx");
+    const css = source("app/users/[accountId]/user-detail.module.css");
 
     expect(page).toContain('aria-busy="true"');
     expect(page).toContain("<dl");
     expect(page).toContain("<Link");
+    expect(page).toContain("<time dateTime=");
+    expect(css).toContain(":focus-visible");
+    expect(css).toContain("prefers-reduced-motion");
   });
 });
