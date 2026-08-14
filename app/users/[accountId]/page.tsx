@@ -14,8 +14,7 @@ import {
 
 import styles from "./user-detail.module.css";
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 const statusLabels: Record<string, string> = {
   Active: "فعال",
@@ -207,7 +206,8 @@ function ProductsCard({ data }: { data: UserDetailResponse }) {
               <span className={styles.softBadge}>{labelStatus(product.status)}</span>
             </div>
             <small>
-              عضویت: {formatDate(product.enrolledAtUtc)} · آخرین فعالیت: {formatDateTime(product.lastActiveAtUtc)}
+              عضویت: {formatDate(product.enrolledAtUtc)} · آخرین فعالیت:{" "}
+              {formatDateTime(product.lastActiveAtUtc)}
             </small>
           </li>
         ))}
@@ -244,7 +244,8 @@ function CommerceCard({ data }: { data: UserDetailResponse }) {
                     <span className={styles.softBadge}>{labelStatus(subscription.status)}</span>
                   </div>
                   <small>
-                    پلن: {subscription.planName} · پایان دوره: {formatDate(subscription.currentPeriodEndUtc)}
+                    پلن: {subscription.planName} · پایان دوره:{" "}
+                    {formatDate(subscription.currentPeriodEndUtc)}
                   </small>
                 </li>
               ))}
@@ -403,7 +404,8 @@ async function UserDetailContent({ accountId }: { accountId: string }) {
       <div className={styles.notice}>
         <strong>مرز حریم خصوصی</strong>
         <p>
-          این صفحه عمداً داده خام سلامت و Women Health را نمایش نمی‌دهد. دسترسی حساس فقط از مسیر مستقل و کنترل‌شده break-glass قابل تعریف خواهد بود.
+          این صفحه عمداً داده خام سلامت و Women Health را نمایش نمی‌دهد. دسترسی حساس فقط از مسیر
+          مستقل و کنترل‌شده break-glass قابل تعریف خواهد بود.
         </p>
       </div>
 
