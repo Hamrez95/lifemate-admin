@@ -17,14 +17,12 @@ type LedgerPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-const kindMeta: Record<
-  RelationshipOverviewKind,
-  { label: string; symbol: string; tone: string }
-> = {
-  relationship: { label: "Relationship", symbol: "♡", tone: "green" },
-  consent: { label: "Consent", symbol: "✓", tone: "violet" },
-  access_grant: { label: "Access Grant", symbol: "⌁", tone: "blue" },
-};
+const kindMeta: Record<RelationshipOverviewKind, { label: string; symbol: string; tone: string }> =
+  {
+    relationship: { label: "Relationship", symbol: "♡", tone: "green" },
+    consent: { label: "Consent", symbol: "✓", tone: "violet" },
+    access_grant: { label: "Access Grant", symbol: "⌁", tone: "blue" },
+  };
 
 const eventLabels: Record<string, string> = {
   relationship_created: "رابطه ایجاد شد",
@@ -95,9 +93,7 @@ function recordTitle(item: RelationshipLedgerItem): string {
 }
 
 function evidenceLabel(item: RelationshipLedgerItem): string {
-  return item.evidence === "event"
-    ? "رویداد ثبت‌شده"
-    : "از timestamp چرخه عمر";
+  return item.evidence === "event" ? "رویداد ثبت‌شده" : "از timestamp چرخه عمر";
 }
 
 function LedgerItem({ item }: { item: RelationshipLedgerItem }) {

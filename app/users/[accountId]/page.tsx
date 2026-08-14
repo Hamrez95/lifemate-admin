@@ -2,12 +2,14 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
 
-import { AdminPageState } from "@/src/components/admin-data-table";
+import { AdminPageState, AdminPagination } from "@/src/components/admin-data-table";
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
 import { AdminShell } from "@/src/components/shell/AdminShell";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 import {
+  getUserActivity,
   getUserDetail,
+  type UserActivityResponse,
   type UserDetailResponse,
   type UserDetailSection,
 } from "@/src/lib/admin-api/user-detail";
@@ -15,6 +17,7 @@ import {
 import styles from "./user-detail.module.css";
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const ACTIVITY_PAGE_SIZE = 20;
 
 const statusLabels: Record<string, string> = {
   Active: "فعال",
@@ -34,6 +37,17 @@ const relationshipDirectionLabels = {
   Outgoing: "خروجی",
 };
 
+const tabs = [
+  { id: "overview", label: "نمای کلی", hint: "حساب و پروفایل" },
+  { id: "products", label: "محصول‌ها", hint: "عضویت و فعالیت" },
+  { id: "relationships", label: "روابط", hint: "Relationship / Consent" },
+  { id: "commerce", label: "اشتراک", hint: "Plan / Entitlement" },
+  { id: "support", label: "پشتیبانی", hint: "Tickets" },
+  { id: "activity", label: "Timeline", hint: "فعالیت مدیریتی" },
+] as const;
+
+type UserDetailTab = (typeof tabs)[number]["id"];
+
 const dateFormatter = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
   timeZone: "Asia/Tehran",
   year: "numeric",
@@ -52,7 +66,21 @@ const dateTimeFormatter = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
 
 type UserDetailPageProps = {
   params: Promise<{ accountId: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
+
+function first(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function parseTab(value: string | undefined): UserDetailTab {
+  return tabs.some((tab) => tab.id === value) ? (value as UserDetailTab) : "overview";
+}
+
+function parsePositiveInteger(value: string | undefined, fallback: number): number {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
 
 function formatDate(value: string | null | undefined): string {
   if (!value) return "—";
@@ -68,6 +96,14 @@ function formatDateTime(value: string | null | undefined): string {
 
 function labelStatus(value: string): string {
   return statusLabels[value] ?? value;
+}
+
+function tabHref(accountId: string, tab: UserDetailTab, page?: number): string {
+  const search = new URLSearchParams({ tab });
+  if (tab === "activity" && page && page > 1) {
+    search.set("page", String(page));
+  }
+  return `/users/${accountId}?${search.toString()}`;
 }
 
 function SectionFrame({
@@ -115,7 +151,7 @@ function SectionState({
       <AdminPageState
         state="unavailable"
         title="این بخش فعلاً در دسترس نیست"
-        description="خطای این منبع، سایر بخش‌های User 360 را متوقف نکرده است."
+        description="خطای این منبع، سایر بخش‌های صفحه کاربر را متوقف نکرده است."
       />
     );
   }
@@ -219,7 +255,7 @@ function ProductsCard({ data }: { data: UserDetailResponse }) {
 function CommerceCard({ data }: { data: UserDetailResponse }) {
   if (data.commerce.state !== "ready" || !data.commerce.data) {
     return (
-      <SectionFrame title="اشتراک و دسترسی" description="فقط با مجوز commerce.read">
+      <SectionFrame title="اشتراک و دسترسی" description="فقط با مجوز commerce.read" wide>
         <SectionState
           section={data.commerce}
           forbiddenDescription="برای مشاهده وضعیت اشتراک و entitlement مجوز commerce.read لازم است."
@@ -229,12 +265,12 @@ function CommerceCard({ data }: { data: UserDetailResponse }) {
   }
 
   return (
-    <SectionFrame title="اشتراک و دسترسی" description="اشتراک‌ها و entitlementهای غیرپرداختی">
+    <SectionFrame title="اشتراک و دسترسی" description="Subscription و Entitlement مستقل از هم" wide>
       <div className={styles.split}>
         <div className={styles.subsection}>
           <h4>اشتراک‌ها</h4>
           {data.commerce.data.subscriptions.length === 0 ? (
-            <p className={styles.muted}>اشتراک فعالی ثبت نشده است.</p>
+            <p className={styles.muted}>اشتراکی ثبت نشده است.</p>
           ) : (
             <ul className={styles.list}>
               {data.commerce.data.subscriptions.map((subscription) => (
@@ -278,7 +314,7 @@ function CommerceCard({ data }: { data: UserDetailResponse }) {
 function RelationshipsCard({ data }: { data: UserDetailResponse }) {
   if (data.relationships.state !== "ready" || !data.relationships.data) {
     return (
-      <SectionFrame title="روابط" description="خلاصه رابطه؛ بدون افشای هویت طرف مقابل">
+      <SectionFrame title="روابط" description="خلاصه رابطه؛ بدون افشای هویت طرف مقابل" wide>
         <SectionState
           section={data.relationships}
           forbiddenDescription="برای مشاهده خلاصه روابط مجوز relationships.read لازم است."
@@ -288,7 +324,11 @@ function RelationshipsCard({ data }: { data: UserDetailResponse }) {
   }
 
   return (
-    <SectionFrame title="روابط" description="Relationship به‌تنهایی Access Grant ایجاد نمی‌کند">
+    <SectionFrame
+      title="روابط"
+      description="Relationship به‌تنهایی Access Grant ایجاد نمی‌کند"
+      wide
+    >
       <div>
         {data.relationships.data.map((relationship) => (
           <div
@@ -309,27 +349,31 @@ function RelationshipsCard({ data }: { data: UserDetailResponse }) {
   );
 }
 
-function AdminActivityCard({ data }: { data: UserDetailResponse }) {
-  if (data.adminActivity.state !== "ready" || !data.adminActivity.data) {
-    return (
-      <SectionFrame title="فعالیت مدیریتی" description="خلاصه audit مرتبط با این حساب" wide>
-        <SectionState
-          section={data.adminActivity}
-          forbiddenDescription="برای مشاهده خلاصه فعالیت مدیریتی مجوز security.audit.read لازم است."
-        />
-      </SectionFrame>
-    );
-  }
+function OverviewActivityPreview({
+  data,
+  accountId,
+}: {
+  data: UserDetailResponse;
+  accountId: string;
+}) {
+  if (data.adminActivity.state !== "ready" || !data.adminActivity.data) return null;
 
   return (
-    <SectionFrame title="فعالیت مدیریتی" description="آخرین رویدادهای audit مرتبط با این حساب" wide>
+    <SectionFrame
+      title="آخرین فعالیت مدیریتی"
+      description="پیش‌نمایش کوتاه؛ Timeline کامل در تب مستقل"
+      wide
+    >
       <div className={styles.metaRow}>
         <span className={styles.softBadge}>
           مجموع رویدادها: {data.adminActivity.data.total.toLocaleString("fa-IR")}
         </span>
+        <Link className={styles.inlineLink} href={tabHref(accountId, "activity")}>
+          مشاهده Timeline کامل
+        </Link>
       </div>
       <ul className={styles.list}>
-        {data.adminActivity.data.latest.map((event) => (
+        {data.adminActivity.data.latest.slice(0, 3).map((event) => (
           <li className={styles.listItem} key={event.id}>
             <div className={styles.listItemTop}>
               <strong>{event.action}</strong>
@@ -343,13 +387,130 @@ function AdminActivityCard({ data }: { data: UserDetailResponse }) {
   );
 }
 
+function TabNavigation({ accountId, activeTab }: { accountId: string; activeTab: UserDetailTab }) {
+  return (
+    <nav className={styles.tabs} aria-label="بخش‌های جزئیات کاربر">
+      {tabs.map((tab) => (
+        <Link
+          className={styles.tab}
+          data-active={tab.id === activeTab ? "true" : "false"}
+          aria-current={tab.id === activeTab ? "page" : undefined}
+          href={tabHref(accountId, tab.id)}
+          key={tab.id}
+        >
+          <strong>{tab.label}</strong>
+          <span>{tab.hint}</span>
+        </Link>
+      ))}
+    </nav>
+  );
+}
+
+function SupportTab({ canReadSupport }: { canReadSupport: boolean }) {
+  return (
+    <SectionFrame
+      title="پشتیبانی کاربر"
+      description="Ticketها در این بخش به User Detail متصل می‌شوند"
+      wide
+    >
+      {canReadSupport ? (
+        <AdminPageState
+          state="unavailable"
+          title="اتصال Ticketها در مرحله بعد فعال می‌شود"
+          description="این وضعیت واقعی است و داده ساختگی نمایش داده نمی‌شود. پیاده‌سازی منبع پشتیبانی در ADM-SUP-001 انجام خواهد شد."
+        />
+      ) : (
+        <AdminPageState
+          state="forbidden"
+          title="مجوز مشاهده پشتیبانی وجود ندارد"
+          description="برای مشاهده Ticketهای مرتبط با کاربر، مجوز support.read لازم است."
+        />
+      )}
+    </SectionFrame>
+  );
+}
+
+function ActivityTimeline({ data }: { data: UserActivityResponse }) {
+  if (data.items.length === 0) {
+    return <AdminPageState state="empty" title="رویداد مدیریتی برای این کاربر ثبت نشده است" />;
+  }
+
+  return (
+    <ol className={styles.timeline}>
+      {data.items.map((event) => (
+        <li className={styles.timelineItem} key={event.id}>
+          <span className={styles.timelineMarker} aria-hidden="true" />
+          <div className={styles.timelineCard}>
+            <div className={styles.listItemTop}>
+              <strong>{event.action}</strong>
+              <span className={styles.softBadge}>{event.result}</span>
+            </div>
+            <time dateTime={event.occurredAtUtc}>{formatDateTime(event.occurredAtUtc)}</time>
+          </div>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+async function ActivityTab({ accountId, page }: { accountId: string; page: number }) {
+  const result = await getUserActivity(accountId, page, ACTIVITY_PAGE_SIZE);
+  if (result.kind === "unauthenticated") redirect("/login");
+  if (result.kind === "not_found") notFound();
+  if (result.kind === "forbidden") {
+    return (
+      <AdminPageState
+        state="forbidden"
+        title="Timeline مدیریتی برای نقش فعلی قابل مشاهده نیست"
+        description="مجوز security.audit.read برای این بخش الزامی است."
+      />
+    );
+  }
+  if (result.kind === "unavailable") {
+    return (
+      <AdminPageState
+        state="unavailable"
+        title="Timeline فعلاً در دسترس نیست"
+        description={result.correlationId ? `کد پیگیری: ${result.correlationId}` : undefined}
+      />
+    );
+  }
+
+  const data = result.data;
+  const previousHref = data.page > 1 ? tabHref(accountId, "activity", data.page - 1) : undefined;
+  const hasNext = data.page * data.pageSize < data.total;
+  const nextHref = hasNext ? tabHref(accountId, "activity", data.page + 1) : undefined;
+
+  return (
+    <SectionFrame
+      title="Timeline مدیریتی"
+      description="رویدادهای audit مرتبط با این حساب با صفحه‌بندی سروری"
+      wide
+    >
+      <div className={styles.timelineHeader}>
+        <span className={styles.softBadge}>کل رویدادها: {data.total.toLocaleString("fa-IR")}</span>
+        <span className={styles.softBadge}>
+          آخرین دریافت: {formatDateTime(data.freshness.asOfUtc)}
+        </span>
+      </div>
+      <ActivityTimeline data={data} />
+      <AdminPagination
+        page={data.page}
+        pageSize={data.pageSize}
+        total={data.total}
+        previousHref={previousHref}
+        nextHref={nextHref}
+        ariaLabel="صفحه‌بندی Timeline مدیریتی کاربر"
+      />
+    </SectionFrame>
+  );
+}
+
 function LoadingView() {
   return (
-    <div className={styles.page} aria-busy="true" aria-label="در حال بارگذاری User 360">
+    <div className={styles.page} aria-busy="true" aria-label="در حال بارگذاری جزئیات کاربر">
       <AdminPageState state="loading" />
       <div className={styles.grid} aria-hidden="true">
-        <div className={styles.loadingCard} />
-        <div className={styles.loadingCard} />
         <div className={styles.loadingCard} />
         <div className={styles.loadingCard} />
       </div>
@@ -357,7 +518,59 @@ function LoadingView() {
   );
 }
 
-async function UserDetailContent({ accountId }: { accountId: string }) {
+function TabLoadingView() {
+  return (
+    <div className={styles.tabLoading} aria-busy="true" aria-label="در حال بارگذاری Timeline">
+      <AdminPageState state="loading" title="در حال دریافت Timeline" />
+    </div>
+  );
+}
+
+function ActiveTabContent({
+  data,
+  accountId,
+  activeTab,
+  activityPage,
+  canReadSupport,
+}: {
+  data: UserDetailResponse;
+  accountId: string;
+  activeTab: UserDetailTab;
+  activityPage: number;
+  canReadSupport: boolean;
+}) {
+  if (activeTab === "products") return <ProductsCard data={data} />;
+  if (activeTab === "relationships") return <RelationshipsCard data={data} />;
+  if (activeTab === "commerce") return <CommerceCard data={data} />;
+  if (activeTab === "support") return <SupportTab canReadSupport={canReadSupport} />;
+  if (activeTab === "activity") {
+    return (
+      <Suspense fallback={<TabLoadingView />}>
+        <ActivityTab accountId={accountId} page={activityPage} />
+      </Suspense>
+    );
+  }
+
+  return (
+    <div className={styles.grid}>
+      <AccountCard data={data} />
+      <PersonCard data={data} />
+      <OverviewActivityPreview data={data} accountId={accountId} />
+    </div>
+  );
+}
+
+async function UserDetailContent({
+  accountId,
+  activeTab,
+  activityPage,
+  canReadSupport,
+}: {
+  accountId: string;
+  activeTab: UserDetailTab;
+  activityPage: number;
+  canReadSupport: boolean;
+}) {
   const result = await getUserDetail(accountId);
   if (result.kind === "unauthenticated") redirect("/login");
   if (result.kind === "not_found") notFound();
@@ -389,6 +602,7 @@ async function UserDetailContent({ accountId }: { accountId: string }) {
             <Link className={styles.backLink} href="/users">
               بازگشت به فهرست کاربران
             </Link>
+            <span className={styles.eyebrow}>LifeMate User Detail</span>
             <h2>{displayName || "کاربر LifeMate"}</h2>
             <code>{account.id}</code>
           </div>
@@ -409,37 +623,45 @@ async function UserDetailContent({ accountId }: { accountId: string }) {
         </p>
       </div>
 
-      <div className={styles.grid}>
-        <AccountCard data={data} />
-        <PersonCard data={data} />
-        <ProductsCard data={data} />
-        <CommerceCard data={data} />
-        <RelationshipsCard data={data} />
-        <AdminActivityCard data={data} />
-      </div>
+      <TabNavigation accountId={accountId} activeTab={activeTab} />
+      <ActiveTabContent
+        data={data}
+        accountId={accountId}
+        activeTab={activeTab}
+        activityPage={activityPage}
+        canReadSupport={canReadSupport}
+      />
     </div>
   );
 }
 
-export default async function UserDetailPage({ params }: UserDetailPageProps) {
-  const { accountId } = await params;
+export default async function UserDetailPage({ params, searchParams }: UserDetailPageProps) {
+  const [{ accountId }, query] = await Promise.all([params, searchParams]);
   if (!UUID_PATTERN.test(accountId)) notFound();
 
   const admin = await requireAdminAccess();
   const canReadUsers = admin.permissions.includes("users.read.basic");
+  const canReadSupport = admin.permissions.includes("support.read");
+  const activeTab = parseTab(first(query.tab));
+  const activityPage = parsePositiveInteger(first(query.page), 1);
 
   return (
     <AdminSessionProvider admin={admin}>
       <AdminShell
         activeSlug="users"
-        title="User 360"
-        subtitle="نمای یکپارچه و حداقلی حساب، Person، محصولات، اشتراک و روابط"
+        title="جزئیات کاربر"
+        subtitle="نمای عملیاتی permission-aware با تب‌های مستقل، Timeline و مرزهای روشن حریم خصوصی"
       >
         {!canReadUsers ? (
           <AdminPageState state="forbidden" />
         ) : (
           <Suspense fallback={<LoadingView />}>
-            <UserDetailContent accountId={accountId.toLowerCase()} />
+            <UserDetailContent
+              accountId={accountId.toLowerCase()}
+              activeTab={activeTab}
+              activityPage={activityPage}
+              canReadSupport={canReadSupport}
+            />
           </Suspense>
         )}
       </AdminShell>
