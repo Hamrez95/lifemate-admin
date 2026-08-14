@@ -3,10 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 
-import {
-  initialUserActionFormState,
-  runUserAccountAction,
-} from "./actions";
+import { initialUserActionFormState, runUserAccountAction } from "./actions";
 import styles from "./user-action-menu.module.css";
 
 type UserActionMenuProps = {
@@ -107,7 +104,10 @@ export function UserActionMenu({ accountId, accountStatus, canManage }: UserActi
         <div className={styles.panelCopy}>
           <span className={styles.kicker}>User actions</span>
           <strong>اقدام مستقیم برای این وضعیت تعریف نشده</strong>
-          <p>حساب‌های در انتظار حذف یا وضعیت‌های خارج از چرخه Active/Disabled از این منو تغییر نمی‌کنند.</p>
+          <p>
+            حساب‌های در انتظار حذف یا وضعیت‌های خارج از چرخه Active/Disabled از این منو تغییر
+            نمی‌کنند.
+          </p>
         </div>
         <span className={styles.lockedBadge}>{accountStatus}</span>
       </aside>
@@ -120,9 +120,7 @@ export function UserActionMenu({ accountId, accountStatus, canManage }: UserActi
         <div className={styles.panelCopy}>
           <span className={styles.kicker}>User actions</span>
           <strong>{config.title}</strong>
-          <p>
-            هر اقدام نیاز به دلیل دارد، idempotent اجرا می‌شود و در Audit Log ثبت خواهد شد.
-          </p>
+          <p>هر اقدام نیاز به دلیل دارد، idempotent اجرا می‌شود و در Audit Log ثبت خواهد شد.</p>
         </div>
         <button
           ref={triggerRef}
@@ -179,7 +177,9 @@ export function UserActionMenu({ accountId, accountStatus, canManage }: UserActi
               placeholder="مثلاً: درخواست رسمی تیم پشتیبانی پس از بررسی مورد تکرارشونده..."
               disabled={pending}
             />
-            <small>حداقل ۱۰ کاراکتر. از ثبت اطلاعات سلامت یا جزئیات حساس غیرضروری خودداری کنید.</small>
+            <small>
+              حداقل ۱۰ کاراکتر. از ثبت اطلاعات سلامت یا جزئیات حساس غیرضروری خودداری کنید.
+            </small>
           </label>
 
           <div className={styles.feedback} aria-live="polite" data-status={state.status}>
@@ -187,7 +187,12 @@ export function UserActionMenu({ accountId, accountStatus, canManage }: UserActi
           </div>
 
           <footer className={styles.dialogActions}>
-            <button className={styles.cancel} type="button" onClick={closeDialog} disabled={pending}>
+            <button
+              className={styles.cancel}
+              type="button"
+              onClick={closeDialog}
+              disabled={pending}
+            >
               انصراف
             </button>
             <button
