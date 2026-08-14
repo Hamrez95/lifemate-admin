@@ -2,10 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import {
-  performUserAccountAction,
-  type UserAccountAction,
-} from "@/src/lib/admin-api/user-actions";
+import { performUserAccountAction, type UserAccountAction } from "@/src/lib/admin-api/user-actions";
 
 export type UserActionFormState = {
   status: "idle" | "success" | "invalid" | "forbidden" | "conflict" | "unavailable";
@@ -14,8 +11,7 @@ export type UserActionFormState = {
 
 export const initialUserActionFormState: UserActionFormState = { status: "idle" };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function formText(formData: FormData, key: string): string {
   const value = formData.get(key);
@@ -70,7 +66,7 @@ export async function runUserAccountAction(
           ? "نمی‌توانید حساب مدیریتی خودتان را از این مسیر تغییر دهید."
           : result.code === "invalid_account_transition"
             ? "وضعیت فعلی حساب با این عملیات سازگار نیست. صفحه را تازه‌سازی کنید."
-            : result.message ?? "این عملیات با وضعیت فعلی حساب تعارض دارد.";
+            : (result.message ?? "این عملیات با وضعیت فعلی حساب تعارض دارد.");
     return { status: "conflict", message };
   }
   if (result.kind === "invalid") {
