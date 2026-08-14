@@ -39,14 +39,8 @@ export type SupportQueueResult =
   | { kind: "invalid" }
   | { kind: "unavailable"; correlationId?: string };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const SLA_STATES = new Set<SupportSlaState>([
-  "OnTrack",
-  "DueSoon",
-  "Breached",
-  "Completed",
-]);
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const SLA_STATES = new Set<SupportSlaState>(["OnTrack", "DueSoon", "Breached", "Completed"]);
 
 function nullableString(value: unknown): value is string | null {
   return value === null || typeof value === "string";
@@ -70,10 +64,14 @@ function parseQueueResponse(value: unknown): SupportQueueResponse | null {
     const item = rawItem as Record<string, unknown>;
     if (typeof item.ticketId !== "string" || !UUID_PATTERN.test(item.ticketId)) return null;
     if (!Number.isInteger(item.ticketNumber) || Number(item.ticketNumber) < 1) return null;
-    if (typeof item.requesterAccountId !== "string" || !UUID_PATTERN.test(item.requesterAccountId)) {
+    if (
+      typeof item.requesterAccountId !== "string" ||
+      !UUID_PATTERN.test(item.requesterAccountId)
+    ) {
       return null;
     }
-    if (!nullableString(item.requesterDisplayName) || !nullableString(item.productCode)) return null;
+    if (!nullableString(item.requesterDisplayName) || !nullableString(item.productCode))
+      return null;
     if (typeof item.category !== "string") return null;
     if (typeof item.status !== "string" || typeof item.priority !== "string") return null;
     if (!nullableString(item.summary)) return null;
@@ -143,14 +141,11 @@ export async function getSupportQueue(params: URLSearchParams): Promise<SupportQ
   const config = getPublicRuntimeConfig();
   let response: Response;
   try {
-    response = await fetch(
-      `${config.adminApiUrl}/api/v1/support/tickets?${params.toString()}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: "no-store",
-        signal: AbortSignal.timeout(10_000),
-      },
-    );
+    response = await fetch(`${config.adminApiUrl}/api/v1/support/tickets?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+      signal: AbortSignal.timeout(10_000),
+    });
   } catch {
     return { kind: "unavailable" };
   }
