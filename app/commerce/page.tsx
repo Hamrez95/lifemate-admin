@@ -146,7 +146,9 @@ function PlanDistribution({ data }: { data: CommerceDashboardResponse }) {
                 </span>
               </div>
               <div className={styles.barTrack} aria-hidden="true">
-                <span style={{ width: `${Math.max(2, (item.subscriptionCount / maximum) * 100)}%` }} />
+                <span
+                  style={{ width: `${Math.max(2, (item.subscriptionCount / maximum) * 100)}%` }}
+                />
               </div>
               <b>{numberFormatter.format(item.subscriptionCount)}</b>
             </div>
@@ -181,7 +183,9 @@ function EntitlementCoverage({ data }: { data: CommerceDashboardResponse }) {
               <strong>{numberFormatter.format(item.activeCount)}</strong>
               <span>فعال</span>
               {item.expiringSoonCount > 0 ? (
-                <small>{numberFormatter.format(item.expiringSoonCount)} مورد تا ۳۰ روز آینده منقضی می‌شود</small>
+                <small>
+                  {numberFormatter.format(item.expiringSoonCount)} مورد تا ۳۰ روز آینده منقضی می‌شود
+                </small>
               ) : (
                 <small>انقضای نزدیک ثبت نشده</small>
               )}
@@ -264,7 +268,11 @@ const subscriptionColumns: readonly AdminTableColumn<CommerceSubscriptionItem>[]
     key: "customer",
     header: "حساب کاربر",
     render: (row) => (
-      <Link className={styles.userLink} href={`/users/${row.customerAccountId}`} title={row.customerAccountId}>
+      <Link
+        className={styles.userLink}
+        href={`/users/${row.customerAccountId}`}
+        title={row.customerAccountId}
+      >
         {shortId(row.customerAccountId)}
       </Link>
     ),
@@ -353,7 +361,8 @@ async function CommerceContent({ params }: { params: URLSearchParams }) {
   }
 
   const data = result.data;
-  const nextPage = data.page * data.pageSize < data.total ? pageHref(data, data.page + 1) : undefined;
+  const nextPage =
+    data.page * data.pageSize < data.total ? pageHref(data, data.page + 1) : undefined;
   const previousPage = data.page > 1 ? pageHref(data, data.page - 1) : undefined;
 
   return (
@@ -368,15 +377,23 @@ async function CommerceContent({ params }: { params: URLSearchParams }) {
           </p>
         </div>
         <div className={styles.heroLegend} aria-label="مدل Commerce">
-          <span><b>Plan</b> بسته تجاری</span>
-          <span><b>Subscription</b> قرارداد فعال/تاریخی</span>
-          <span><b>Entitlement</b> دسترسی واقعی به قابلیت</span>
+          <span>
+            <b>Plan</b> بسته تجاری
+          </span>
+          <span>
+            <b>Subscription</b> قرارداد فعال/تاریخی
+          </span>
+          <span>
+            <b>Entitlement</b> دسترسی واقعی به قابلیت
+          </span>
         </div>
       </section>
 
       <CommerceFilters data={data} />
       <div className={styles.freshnessStrip}>
-        <span data-status={data.freshness.status}>{data.freshness.status === "fresh" ? "داده تازه" : "داده قدیمی"}</span>
+        <span data-status={data.freshness.status}>
+          {data.freshness.status === "fresh" ? "داده تازه" : "داده قدیمی"}
+        </span>
         <span>آخرین دریافت: {formatDate(data.freshness.asOfUtc)}</span>
         <span>بدون درآمد یا KPI ساختگی</span>
       </div>
@@ -424,7 +441,11 @@ export default async function CommercePage({ searchParams }: CommercePageProps) 
         title="فروش و تجارت"
         subtitle="اشتراک‌ها، پلن‌ها و entitlementهای واقعی؛ بدون میانبر امنیتی"
       >
-        {canReadCommerce ? <CommerceContent params={apiParams} /> : <AdminPageState state="forbidden" />}
+        {canReadCommerce ? (
+          <CommerceContent params={apiParams} />
+        ) : (
+          <AdminPageState state="forbidden" />
+        )}
       </AdminShell>
     </AdminSessionProvider>
   );
