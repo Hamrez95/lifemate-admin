@@ -1,0 +1,557 @@
+.page {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.hero {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(52, 120, 246, 0.14);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 10% 12%, rgba(23, 173, 104, 0.12), transparent 30%),
+    radial-gradient(circle at 93% 12%, rgba(118, 87, 232, 0.1), transparent 33%),
+    linear-gradient(135deg, #fffdf9 0%, #f2f8ff 52%, #f1fbf6 100%);
+  box-shadow: var(--lm-shadow);
+  padding: 26px;
+}
+
+.hero::after {
+  position: absolute;
+  inset-inline-end: -72px;
+  bottom: -110px;
+  width: 250px;
+  height: 250px;
+  border: 34px solid rgba(52, 120, 246, 0.045);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
+.heroCopy,
+.heroStats {
+  position: relative;
+  z-index: 1;
+}
+
+.heroCopy {
+  max-width: 700px;
+}
+
+.heroCopy > span,
+.panelHeader span,
+.highlightPanel header span {
+  display: inline-flex;
+  width: max-content;
+  border-radius: 999px;
+  background: var(--lm-blue-soft);
+  color: var(--lm-blue);
+  padding: 5px 9px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.heroCopy h2 {
+  margin: 9px 0 7px;
+  color: var(--lm-text);
+  font-size: clamp(23px, 2.7vw, 33px);
+  line-height: 1.45;
+  letter-spacing: -0.035em;
+}
+
+.heroCopy p,
+.panelHeader p {
+  margin: 0;
+  color: var(--lm-text-muted);
+  font-size: 11px;
+  line-height: 1.9;
+}
+
+.heroStats {
+  display: grid;
+  min-width: 290px;
+  grid-template-columns: repeat(3, minmax(76px, 1fr));
+  gap: 8px;
+}
+
+.heroStats > div {
+  display: grid;
+  min-height: 82px;
+  place-items: center;
+  border: 1px solid rgba(229, 224, 215, 0.78);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 10px;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.heroStats strong {
+  color: var(--lm-text);
+  font-size: 20px;
+}
+
+.heroStats span {
+  color: var(--lm-text-muted);
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.summaryCard {
+  position: relative;
+  display: grid;
+  min-height: 112px;
+  align-content: space-between;
+  gap: 8px;
+  overflow: hidden;
+  border: 1px solid var(--lm-border);
+  border-radius: 18px;
+  background: var(--lm-surface-raised);
+  box-shadow: 0 8px 24px rgba(34, 48, 68, 0.035);
+  padding: 15px;
+}
+
+.summaryCard::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--lm-border-strong);
+  content: "";
+}
+
+.summaryCard[data-tone="green"]::before {
+  background: var(--lm-green);
+}
+
+.summaryCard[data-tone="blue"]::before {
+  background: var(--lm-blue);
+}
+
+.summaryCard[data-tone="orange"]::before {
+  background: var(--lm-orange);
+}
+
+.summaryCard[data-tone="violet"]::before {
+  background: var(--lm-violet);
+}
+
+.summaryCard > span {
+  color: var(--lm-text-muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.summaryCard strong {
+  color: var(--lm-text);
+  font-size: 25px;
+  line-height: 1;
+}
+
+.summaryCard small {
+  color: var(--lm-text-muted);
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.contextStrip {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.contextStrip span {
+  display: inline-flex;
+  min-height: 29px;
+  align-items: center;
+  border: 1px solid var(--lm-border);
+  border-radius: 999px;
+  background: var(--lm-surface);
+  color: var(--lm-text-muted);
+  padding: 5px 10px;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.twoColumn,
+.highlightGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.panel,
+.highlightPanel {
+  min-width: 0;
+  border: 1px solid var(--lm-border);
+  border-radius: 22px;
+  background: var(--lm-surface-raised);
+  box-shadow: var(--lm-shadow);
+  padding: 18px;
+}
+
+.panelHeader,
+.highlightPanel header {
+  margin-bottom: 14px;
+}
+
+.panelHeader h3,
+.highlightPanel h3 {
+  margin: 7px 0 4px;
+  color: var(--lm-text);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.planGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.planCard {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+  border: 1px solid var(--lm-border);
+  border-radius: 16px;
+  background: linear-gradient(145deg, #fff, #fbfdff);
+  padding: 13px;
+  text-decoration: none;
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.planCard:hover {
+  border-color: rgba(52, 120, 246, 0.28);
+  box-shadow: 0 10px 22px rgba(52, 120, 246, 0.07);
+  transform: translateY(-1px);
+}
+
+.planCard > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.planCard > strong {
+  overflow: hidden;
+  color: var(--lm-text);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.planCard > code,
+.tablePlan code,
+.identifier,
+.entitlementName code {
+  direction: ltr;
+  unicode-bidi: isolate;
+  color: var(--lm-text-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 9px;
+}
+
+.planCard dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin: 0;
+}
+
+.planCard dl > div {
+  display: grid;
+  gap: 3px;
+  border-radius: 10px;
+  background: var(--lm-surface-soft);
+  padding: 8px;
+}
+
+.planCard dt {
+  color: var(--lm-text-muted);
+  font-size: 8px;
+}
+
+.planCard dd {
+  margin: 0;
+  color: var(--lm-text);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.productBadge,
+.statusPill {
+  display: inline-flex;
+  width: max-content;
+  min-height: 25px;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 9px;
+  font-weight: 850;
+  line-height: 1.3;
+}
+
+.productBadge {
+  border: 1px solid rgba(52, 120, 246, 0.14);
+  background: var(--lm-blue-soft);
+  color: var(--lm-blue);
+}
+
+.statusPill {
+  border: 1px solid rgba(23, 173, 104, 0.16);
+  background: var(--lm-green-soft);
+  color: var(--lm-green-deep);
+}
+
+.statusPill[data-status="PastDue"] {
+  border-color: rgba(238, 139, 49, 0.22);
+  background: var(--lm-orange-soft);
+  color: #8c531d;
+}
+
+.statusPill[data-status="Cancelled"],
+.statusPill[data-status="Expired"],
+.statusPill[data-status="Refunded"],
+.statusPill[data-status="Retired"] {
+  border-color: var(--lm-border);
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
+}
+
+.statusPill[data-status="Trial"] {
+  border-color: rgba(118, 87, 232, 0.16);
+  background: var(--lm-violet-soft);
+  color: var(--lm-violet);
+}
+
+.entitlementList {
+  display: grid;
+  gap: 8px;
+}
+
+.entitlementRow {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.8fr) minmax(120px, 1.2fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: var(--lm-surface-soft);
+  padding: 10px;
+  text-decoration: none;
+}
+
+.entitlementRow:hover {
+  border-color: rgba(118, 87, 232, 0.18);
+  background: #faf8ff;
+}
+
+.entitlementName {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.entitlementName code {
+  overflow: hidden;
+  color: var(--lm-text);
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.entitlementName span,
+.entitlementRow small {
+  color: var(--lm-text-muted);
+  font-size: 8px;
+}
+
+.entitlementMeter {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e8e7e2;
+}
+
+.entitlementMeter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--lm-green), var(--lm-blue));
+}
+
+.highlightPanel ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.highlightPanel li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 13px;
+  background: var(--lm-surface-soft);
+  padding: 10px 11px;
+}
+
+.highlightPanel li > div {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.highlightPanel li strong {
+  overflow: hidden;
+  color: var(--lm-text);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.highlightPanel li small,
+.highlightPanel time,
+.emptyHint {
+  color: var(--lm-text-muted);
+  font-size: 8px;
+}
+
+.highlightPanel time {
+  flex: 0 0 auto;
+  font-weight: 750;
+}
+
+.emptyHint {
+  margin: 0;
+  line-height: 1.8;
+}
+
+.tablePlan {
+  display: grid;
+  gap: 3px;
+}
+
+.tablePlan a {
+  color: var(--lm-blue);
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.tablePlan a:hover {
+  text-decoration: underline;
+}
+
+.identifier {
+  display: inline-block;
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.planCard:focus-visible,
+.entitlementRow:focus-visible,
+.tablePlan a:focus-visible {
+  outline: 3px solid rgba(52, 120, 246, 0.24);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1180px) {
+  .summaryGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .twoColumn,
+  .highlightGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 820px) {
+  .hero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .heroStats {
+    width: 100%;
+  }
+
+  .planGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    gap: 13px;
+  }
+
+  .hero {
+    border-radius: 20px;
+    padding: 18px;
+  }
+
+  .heroCopy h2 {
+    font-size: 22px;
+  }
+
+  .heroStats {
+    min-width: 0;
+    grid-template-columns: 1fr;
+  }
+
+  .heroStats > div {
+    min-height: 64px;
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summaryCard {
+    min-height: 104px;
+  }
+
+  .panel,
+  .highlightPanel {
+    border-radius: 18px;
+    padding: 14px;
+  }
+
+  .entitlementRow {
+    grid-template-columns: 1fr;
+  }
+
+  .highlightPanel li {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .planCard {
+    transition: none;
+  }
+}
