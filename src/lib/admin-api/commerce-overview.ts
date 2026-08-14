@@ -129,11 +129,13 @@ function parseOverview(value: unknown): CommerceOverviewResponse | null {
     if (!nonNegativeInteger(entitlementsSummary[key])) return null;
   }
   if (!Array.isArray(body.products) || !Array.isArray(body.planDistribution)) return null;
-  if (!Array.isArray(body.entitlementCoverage) || !Array.isArray(body.renewalHighlights)) return null;
+  if (!Array.isArray(body.entitlementCoverage) || !Array.isArray(body.renewalHighlights))
+    return null;
   if (!Array.isArray(body.entitlementExpiryHighlights)) return null;
   if (!body.subscriptions || typeof body.subscriptions !== "object") return null;
   const subscriptionList = body.subscriptions as Record<string, unknown>;
-  if (!Array.isArray(subscriptionList.items) || !nonNegativeInteger(subscriptionList.total)) return null;
+  if (!Array.isArray(subscriptionList.items) || !nonNegativeInteger(subscriptionList.total))
+    return null;
   if (!Number.isInteger(body.page) || !Number.isInteger(body.pageSize)) return null;
   if (!body.filters || typeof body.filters !== "object") return null;
   const filters = body.filters as Record<string, unknown>;
@@ -178,7 +180,11 @@ function parseOverview(value: unknown): CommerceOverviewResponse | null {
     if (!raw || typeof raw !== "object") return null;
     const row = raw as Record<string, unknown>;
     if (typeof row.featureCode !== "string") return null;
-    if (!nonNegativeInteger(row.active) || !nonNegativeInteger(row.expired) || !nonNegativeInteger(row.revoked)) {
+    if (
+      !nonNegativeInteger(row.active) ||
+      !nonNegativeInteger(row.expired) ||
+      !nonNegativeInteger(row.revoked)
+    ) {
       return null;
     }
     entitlementCoverage.push(row as unknown as CommerceEntitlementCoverage);
@@ -188,7 +194,8 @@ function parseOverview(value: unknown): CommerceOverviewResponse | null {
   for (const raw of body.renewalHighlights) {
     if (!raw || typeof raw !== "object") return null;
     const row = raw as Record<string, unknown>;
-    if (typeof row.subscriptionId !== "string" || !UUID_PATTERN.test(row.subscriptionId)) return null;
+    if (typeof row.subscriptionId !== "string" || !UUID_PATTERN.test(row.subscriptionId))
+      return null;
     for (const key of ["productCode", "planCode", "planName", "status", "currentPeriodEndUtc"]) {
       if (typeof row[key] !== "string") return null;
     }
@@ -210,12 +217,21 @@ function parseOverview(value: unknown): CommerceOverviewResponse | null {
   for (const raw of subscriptionList.items) {
     if (!raw || typeof raw !== "object") return null;
     const row = raw as Record<string, unknown>;
-    if (typeof row.subscriptionId !== "string" || !UUID_PATTERN.test(row.subscriptionId)) return null;
+    if (typeof row.subscriptionId !== "string" || !UUID_PATTERN.test(row.subscriptionId))
+      return null;
     if (typeof row.planId !== "string" || !UUID_PATTERN.test(row.planId)) return null;
-    for (const key of ["productCode", "productName", "planCode", "planName", "status", "startsAtUtc"]) {
+    for (const key of [
+      "productCode",
+      "productName",
+      "planCode",
+      "planName",
+      "status",
+      "startsAtUtc",
+    ]) {
       if (typeof row[key] !== "string") return null;
     }
-    if (!nullableString(row.currentPeriodEndUtc) || !nullableString(row.cancelledAtUtc)) return null;
+    if (!nullableString(row.currentPeriodEndUtc) || !nullableString(row.cancelledAtUtc))
+      return null;
     subscriptionItems.push(row as unknown as CommerceSubscriptionRow);
   }
 
