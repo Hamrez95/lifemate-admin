@@ -35,6 +35,18 @@ jobs:
         run: |
           set -euo pipefail
           npm run format
+          for file in \
+            "app/relationships/ledger/ledger.module.css" \
+            "app/relationships/ledger/page.tsx" \
+            "src/lib/admin-api/relationship-ledger.ts" \
+            "app/users/[accountId]/page.tsx" \
+            "src/lib/admin-api/user-detail.ts" \
+            "tests/user-360-contract.test.ts"; do
+            echo "FORMAT_DUMP_BEGIN:${file}"
+            base64 -w0 "${file}"
+            echo
+            echo "FORMAT_DUMP_END:${file}"
+          done
           git diff --exit-code
 
       - name: Browser secret boundary
