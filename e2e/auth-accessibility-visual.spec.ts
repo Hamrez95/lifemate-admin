@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
-async function expectNoSeriousA11yViolations(page: Parameters<typeof AxeBuilder>[0]["page"]) {
+async function expectNoSeriousA11yViolations(page: Page) {
   const result = await new AxeBuilder({ page }).analyze();
   const blocking = result.violations.filter(
     (violation) => violation.impact === "critical" || violation.impact === "serious",
