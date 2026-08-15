@@ -4,8 +4,7 @@ import { expect, test } from "@playwright/test";
 const authOrigin = "http://127.0.0.1:54321/auth/v1";
 
 function authRequest(path: string) {
-  return (response: { url(): string; request(): { method(): string } }) =>
-    response.url().startsWith(`${authOrigin}${path}`);
+  return (response: { url(): string }) => response.url().startsWith(`${authOrigin}${path}`);
 }
 
 test("existing account completes OTP then TOTP MFA before an authorized workspace is rendered", async ({
@@ -19,11 +18,11 @@ test("existing account completes OTP then TOTP MFA before an authorized workspac
   });
 
   await page.goto("/login");
-  await page.getByLabel("شماره موبایل حساب LifeMate").fill("۰۹۱۲۱۲۳۴۵۶۷");
+  await page.getByLabel("شماره موبایل حساب LifeMate").fill("09121234567");
 
   const otpRequest = page.waitForResponse(authRequest("/otp"));
   await page.getByRole("button", { name: "دریافت کد ورود" }).click();
-  await expect(otpRequest).resolves.toMatchObject({ ok: expect.any(Function) });
+  expect((await otpRequest).ok()).toBe(true);
   await expect(page.getByText("کد یک‌بارمصرف برای حساب موجود ارسال شد.")).toBeVisible();
 
   await page.getByLabel("کد پیامک").fill("123456");
@@ -39,16 +38,18 @@ test("existing account completes OTP then TOTP MFA before an authorized workspac
 
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { name: "مرکز فرماندهی" })).toBeVisible();
-  expect(authRequests.some((value) => value.includes(`/factors/`) && value.endsWith("/challenge"))).toBe(
-    true,
-  );
-  expect(authRequests.some((value) => value.includes(`/factors/`) && value.endsWith("/verify"))).toBe(
-    true,
-  );
+  expect(
+    authRequests.some((value) => value.includes("/factors/") && value.endsWith("/challenge")),
+  ).toBe(true);
+  expect(
+    authRequests.some((value) => value.includes("/factors/") && value.endsWith("/verify")),
+  ).toBe(true);
 
   await page.goto("/operations");
   await expect(page.getByRole("heading", { name: "عملیات" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "دسترسی این فضا از سمت سرور تأیید شد." })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "دسترسی این فضا از سمت سرور تأیید شد." }),
+  ).toBeVisible();
   await expect(page.getByText(/نمایش منو صرفاً UX است/)).toBeVisible();
 
   const a11y = await new AxeBuilder({ page }).analyze();
