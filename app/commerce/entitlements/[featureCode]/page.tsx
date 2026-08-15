@@ -149,7 +149,7 @@ function ProductRules({ data }: { data: CommerceEntitlementDetail }) {
         <>
           {data.productRules.total > data.productRules.items.length ? (
             <p className={styles.emptyNote}>
-              {data.productRules.items.length.toLocaleString("fa-IR")} قانون از مجموع {" "}
+              {data.productRules.items.length.toLocaleString("fa-IR")} قانون از مجموع{" "}
               {data.productRules.total.toLocaleString("fa-IR")} قانون نمایش داده می‌شود.
             </p>
           ) : null}
@@ -217,8 +217,8 @@ function EventHistory({ data }: { data: CommerceEntitlementDetail }) {
           <span>ENTITLEMENT EVENTS</span>
           <h3 id="entitlement-events-title">تاریخچه تغییر دسترسی</h3>
           <p>
-            فقط نوع رویداد، Entitlement ID و زمان‌ها نمایش داده می‌شود؛ `metadata_json` و provider event
-            key وارد Command Center نمی‌شوند.
+            فقط نوع رویداد، Entitlement ID و زمان‌ها نمایش داده می‌شود؛ `metadata_json` و provider
+            event key وارد Command Center نمی‌شوند.
           </p>
         </div>
       </header>
@@ -228,7 +228,7 @@ function EventHistory({ data }: { data: CommerceEntitlementDetail }) {
         <>
           {data.eventHistory.total > data.eventHistory.items.length ? (
             <p className={styles.emptyNote}>
-              {data.eventHistory.items.length.toLocaleString("fa-IR")} رویداد اخیر از مجموع {" "}
+              {data.eventHistory.items.length.toLocaleString("fa-IR")} رویداد اخیر از مجموع{" "}
               {data.eventHistory.total.toLocaleString("fa-IR")} رویداد نمایش داده می‌شود.
             </p>
           ) : null}
@@ -280,8 +280,8 @@ async function EntitlementContent({ featureCode, page }: { featureCode: string; 
     <div className={styles.page}>
       <Hero data={data} />
       <div className={styles.warning}>
-        <strong>تعریف «فعال مؤثر»:</strong> status ذخیره‌شده به‌تنهایی کافی نیست؛ زمان شروع و انقضا هم
-        اعمال می‌شوند. اگر وضعیت مؤثر با وضعیت ذخیره‌شده فرق کند، هر دو در جدول دیده می‌شوند.
+        <strong>تعریف «فعال مؤثر»:</strong> status ذخیره‌شده به‌تنهایی کافی نیست؛ زمان شروع و انقضا
+        هم اعمال می‌شوند. اگر وضعیت مؤثر با وضعیت ذخیره‌شده فرق کند، هر دو در جدول دیده می‌شوند.
       </div>
       <Summary data={data} />
       <ProductRules data={data} />
