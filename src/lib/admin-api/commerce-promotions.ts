@@ -290,12 +290,9 @@ function parseList(value: unknown): CommercePromotionsResponse | null {
   const items = value.items.map((item) => parsePromotion(item, true));
   if (products.some((item) => !item) || items.some((item) => !item)) return null;
   if (!isRecord(value.summary) || !isRecord(value.filters) || !isRecord(value.source)) return null;
+  const summary = value.summary;
   const summaryKeys = ["total", "draft", "active", "paused", "expired"] as const;
-  if (
-    summaryKeys.some(
-      (key) => !Number.isInteger(value.summary[key]) || Number(value.summary[key]) < 0,
-    )
-  ) {
+  if (summaryKeys.some((key) => !Number.isInteger(summary[key]) || Number(summary[key]) < 0)) {
     return null;
   }
   if (
@@ -310,11 +307,11 @@ function parseList(value: unknown): CommercePromotionsResponse | null {
   return {
     products: products as Array<{ id: string; code: string; name: string }>,
     summary: {
-      total: Number(value.summary.total),
-      draft: Number(value.summary.draft),
-      active: Number(value.summary.active),
-      paused: Number(value.summary.paused),
-      expired: Number(value.summary.expired),
+      total: Number(summary.total),
+      draft: Number(summary.draft),
+      active: Number(summary.active),
+      paused: Number(summary.paused),
+      expired: Number(summary.expired),
     },
     items: items as CommercePromotionRow[],
     total: Number(value.total),
@@ -402,13 +399,21 @@ function parseDetail(value: unknown): CommercePromotionDetail | null {
   }
   const freshness = parseFreshness(value.freshness);
   if (!freshness || value.source.kind !== "canonical" || !isString(value.source.label)) return null;
-  const {
-    primaryCodeMasked: _masked,
-    primaryCodeStatus: _status,
-    primaryCodeMaxRedemptions: _limit,
-    codeCount: _count,
-    ...detailPromotion
-  } = row;
+  const detailPromotion: CommercePromotionDetail["promotion"] = {
+    promotionId: row.promotionId,
+    name: row.name,
+    description: row.description,
+    product: row.product,
+    discount: row.discount,
+    storedStatus: row.storedStatus,
+    effectiveStatus: row.effectiveStatus,
+    startsAtUtc: row.startsAtUtc,
+    endsAtUtc: row.endsAtUtc,
+    maxRedemptions: row.maxRedemptions,
+    redemptionSummary: row.redemptionSummary,
+    createdAtUtc: row.createdAtUtc,
+    updatedAtUtc: row.updatedAtUtc,
+  };
   return {
     promotion: detailPromotion,
     codes: codes as CommercePromotionDetail["codes"],
