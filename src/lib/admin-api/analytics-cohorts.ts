@@ -150,10 +150,7 @@ function event(catalog: AnalyticsCatalog, name: string): AnalyticsEventDefinitio
   return catalog.events.find((item) => item.name === name);
 }
 
-function value(
-  values: AnalyticsKpiValuesResponse,
-  name: string,
-): KpiValue | undefined {
+function value(values: AnalyticsKpiValuesResponse, name: string): KpiValue | undefined {
   return values.values.find((item) => item.name === name);
 }
 
@@ -184,8 +181,7 @@ export function buildCohortReport(
   const acquisition = value(values, "accounts_created");
   const activationEvent = event(catalog, "profile_completed");
   const retentionEvent = event(catalog, "app_opened");
-  const acquisitionSeries =
-    acquisition?.state !== "unavailable" ? (acquisition?.series ?? []) : [];
+  const acquisitionSeries = acquisition?.state !== "unavailable" ? (acquisition?.series ?? []) : [];
 
   const retentionReason =
     retentionEvent?.instrumentationState === "instrumented"
@@ -223,10 +219,8 @@ export function buildCohortReport(
       suppressionThreshold: COHORT_SUPPRESSION_THRESHOLD,
     },
     acquisition: {
-      state:
-        acquisition?.state === "unavailable" || !acquisition ? "unavailable" : "partial",
-      total:
-        acquisition?.state === "unavailable" || !acquisition ? null : acquisition.value,
+      state: acquisition?.state === "unavailable" || !acquisition ? "unavailable" : "partial",
+      total: acquisition?.state === "unavailable" || !acquisition ? null : acquisition.value,
       source: acquisition?.source ?? "account_created canonical definition",
       asOfUtc: acquisition?.freshness.asOfUtc ?? null,
       reason: acquisition?.reason ?? null,
