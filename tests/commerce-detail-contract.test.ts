@@ -45,14 +45,33 @@ describe("ADM-COM-002 Commerce Detail", () => {
     }
   });
 
-  it("does not invent plan lifecycle history or plan-feature ordering", () => {
+  it("connects overview drilldowns only after protected detail routes exist", () => {
+    const overview = source("app/commerce/page.tsx");
+
+    expect(overview).toContain("/commerce/plans/${row.planId}");
+    expect(overview).toContain("/commerce/entitlements/${encodeURIComponent(row.featureCode)}");
+  });
+
+  it("does not invent plan lifecycle, transaction history, or plan-feature ordering", () => {
     const plan = source("app/commerce/plans/[planId]/page.tsx");
 
     expect(plan).toContain("minimumPlanCode");
     expect(plan).toContain("حدس زده نمی‌شود");
     expect(plan).toContain("instrumented");
     expect(plan).toContain("هنوز instrument نشده");
+    expect(plan).toContain("transactionLinkage");
     expect(plan).toContain("amount_minor");
+  });
+
+  it("keeps bigint price values lossless and reports bounded collections", () => {
+    const client = source("src/lib/admin-api/commerce-detail.ts");
+    const plan = source("app/commerce/plans/[planId]/page.tsx");
+
+    expect(client).toContain("amountMinor: string");
+    expect(client).toContain("NON_NEGATIVE_INTEGER_STRING");
+    expect(plan).toContain("formatIntegerString(price.amountMinor)");
+    expect(plan).toContain("data.featureRules.total");
+    expect(plan).toContain("data.prices.total");
   });
 
   it("documents effective entitlement semantics and bounded linked grants", () => {
@@ -61,6 +80,7 @@ describe("ADM-COM-002 Commerce Detail", () => {
     expect(entitlement).toContain("فعال مؤثر");
     expect(entitlement).toContain("زمان‌بندی‌شده");
     expect(entitlement).toContain("data.entitlements.total");
+    expect(entitlement).toContain("data.productRules.total");
     expect(entitlement).toContain("previousHref");
     expect(entitlement).toContain("nextHref");
     expect(entitlement).toContain("eventHistory");
