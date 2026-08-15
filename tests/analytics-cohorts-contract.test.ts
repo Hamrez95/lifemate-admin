@@ -82,9 +82,9 @@ describe("ADM-ANL-002 cohort contract", () => {
       rate: null,
     });
     expect(report.retention.cohorts[1]).toMatchObject({ size: null, suppressed: true });
-    expect(report.retention.cohorts[1]?.retention.every((cell) => cell.state === "suppressed")).toBe(
-      true,
-    );
+    expect(
+      report.retention.cohorts[1]?.retention.every((cell) => cell.state === "suppressed"),
+    ).toBe(true);
     expect(report.retention.cohorts[2]).toMatchObject({
       size: COHORT_SUPPRESSION_THRESHOLD,
       suppressed: false,
@@ -140,7 +140,11 @@ describe("ADM-ANL-002 cohort contract", () => {
 
     expect(
       parseCohortQuery(
-        new URLSearchParams({ from: "2026-08-01", to: "2026-08-16", product: "wellmate" }),
+        new URLSearchParams({
+          from: "2026-08-01",
+          to: "2026-08-16",
+          product: "wellmate",
+        }),
         now,
       ),
     ).toEqual({ from: "2026-08-01", to: "2026-08-16", product: "wellmate" });
