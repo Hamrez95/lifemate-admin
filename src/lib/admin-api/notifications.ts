@@ -132,7 +132,10 @@ function parseSourceState(value: unknown): NotificationSourceState | null {
   if (!row || typeof row.source !== "string" || !SOURCES.has(row.source as NotificationSource)) {
     return null;
   }
-  if (typeof row.state !== "string" || !SOURCE_STATES.has(row.state as NotificationSourceStateKind)) {
+  if (
+    typeof row.state !== "string" ||
+    !SOURCE_STATES.has(row.state as NotificationSourceStateKind)
+  ) {
     return null;
   }
   const total = nullableInteger(row.total);
@@ -151,7 +154,10 @@ function parseSourceState(value: unknown): NotificationSourceState | null {
   if ((state === "ready" || state === "empty") && (total === null || unreadCount === null)) {
     return null;
   }
-  if ((state === "unavailable" || state === "not_instrumented") && (total !== null || unreadCount !== null)) {
+  if (
+    (state === "unavailable" || state === "not_instrumented") &&
+    (total !== null || unreadCount !== null)
+  ) {
     return null;
   }
   return {
@@ -302,7 +308,8 @@ function parseCount(value: unknown): NotificationCountData | null {
 function parseReadState(value: unknown): NotificationReadStateData | null {
   const body = record(value);
   if (!body || body.code !== "ok" || body.httpStatus !== 200) return null;
-  if (typeof body.source !== "string" || !SOURCES.has(body.source as NotificationSource)) return null;
+  if (typeof body.source !== "string" || !SOURCES.has(body.source as NotificationSource))
+    return null;
   const source = body.source as NotificationSource;
   const alertKey = text(body.alertKey, 180);
   const readAtUtc = body.readAtUtc === null ? null : iso(body.readAtUtc);

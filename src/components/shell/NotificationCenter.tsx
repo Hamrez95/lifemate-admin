@@ -242,7 +242,9 @@ export function NotificationCenter() {
     if (!open) return;
     const frame = requestAnimationFrame(() => {
       dialogRef.current
-        ?.querySelector<HTMLElement>('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])')
+        ?.querySelector<HTMLElement>(
+          'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+        )
         ?.focus();
     });
     return () => cancelAnimationFrame(frame);
@@ -306,7 +308,11 @@ export function NotificationCenter() {
         className={styles.trigger}
         type="button"
         disabled={!enabled}
-        aria-label={enabled ? `اعلان‌ها${badgeDescription ? `؛ ${badgeDescription}` : ""}` : "اعلان‌ها؛ دسترسی مجاز ندارید"}
+        aria-label={
+          enabled
+            ? `اعلان‌ها${badgeDescription ? `؛ ${badgeDescription}` : ""}`
+            : "اعلان‌ها؛ دسترسی مجاز ندارید"
+        }
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => {
@@ -314,7 +320,9 @@ export function NotificationCenter() {
           void loadCount();
         }}
       >
-        <span aria-hidden="true" className={styles.bell}>♧</span>
+        <span aria-hidden="true" className={styles.bell}>
+          ♧
+        </span>
         {badge && <span className={styles.badge}>{badge}</span>}
       </button>
 
@@ -323,9 +331,13 @@ export function NotificationCenter() {
       </span>
 
       {open && (
-        <div className={styles.backdrop} role="presentation" onMouseDown={(event) => {
-          if (event.target === event.currentTarget) close();
-        }}>
+        <div
+          className={styles.backdrop}
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) close();
+          }}
+        >
           <div
             ref={dialogRef}
             className={styles.panel}
@@ -341,7 +353,12 @@ export function NotificationCenter() {
                 <h2 id="notification-center-title">مرکز اعلان‌ها</h2>
                 <p>فقط هشدارهای واقعی از دامنه‌هایی که اجازه دیدنشان را دارید.</p>
               </div>
-              <button type="button" className={styles.close} onClick={close} aria-label="بستن اعلان‌ها">
+              <button
+                type="button"
+                className={styles.close}
+                onClick={close}
+                aria-label="بستن اعلان‌ها"
+              >
                 ×
               </button>
             </header>
@@ -397,7 +414,9 @@ export function NotificationCenter() {
             {panelState.kind === "error" && (
               <div className={styles.state} role="alert">
                 <strong>{panelState.message}</strong>
-                <button type="button" onClick={() => void loadPanel()}>تلاش دوباره</button>
+                <button type="button" onClick={() => void loadPanel()}>
+                  تلاش دوباره
+                </button>
               </div>
             )}
 
@@ -422,10 +441,15 @@ export function NotificationCenter() {
                   </div>
                 </div>
 
-                {data.sourceStates.some((source) => source.state === "unavailable" || source.state === "not_instrumented") && (
+                {data.sourceStates.some(
+                  (source) => source.state === "unavailable" || source.state === "not_instrumented",
+                ) && (
                   <div className={styles.sourceStates} aria-label="وضعیت منابع اعلان">
                     {data.sourceStates
-                      .filter((source) => source.state === "unavailable" || source.state === "not_instrumented")
+                      .filter(
+                        (source) =>
+                          source.state === "unavailable" || source.state === "not_instrumented",
+                      )
                       .map((source) => (
                         <div key={source.source} data-state={source.state}>
                           <span aria-hidden="true">{sourceIcons[source.source]}</span>
@@ -443,7 +467,11 @@ export function NotificationCenter() {
                 {data.items.length === 0 ? (
                   <div className={styles.empty} role="status">
                     <span aria-hidden="true">✓</span>
-                    <strong>{unreadOnly ? "اعلان خوانده‌نشده‌ای در منابع آماده نیست." : "در منابع آماده هشدار فعالی نیست."}</strong>
+                    <strong>
+                      {unreadOnly
+                        ? "اعلان خوانده‌نشده‌ای در منابع آماده نیست."
+                        : "در منابع آماده هشدار فعالی نیست."}
+                    </strong>
                     <p>منابع unavailable یا not-instrumented بالا جداگانه و شفاف مشخص می‌شوند.</p>
                   </div>
                 ) : (
@@ -472,7 +500,9 @@ export function NotificationCenter() {
                           <h3>{alert.title}</h3>
                           {alert.summary && <p>{alert.summary}</p>}
                           <div className={styles.meta}>
-                            <time dateTime={alert.occurredAtUtc}>{formatDate(alert.occurredAtUtc)}</time>
+                            <time dateTime={alert.occurredAtUtc}>
+                              {formatDate(alert.occurredAtUtc)}
+                            </time>
                             <span>{stale(alert.freshnessAtUtc) ? "منبع قدیمی" : "منبع تازه"}</span>
                           </div>
                           <div className={styles.actions}>
@@ -489,8 +519,8 @@ export function NotificationCenter() {
                               {pendingKey === alert.alertKey
                                 ? "در حال ثبت…"
                                 : alert.isRead
-                                ? "علامت‌گذاری به‌عنوان نخوانده"
-                                : "خواندم"}
+                                  ? "علامت‌گذاری به‌عنوان نخوانده"
+                                  : "خواندم"}
                             </button>
                           </div>
                         </div>
@@ -501,7 +531,10 @@ export function NotificationCenter() {
 
                 <footer className={styles.footer}>
                   <span>
-                    صفحه {numberFormat.format(data.page)} · {data.completeness === "partial" ? "شمارش کل بخشی است" : `${numberFormat.format(data.total ?? 0)} هشدار`}
+                    صفحه {numberFormat.format(data.page)} ·{" "}
+                    {data.completeness === "partial"
+                      ? "شمارش کل بخشی است"
+                      : `${numberFormat.format(data.total ?? 0)} هشدار`}
                   </span>
                   <div>
                     <button

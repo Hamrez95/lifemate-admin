@@ -22,8 +22,8 @@ describe("ADM-PLAT-003 Admin Notification Center / Alerts", () => {
     expect(client).not.toContain("service_role");
     expect(route).not.toContain("service_role");
     expect(countRoute).not.toContain("service_role");
-    expect(component).toContain('fetch(`/api/admin/notifications/count?${params.toString()}`');
-    expect(component).toContain('fetch(`/api/admin/notifications?${params.toString()}`');
+    expect(component).toContain("fetch(`/api/admin/notifications/count?${params.toString()}`");
+    expect(component).toContain("fetch(`/api/admin/notifications?${params.toString()}`");
     expect(component).not.toContain("adminApiUrl");
   });
 
@@ -78,8 +78,8 @@ describe("ADM-PLAT-003 Admin Notification Center / Alerts", () => {
 
     expect(client).toContain('"unavailable" | "not_instrumented"');
     expect(client).toContain('"canonical_source_not_instrumented"');
-    expect(component).toContain("source.state === \"unavailable\"");
-    expect(component).toContain("source.state === \"not_instrumented\"");
+    expect(component).toContain('source.state === "unavailable"');
+    expect(component).toContain('source.state === "not_instrumented"');
     expect(component).toContain("منبع canonical هشدار ندارد");
     expect(component).toContain("stale(data.asOfUtc)");
     expect(component).toContain("منبع قدیمی");
@@ -109,6 +109,6 @@ describe("ADM-PLAT-003 Admin Notification Center / Alerts", () => {
 
     expect(topbar).toContain("<NotificationCenter />");
     expect(topbar).not.toContain("اعلان‌ها؛ به‌زودی");
-    expect(topbar).not.toContain("<button className=\"icon-button\" type=\"button\" disabled");
+    expect(topbar).not.toContain('<button className="icon-button" type="button" disabled');
   });
 });
