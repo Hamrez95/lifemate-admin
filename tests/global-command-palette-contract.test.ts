@@ -26,6 +26,7 @@ describe("ADM-PLAT-002 Secure Global Search / Command Palette", () => {
 
   it("maps search domains to existing RBAC permissions and excludes health", () => {
     const palette = source("src/components/shell/GlobalCommandPalette.tsx");
+    const client = source("src/lib/admin-api/global-search.ts");
 
     expect(palette).toContain('users: "users.read.basic"');
     expect(palette).toContain('support: "support.read"');
@@ -33,6 +34,8 @@ describe("ADM-PLAT-002 Secure Global Search / Command Palette", () => {
     expect(palette).toContain('campaigns: "marketing.read"');
     expect(palette).not.toContain("health.read");
     expect(palette).not.toContain("women_health.read");
+    expect(client).not.toContain("women_health");
+    expect(client).not.toContain("health.read");
   });
 
   it("stores only non-sensitive static command keys in local recent history", () => {
