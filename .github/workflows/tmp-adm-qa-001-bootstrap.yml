@@ -42,6 +42,21 @@ jobs:
           npm pkg set 'scripts.test:qa=npm run test:security-denial && npm run test:e2e'
           npx playwright install --with-deps chromium
 
+      - name: Apply verified accessibility repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('app/globals.css')
+          text = path.read_text()
+          old = '--lm-green-deep: #0d8a52;'
+          new = '--lm-green-deep: #087a47;'
+          if old not in text and new not in text:
+              raise SystemExit('green-deep token anchor missing')
+          path.write_text(text.replace(old, new, 1))
+          PY
+
       - name: Verify ordinary quality gates
         shell: bash
         env:
@@ -86,13 +101,13 @@ jobs:
             echo
             echo '## update-snapshots output'
             echo '```text'
-            if [ -f /tmp/lifemate-e2e-update.log ]; then tail -c 20000 /tmp/lifemate-e2e-update.log; else echo 'No update log was produced.'; fi
+            if [ -f /tmp/lifemate-e2e-update.log ]; then tail -c 24000 /tmp/lifemate-e2e-update.log; else echo 'No update log was produced.'; fi
             echo
             echo '```'
             echo
             echo '## verification output'
             echo '```text'
-            if [ -f /tmp/lifemate-e2e-verify.log ]; then tail -c 20000 /tmp/lifemate-e2e-verify.log; else echo 'Verification did not run.'; fi
+            if [ -f /tmp/lifemate-e2e-verify.log ]; then tail -c 24000 /tmp/lifemate-e2e-verify.log; else echo 'Verification did not run.'; fi
             echo
             echo '```'
           } > docs/qa/diagnostics/playwright-bootstrap-failure.md
@@ -107,6 +122,9 @@ jobs:
         run: |
           set -euo pipefail
           git rm -f .github/workflows/tmp-adm-qa-001-bootstrap.yml
+          if [ -f docs/qa/diagnostics/playwright-bootstrap-failure.md ]; then
+            git rm -f docs/qa/diagnostics/playwright-bootstrap-failure.md
+          fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add \
