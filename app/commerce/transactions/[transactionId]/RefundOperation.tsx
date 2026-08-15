@@ -13,25 +13,17 @@ type RefundOperationProps = {
   requestSeed: string;
 };
 
-const capabilityMessages: Record<
-  CommerceTransactionDetail["refundCapability"]["reason"],
-  string
-> = {
-  Available:
-    "این تراکنش موفق است و می‌تواند وارد فرآیند بررسی انسانی بازپرداخت شود.",
-  MissingPermission:
-    "برای شروع فرآیند بازپرداخت مجوز پرریسک commerce.refund لازم است.",
-  TransactionNotEligible:
-    "فقط تراکنش با وضعیت مالی Succeeded می‌تواند وارد فرآیند بررسی بازپرداخت شود.",
-  WorkflowAlreadyActive:
-    "برای این تراکنش یک فرآیند بازپرداخت فعال وجود دارد و درخواست موازی ساخته نمی‌شود.",
-};
+const capabilityMessages: Record<CommerceTransactionDetail["refundCapability"]["reason"], string> =
+  {
+    Available: "این تراکنش موفق است و می‌تواند وارد فرآیند بررسی انسانی بازپرداخت شود.",
+    MissingPermission: "برای شروع فرآیند بازپرداخت مجوز پرریسک commerce.refund لازم است.",
+    TransactionNotEligible:
+      "فقط تراکنش با وضعیت مالی Succeeded می‌تواند وارد فرآیند بررسی بازپرداخت شود.",
+    WorkflowAlreadyActive:
+      "برای این تراکنش یک فرآیند بازپرداخت فعال وجود دارد و درخواست موازی ساخته نمی‌شود.",
+  };
 
-export function RefundOperation({
-  transactionId,
-  capability,
-  requestSeed,
-}: RefundOperationProps) {
+export function RefundOperation({ transactionId, capability, requestSeed }: RefundOperationProps) {
   const [state, action, pending] = useActionState(
     requestRefundAction,
     initialRefundActionFormState,
