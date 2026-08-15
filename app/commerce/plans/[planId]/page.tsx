@@ -58,6 +58,12 @@ function formatDateTime(value: string | null): string {
   return Number.isNaN(date.getTime()) ? "—" : dateTimeFormatter.format(date);
 }
 
+function formatIntegerString(value: string): string {
+  const grouped = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const digits = "۰۱۲۳۴۵۶۷۸۹";
+  return grouped.replace(/\d/g, (digit) => digits[Number(digit)]);
+}
+
 function detailParams(page: number): URLSearchParams {
   return new URLSearchParams({ page: String(Math.max(1, page)), pageSize: "25" });
 }
@@ -130,7 +136,12 @@ function SubscriptionSummary({ data }: { data: CommercePlanDetail }) {
     ["فعال", data.subscriptionSummary.active],
     ["آزمایشی", data.subscriptionSummary.trial],
     ["سررسید گذشته", data.subscriptionSummary.pastDue],
-    ["منقضی/لغو/بازپرداخت", data.subscriptionSummary.expired + data.subscriptionSummary.cancelled + data.subscriptionSummary.refunded],
+    [
+      "منقضی/لغو/بازپرداخت",
+      data.subscriptionSummary.expired +
+        data.subscriptionSummary.cancelled +
+        data.subscriptionSummary.refunded,
+    ],
   ] as const;
   return (
     <section className={styles.summaryGrid} aria-label="خلاصه Subscriptionهای پلن">
@@ -157,25 +168,33 @@ function FeatureRules({ data }: { data: CommercePlanDetail }) {
           </p>
         </div>
       </header>
-      {data.featureRules.length === 0 ? (
+      {data.featureRules.items.length === 0 ? (
         <AdminPageState state="empty" title="قاعده Feature برای این محصول ثبت نشده" />
       ) : (
-        <div className={styles.ruleGrid}>
-          {data.featureRules.map((rule) => (
-            <article className={styles.ruleCard} key={rule.featureId}>
-              <header>
-                <strong className={styles.code}>{rule.featureCode}</strong>
-                <span className={styles.ruleBadge}>
-                  {rule.minimumPlanCode ? `حداقل ${rule.minimumPlanCode}` : "بدون حداقل پلن"}
-                </span>
-              </header>
-              <p>{rule.description}</p>
-              <Link href={`/commerce/entitlements/${encodeURIComponent(rule.featureCode)}`}>
-                مشاهده جزئیات Entitlement
-              </Link>
-            </article>
-          ))}
-        </div>
+        <>
+          {data.featureRules.total > data.featureRules.items.length ? (
+            <p className={styles.emptyNote}>
+              {data.featureRules.items.length.toLocaleString("fa-IR")} قاعده از مجموع {" "}
+              {data.featureRules.total.toLocaleString("fa-IR")} قاعده نمایش داده می‌شود.
+            </p>
+          ) : null}
+          <div className={styles.ruleGrid}>
+            {data.featureRules.items.map((rule) => (
+              <article className={styles.ruleCard} key={rule.featureId}>
+                <header>
+                  <strong className={styles.code}>{rule.featureCode}</strong>
+                  <span className={styles.ruleBadge}>
+                    {rule.minimumPlanCode ? `حداقل ${rule.minimumPlanCode}` : "بدون حداقل پلن"}
+                  </span>
+                </header>
+                <p>{rule.description}</p>
+                <Link href={`/commerce/entitlements/${encodeURIComponent(rule.featureCode)}`}>
+                  مشاهده جزئیات Entitlement
+                </Link>
+              </article>
+            ))}
+          </div>
+        </>
       )}
     </section>
   );
@@ -189,36 +208,44 @@ function Prices({ data }: { data: CommercePlanDetail }) {
           <span>PRICE HISTORY</span>
           <h3 id="plan-prices-title">قیمت‌های ثبت‌شده</h3>
           <p>
-            مبلغ به شکل `amount_minor` و بدون تفسیر اعشار ارز نمایش داده می‌شود تا عددی ساخته یا
-            تبدیل اشتباه نشود.
+            مبلغ به شکل `amount_minor` و بدون تفسیر اعشار ارز نمایش داده می‌شود؛ مقدار bigint نیز به
+            رشته نگه داشته شده تا دقت عددی از بین نرود.
           </p>
         </div>
       </header>
-      {data.prices.length === 0 ? (
+      {data.prices.items.length === 0 ? (
         <AdminPageState state="empty" title="قیمتی برای این پلن ثبت نشده" />
       ) : (
-        <div className={styles.priceGrid}>
-          {data.prices.map((price) => (
-            <article className={styles.priceCard} key={price.priceId}>
-              <header>
-                <strong>
-                  {price.amountMinor.toLocaleString("fa-IR")} {price.currency}
-                </strong>
-                <span className={styles.statusBadge} data-status={price.status}>
-                  {statusLabels[price.status] ?? price.status}
-                </span>
-              </header>
-              <div className={styles.priceMeta}>
-                <span>{price.storeProvider}</span>
-                <span>{price.countryCode ?? "همه کشورها"}</span>
-                <span>{price.billingPeriodMonths.toLocaleString("fa-IR")} ماهه</span>
-              </div>
-              <p>
-                از {formatDateTime(price.effectiveFromUtc)} تا {formatDateTime(price.effectiveToUtc)}
-              </p>
-            </article>
-          ))}
-        </div>
+        <>
+          {data.prices.total > data.prices.items.length ? (
+            <p className={styles.emptyNote}>
+              {data.prices.items.length.toLocaleString("fa-IR")} قیمت اخیر از مجموع {" "}
+              {data.prices.total.toLocaleString("fa-IR")} رکورد نمایش داده می‌شود.
+            </p>
+          ) : null}
+          <div className={styles.priceGrid}>
+            {data.prices.items.map((price) => (
+              <article className={styles.priceCard} key={price.priceId}>
+                <header>
+                  <strong>
+                    {formatIntegerString(price.amountMinor)} {price.currency}
+                  </strong>
+                  <span className={styles.statusBadge} data-status={price.status}>
+                    {statusLabels[price.status] ?? price.status}
+                  </span>
+                </header>
+                <div className={styles.priceMeta}>
+                  <span>{price.storeProvider}</span>
+                  <span>{price.countryCode ?? "همه کشورها"}</span>
+                  <span>{price.billingPeriodMonths.toLocaleString("fa-IR")} ماهه</span>
+                </div>
+                <p>
+                  از {formatDateTime(price.effectiveFromUtc)} تا {formatDateTime(price.effectiveToUtc)}
+                </p>
+              </article>
+            ))}
+          </div>
+        </>
       )}
     </section>
   );
@@ -253,20 +280,27 @@ const subscriptionColumns: readonly AdminTableColumn<SubscriptionRow>[] = [
   },
 ];
 
-function ChangeHistory({ data }: { data: CommercePlanDetail }) {
-  if (data.changeHistory.instrumented) return null;
+function InstrumentationGaps({ data }: { data: CommercePlanDetail }) {
+  const gaps = [
+    ["تاریخچه تغییرات پلن", data.changeHistory],
+    ["ارتباط Transaction / Order", data.transactionLinkage],
+  ] as const;
   return (
-    <section className={styles.timelineSection} aria-labelledby="plan-history-title">
+    <section className={styles.timelineSection} aria-labelledby="plan-instrumentation-title">
       <header className={styles.sectionHeader}>
         <div>
-          <span>CHANGE HISTORY</span>
-          <h3 id="plan-history-title">تاریخچه تغییرات پلن</h3>
+          <span>DATA COVERAGE</span>
+          <h3 id="plan-instrumentation-title">پوشش داده و تاریخچه</h3>
         </div>
       </header>
-      <p className={styles.emptyNote}>
-        این بخش هنوز instrument نشده است. به‌جای ساختن Timeline نمایشی، وضعیت واقعی منبع داده نمایش
-        داده می‌شود: {data.changeHistory.reason}
-      </p>
+      {gaps.map(([label, gap]) => (
+        <p className={styles.emptyNote} key={label}>
+          <strong>{label}:</strong>{" "}
+          {gap.instrumented
+            ? "منبع داده فعال است."
+            : `هنوز instrument نشده و داده نمایشی ساخته نمی‌شود. ${gap.reason}`}
+        </p>
+      ))}
     </section>
   );
 }
@@ -276,7 +310,9 @@ async function PlanContent({ planId, page }: { planId: string; page: number }) {
   if (result.kind === "unauthenticated") redirect("/login");
   if (result.kind === "not_found") notFound();
   if (result.kind === "forbidden") return <AdminPageState state="forbidden" />;
-  if (result.kind === "invalid") return <AdminPageState state="error" title="درخواست پلن معتبر نیست" />;
+  if (result.kind === "invalid") {
+    return <AdminPageState state="error" title="درخواست پلن معتبر نیست" />;
+  }
   if (result.kind === "unavailable") {
     return (
       <AdminPageState
@@ -296,12 +332,12 @@ async function PlanContent({ planId, page }: { planId: string; page: number }) {
   return (
     <div className={styles.page}>
       <Hero data={data} />
-      {(data.plan.status === "Retired" || data.product.status === "Retired") && (
+      {data.plan.status === "Retired" || data.product.status === "Retired" ? (
         <div className={styles.warning}>
           <strong>هشدار lifecycle:</strong> این پلن یا محصول بازنشسته است؛ وضعیت را به‌عنوان داده تاریخی
           بخوان و فعال بودن دسترسی کاربران را از Entitlement نتیجه بگیر، نه از Plan.
         </div>
-      )}
+      ) : null}
       <PlanFacts data={data} />
       <SubscriptionSummary data={data} />
       <FeatureRules data={data} />
@@ -313,7 +349,10 @@ async function PlanContent({ planId, page }: { planId: string; page: number }) {
         columns={subscriptionColumns}
         rowKey={(row) => row.subscriptionId}
         total={data.subscriptions.total}
-        freshness={{ status: data.freshness.status, label: formatDateTime(data.freshness.asOfUtc) }}
+        freshness={{
+          status: data.freshness.status,
+          label: formatDateTime(data.freshness.asOfUtc),
+        }}
         pagination={{
           page: data.page,
           pageSize: data.pageSize,
@@ -323,7 +362,7 @@ async function PlanContent({ planId, page }: { planId: string; page: number }) {
           ariaLabel: "صفحه‌بندی Subscriptionهای پلن",
         }}
       />
-      <ChangeHistory data={data} />
+      <InstrumentationGaps data={data} />
     </div>
   );
 }
