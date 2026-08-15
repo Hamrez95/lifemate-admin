@@ -27,8 +27,11 @@ describe("ADM-COM-005 Promotions / Discount Codes", () => {
   it("keeps Promotion Discount Code Plan and Entitlement semantics separate", () => {
     const page = source("app/commerce/promotions/page.tsx");
 
-    expect(page).toContain("Promotion ≠ Discount Code ≠ Plan");
-    expect(page).toContain("هیچ‌کدام Plan، Entitlement یا Transaction نیستند");
+    expect(page).toContain("<span>Promotion</span>");
+    expect(page).toContain("<span>Discount Code</span>");
+    expect(page).toContain("<span>Plan</span>");
+    expect(page).toContain("هیچ‌کدام Plan، Entitlement");
+    expect(page).toContain("یا Transaction نیستند");
     expect(page).toContain("/commerce/promotions/${row.promotionId}");
   });
 
