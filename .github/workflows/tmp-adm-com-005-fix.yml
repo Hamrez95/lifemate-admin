@@ -37,16 +37,16 @@ jobs:
               raise SystemExit('expected projection block not found')
           text = text.replace(projection_old, projection_new)
 
-          summary_old = '''  if (!isRecord(value.summary) || !isRecord(value.filters) || !isRecord(value.source)) return null;\n  const summaryKeys = ["total", "draft", "active", "paused", "expired"] as const;\n  if (summaryKeys.some((key) => !Number.isInteger(value.summary[key]) || Number(value.summary[key]) < 0)) {\n    return null;\n  }'''
-          summary_new = '''  if (!isRecord(value.summary) || !isRecord(value.filters) || !isRecord(value.source)) return null;\n  const summary = value.summary;\n  const summaryKeys = ["total", "draft", "active", "paused", "expired"] as const;\n  if (summaryKeys.some((key) => !Number.isInteger(summary[key]) || Number(summary[key]) < 0)) {\n    return null;\n  }'''
-          if summary_old not in text:
-              raise SystemExit('expected summary validation block not found')
-          text = text.replace(summary_old, summary_new)
-          text = text.replace('total: Number(value.summary.total)', 'total: Number(summary.total)')
-          text = text.replace('draft: Number(value.summary.draft)', 'draft: Number(summary.draft)')
-          text = text.replace('active: Number(value.summary.active)', 'active: Number(summary.active)')
-          text = text.replace('paused: Number(value.summary.paused)', 'paused: Number(summary.paused)')
-          text = text.replace('expired: Number(value.summary.expired)', 'expired: Number(summary.expired)')
+          guard = '  if (!isRecord(value.summary) || !isRecord(value.filters) || !isRecord(value.source)) return null;\n'
+          if guard not in text:
+              raise SystemExit('expected summary guard not found')
+          text = text.replace(guard, guard + '  const summary = value.summary;\n', 1)
+          text = text.replace('value.summary[key]', 'summary[key]')
+          text = text.replace('Number(value.summary.total)', 'Number(summary.total)')
+          text = text.replace('Number(value.summary.draft)', 'Number(summary.draft)')
+          text = text.replace('Number(value.summary.active)', 'Number(summary.active)')
+          text = text.replace('Number(value.summary.paused)', 'Number(summary.paused)')
+          text = text.replace('Number(value.summary.expired)', 'Number(summary.expired)')
           path.write_text(text)
           PY
           npm install --no-audit --no-fund
