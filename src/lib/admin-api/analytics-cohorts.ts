@@ -2,12 +2,12 @@ import {
   getAnalyticsCatalog,
   type AnalyticsCatalog,
   type AnalyticsEventDefinition,
-} from "@/src/lib/admin-api/analytics-catalog";
+} from "./analytics-catalog";
 import {
   getKpiValues,
   type AnalyticsKpiValuesResponse,
   type KpiValue,
-} from "@/src/lib/admin-api/analytics-kpis";
+} from "./analytics-kpis";
 
 export const COHORT_DEFINITION_VERSION = 1;
 export const COHORT_SUPPRESSION_THRESHOLD = 20;
