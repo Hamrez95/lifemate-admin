@@ -92,9 +92,7 @@ describe("ADM-COM-004 Transaction Detail / Audited Financial Actions", () => {
 
   it("keeps Persian RTL visuals responsive, keyboard-visible and motion-aware", () => {
     const page = source("app/commerce/transactions/[transactionId]/page.tsx");
-    const css = source(
-      "app/commerce/transactions/[transactionId]/transaction-detail.module.css",
-    );
+    const css = source("app/commerce/transactions/[transactionId]/transaction-detail.module.css");
 
     expect(page).toContain('dir="rtl"');
     expect(page).toContain('aria-labelledby="provider-timeline-title"');
