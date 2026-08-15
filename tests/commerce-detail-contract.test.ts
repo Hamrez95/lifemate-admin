@@ -47,9 +47,13 @@ describe("ADM-COM-002 Commerce Detail", () => {
 
   it("connects overview drilldowns only after protected detail routes exist", () => {
     const overview = source("app/commerce/page.tsx");
+    const overviewCss = source("app/commerce/commerce.module.css");
 
     expect(overview).toContain("/commerce/plans/${row.planId}");
     expect(overview).toContain("/commerce/entitlements/${encodeURIComponent(row.featureCode)}");
+    expect(overviewCss).toContain("text-decoration: none");
+    expect(overviewCss).toContain(".planCard:hover");
+    expect(overviewCss).toContain(".entitlementRow:hover");
   });
 
   it("does not invent plan lifecycle, transaction history, or plan-feature ordering", () => {
@@ -75,10 +79,15 @@ describe("ADM-COM-002 Commerce Detail", () => {
   });
 
   it("documents effective entitlement semantics and bounded linked grants", () => {
+    const client = source("src/lib/admin-api/commerce-detail.ts");
     const entitlement = source("app/commerce/entitlements/[featureCode]/page.tsx");
 
+    expect(client).toContain("storedStatus: string");
+    expect(client).toContain("effectiveStatus: string");
     expect(entitlement).toContain("فعال مؤثر");
     expect(entitlement).toContain("زمان‌بندی‌شده");
+    expect(entitlement).toContain("row.effectiveStatus");
+    expect(entitlement).toContain("row.storedStatus");
     expect(entitlement).toContain("data.entitlements.total");
     expect(entitlement).toContain("data.productRules.total");
     expect(entitlement).toContain("previousHref");
