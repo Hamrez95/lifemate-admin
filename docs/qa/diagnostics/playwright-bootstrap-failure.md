@@ -4,26 +4,21 @@ This file is generated only when the temporary bootstrap workflow fails and must
 
 ## update-snapshots output
 ```text
-olor-contrast",
-    +             "impact": "serious",
-    +             "message": "Element has insufficient color contrast of 4.32 (foreground color: #0d8a52, background color: #fffdf9, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1",
-    +             "relatedNodes": Array [
-    +               Object {
-    +                 "html": "<section class=\"workspace-placeholder\" aria-labelledby=\"workspace-placeholder-title\">",
+label=\"خروج از نشست Command Center\">خروج</button>",
     +                 "target": Array [
-    +                   "section",
+    +                   ".operator-chip__logout",
     +                 ],
     +               },
     +             ],
     +           },
     +         ],
     +         "failureSummary": "Fix any of the following:
-    +   Element has insufficient color contrast of 4.32 (foreground color: #0d8a52, background color: #fffdf9, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1",
-    +         "html": "<p class=\"eyebrow\">Vertical slice pending</p>",
+    +   Element has insufficient color contrast of 4.26 (foreground color: #697386, background color: #f4f2ed, font size: 6.8pt (9px), font weight: bold). Expected contrast ratio of 4.5:1",
+    +         "html": "<button type=\"button\" class=\"operator-chip__logout\" aria-label=\"خروج از نشست Command Center\">خروج</button>",
     +         "impact": "serious",
     +         "none": Array [],
     +         "target": Array [
-    +           "section > .eyebrow",
+    +           ".operator-chip__logout",
     +         ],
     +       },
     +     ],
@@ -40,91 +35,351 @@ olor-contrast",
     +       "RGAA-3.2.1",
     +     ],
     +   },
+    + ]
+
+      58 |       (violation) => violation.impact === "critical" || violation.impact === "serious",
+      59 |     ),
+    > 60 |   ).toEqual([]);
+         |     ^
+      61 |   await expect(page).toHaveScreenshot("authorized-operations-workspace.png", { fullPage: true });
+      62 | });
+      63 |
+        at /home/runner/work/lifemate-admin/lifemate-admin/e2e/mfa-workspace.spec.ts:60:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/playwright/mfa-workspace-existing-acc-c5aec-rized-workspace-is-rendered-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/playwright/mfa-workspace-existing-acc-c5aec-rized-workspace-is-rendered-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/playwright/mfa-workspace-existing-acc-c5aec-rized-workspace-is-rendered-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/playwright/mfa-workspace-existing-acc-c5aec-rized-workspace-is-rendered-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[5/8] [mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:12:5 › protected Command Center redirects an unauthenticated browser to secure login
+[6/8] [mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:21:5 › login is Persian RTL, keyboard reachable, validates locally and remains accessible
+  3) [mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:21:5 › login is Persian RTL, keyboard reachable, validates locally and remains accessible 
+
+    Error: [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "tags": [
+          "cat.aria",
+          "wcag2a",
+          "wcag412",
+          "EN-301-549",
+          "EN-9.4.1.2",
+          "RGAAv4",
+          "RGAA-7.1.1"
+        ],
+        "description": "Ensure ARIA attributes are not prohibited for an element's role",
+        "help": "Elements must only use permitted ARIA attributes",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/aria-prohibited-attr?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [],
+            "none": [
+              {
+                "id": "aria-prohibited-attr",
+                "data": {
+                  "role": null,
+                  "nodeName": "div",
+                  "messageKey": "noRoleSingular",
+                  "prohibited": [
+                    "aria-label"
+                  ]
+                },
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "aria-label attribute cannot be used on a div with no valid role attribute."
+              }
+            ],
+            "impact": "serious",
+            "html": "<div class=\"brand\" aria-label=\"LifeMate\">",
+            "target": [
+              ".brand"
+            ],
+            "failureSummary": "Fix all of the following:\n  aria-label attribute cannot be used on a div with no valid role attribute."
+          }
+        ]
+      }
+    ]
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  1
+    + Received  + 47
+
+    - Array []
+    + Array [
     +   Object {
-    +     "description": "Ensure links have discernible text",
-    +     "help": "Links must have discernible text",
-    +     "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/link-name?application=playwright",
-    +     "id": "link-name",
+    +     "description": "Ensure ARIA attributes are not prohibited for an element's role",
+    +     "help": "Elements must only use permitted ARIA attributes",
+    +     "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/aria-prohibited-attr?application=playwright",
+    +     "id": "aria-prohibited-attr",
+    +     "impact": "serious",
+    +     "nodes": Array [
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [],
+    +         "failureSummary": "Fix all of the following:
+    +   aria-label attribute cannot be used on a div with no valid role attribute.",
+    +         "html": "<div class=\"brand\" aria-label=\"LifeMate\">",
+    +         "impact": "serious",
+    +         "none": Array [
+    +           Object {
+    +             "data": Object {
+    +               "messageKey": "noRoleSingular",
+    +               "nodeName": "div",
+    +               "prohibited": Array [
+    +                 "aria-label",
+    +               ],
+    +               "role": null,
+    +             },
+    +             "id": "aria-prohibited-attr",
+    +             "impact": "serious",
+    +             "message": "aria-label attribute cannot be used on a div with no valid role attribute.",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "target": Array [
+    +           ".brand",
+    +         ],
+    +       },
+    +     ],
+    +     "tags": Array [
+    +       "cat.aria",
+    +       "wcag2a",
+    +       "wcag412",
+    +       "EN-301-549",
+    +       "EN-9.4.1.2",
+    +       "RGAAv4",
+    +       "RGAA-7.1.1",
+    +     ],
+    +   },
+    + ]
+
+       7 |     (violation) => violation.impact === "critical" || violation.impact === "serious",
+       8 |   );
+    >  9 |   expect(blocking, JSON.stringify(blocking, null, 2)).toEqual([]);
+         |                                                       ^
+      10 | }
+      11 |
+      12 | test("protected Command Center redirects an unauthenticated browser to secure login", async ({
+        at expectNoSeriousA11yViolations (/home/runner/work/lifemate-admin/lifemate-admin/e2e/auth-accessibility-visual.spec.ts:9:55)
+        at /home/runner/work/lifemate-admin/lifemate-admin/e2e/auth-accessibility-visual.spec.ts:36:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/playwright/auth-accessibility-visual--0579e-ally-and-remains-accessible-mobile-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/playwright/auth-accessibility-visual--0579e-ally-and-remains-accessible-mobile-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/playwright/auth-accessibility-visual--0579e-ally-and-remains-accessible-mobile-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/playwright/auth-accessibility-visual--0579e-ally-and-remains-accessible-mobile-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[7/8] [mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:40:5 › forbidden state explains server-side authorization without leaking backend details
+  4) [mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:40:5 › forbidden state explains server-side authorization without leaking backend details 
+
+    Error: [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=playwright",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#17ad68",
+                  "bgColor": "#fffdf9",
+                  "contrastRatio": 2.86,
+                  "fontSize": "27.0pt (36px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "3:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"standalone-state__card\"><span aria-hidden=\"true\">403</span><h1>این حساب برای این بخش مجوز ندارد.</h1><p>عضویت و permissionهای Command Center در سمت سرور بررسی می‌شوند. پنهان یا نمایش داده شدن منو کنترل امنیتی محسوب نمی‌شود.</p><a href=\"/\">بازگشت به مرکز فرماندهی</a></div>",
+                    "target": [
+                      ".standalone-state__card"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.86 (foreground color: #17ad68, background color: #fffdf9, font size: 27.0pt (36px), font weight: bold). Expected contrast ratio of 3:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span aria-hidden=\"true\">403</span>",
+            "target": [
+              "span"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.86 (foreground color: #17ad68, background color: #fffdf9, font size: 27.0pt (36px), font weight: bold). Expected contrast ratio of 3:1"
+          }
+        ]
+      }
+    ]
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  1
+    + Received  + 58
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    +     "help": "Elements must meet minimum color contrast ratio thresholds",
+    +     "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=playwright",
+    +     "id": "color-contrast",
     +     "impact": "serious",
     +     "nodes": Array [
     +       Object {
     +         "all": Array [],
     +         "any": Array [
     +           Object {
-    +             "data": null,
-    +             "id": "has-visible-text",
-    +             "impact": "serious",
-    +             "message": "Element does not have text that is visible to screen readers",
-    +             "relatedNodes": Array [],
-    +           },
-    +           Object {
-    +             "data": null,
-    +             "id": "aria-label",
-    +             "impact": "serious",
-    +             "message": "aria-label attribute does not exist or is empty",
-    +             "relatedNodes": Array [],
-    +           },
-    +           Object {
-    +             "data": null,
-    +             "id": "aria-labelledby",
-    +             "impact": "serious",
-    +             "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty",
-    +             "relatedNodes": Array [],
-    +           },
-    +           Object {
     +             "data": Object {
-    +               "messageKey": "noAttr",
+    +               "bgColor": "#fffdf9",
+    +               "contrastRatio": 2.86,
+    +               "expectedContrastRatio": "3:1",
+    +               "fgColor": "#17ad68",
+    +               "fontSize": "27.0pt (36px)",
+    +               "fontWeight": "bold",
+    +               "messageKey": null,
     +             },
-    +             "id": "non-empty-title",
+    +             "id": "color-contrast",
     +             "impact": "serious",
-    +             "message": "Element has no title attribute",
-    +             "relatedNodes": Array [],
+    +             "message": "Element has insufficient color contrast of 2.86 (foreground color: #17ad68, background color: #fffdf9, font size: 27.0pt (36px), font weight: bold). Expected contrast ratio of 3:1",
+    +             "relatedNodes": Array [
+    +               Object {
+    +                 "html": "<div class=\"standalone-state__card\"><span aria-hidden=\"true\">403</span><h1>این حساب برای این بخش مجوز ندارد.</h1><p>عضویت و permissionهای Command Center در سمت سرور بررسی می‌شوند. پنهان یا نمایش داده شدن منو کنترل امنیتی محسوب نمی‌شود.</p><a href=\"/\">بازگشت به مرکز فرماندهی</a></div>",
+    +                 "target": Array [
+    +                   ".standalone-state__card",
+    +                 ],
+    +               },
+    +             ],
     +           },
     +         ],
-    +         "failureSummary": "Fix all of the following:
-    +   Element is in tab order and does not have accessible text
-    +
-    + Fix any of the following:
-    +   Element does not have text that is visible to screen readers
-    +   aria-label attribute does not exist or is empty
-    +   aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty
-    +   Element has no title attribute",
-    +         "html": "<a class=\"nav-item\" data-active=\"false\" href=\"/\"><span class=\"nav-item__symbol\" aria-hidden=\"true\">⌂</span><span>مرکز فرماندهی</span></a>",
+    +         "failureSummary": "Fix any of the following:
+    +   Element has insufficient color contrast of 2.86 (foreground color: #17ad68, background color: #fffdf9, font size: 27.0pt (36px), font weight: bold). Expected contrast ratio of 3:1",
+    +         "html": "<span aria-hidden=\"true\">403</span>",
     +         "impact": "serious",
-    +         "none": Array [
-    +           Object {
-    +             "data": null,
-    +             "id": "focusable-no-name",
-    +             "impact": "serious",
-    +             "message": "Element is in tab order and does not have accessible text",
-    +             "relatedNodes": Array [],
-    +           },
-    +         ],
+    +         "none": Array [],
     +         "target": Array [
-    +           "a[href=\"/\"]",
+    +           "span",
     +         ],
     +       },
+    +     ],
+    +     "tags": Array [
+    +       "cat.color",
+    +       "wcag2aa",
+    +       "wcag143",
+    +       "TTv5",
+    +       "TT13.c",
+    +       "EN-301-549",
+    +       "EN-9.1.4.3",
+    +       "ACT",
+    +       "RGAAv4",
+    +       "RGAA-3.2.1",
+    +     ],
+    +   },
+    + ]
+
+       7 |     (violation) => violation.impact === "critical" || violation.impact === "serious",
+       8 |   );
+    >  9 |   expect(blocking, JSON.stringify(blocking, null, 2)).toEqual([]);
+         |                                                       ^
+      10 | }
+      11 |
+      12 | test("protected Command Center redirects an unauthenticated browser to secure login", async ({
+        at expectNoSeriousA11yViolations (/home/runner/work/lifemate-admin/lifemate-admin/e2e/auth-accessibility-visual.spec.ts:9:55)
+        at /home/runner/work/lifemate-admin/lifemate-admin/e2e/auth-accessibility-visual.spec.ts:52:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/playwright/auth-accessibility-visual--74522-out-leaking-backend-details-mobile-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/playwright/auth-accessibility-visual--74522-out-leaking-backend-details-mobile-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/playwright/auth-accessibility-visual--74522-out-leaking-backend-details-mobile-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/playwright/auth-accessibility-visual--74522-out-leaking-backend-details-mobile-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[8/8] [mobile-chromium] › e2e/mfa-workspace.spec.ts:10:5 › existing account completes OTP then TOTP MFA before an authorized workspace is rendered
+  5) [mobile-chromium] › e2e/mfa-workspace.spec.ts:10:5 › existing account completes OTP then TOTP MFA before an authorized workspace is rendered 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  1
+    + Received  + 95
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "description": "Ensure buttons have discernible text",
+    +     "help": "Buttons must have discernible text",
+    +     "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/button-name?application=playwright",
+    +     "id": "button-name",
+    +     "impact": "critical",
+    +     "nodes": Array [
     +       Object {
     +         "all": Array [],
     +         "any": Array [
     +           Object {
     +             "data": null,
-    +             "id": "has-visible-text",
-    +             "impact": "serious",
-    +             "message": "Element does not have text that is visible to screen readers",
+    +             "id": "button-has-visible-text",
+    +             "impact": "critical",
+    +             "message": "Element does not have inner text that is visible to screen readers",
     +             "relatedNodes": Array [],
     +           },
     +           Object {
     +             "data": null,
     +             "id": "aria-label",
-    +             "impact": "serious",
+    +             "impact": "critical",
     +             "message": "aria-label attribute does not exist or is empty",
     +             "relatedNodes": Array [],
     +           },
     +           Object {
     +             "data": null,
     +             "id": "aria-labelledby",
-    +             "impact": "serious",
+    +             "impact": "critical",
     +             "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty",
     +             "relatedNodes": Array [],
     +           },
@@ -133,278 +388,61 @@ olor-contrast",
     +               "messageKey": "noAttr",
     +             },
     +             "id": "non-empty-title",
-    +             "impact": "serious",
+    +             "impact": "critical",
     +             "message": "Element has no title attribute",
     +             "relatedNodes": Array [],
     +           },
+    +           Object {
+    +             "data": null,
+    +             "id": "implicit-label",
+    +             "impact": "critical",
+    +             "message": "Element does not have an implicit (wrapped) <label>",
+    +             "relatedNodes": Array [],
+    +           },
+    +           Object {
+    +             "data": null,
+    +             "id": "explicit-label",
+    +             "impact": "critical",
+    +             "message": "Element does not have an explicit <label>",
+    +             "relatedNodes": Array [],
+    +           },
+    +           Object {
+    +             "data": null,
+    +             "id": "presentational-role",
+    +             "impact": "critical",
+    +             "message": "Element's default semantics were not overridden with role=\"none\" or role=\"presentation\"",
+    +             "relatedNodes": Array [],
+    +           },
     +         ],
-    +         "failureSummary": "Fix all of the following:
-    +   Element is in tab order and does not have accessible text
-    +
-    + Fix any of the following:
-    +   Element does not have text that is visible to screen readers
+    +         "failureSummary": "Fix any of the following:
+    +   Element does not have inner text that is visible to screen readers
     +   aria-label attribute does not exist or is empty
     +   aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty
-    +   Element has no title attribute",
-    +         "html": "<a class=\"nav-item\" data-active=\"false\" href=\"/users\"><span class=\"nav-item__symbol\" aria-hidden=\"true\">◎</span><span>کاربران</span></a>",
-    +         "impact": "serious",
-    +         "none": Array [
-    +           Object {
-    +             "data": null,
-    +             "id": "focusable-no-name",
-    +             "impact": "serious",
-    +             "message": "Element is in tab order and does not have accessible text",
-    +             "relatedNodes": Array [],
-    +           },
-    +         ],
+    +   Element has no title attribute
+    +   Element does not have an implicit (wrapped) <label>
+    +   Element does not have an explicit <label>
+    +   Element's default semantics were not overridden with role=\"none\" or role=\"presentation\"",
+    +         "html": "<button type=\"button\" class=\"global-command-palette-module__WPehia__trigger\" aria-haspopup=\"dialog\" aria-expanded=\"false\"><span aria-hidden=\"true\">⌕</span><span>جست‌وجو و فرمان</span><kbd>⌘/Ctrl K</kbd></button>",
+    +         "impact": "critical",
+    +         "none": Array [],
     +         "target": Array [
-    +           "a[href$=\"users\"]",
-    +         ],
-    +       },
-    +       Object {
-    +         "all": Array [],
-    +         "any": Array [
-    +           Object {
-    +             "data": null,
-    +             "id": "has-visible-text",
-    +             "impact": "serious",
-    +             "message": "Element does not have text that is visible to screen readers",
-    +             "relatedNodes": Array [],
-    +           },
-    +           Object {
-    +             "data": null,
-    +             "id": "aria-label",
-    +             "impact": "serious",
-    +             "message": "aria-label attribute does not exist or is empty",
-    +             "relatedNodes": Array [],
-    +           },
-    +           Object {
-    +             "data": null,
-    +             "id": "aria-labelledby",
-    +             "impact": "serious",
-    +             "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty",
-    +             "relatedNodes": Array [],
-    +           },
-    +           Object {
-    +             "data": Object {
-    +               "messageKey": "noAttr",
-    +             },
-    +             "id": "non-empty-title",
-    +             "impact": "serious",
-    +             "message": "Element has no title attribute",
-    +             "relatedNodes": Array [],
-    +           },
-    +         ],
-    +         "failureSummary": "Fix all of the following:
-    +   Element is in tab order and does not have accessible text
-    +
-    + Fix any of the following:
-    +   Element does not have text that is visible to screen readers
-    +   aria-label attribute does not exist or is empty
-    +   aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty
-    +   Element has no title attribute",
-    +         "html": "<a class=\"nav-item\" data-active=\"false\" href=\"/analytics\"><span class=\"nav-item__symbol\" aria-hidden=\"true\">◇</span><span>تحلیل محصول</span></a>",
-    +         "impact": "serious",
-    +         "none": Array [
-    +           Object {
-    +             "data": null,
-    +             "id": "focusable-no-name",
-    +             "impact": "serious",
-    +             "message": "Element is in tab order and does not have accessible text",
-    +             "relatedNodes": Array [],
-    +           },
-    +         ],
-    +         "target": Array [
-    +           "a[href$=\"analytics\"]",
-    +         ],
-    +       },
-    +       Object {
-    +         "all": Array [],
-    +         "any": Array [
-    +           Object {
-    +             "data": null,
-    +             "id": "has-visible-text",
-    +             "impact": "serious",
-    +             "message": "Element does not have text that is visible to screen readers",
-    +             "relatedNodes": Array [],
-    +           },
-    +           Object {
-    +             "data": null,
-    +             "id": "aria-label",
-    +             "impact": "serious",
-    +             "message": "aria-label attribute does not exist or is empty",
-    +             "relatedNodes": Array [],
-    +           },
-    +           Object {
-    +             "data": null,
-    +             "id": "aria-labelledby",
-    +             "impact": "serious",
-    +             "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty",
-    +             "relatedNodes": Array [],
-    +           },
-    +           Object {
-    +             "data": Object {
-    +               "messageKey": "noAttr",
-    +             },
-    +             "id": "non-empty-title",
-    +             "impact": "serious",
-    +             "message": "Element has no title attribute",
-    +             "relatedNodes": Array [],
-    +           },
-    +         ],
-    +         "failureSummary": "Fix all of the following:
-    +   Element is in tab order and does not have accessible text
-    +
-    + Fix any of the following:
-    +   Element does not have text that is visible to screen readers
-    +   aria-label attribute does not exist or is empty
-    +   aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty
-    +   Element has no title attribute",
-    +         "html": "<a class=\"nav-item\" data-active=\"true\" aria-current=\"page\" href=\"/operations\"><span class=\"nav-item__symbol\" aria-hidden=\"true\">⚙</span><span>عملیات</span></a>",
-    +         "impact": "serious",
-    +         "none": Array [
-    +           Object {
-    +             "data": null,
-    +             "id": "focusable-no-name",
-    +             "impact": "serious",
-    +             "message": "Element is in tab order and does not have accessible text",
-    +             "relatedNodes": Array [],
-    +           },
-    +         ],
-    +         "target": Array [
-    +           "a[data-active=\"true\"]",
-    +         ],
-    +       },
-    +       Object {
-    +         "all": Array [],
-    +         "any": Array [
-    +           Object {
-    +             "data": null,
-    +             "id": "has-visible-text",
-    +             "impact": "serious",
-    +             "message": "Element does not have text that is visible to screen readers",
-    +             "relatedNodes": Array [],
-    +           },
-    +           Object {
-    +             "data": null,
-    +             "id": "aria-label",
-    +             "impact": "serious",
-    +             "message": "aria-label attribute does not exist or is empty",
-    +             "relatedNodes": Array [],
-    +           },
-    +           Object {
-    +             "data": null,
-    +             "id": "aria-labelledby",
-    +             "impact": "serious",
-    +             "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty",
-    +             "relatedNodes": Array [],
-    +           },
-    +           Object {
-    +             "data": Object {
-    +               "messageKey": "noAttr",
-    +             },
-    +             "id": "non-empty-title",
-    +             "impact": "serious",
-    +             "message": "Element has no title attribute",
-    +             "relatedNodes": Array [],
-    +           },
-    +         ],
-    +         "failureSummary": "Fix all of the following:
-    +   Element is in tab order and does not have accessible text
-    +
-    + Fix any of the following:
-    +   Element does not have text that is visible to screen readers
-    +   aria-label attribute does not exist or is empty
-    +   aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty
-    +   Element has no title attribute",
-    +         "html": "<a class=\"nav-item\" data-active=\"false\" href=\"/ai\"><span class=\"nav-item__symbol\" aria-hidden=\"true\">✦</span><span>مشاور هوش مصنوعی</span><span class=\"nav-item__badge\">جدید</span></a>",
-    +         "impact": "serious",
-    +         "none": Array [
-    +           Object {
-    +             "data": null,
-    +             "id": "focusable-no-name",
-    +             "impact": "serious",
-    +             "message": "Element is in tab order and does not have accessible text",
-    +             "relatedNodes": Array [],
-    +           },
-    +         ],
-    +         "target": Array [
-    +           "a[href=\"/ai\"]",
-    +         ],
-    +       },
-    +       Object {
-    +         "all": Array [],
-    +         "any": Array [
-    +           Object {
-    +             "data": null,
-    +             "id": "has-visible-text",
-    +             "impact": "serious",
-    +             "message": "Element does not have text that is visible to screen readers",
-    +             "relatedNodes": Array [],
-    +           },
-    +           Object {
-    +             "data": null,
-    +             "id": "aria-label",
-    +             "impact": "serious",
-    +             "message": "aria-label attribute does not exist or is empty",
-    +             "relatedNodes": Array [],
-    +           },
-    +           Object {
-    +             "data": null,
-    +             "id": "aria-labelledby",
-    +             "impact": "serious",
-    +             "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty",
-    +             "relatedNodes": Array [],
-    +           },
-    +           Object {
-    +             "data": Object {
-    +               "messageKey": "noAttr",
-    +             },
-    +             "id": "non-empty-title",
-    +             "impact": "serious",
-    +             "message": "Element has no title attribute",
-    +             "relatedNodes": Array [],
-    +           },
-    +         ],
-    +         "failureSummary": "Fix all of the following:
-    +   Element is in tab order and does not have accessible text
-    +
-    + Fix any of the following:
-    +   Element does not have text that is visible to screen readers
-    +   aria-label attribute does not exist or is empty
-    +   aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty
-    +   Element has no title attribute",
-    +         "html": "<a class=\"nav-item\" data-active=\"false\" href=\"/settings\"><span class=\"nav-item__symbol\" aria-hidden=\"true\">≡</span><span>تنظیمات</span></a>",
-    +         "impact": "serious",
-    +         "none": Array [
-    +           Object {
-    +             "data": null,
-    +             "id": "focusable-no-name",
-    +             "impact": "serious",
-    +             "message": "Element is in tab order and does not have accessible text",
-    +             "relatedNodes": Array [],
-    +           },
-    +         ],
-    +         "target": Array [
-    +           "a[href$=\"settings\"]",
+    +           ".global-command-palette-module__WPehia__trigger",
     +         ],
     +       },
     +     ],
     +     "tags": Array [
     +       "cat.name-role-value",
     +       "wcag2a",
-    +       "wcag244",
     +       "wcag412",
     +       "section508",
     +       "section508.22.a",
     +       "TTv5",
     +       "TT6.a",
     +       "EN-301-549",
-    +       "EN-9.2.4.4",
     +       "EN-9.4.1.2",
     +       "ACT",
     +       "RGAAv4",
-    +       "RGAA-6.2.1",
+    +       "RGAA-11.9.1",
     +     ],
     +   },
     + ]
@@ -433,14 +471,13 @@ olor-contrast",
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
 
-  6 failed
-    [desktop-chromium] › e2e/auth-accessibility-visual.spec.ts:21:5 › login is Persian RTL, keyboard reachable, validates locally and remains accessible 
+  5 failed
     [desktop-chromium] › e2e/auth-accessibility-visual.spec.ts:40:5 › forbidden state explains server-side authorization without leaking backend details 
     [desktop-chromium] › e2e/mfa-workspace.spec.ts:10:5 › existing account completes OTP then TOTP MFA before an authorized workspace is rendered 
     [mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:21:5 › login is Persian RTL, keyboard reachable, validates locally and remains accessible 
     [mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:40:5 › forbidden state explains server-side authorization without leaking backend details 
     [mobile-chromium] › e2e/mfa-workspace.spec.ts:10:5 › existing account completes OTP then TOTP MFA before an authorized workspace is rendered 
-  2 passed (29.9s)
+  3 passed (26.1s)
 
 ```
 
