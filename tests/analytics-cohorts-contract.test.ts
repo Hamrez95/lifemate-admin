@@ -132,10 +132,7 @@ describe("ADM-ANL-002 cohort contract", () => {
     expect(defaults.to).toBe("2026-08-16");
 
     expect(() =>
-      parseCohortQuery(
-        new URLSearchParams({ from: "2026-01-01", to: "2026-08-16" }),
-        now,
-      ),
+      parseCohortQuery(new URLSearchParams({ from: "2026-01-01", to: "2026-08-16" }), now),
     ).toThrow(/between 1 and 180 days/);
 
     expect(
