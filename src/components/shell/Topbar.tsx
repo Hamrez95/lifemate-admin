@@ -1,5 +1,6 @@
-import { OperatorMenu } from "@/src/components/shell/OperatorMenu";
 import { GlobalCommandPalette } from "@/src/components/shell/GlobalCommandPalette";
+import { NotificationCenter } from "@/src/components/shell/NotificationCenter";
+import { OperatorMenu } from "@/src/components/shell/OperatorMenu";
 
 type TopbarProps = { title: string; subtitle?: string };
 
@@ -13,9 +14,7 @@ export function Topbar({ title, subtitle }: TopbarProps) {
       </div>
       <div className="topbar__actions">
         <GlobalCommandPalette />
-        <button className="icon-button" type="button" disabled aria-label="اعلان‌ها؛ به‌زودی">
-          ♧
-        </button>
+        <NotificationCenter />
         <OperatorMenu />
       </div>
     </header>
