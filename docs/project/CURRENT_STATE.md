@@ -11,14 +11,16 @@ Last verified: 2026-08-15 (Asia/Tehran)
 
 ## Verified GitHub state
 
-At the ADM-PLAT-003 milestone sync:
+At the ADM-QA-001 milestone sync:
 
 - Commerce remains complete through `ADM-COM-005` (#16): Core PR #197 / Admin PR #70.
-- `ADM-PLAT-002` (#4) Secure Global Search / Command Palette is complete via Core PR #198 / Admin PR #72.
-- `ADM-PLAT-003` (#30) Admin Notification Center / Alerts is complete via Core PR #201 / Admin PR #74.
-- Core #201 passed Admin Edge API, PostgreSQL schema/restore, edge/readiness, ecosystem and runtime/db-pressure smoke gates before merge.
-- Admin #74 passed format, browser-secret boundary, lint, strict TypeScript, unit tests and production build before merge.
-- Master Issue #49 sets `ADM-QA-001` (#5) as current work, followed by `ADM-PERF-001` (#39).
+- `ADM-PLAT-002` (#4) Secure Global Search / Command Palette: Core #198 / Admin #72.
+- `ADM-PLAT-003` (#30) Admin Notification Center / Alerts: Core #201 / Admin #74.
+- `ADM-QA-001` (#5) is complete via Admin PR #76.
+- PR #76 merged only after both permanent checks were green: `admin-web-ci` and `admin-qa`.
+- `admin-qa` now runs synthetic local existing-account OTP -> verified TOTP -> AAL2 -> server claims/Admin API/workspace E2E, permission-denial tests, Axe serious/critical checks and desktop/mobile visual regression.
+- The QA gate found and fixed real accessibility defects before merge: sidebar accessible names, logo semantics, mobile Command Palette naming and insufficient text contrast.
+- Master Issue #49 sets `ADM-PERF-001` (#39) Dataset Performance Guardrails as the current task.
 - Source merge is **not** production deployment.
 
 Repository/privacy hardening and delivery environments remain tracked under `ADM-OPS-003` (#38).
@@ -43,42 +45,38 @@ Repository/privacy hardening and delivery environments remain tracked under `ADM
 - `ADM-COM-005` — Core PR #197 / Admin PR #70
 - `ADM-PLAT-002` — Core PR #198 / Admin PR #72
 - `ADM-PLAT-003` — Core PR #201 / Admin PR #74
+- `ADM-QA-001` — Admin PR #76
 
-## Secure Global Search contract now in main
+## Permanent QA gate now in main
 
-- Search is an authenticated Admin API surface, not a universal data explorer.
+- `.github/workflows/qa.yml` is a permanent PR/main browser-security gate in addition to `admin-web-ci`.
+- It installs locked dependencies and pinned Chromium, then runs the security denial matrix plus Playwright browser QA.
+- Playwright runs desktop and mobile Chromium with Persian locale, Tehran timezone and zero CI retries.
+- E2E uses only local synthetic QA services. No production account, PII/PHI, real OTP/TOTP secret, service-role key or application-side auth bypass is used.
+- The mock Auth service signs ephemeral RS256 JWTs and serves local JWKS so the real server `getClaims()` verification path is exercised.
+- The successful browser flow proves existing-account-only OTP, TOTP challenge/verify, AAL2, Admin API capability retrieval and authorized workspace rendering.
+- Representative ordinary role × workspace denial tests run in CI and explicitly exclude `health.read.elevated` and `women_health.read.elevated` from ordinary roles.
+- Axe fails the gate for serious/critical violations on representative secure-login, forbidden and authorized surfaces.
+- Visual baselines are committed for desktop/mobile representative surfaces and must be intentionally updated/reviewed.
+- Playwright retries are zero; failure traces/screenshots/reports are retained as short-lived CI artifacts.
+
+## Secure Global Search contract
+
 - Domains are allow-listed and independently permission-gated: users, support, commerce and campaigns.
 - Unauthorized domains are not queried and do not leak existence through counts.
 - Raw Health and Women Health are excluded entirely.
-- Minimum query length, bounded pagination and a database-backed per-admin rate limit are enforced.
-- Raw query text is not persisted for rate limiting or operational logs.
-- The browser uses a same-origin Next.js boundary; privileged secrets never enter browser code.
-- Campaign search stays explicit `not_instrumented` until a canonical source exists.
-- The Persian RTL Command Palette supports keyboard navigation, focus trapping and mobile fallback.
+- Minimum query length, bounded pagination and DB-backed per-admin rate limiting are enforced.
+- Raw query text is not persisted/logged.
+- The browser uses a same-origin server boundary; campaign search remains explicit `not_instrumented` until canonical data exists.
 
-## Notification Center contract now in main
+## Notification Center contract
 
-- Bell count and notification list are filtered by the permission of each source domain before source data is loaded.
-- Approved real sources are Support, Security and Operations.
-- Support alerts use redacted ticket queue metadata for active SLA/Urgent conditions.
-- Security alerts use narrowly selected failed/elevated-denied Admin audit metadata; audit reason/metadata payloads are not sent to the browser.
-- Operations alerts use a SECURITY DEFINER metadata-only Outbox snapshot; `payload_json`, event/resource identifiers and secrets are not exposed.
-- Outbox alert thresholds follow the reviewed runbook: `<120s` healthy, `120–899s` warning, `>=900s` critical; DeadLetter and stale Processing locks are surfaced separately.
-- Finance and Product remain truthful `not_instrumented` sources until canonical alert sources exist; no demo alert is invented.
-- Exact unread totals are returned only when all authorized sources are complete. Partial source coverage returns lower-bound known counts plus explicit completeness/source states.
-- Per-admin read/unread presentation state is permission-checked, idempotent and audited; it never mutates source business state.
-- Acknowledge/dismiss actions are not invented for sources that do not support a canonical source-owned workflow.
-- Deep links are source-scoped and validated both in Core and the Admin server client.
-- The Persian RTL panel supports responsive mobile sheet layout, severity icon+text, freshness, Escape/focus trap and a limited live region for unread-count changes.
+- Bell count/list are filtered by source-domain permission before source data is loaded.
+- Real approved sources are Support, Security and Operations; Finance/Product remain truthful `not_instrumented` until canonical sources exist.
+- Operations uses a metadata-only Outbox projection; raw payloads/resource identifiers are not exposed.
+- Exact unread totals are claimed only when authorized sources are complete; otherwise lower-bound known counts plus partial completeness are returned.
+- Per-admin read/unread presentation state is permission-checked, idempotent and audited without mutating source business state.
 - Raw Health and Women Health are not notification domains.
-
-## Commerce contract now in main
-
-Commerce intentionally keeps these concepts separate:
-
-`Plan ≠ Entitlement ≠ Order ≠ Transaction ≠ Provider Event ≠ Promotion ≠ Discount Code`
-
-The merged Commerce work includes plan/entitlement overview/detail, normalized transaction/order list/detail, provider-event observations, audited refund requests, promotion/discount-code lifecycle management, exact-code enumeration controls and truthful unavailable redemption summaries.
 
 ## Security rules that remain active
 
@@ -96,15 +94,14 @@ The merged Commerce work includes plan/entitlement overview/detail, normalized t
 
 Completed through:
 
-1. `ADM-PLAT-003` Admin Notification Center / Alerts (#30)
+1. `ADM-QA-001` E2E + Accessibility + Visual Regression + Security Denial Matrix (#5)
 
 Current strictly sequential focus:
 
-2. `ADM-QA-001` E2E + Accessibility + Visual Regression + Security Denial Matrix (#5)
-3. `ADM-PERF-001` Dataset Performance Guardrails (#39)
+2. `ADM-PERF-001` Dataset Performance Guardrails (#39)
 
 The exact current sequence is maintained in Master Issue #49.
 
 ## Production rollout
 
-Merged code is not proof of production deployment. A read-only check of the live Supabase migration list on 2026-08-15 did not show the Command Center control-plane/Commerce migrations at that time. Production migration/function rollout, Founder bootstrap, environment configuration and smoke verification remain gated under `ADM-OPS-002` (#24). Re-verify live Supabase immediately before any production write.
+Merged code is not proof of production deployment. Production migration/function rollout, Founder bootstrap, environment configuration and smoke verification remain gated under `ADM-OPS-002` (#24). Re-verify live Supabase immediately before any production write.
