@@ -96,9 +96,10 @@ Every task Issue must be self-contained and include Goal, Scope, UI/UX, Backend/
 - Raw Health is default deny. Women Health is stricter.
 - Relationship does not automatically create Access Grant; Admin role is not caregiver access.
 - Global Search is allow-listed and permission-filtered; it never exposes raw Health, Women Health or arbitrary SQL.
-- Notification counts/lists are permission-filtered and source failures are isolated; unauthorized resource existence must not leak through badges.
-- Operations notifications use metadata-only projections and never surface raw log/outbox payloads.
-- Missing Finance/Product alert instrumentation is explicit; no fake alerts are created.
+- Notification counts/lists are permission-filtered; Operations alerts use metadata-only projections; missing source instrumentation is explicit.
+- `admin-qa` is now a permanent merge gate: isolated synthetic MFA E2E, denial matrix, Axe, responsive/RTL and visual baselines; CI retries stay zero.
+- Performance work must measure representative approved read models/endpoints without importing PII/PHI or production secrets into fixtures/logs/artifacts.
+- Large-list APIs remain bounded; query/index/cache/rate-limit changes require representative explain/benchmark evidence and safe failure behavior.
 - AI phase 1 is read-only and cannot access raw health, execute unrestricted SQL, mutate business state or auto-publish social content.
 - Human approval is mandatory for social publishing.
 - Actual financials and forecast data are distinct.
@@ -106,11 +107,10 @@ Every task Issue must be self-contained and include Goal, Scope, UI/UX, Backend/
 
 ## Verified execution position
 
-Completed through `ADM-PLAT-003` (#30): Core PR #201 / Admin PR #74. `ADM-PLAT-002` (#4) is Core #198 / Admin #72, and Commerce remains complete through `ADM-COM-005` (#16): Core #197 / Admin #70.
+Completed through `ADM-QA-001` (#5): Admin PR #76. `ADM-PLAT-003` (#30) is Core #201 / Admin #74; `ADM-PLAT-002` (#4) is Core #198 / Admin #72; Commerce remains complete through `ADM-COM-005` (#16): Core #197 / Admin #70.
 
 Current strictly sequential focus:
 
-1. `ADM-QA-001` — E2E + Accessibility + Visual Regression + Security Denial Matrix (#5)
-2. `ADM-PERF-001` — Dataset Performance Guardrails (#39)
+1. `ADM-PERF-001` — Dataset Performance Guardrails (#39)
 
-The QA gate comes first because the main Command Center platform/search/notification surfaces now exist and should become regression-protected before additional feature breadth. Master Issue #49 is canonical. `ADM-OPS-002` (#24) remains the separate production rollout gate; source merges do not imply deployment.
+The browser/security regression gate is now permanent, so performance guardrails are the current foundation task before additional feature breadth. Master Issue #49 is canonical. `ADM-OPS-002` (#24) remains the separate production rollout gate; source merges do not imply deployment.
