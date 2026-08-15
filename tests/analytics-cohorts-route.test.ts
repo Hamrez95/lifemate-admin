@@ -22,11 +22,12 @@ describe("ADM-ANL-002 cohort workspace routing and privacy", () => {
     expect(contract).not.toMatch(/accountId|userId|personId|phone|email/i);
   });
 
-  it("does not expose a user-level export action", () => {
+  it("does not expose a user-level export action and keeps missing instrumentation explicit", () => {
     const page = source("app/analytics/cohorts/page.tsx");
+    const contract = source("src/lib/admin-api/analytics-cohorts.ts");
 
     expect(page).not.toMatch(/export csv|download csv|user-level export|خروجی کاربران/i);
-    expect(page).toContain("app_opened history");
-    expect(page).toContain("profile_completed");
+    expect(contract).toContain("app_opened history");
+    expect(contract).toContain("profile_completed");
   });
 });
