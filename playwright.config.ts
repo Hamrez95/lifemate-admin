@@ -1,11 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const qaEnv = {
-  NEXT_PUBLIC_SUPABASE_URL: "https://ci-placeholder.supabase.co",
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "ci_publishable_placeholder",
-  NEXT_PUBLIC_ADMIN_API_URL: "https://admin-api.ci-placeholder.test",
-};
-
 export default defineConfig({
   testDir: "./e2e",
   outputDir: "test-results/playwright",
@@ -51,10 +45,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run dev -- --hostname 127.0.0.1 --port 3100",
+    command: "node scripts/qa/start-e2e-server.mjs",
     url: "http://127.0.0.1:3100/login",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
-    env: qaEnv,
   },
 });
