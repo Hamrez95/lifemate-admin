@@ -203,7 +203,11 @@ function PlanDistribution({ rows }: { rows: CommercePlanDistribution[] }) {
       ) : (
         <div className={styles.planGrid}>
           {rows.map((row) => (
-            <Link className={styles.planCard} href={`/commerce/plans/${row.planId}`} key={row.planId}>
+            <Link
+              className={styles.planCard}
+              href={`/commerce/plans/${row.planId}`}
+              key={row.planId}
+            >
               <div>
                 <span className={styles.productBadge}>{row.productName}</span>
                 <span className={styles.statusPill} data-status={row.planStatus}>
