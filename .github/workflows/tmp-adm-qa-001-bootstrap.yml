@@ -136,21 +136,21 @@ jobs:
           git commit -m 'chore(qa): capture Playwright bootstrap failure [skip ci]'
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
-      - name: Commit locked QA harness and snapshots
+      - name: Commit verified QA artifacts
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git rm -f .github/workflows/tmp-adm-qa-001-bootstrap.yml
-          if git ls-files --error-unmatch docs/qa/diagnostics/playwright-bootstrap-failure.md >/dev/null 2>&1; then
-            git rm -f docs/qa/diagnostics/playwright-bootstrap-failure.md
-          else
-            rm -f docs/qa/diagnostics/playwright-bootstrap-failure.md
-          fi
-          git add -A
+          git add \
+            package.json package-lock.json \
+            playwright.config.ts \
+            app src \
+            e2e tests \
+            scripts/qa \
+            docs/qa/COMMAND_CENTER_QA_GATE.md
           if git diff --cached --quiet; then
-            echo 'No QA harness changes to commit.'
+            echo 'No verified QA artifact changes to commit.'
             exit 1
           fi
           git commit -m 'test(admin): lock Command Center QA gate and visual baselines'
