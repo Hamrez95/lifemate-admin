@@ -117,11 +117,11 @@ Every task Issue must be self-contained and include:
 
 ## Verified execution position
 
-Completed through `ADM-COM-003` (#36), merged as Core PR #186 and Admin PR #67.
+Completed through `ADM-COM-005` (#16), with Core PR #197 and Admin PR #70 merged after required CI. `ADM-COM-004` (#37) is also complete via Core PR #189 and Admin PR #69.
 
 Current strictly sequential focus:
 
-1. `ADM-COM-004` — Transaction Detail / Audited Financial Actions (#37)
-2. `ADM-COM-005` — Promotions / Discount Codes (#16)
+1. `ADM-PLAT-002` — Secure Global Search / Command Palette (#4)
+2. `ADM-PLAT-003` — Admin Notification Center / Alerts (#30)
 
 Master Issue #49 is canonical for exact completion state and sequencing. `ADM-OPS-002` (#24) remains the separate production rollout gate; source merges do not imply deployment.
