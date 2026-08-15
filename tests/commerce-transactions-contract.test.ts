@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { tehranDayBoundaryToUtc } from "@/src/lib/time-zone";
+import { tehranDayBoundaryToUtc } from "../src/lib/time-zone";
 
 function source(path: string): string {
   return readFileSync(resolve(process.cwd(), path), "utf8");
