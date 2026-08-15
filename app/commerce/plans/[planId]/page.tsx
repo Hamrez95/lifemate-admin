@@ -61,7 +61,7 @@ function formatDateTime(value: string | null): string {
 function formatIntegerString(value: string): string {
   const grouped = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   const digits = "۰۱۲۳۴۵۶۷۸۹";
-  return grouped.replace(/\d/g, (digit) => digits[Number(digit)]);
+  return grouped.replace(/\d/g, (digit) => digits.charAt(Number(digit)));
 }
 
 function detailParams(page: number): URLSearchParams {
