@@ -142,25 +142,33 @@ function ProductRules({ data }: { data: CommerceEntitlementDetail }) {
           </p>
         </div>
       </header>
-      {data.productRules.length === 0 ? (
+      {data.productRules.items.length === 0 ? (
         <AdminPageState state="empty" title="این Feature به محصولی map نشده است" />
       ) : (
-        <div className={styles.ruleGrid}>
-          {data.productRules.map((rule) => (
-            <article className={styles.ruleCard} key={rule.productId}>
-              <header>
-                <strong>{rule.productName}</strong>
-                <span className={styles.statusBadge} data-status={rule.productStatus}>
-                  {statusLabels[rule.productStatus] ?? rule.productStatus}
+        <>
+          {data.productRules.total > data.productRules.items.length ? (
+            <p className={styles.emptyNote}>
+              {data.productRules.items.length.toLocaleString("fa-IR")} قانون از مجموع {" "}
+              {data.productRules.total.toLocaleString("fa-IR")} قانون نمایش داده می‌شود.
+            </p>
+          ) : null}
+          <div className={styles.ruleGrid}>
+            {data.productRules.items.map((rule) => (
+              <article className={styles.ruleCard} key={rule.productId}>
+                <header>
+                  <strong>{rule.productName}</strong>
+                  <span className={styles.statusBadge} data-status={rule.productStatus}>
+                    {statusLabels[rule.productStatus] ?? rule.productStatus}
+                  </span>
+                </header>
+                <p className={styles.code}>{rule.productCode}</p>
+                <span className={styles.ruleBadge}>
+                  {rule.minimumPlanCode ? `حداقل پلن: ${rule.minimumPlanCode}` : "بدون حداقل پلن"}
                 </span>
-              </header>
-              <p className={styles.code}>{rule.productCode}</p>
-              <span className={styles.ruleBadge}>
-                {rule.minimumPlanCode ? `حداقل پلن: ${rule.minimumPlanCode}` : "بدون حداقل پلن"}
-              </span>
-            </article>
-          ))}
-        </div>
+              </article>
+            ))}
+          </div>
+        </>
       )}
     </section>
   );
@@ -214,12 +222,12 @@ function EventHistory({ data }: { data: CommerceEntitlementDetail }) {
         <p className={styles.emptyNote}>رویداد ثبت‌شده‌ای برای این Feature وجود ندارد.</p>
       ) : (
         <>
-          {data.eventHistory.total > data.eventHistory.items.length && (
+          {data.eventHistory.total > data.eventHistory.items.length ? (
             <p className={styles.emptyNote}>
               {data.eventHistory.items.length.toLocaleString("fa-IR")} رویداد اخیر از مجموع {" "}
               {data.eventHistory.total.toLocaleString("fa-IR")} رویداد نمایش داده می‌شود.
             </p>
-          )}
+          ) : null}
           <ol className={styles.timeline}>
             {data.eventHistory.items.map((event) => (
               <li key={event.eventId}>
@@ -280,7 +288,10 @@ async function EntitlementContent({ featureCode, page }: { featureCode: string; 
         columns={entitlementColumns}
         rowKey={(row) => row.entitlementId}
         total={data.entitlements.total}
-        freshness={{ status: data.freshness.status, label: formatDateTime(data.freshness.asOfUtc) }}
+        freshness={{
+          status: data.freshness.status,
+          label: formatDateTime(data.freshness.asOfUtc),
+        }}
         pagination={{
           page: data.page,
           pageSize: data.pageSize,
