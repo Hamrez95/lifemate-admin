@@ -10,7 +10,7 @@ Use this file when a new AI model, engineer or reviewer enters the project.
 4. `docs/project/ROADMAP.md` — implementation order and release gates.
 5. `docs/project/COMMAND_CENTER_BACKLOG.md` — durable backlog index.
 6. `docs/project/DESIGN_REFERENCE_INDEX.md` — approved visual references.
-7. The GitHub Issue you are about to implement, including dependencies and acceptance criteria.
+7. Master Issue #49 and the GitHub Issue you are about to implement, including dependencies and acceptance criteria.
 8. Relevant files in core `Hamrez95/LifeMate` when the task changes Admin API contracts, read models, migrations or restricted runtime permissions.
 
 Do not infer production state from merged code. Re-verify live Supabase before deployment or schema claims.
@@ -40,17 +40,16 @@ The browser does not directly query healthcare/admin tables and never contains p
 - `ADM-USR-005` stays blocked until `ADM-SEC-005` break-glass is implemented and accepted.
 - Break-glass requires purpose, target, explicit scope, TTL, approval, revoke/expiry and immutable audit.
 
-## How to choose the next Issue
+## Current execution position
 
-Unless the Master Issue says otherwise, take the earliest unblocked item in this order:
+As of the 2026-08-15 milestone sync, implementation is verified complete through `ADM-COM-003` (#36): Core PR #186 and Admin PR #67 are merged and the Issue is closed.
 
-1. `ADM-PLAT-001`
-2. `ADM-USR-001`
-3. `ADM-USR-002`
-4. `ADM-DATA-001`
-5. `ADM-ANL-001`
+The next strictly sequential task is:
 
-Do not start a later feature merely because its UI is easier.
+1. `ADM-COM-004` — Transaction Detail / Audited Financial Actions (#37)
+2. then `ADM-COM-005` — Promotions / Discount Codes (#16)
+
+Always re-read Master Issue #49 before starting, because it is canonical and may have advanced since this document was written. Do not start a later feature merely because its UI is easier.
 
 ## Engineering workflow
 
@@ -69,6 +68,7 @@ For each Issue:
 11. Run repository-required checks and security checks.
 12. Open a PR; merge only after green CI and resolved review concerns.
 13. Close the Issue, update the Master checklist and update `CURRENT_STATE.md` for milestones.
+14. Sync Trello only after GitHub completion bookkeeping is correct.
 
 ## GitHub write verification
 
@@ -76,15 +76,29 @@ After every branch/Issue/commit/PR write, immediately fetch the created/updated 
 
 ## Supabase deployment safety
 
-Production Admin Control Plane code is merged in core but, as of the current state document, was not deployed. Before `ADM-OPS-002`:
+Production rollout remains a separate gate under `ADM-OPS-002` (#24). Before that task performs any write:
 
 - list production migrations;
 - list deployed Edge Functions;
-- inspect `admin` schema presence;
+- inspect approved live schemas/read models as needed;
 - compare live state to the exact core migration/function version;
 - only then follow the gated rollout Issue.
 
 Do not apply migrations or deploy functions as a side effect of unrelated feature work.
+
+## Commerce safety contract
+
+The merged ADM-COM-003 slice intentionally keeps:
+
+`Order ≠ Transaction ≠ Provider Event`
+
+- Order is commercial intent.
+- Transaction is normalized financial state.
+- Provider Event is an observation received from an external provider.
+- Provider references remain hash-only in persistence and do not enter the Admin browser contract.
+- `amountMinor` is string-backed for bigint precision safety.
+- Admin browser receives `accountLinked` rather than an account identifier.
+- Financial mutations introduced by later tasks require explicit permission and immutable audit rather than inheriting `commerce.read` automatically.
 
 ## Design use
 
