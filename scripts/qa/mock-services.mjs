@@ -1,9 +1,10 @@
 import { createServer } from "node:http";
-import { generateKeyPairSync, sign } from "node:crypto";
+import { createPublicKey, generateKeyPairSync, sign } from "node:crypto";
 
 const host = "127.0.0.1";
 const port = 54321;
 const origin = `http://${host}:${port}`;
+const appOrigin = "http://127.0.0.1:3100";
 const authIssuer = `${origin}/auth/v1`;
 const userId = "11111111-1111-4111-8111-111111111111";
 const factorId = "22222222-2222-4222-8222-222222222222";
@@ -17,17 +18,16 @@ const { privateKey, publicKey } = generateKeyPairSync("rsa", {
 });
 
 const publicJwk = {
-  ...await import("node:crypto").then(({ createPublicKey }) =>
-    createPublicKey(publicKey).export({ format: "jwk" }),
-  ),
+  ...createPublicKey(publicKey).export({ format: "jwk" }),
   kid,
   alg: "RS256",
   use: "sig",
 };
 
 function base64Url(value) {
-  return Buffer.from(typeof value === "string" ? value : JSON.stringify(value))
-    .toString("base64url");
+  return Buffer.from(typeof value === "string" ? value : JSON.stringify(value)).toString(
+    "base64url",
+  );
 }
 
 function jwt(aal) {
@@ -100,10 +100,19 @@ function session(aal) {
   };
 }
 
+const corsHeaders = {
+  "access-control-allow-origin": appOrigin,
+  "access-control-allow-credentials": "true",
+  "access-control-allow-methods": "GET,POST,OPTIONS",
+  "access-control-allow-headers": "authorization,apikey,content-type,x-client-info,x-supabase-api-version",
+  vary: "Origin",
+};
+
 function json(response, status, body, extraHeaders = {}) {
   response.writeHead(status, {
     "content-type": "application/json; charset=utf-8",
     "cache-control": "no-store",
+    ...corsHeaders,
     ...extraHeaders,
   });
   response.end(JSON.stringify(body));
@@ -134,16 +143,18 @@ export function startQaMockServices() {
     const url = new URL(request.url ?? "/", origin);
     const method = request.method ?? "GET";
 
+    if (method === "OPTIONS") {
+      response.writeHead(204, corsHeaders);
+      return response.end();
+    }
+
     if (method === "GET" && url.pathname === "/auth/v1/.well-known/jwks.json") {
       return json(response, 200, { keys: [publicJwk] });
     }
 
     if (method === "POST" && url.pathname === "/auth/v1/otp") {
       const body = await readBody(request);
-      if (
-        body?.phone !== "+989121234567" ||
-        body?.create_user !== false
-      ) {
+      if (body?.phone !== "+989121234567" || body?.create_user !== false) {
         return json(response, 400, {
           code: "qa_otp_contract_mismatch",
           message: "QA OTP request did not preserve existing-account-only semantics.",
@@ -189,7 +200,10 @@ export function startQaMockServices() {
     ) {
       const body = await readBody(request);
       if (body?.challenge_id !== challengeId || body?.code !== "654321") {
-        return json(response, 400, { code: "mfa_verification_failed", message: "Invalid QA TOTP." });
+        return json(response, 400, {
+          code: "mfa_verification_failed",
+          message: "Invalid QA TOTP.",
+        });
       }
       return json(response, 200, session("aal2"));
     }
