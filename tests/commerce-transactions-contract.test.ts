@@ -72,8 +72,8 @@ describe("ADM-COM-003 Transactions / Orders List", () => {
     const page = source("app/commerce/transactions/page.tsx");
     expect(page).toContain('tehranDayBoundaryToUtc(query.from, "start")');
     expect(page).toContain('tehranDayBoundaryToUtc(query.to, "end")');
-    expect(page).not.toContain('`${query.from}T00:00:00.000Z`');
-    expect(page).not.toContain('`${query.to}T23:59:59.999Z`');
+    expect(page).not.toContain("`${query.from}T00:00:00.000Z`");
+    expect(page).not.toContain("`${query.to}T23:59:59.999Z`");
   });
 
   it("is discoverable from the commerce overview", () => {
