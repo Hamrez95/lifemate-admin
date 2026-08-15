@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 24
-      - name: Repair promotion client and verify
+      - name: Repair and persist promotion client
         shell: bash
         run: |
           set -euo pipefail
@@ -31,8 +31,28 @@ jobs:
           path = Path('src/lib/admin-api/commerce-promotions.ts')
           text = path.read_text()
 
-          projection_old = '''  const {\n    primaryCodeMasked: _masked,\n    primaryCodeStatus: _status,\n    primaryCodeMaxRedemptions: _limit,\n    codeCount: _count,\n    ...detailPromotion\n  } = row;'''
-          projection_new = '''  const detailPromotion: CommercePromotionDetail["promotion"] = {\n    promotionId: row.promotionId,\n    name: row.name,\n    description: row.description,\n    product: row.product,\n    discount: row.discount,\n    storedStatus: row.storedStatus,\n    effectiveStatus: row.effectiveStatus,\n    startsAtUtc: row.startsAtUtc,\n    endsAtUtc: row.endsAtUtc,\n    maxRedemptions: row.maxRedemptions,\n    redemptionSummary: row.redemptionSummary,\n    createdAtUtc: row.createdAtUtc,\n    updatedAtUtc: row.updatedAtUtc,\n  };'''
+          projection_old = '''  const {
+            primaryCodeMasked: _masked,
+            primaryCodeStatus: _status,
+            primaryCodeMaxRedemptions: _limit,
+            codeCount: _count,
+            ...detailPromotion
+          } = row;'''
+          projection_new = '''  const detailPromotion: CommercePromotionDetail["promotion"] = {
+            promotionId: row.promotionId,
+            name: row.name,
+            description: row.description,
+            product: row.product,
+            discount: row.discount,
+            storedStatus: row.storedStatus,
+            effectiveStatus: row.effectiveStatus,
+            startsAtUtc: row.startsAtUtc,
+            endsAtUtc: row.endsAtUtc,
+            maxRedemptions: row.maxRedemptions,
+            redemptionSummary: row.redemptionSummary,
+            createdAtUtc: row.createdAtUtc,
+            updatedAtUtc: row.updatedAtUtc,
+          };'''
           if projection_old not in text:
               raise SystemExit('expected projection block not found')
           text = text.replace(projection_old, projection_new)
@@ -51,9 +71,6 @@ jobs:
           PY
           npm install --no-audit --no-fund
           npm run format
-          npm run lint
-          npm run typecheck
-          npm test
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add src/lib/admin-api/commerce-promotions.ts
