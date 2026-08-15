@@ -58,6 +58,9 @@ describe("ADM-PLAT-002 Secure Global Search / Command Palette", () => {
     expect(palette).toContain('event.key === "ArrowUp"');
     expect(palette).toContain('event.key === "Enter"');
     expect(palette).toContain('event.key === "Tab"');
+    expect(palette).toContain("if (!focusable?.length) return;");
+    expect(palette).toContain("const first = focusable[0]!;");
+    expect(palette).toContain("const last = focusable[focusable.length - 1]!;");
     expect(palette).toContain('role="dialog"');
     expect(palette).toContain('aria-modal="true"');
     expect(palette).toContain('role="combobox"');
