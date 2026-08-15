@@ -230,17 +230,6 @@
   border-radius: 16px;
   background: linear-gradient(145deg, #fff, #fbfdff);
   padding: 13px;
-  text-decoration: none;
-  transition:
-    transform 150ms ease,
-    border-color 150ms ease,
-    box-shadow 150ms ease;
-}
-
-.planCard:hover {
-  border-color: rgba(52, 120, 246, 0.28);
-  box-shadow: 0 10px 22px rgba(52, 120, 246, 0.07);
-  transform: translateY(-1px);
 }
 
 .planCard > div:first-child {
@@ -356,12 +345,6 @@
   border-radius: 13px;
   background: var(--lm-surface-soft);
   padding: 10px;
-  text-decoration: none;
-}
-
-.entitlementRow:hover {
-  border-color: rgba(118, 87, 232, 0.18);
-  background: #faf8ff;
 }
 
 .entitlementName {
@@ -452,14 +435,9 @@
   gap: 3px;
 }
 
-.tablePlan a {
-  color: var(--lm-blue);
+.tablePlan strong {
+  color: var(--lm-text);
   font-weight: 850;
-  text-decoration: none;
-}
-
-.tablePlan a:hover {
-  text-decoration: underline;
 }
 
 .identifier {
@@ -468,13 +446,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.planCard:focus-visible,
-.entitlementRow:focus-visible,
-.tablePlan a:focus-visible {
-  outline: 3px solid rgba(52, 120, 246, 0.24);
-  outline-offset: 2px;
 }
 
 @media (max-width: 1180px) {
@@ -547,11 +518,5 @@
   .highlightPanel li {
     align-items: flex-start;
     flex-direction: column;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .planCard {
-    transition: none;
   }
 }
