@@ -1,6 +1,6 @@
 # LifeMate Command Center — Current State
 
-Last verified: 2026-08-15 (Asia/Tehran)
+Last verified: 2026-08-16 (Asia/Tehran)
 
 ## Repositories
 
@@ -11,16 +11,16 @@ Last verified: 2026-08-15 (Asia/Tehran)
 
 ## Verified GitHub state
 
-At the ADM-QA-001 milestone sync:
+At the ADM-PERF-001 milestone sync:
 
 - Commerce remains complete through `ADM-COM-005` (#16): Core PR #197 / Admin PR #70.
 - `ADM-PLAT-002` (#4) Secure Global Search / Command Palette: Core #198 / Admin #72.
 - `ADM-PLAT-003` (#30) Admin Notification Center / Alerts: Core #201 / Admin #74.
-- `ADM-QA-001` (#5) is complete via Admin PR #76.
-- PR #76 merged only after both permanent checks were green: `admin-web-ci` and `admin-qa`.
-- `admin-qa` now runs synthetic local existing-account OTP -> verified TOTP -> AAL2 -> server claims/Admin API/workspace E2E, permission-denial tests, Axe serious/critical checks and desktop/mobile visual regression.
-- The QA gate found and fixed real accessibility defects before merge: sidebar accessible names, logo semantics, mobile Command Palette naming and insufficient text contrast.
-- Master Issue #49 sets `ADM-PERF-001` (#39) Dataset Performance Guardrails as the current task.
+- `ADM-QA-001` (#5) is complete via Admin PR #76; permanent `admin-web-ci` and `admin-qa` are active.
+- `ADM-PERF-001` (#39) is complete via Core PR #231 / Admin PR #78.
+- Core #231 merged after `admin-edge-api` was green and review threads were clean.
+- Admin #78 merged after `admin-web-ci` passed formatting, browser-secret boundary, lint, strict TypeScript, unit tests and production build, and `admin-qa` was green.
+- Master Issue #49 sets `ADM-HOME-001` (#6) Founder / Executive Overview as the current task.
 - Source merge is **not** production deployment.
 
 Repository/privacy hardening and delivery environments remain tracked under `ADM-OPS-003` (#38).
@@ -46,19 +46,25 @@ Repository/privacy hardening and delivery environments remain tracked under `ADM
 - `ADM-PLAT-002` — Core PR #198 / Admin PR #72
 - `ADM-PLAT-003` — Core PR #201 / Admin PR #74
 - `ADM-QA-001` — Admin PR #76
+- `ADM-PERF-001` — Core PR #231 / Admin PR #78
 
-## Permanent QA gate now in main
+## Permanent QA gate
 
-- `.github/workflows/qa.yml` is a permanent PR/main browser-security gate in addition to `admin-web-ci`.
-- It installs locked dependencies and pinned Chromium, then runs the security denial matrix plus Playwright browser QA.
-- Playwright runs desktop and mobile Chromium with Persian locale, Tehran timezone and zero CI retries.
-- E2E uses only local synthetic QA services. No production account, PII/PHI, real OTP/TOTP secret, service-role key or application-side auth bypass is used.
-- The mock Auth service signs ephemeral RS256 JWTs and serves local JWKS so the real server `getClaims()` verification path is exercised.
-- The successful browser flow proves existing-account-only OTP, TOTP challenge/verify, AAL2, Admin API capability retrieval and authorized workspace rendering.
-- Representative ordinary role × workspace denial tests run in CI and explicitly exclude `health.read.elevated` and `women_health.read.elevated` from ordinary roles.
-- Axe fails the gate for serious/critical violations on representative secure-login, forbidden and authorized surfaces.
-- Visual baselines are committed for desktop/mobile representative surfaces and must be intentionally updated/reviewed.
-- Playwright retries are zero; failure traces/screenshots/reports are retained as short-lived CI artifacts.
+- `.github/workflows/qa.yml` remains a permanent PR/main browser-security gate in addition to `admin-web-ci`.
+- It runs synthetic existing-account OTP -> verified TOTP -> AAL2 -> server claims/workspace authorization without production accounts, PII/PHI, service-role credentials or an application auth bypass.
+- Representative permission-denial tests, Axe serious/critical checks, desktop/mobile visual baselines, RTL/keyboard smoke and zero CI retries remain enforced.
+- Do not weaken this gate to make future UI work pass.
+
+## Dataset performance guardrails now in main
+
+- All current pageable Command Center API list surfaces are capped at 100 pages and 100 rows/page; endpoint-specific stricter page-size limits remain stricter.
+- This removes pathological multi-million-row offset windows and forces operators toward filters rather than unbounded deep pagination.
+- Relationship ledger keeps its independent maximum 366-day time window; Global Search keeps its stricter page-size and DB-backed per-admin throttle.
+- Serialized Admin API JSON responses fail closed above 512 KiB before browser delivery.
+- Admin responses remain `Cache-Control: no-store` and Admin server clients keep bounded timeouts of at most 10 seconds.
+- `tests/dataset-performance-guardrails.test.ts` discovers Admin API fetch clients and prevents regression of no-store/timeout policy.
+- Performance fixtures/telemetry remain privacy-minimized: no production PII/PHI, raw search text, tokens, payment credentials, provider payloads, Health or Women Health content.
+- Timeout/unavailable remains distinct from empty/zero data.
 
 ## Secure Global Search contract
 
@@ -88,17 +94,17 @@ Repository/privacy hardening and delivery environments remain tracked under `ADM
 6. Admin role never implies caregiver access.
 7. Elevated sensitive access remains blocked until the approved break-glass workflow is implemented.
 8. Browser code never receives `service_role`, database passwords or payment-provider credentials.
-9. Missing data/search/alert sources stay explicit unavailable/not-instrumented; production facts are never fabricated.
+9. Missing data/search/alert/KPI sources stay explicit unavailable/not-instrumented; production facts are never fabricated.
 
 ## Current implementation order
 
 Completed through:
 
-1. `ADM-QA-001` E2E + Accessibility + Visual Regression + Security Denial Matrix (#5)
+1. `ADM-PERF-001` Dataset Performance Guardrails (#39)
 
 Current strictly sequential focus:
 
-2. `ADM-PERF-001` Dataset Performance Guardrails (#39)
+2. `ADM-HOME-001` Founder / Executive Overview (#6)
 
 The exact current sequence is maintained in Master Issue #49.
 
