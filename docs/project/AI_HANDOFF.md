@@ -42,17 +42,18 @@ The browser does not directly query healthcare/admin tables and never contains p
 
 ## Current execution position
 
-As of the 2026-08-15 milestone sync:
+As of the 2026-08-16 milestone sync:
 
 - Commerce is complete through `ADM-COM-005` (#16): Core #197 / Admin #70.
 - `ADM-PLAT-002` Secure Global Search / Command Palette (#4): Core #198 / Admin #72.
 - `ADM-PLAT-003` Admin Notification Center / Alerts (#30): Core #201 / Admin #74.
 - `ADM-QA-001` E2E + Accessibility + Visual Regression + Security Denial Matrix (#5): Admin #76.
-- PR #76 merged only after both `admin-web-ci` and permanent `admin-qa` were green.
+- `ADM-PERF-001` Dataset Performance Guardrails (#39): Core #231 / Admin #78.
+- #39 merged only after Core `admin-edge-api`, Admin `admin-web-ci` and permanent `admin-qa` were green and review threads were clean.
 
 Current sequential execution:
 
-1. `ADM-PERF-001` — Dataset Performance Guardrails (#39)
+1. `ADM-HOME-001` — Founder / Executive Overview (#6)
 
 Always re-read Master Issue #49 before starting because it is canonical and may have advanced.
 
@@ -77,7 +78,7 @@ For each Issue:
 
 ## Permanent QA gate
 
-`admin-qa` is now a permanent merge-blocking browser/security gate in addition to `admin-web-ci`.
+`admin-qa` is a permanent merge-blocking browser/security gate in addition to `admin-web-ci`.
 
 - It runs locked Playwright desktop/mobile Chromium with Persian locale/Tehran timezone and CI retries set to zero.
 - Synthetic local Auth/Admin API services exercise existing-account phone OTP -> verified TOTP -> AAL2 -> signed JWT/JWKS -> real server `getClaims()` -> Admin API -> authorized workspace.
@@ -85,7 +86,17 @@ For each Issue:
 - Role×workspace denial tests explicitly keep ordinary roles away from `health.read.elevated` and `women_health.read.elevated`.
 - Axe fails on serious/critical accessibility violations; committed desktop/mobile visual baselines require intentional review before update.
 - Failure traces/screenshots/reports are retained as short-lived CI artifacts.
-- The gate already discovered and forced fixes for real accessible-name/semantic/contrast issues; do not weaken it to make future changes pass.
+- Do not weaken the gate to make future changes pass.
+
+## Dataset performance guardrails
+
+- Current pageable Admin API surfaces are capped at 100 pages and 100 rows/page; stricter endpoint-specific limits remain stricter.
+- Relationship Ledger keeps a maximum 366-day range; Global Search retains its stricter page-size and DB-backed per-admin throttle.
+- Serialized Admin API JSON responses fail closed above 512 KiB.
+- Privileged Admin responses remain `no-store`; Admin server fetches must keep `AbortSignal.timeout` at or below 10 seconds.
+- `tests/dataset-performance-guardrails.test.ts` discovers fetch clients and enforces no-store/timeout behavior.
+- Performance fixtures/logs/telemetry must not contain production PII/PHI, raw search text, credentials, provider payloads, Health or Women Health content.
+- Timeout/unavailable must not be rendered as an empty list or zero metric.
 
 ## Supabase deployment safety
 
@@ -109,18 +120,18 @@ Production rollout remains a separate gate under `ADM-OPS-002` (#24). Before tha
 - Deep links are source-scoped; no source-owned acknowledge/dismiss mutation is invented.
 - Raw Health and Women Health are not notification sources.
 
-## Current performance focus — ADM-PERF-001
+## Current Home focus — ADM-HOME-001
 
-Performance work must protect correctness/security rather than bypass them.
+Replace the placeholder Founder Overview with a trusted executive surface, not a demo dashboard.
 
-- Inventory every high-volume Admin list/read endpoint and its current page/query bounds.
-- Prefer indexes/read-model/query-shape fixes before caching sensitive records.
-- Add representative synthetic large-dataset fixtures only; never production PII/PHI.
-- Add reproducible PostgreSQL `EXPLAIN (ANALYZE, BUFFERS)` or equivalent evidence for representative large lists/filters.
-- Define payload-size, max-page-size, timeout and rate-limit budgets and fail tests when a query becomes unbounded.
-- If caching is introduced, cache only approved non-sensitive projections with explicit TTL/invalidation/freshness semantics; never browser-cache privileged responses.
-- Benchmark/search/list artifacts and CI logs must not contain secrets, raw health or sensitive provider payloads.
-- Keep `admin-web-ci` and `admin-qa` green while adding performance gates.
+- Reuse canonical KPI/read models and existing Support/Operations/Security/Commerce sources where they are already approved.
+- Every metric/card must be permission-aware and carry source/freshness metadata.
+- Per-card source failure must not collapse the whole dashboard.
+- Missing/uninstrumented values render `—` or explicit unavailable state, never zero fabricated from absence.
+- Raw Health and Women Health data are prohibited from the Home aggregation.
+- Security/operations cards must expose only minimized safe metadata.
+- Drill-down links must target already-authorized workspace routes; hiding a card is not authorization.
+- Keep the warm Persian RTL LifeMate hierarchy and pass permanent responsive/a11y/visual QA.
 
 ## Commerce safety contract
 
