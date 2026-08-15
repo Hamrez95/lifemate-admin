@@ -1,0 +1,61 @@
+name: tmp-adm-com-005-prep
+
+on:
+  pull_request:
+    paths:
+      - 'app/commerce/**'
+      - 'src/lib/admin-api/commerce-promotions.ts'
+      - 'src/lib/time-zone.ts'
+      - 'tests/commerce-promotions-contract.test.ts'
+      - 'tests/time-zone.test.ts'
+      - '.github/workflows/tmp-adm-com-005-prep.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  prepare-commit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          show-progress: false
+          persist-credentials: true
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+      - name: Apply isolated source fixes and repository formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          client = Path('src/lib/admin-api/commerce-promotions.ts')
+          text = client.read_text()
+          obsolete = '''  const promotion = {\n    ...row,\n    primaryCodeMasked: undefined,\n    primaryCodeStatus: undefined,\n    primaryCodeMaxRedemptions: undefined,\n    codeCount: undefined,\n  };\n'''
+          if obsolete not in text:
+              raise SystemExit('expected obsolete detail projection was not found')
+          client.write_text(text.replace(obsolete, ''))
+
+          commerce = Path('app/commerce/page.tsx')
+          text = commerce.read_text()
+          needle = '''        <div className={styles.tablePlan}>\n          <Link href="/commerce/transactions">مشاهده تراکنش‌ها و سفارش‌ها</Link>\n        </div>'''
+          replacement = '''        <div className={styles.tablePlan}>\n          <Link href="/commerce/transactions">مشاهده تراکنش‌ها و سفارش‌ها</Link>\n          <Link href="/commerce/promotions">مدیریت پروموشن‌ها و کدهای تخفیف</Link>\n        </div>'''
+          if needle not in text:
+              raise SystemExit('expected Commerce hero navigation was not found')
+          commerce.write_text(text.replace(needle, replacement))
+          PY
+          npm install --no-audit --no-fund
+          npm run format
+          if git diff --quiet; then
+            echo 'No branch preparation changes.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app src tests
+          git commit -m 'style(commerce): finalize promotion workspace'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
