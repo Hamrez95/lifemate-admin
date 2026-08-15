@@ -29,7 +29,7 @@ describe("ADM-PERF-001 Admin API client guardrails", () => {
       expect(timeoutMatches.length, `${path.basename(file)} must set a timeout`).toBeGreaterThan(0);
 
       for (const match of timeoutMatches) {
-        const timeoutMs = Number(match[1].replaceAll("_", ""));
+        const timeoutMs = Number(match[1]!.replaceAll("_", ""));
         expect(timeoutMs, `${path.basename(file)} timeout must be positive`).toBeGreaterThan(0);
         expect(timeoutMs, `${path.basename(file)} timeout must stay bounded`).toBeLessThanOrEqual(
           MAX_TIMEOUT_MS,
