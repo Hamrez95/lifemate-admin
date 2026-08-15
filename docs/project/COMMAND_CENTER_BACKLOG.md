@@ -98,10 +98,13 @@ Every task Issue must be self-contained and include Goal, Scope, UI/UX, Backend/
 - Sensitive mutations require authorization, validation, idempotency, reason where applicable and immutable audit.
 - Raw Health is default deny. Women Health is stricter.
 - Relationship does not automatically create Access Grant; Admin role is not caregiver access.
+- Founder Home may compose only already-approved server-side domain sources and must preserve each source permission/freshness boundary.
+- Active subscriptions are not synonymous with paying users; unavailable executive metrics never become zero.
 - Global Search is allow-listed and permission-filtered; it never exposes raw Health, Women Health or arbitrary SQL.
 - Notification counts/lists are permission-filtered; Operations alerts use metadata-only projections; missing source instrumentation is explicit.
 - `admin-qa` is a permanent merge gate: isolated synthetic MFA E2E, denial matrix, Axe, responsive/RTL and visual baselines; CI retries stay zero.
 - Performance fixtures, caches and telemetry must not import production PII/PHI, raw search text, secrets, payment/provider payloads, Health or Women Health content.
+- Analytics cohorts must remain aggregate, use versioned definitions, suppress undersized cohorts and never add user-level export in ADM-ANL-002.
 - AI phase 1 is read-only and cannot access raw health, execute unrestricted SQL, mutate business state or auto-publish social content.
 - Human approval is mandatory for social publishing.
 - Actual financials and forecast data are distinct.
@@ -109,10 +112,10 @@ Every task Issue must be self-contained and include Goal, Scope, UI/UX, Backend/
 
 ## Verified execution position
 
-Completed through `ADM-PERF-001` (#39): Core PR #231 / Admin PR #78. `ADM-QA-001` (#5) is Admin #76, `ADM-PLAT-003` (#30) is Core #201 / Admin #74, `ADM-PLAT-002` (#4) is Core #198 / Admin #72, and Commerce remains complete through `ADM-COM-005` (#16): Core #197 / Admin #70.
+Completed through `ADM-HOME-001` (#6): Admin PR #80. `ADM-PERF-001` (#39) is Core #231 / Admin #78, `ADM-QA-001` (#5) is Admin #76, `ADM-PLAT-003` (#30) is Core #201 / Admin #74, and Commerce remains complete through `ADM-COM-005` (#16): Core #197 / Admin #70.
 
 Current strictly sequential focus:
 
-1. `ADM-HOME-001` — Founder / Executive Overview (#6)
+1. `ADM-ANL-002` — Acquisition / Activation / Retention / Cohorts (#13)
 
-The platform is now protected by permanent browser/security QA and dataset performance guardrails. The current task is to replace the Home foundation placeholders with trusted, permission-aware, freshness-labelled executive data only. Master Issue #49 is canonical. `ADM-OPS-002` (#24) remains the separate production rollout gate; source merges do not imply deployment.
+The current analytics task must use the canonical event/KPI definitions from ADM-DATA-001/ADM-ANL-001, bounded date windows, server-side cohort computation and suppression for small cohorts. Master Issue #49 is canonical. `ADM-OPS-002` (#24) remains the separate production rollout gate; source merges do not imply deployment.
