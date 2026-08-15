@@ -3,7 +3,8 @@
   gap: 1.15rem;
 }
 
-.hero {
+.hero,
+.detailHero {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
   gap: 1.5rem;
@@ -12,33 +13,47 @@
   border: 1px solid var(--lm-border);
   border-radius: 28px;
   background:
-    radial-gradient(circle at 86% 18%, color-mix(in srgb, var(--lm-green) 16%, transparent), transparent 34%),
-    linear-gradient(135deg, var(--lm-surface), color-mix(in srgb, var(--lm-orange-soft) 45%, var(--lm-surface)));
-  box-shadow: var(--lm-shadow-sm);
+    radial-gradient(
+      circle at 86% 18%,
+      color-mix(in srgb, var(--lm-green) 16%, transparent),
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      var(--lm-surface),
+      color-mix(in srgb, var(--lm-orange-soft) 45%, var(--lm-surface))
+    );
+  box-shadow: var(--lm-shadow);
 }
 
 .hero h2,
-.sectionHeading h3 {
+.detailHero h2,
+.sectionHeading h3,
+.operationsPanel h4,
+.lifecycleForm h4 {
   margin: 0.35rem 0 0.55rem;
-  color: var(--lm-text-primary);
+  color: var(--lm-text);
 }
 
-.hero h2 {
+.hero h2,
+.detailHero h2 {
   max-width: 760px;
   font-size: clamp(1.55rem, 3vw, 2.35rem);
   line-height: 1.35;
 }
 
 .hero p,
-.sectionHeading p {
+.detailHero p,
+.sectionHeading p,
+.lifecycleForm p {
   margin: 0;
-  color: var(--lm-text-secondary);
+  color: var(--lm-text-muted);
   line-height: 1.9;
 }
 
 .eyebrow,
 .sectionHeading span:first-child {
-  color: var(--lm-green);
+  color: var(--lm-green-deep);
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -52,16 +67,16 @@
   justify-content: center;
   min-height: 130px;
   padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--lm-border) 80%, transparent);
   border-radius: 22px;
   background: color-mix(in srgb, var(--lm-surface) 82%, transparent);
-  border: 1px solid color-mix(in srgb, var(--lm-border) 80%, transparent);
 }
 
 .heroVisual span {
   padding: 0.65rem 0.8rem;
   border-radius: 16px;
   background: var(--lm-surface);
-  box-shadow: var(--lm-shadow-xs);
+  box-shadow: var(--lm-shadow);
   font-weight: 800;
 }
 
@@ -73,7 +88,8 @@
 
 .secondaryAction,
 .detailLink,
-.primaryButton {
+.primaryButton,
+.lifecycleButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -86,9 +102,9 @@
 .secondaryAction {
   margin-top: 1rem;
   padding: 0.6rem 0.9rem;
-  color: var(--lm-text-primary);
   border: 1px solid var(--lm-border);
   background: var(--lm-surface);
+  color: var(--lm-text);
 }
 
 .sourceStrip {
@@ -97,17 +113,17 @@
   gap: 0.55rem 1.1rem;
   align-items: center;
   padding: 0.7rem 1rem;
-  border-radius: 16px;
   border: 1px solid var(--lm-border);
+  border-radius: 16px;
   background: var(--lm-surface-soft);
-  color: var(--lm-text-secondary);
+  color: var(--lm-text-muted);
   font-size: 0.82rem;
 }
 
 .sourceStrip[data-stale="true"] {
   border-color: color-mix(in srgb, var(--lm-orange) 45%, var(--lm-border));
   background: var(--lm-orange-soft);
-  color: var(--lm-text-primary);
+  color: var(--lm-text);
 }
 
 .summaryGrid {
@@ -123,15 +139,15 @@
   border: 1px solid var(--lm-border);
   border-radius: 20px;
   background: var(--lm-surface);
-  box-shadow: var(--lm-shadow-xs);
+  box-shadow: var(--lm-shadow);
 }
 
 .summaryCard::before {
-  content: "";
   position: absolute;
   inset: 0 auto 0 0;
   width: 4px;
   background: var(--lm-blue);
+  content: "";
 }
 
 .summaryCard[data-tone="green"]::before {
@@ -154,21 +170,33 @@
 
 .summaryCard span,
 .summaryCard small {
-  color: var(--lm-text-secondary);
+  color: var(--lm-text-muted);
+}
+
+.createPanel,
+.operationsPanel,
+.detailPanel {
+  padding: 1.15rem;
+  border: 1px solid var(--lm-border);
+  border-radius: 24px;
+  background: var(--lm-surface);
+  box-shadow: var(--lm-shadow);
 }
 
 .createPanel {
-  padding: 1.15rem;
-  border: 1px solid color-mix(in srgb, var(--lm-green) 25%, var(--lm-border));
-  border-radius: 24px;
-  background: linear-gradient(140deg, var(--lm-surface), color-mix(in srgb, var(--lm-green-soft) 50%, var(--lm-surface)));
+  border-color: color-mix(in srgb, var(--lm-green) 25%, var(--lm-border));
+  background: linear-gradient(
+    140deg,
+    var(--lm-surface),
+    color-mix(in srgb, var(--lm-green-soft) 50%, var(--lm-surface))
+  );
 }
 
 .sectionHeading {
   display: flex;
-  justify-content: space-between;
   gap: 1rem;
   align-items: flex-start;
+  justify-content: space-between;
   margin-bottom: 1rem;
 }
 
@@ -185,11 +213,12 @@
 
 .permissionBadge {
   padding: 0.4rem 0.7rem;
-  color: var(--lm-violet);
   background: var(--lm-violet-soft);
+  color: var(--lm-violet);
 }
 
-.promotionForm {
+.promotionForm,
+.lifecycleForm {
   display: grid;
   gap: 0.85rem;
 }
@@ -200,33 +229,39 @@
   gap: 0.75rem;
 }
 
-.promotionForm label {
+.promotionForm label,
+.lifecycleForm label {
   display: grid;
   gap: 0.4rem;
-  color: var(--lm-text-primary);
+  color: var(--lm-text);
   font-weight: 700;
 }
 
 .promotionForm input,
 .promotionForm select,
-.promotionForm textarea {
+.promotionForm textarea,
+.lifecycleForm input,
+.lifecycleForm select,
+.lifecycleForm textarea {
   width: 100%;
   min-height: 44px;
   padding: 0.65rem 0.75rem;
   border: 1px solid var(--lm-border);
   border-radius: 13px;
-  background: var(--lm-surface);
-  color: var(--lm-text-primary);
+  background: var(--lm-surface-raised);
+  color: var(--lm-text);
   font: inherit;
 }
 
-.promotionForm textarea {
+.promotionForm textarea,
+.lifecycleForm textarea {
   resize: vertical;
 }
 
 .promotionForm small,
+.lifecycleForm small,
 .feedback {
-  color: var(--lm-text-secondary);
+  color: var(--lm-text-muted);
   font-weight: 500;
 }
 
@@ -239,7 +274,7 @@
 }
 
 .feedback[data-status="success"] {
-  color: var(--lm-green);
+  color: var(--lm-green-deep);
 }
 
 .feedback[data-status="conflict"],
@@ -248,44 +283,54 @@
   color: var(--lm-danger);
 }
 
-.primaryButton {
+.primaryButton,
+.lifecycleButton {
   justify-self: start;
   padding: 0.65rem 1rem;
   border: 0;
-  color: white;
-  background: var(--lm-green);
+  color: #fff;
   cursor: pointer;
 }
 
-.primaryButton:disabled {
-  cursor: progress;
-  opacity: 0.65;
+.primaryButton {
+  background: var(--lm-green-deep);
+}
+
+.lifecycleButton {
+  background: var(--lm-violet);
+}
+
+.primaryButton:disabled,
+.lifecycleButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
 }
 
 .statusBadge {
   padding: 0.35rem 0.65rem;
-  color: var(--lm-text-secondary);
   background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
 }
 
 .statusBadge[data-status="Active"] {
-  color: var(--lm-green);
   background: var(--lm-green-soft);
+  color: var(--lm-green-deep);
 }
 
 .statusBadge[data-status="Draft"] {
-  color: var(--lm-violet);
   background: var(--lm-violet-soft);
+  color: var(--lm-violet);
 }
 
 .statusBadge[data-status="Paused"] {
-  color: var(--lm-orange);
   background: var(--lm-orange-soft);
+  color: var(--lm-orange);
 }
 
-.statusBadge[data-status="Expired"] {
-  color: var(--lm-text-secondary);
+.statusBadge[data-status="Expired"],
+.statusBadge[data-status="Disabled"] {
   background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
 }
 
 .nameCell,
@@ -298,7 +343,7 @@
 .nameCell small,
 .codeCell small,
 .windowCell small {
-  color: var(--lm-text-secondary);
+  color: var(--lm-text-muted);
 }
 
 .codeCell code {
@@ -308,44 +353,235 @@
 
 .unavailableBadge {
   padding: 0.35rem 0.6rem;
-  color: var(--lm-text-secondary);
   background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
 }
 
 .detailLink {
   padding: 0.45rem 0.7rem;
-  color: var(--lm-blue);
   background: var(--lm-blue-soft);
+  color: var(--lm-blue);
+}
+
+.detailHeroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.detailHeroActions code {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: var(--lm-text-muted);
+}
+
+.detailStatusCard {
+  display: grid;
+  gap: 0.4rem;
+  place-items: center;
+  min-height: 145px;
+  padding: 1rem;
+  border: 1px solid var(--lm-border);
+  border-radius: 22px;
+  background: var(--lm-surface-raised);
+  text-align: center;
+}
+
+.detailStatusCard span,
+.detailStatusCard small {
+  color: var(--lm-text-muted);
+}
+
+.detailStatusCard strong {
+  font-size: 1.4rem;
+}
+
+.detailStatusCard strong[data-status="Active"] {
+  color: var(--lm-green-deep);
+}
+
+.detailStatusCard strong[data-status="Draft"] {
+  color: var(--lm-violet);
+}
+
+.detailStatusCard strong[data-status="Paused"] {
+  color: var(--lm-orange);
+}
+
+.detailStatusCard strong[data-status="Expired"] {
+  color: var(--lm-danger);
+}
+
+.factGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.factGrid article {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.95rem;
+  border: 1px solid var(--lm-border);
+  border-radius: 18px;
+  background: var(--lm-surface);
+}
+
+.factGrid span {
+  color: var(--lm-text-muted);
+  font-size: 0.78rem;
+}
+
+.codeCards,
+.auditList {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.codeCards {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.codeCards article,
+.auditList article {
+  padding: 0.95rem;
+  border: 1px solid var(--lm-border);
+  border-radius: 18px;
+  background: var(--lm-surface-soft);
+}
+
+.codeCards article > div,
+.auditList article > div,
+.auditList footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.codeCards code {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.codeCards dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0.85rem 0 0;
+}
+
+.codeCards dl div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.codeCards dt,
+.auditList footer {
+  color: var(--lm-text-muted);
+  font-size: 0.78rem;
+}
+
+.codeCards dd {
+  margin: 0;
+}
+
+.operationsGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 0.8fr);
+  gap: 1rem;
+}
+
+.lifecycleForm {
+  align-self: start;
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--lm-violet) 22%, var(--lm-border));
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--lm-violet-soft) 42%, var(--lm-surface));
+}
+
+.safetyNote {
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--lm-border);
+  border-radius: 14px;
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
+  line-height: 1.75;
+}
+
+.safetyNote[data-tone="attention"] {
+  border-color: color-mix(in srgb, var(--lm-orange) 35%, var(--lm-border));
+  background: var(--lm-orange-soft);
+  color: var(--lm-text);
+}
+
+.safetyNote[data-tone="danger"] {
+  border-color: color-mix(in srgb, var(--lm-danger) 32%, var(--lm-border));
+  background: color-mix(in srgb, var(--lm-danger) 8%, var(--lm-surface));
+  color: var(--lm-danger);
+}
+
+.auditList article {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.auditList p {
+  margin: 0;
+  color: var(--lm-text-muted);
+}
+
+.auditList [data-result="Succeeded"] {
+  color: var(--lm-green-deep);
+}
+
+.auditList [data-result="Denied"] {
+  color: var(--lm-danger);
 }
 
 .secondaryAction:focus-visible,
 .detailLink:focus-visible,
 .primaryButton:focus-visible,
+.lifecycleButton:focus-visible,
 .promotionForm input:focus-visible,
 .promotionForm select:focus-visible,
-.promotionForm textarea:focus-visible {
+.promotionForm textarea:focus-visible,
+.lifecycleForm input:focus-visible,
+.lifecycleForm select:focus-visible,
+.lifecycleForm textarea:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--lm-blue) 35%, transparent);
   outline-offset: 2px;
 }
 
 @media (max-width: 1050px) {
-  .summaryGrid {
+  .summaryGrid,
+  .factGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .formGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .operationsGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 760px) {
-  .hero {
+  .hero,
+  .detailHero {
     grid-template-columns: 1fr;
     border-radius: 22px;
   }
 
   .summaryGrid,
-  .formGrid {
+  .formGrid,
+  .factGrid,
+  .codeCards,
+  .codeCards dl {
     grid-template-columns: 1fr;
   }
 
@@ -353,7 +589,8 @@
     flex-direction: column;
   }
 
-  .primaryButton {
+  .primaryButton,
+  .lifecycleButton {
     width: 100%;
   }
 }
@@ -361,7 +598,8 @@
 @media (prefers-reduced-motion: reduce) {
   .secondaryAction,
   .detailLink,
-  .primaryButton {
+  .primaryButton,
+  .lifecycleButton {
     scroll-behavior: auto;
   }
 }
