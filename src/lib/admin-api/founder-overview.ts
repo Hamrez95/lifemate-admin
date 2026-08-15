@@ -9,11 +9,7 @@ import {
 import { getRelationshipOverview } from "@/src/lib/admin-api/relationship-overview";
 
 export type ExecutiveValueState =
-  | "ready"
-  | "partial"
-  | "empty"
-  | "unavailable"
-  | "not_instrumented";
+  "ready" | "partial" | "empty" | "unavailable" | "not_instrumented";
 
 export type ExecutiveMetric = {
   key: string;
@@ -172,7 +168,12 @@ function buildShortcuts(permissions: Set<string>): ExecutiveShortcut[] {
   const candidates = [
     ["users.read.basic", "کاربران", "/users", "دایرکتوری و پروفایل‌های مدیریتی"],
     ["analytics.read", "تحلیل‌ها", "/analytics", "KPIهای canonical و freshness"],
-    ["relationships.read", "روابط و رضایت", "/relationships", "Relationship / Consent / Access Grant"],
+    [
+      "relationships.read",
+      "روابط و رضایت",
+      "/relationships",
+      "Relationship / Consent / Access Grant",
+    ],
     ["support.read", "پشتیبانی", "/support", "صف تیکت و SLA"],
     ["commerce.read", "تجارت", "/commerce", "اشتراک، تراکنش و پروموشن"],
   ] as const;
@@ -342,8 +343,7 @@ export async function getFounderOverview(
     requestedNotificationSources.length > 0
       ? notifications?.kind === "ok"
         ? {
-            state:
-              notifications.data.items.length === 0 ? ("empty" as const) : ("ready" as const),
+            state: notifications.data.items.length === 0 ? ("empty" as const) : ("ready" as const),
             items: notifications.data.items,
             sources: notifications.data.sourceStates.map(mapNotificationState),
             asOfUtc: notifications.data.asOfUtc,
