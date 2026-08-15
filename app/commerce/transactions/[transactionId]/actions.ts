@@ -5,13 +5,7 @@ import { revalidatePath } from "next/cache";
 import { requestCommerceRefundWorkflow } from "@/src/lib/admin-api/commerce-transaction-detail";
 
 export type RefundActionFormState = {
-  status:
-    | "idle"
-    | "success"
-    | "invalid"
-    | "forbidden"
-    | "conflict"
-    | "unavailable";
+  status: "idle" | "success" | "invalid" | "forbidden" | "conflict" | "unavailable";
   message?: string;
 };
 
@@ -19,8 +13,7 @@ export const initialRefundActionFormState: RefundActionFormState = {
   status: "idle",
 };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
 
 function text(formData: FormData, key: string): string {
