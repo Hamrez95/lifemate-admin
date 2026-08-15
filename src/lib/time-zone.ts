@@ -42,7 +42,10 @@ export function localDayBoundaryToUtc(
 ): string {
   if (!ISO_DAY_PATTERN.test(day)) throw new RangeError("Expected an ISO calendar day");
 
-  const [year, month, date] = day.split("-").map(Number);
+  const segments = day.split("-");
+  const year = Number(segments[0]);
+  const month = Number(segments[1]);
+  const date = Number(segments[2]);
   const localAsUtc =
     boundary === "start"
       ? Date.UTC(year, month - 1, date, 0, 0, 0, 0)
