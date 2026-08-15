@@ -48,17 +48,32 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          path = Path('app/globals.css')
-          text = path.read_text()
-          old = '--lm-green-deep: #0d8a52;'
-          new = '--lm-green-deep: #087a47;'
-          if old not in text and new not in text:
-              raise SystemExit('green-deep token anchor missing')
-          text = text.replace(old, new, 1)
+
+          css = Path('app/globals.css')
+          text = css.read_text()
+          replacements = {
+              '--lm-green-deep: #0d8a52;': '--lm-green-deep: #087a47;',
+              '--lm-text-muted: #697386;': '--lm-text-muted: #596478;',
+          }
+          for old, new in replacements.items():
+              if old in text:
+                  text = text.replace(old, new, 1)
+              elif new not in text:
+                  raise SystemExit(f'CSS token anchor missing: {old}')
           marker = '/* ADM-QA-001 verified WCAG contrast repairs */'
           if marker not in text:
-              text += '''\n\n/* ADM-QA-001 verified WCAG contrast repairs */\n.standalone-state__card > span {\n  color: var(--lm-green-deep);\n}\n\n.operator-chip__logout {\n  color: #4b5668;\n}\n'''
-          path.write_text(text)
+              text += '''\n\n/* ADM-QA-001 verified WCAG contrast repairs */\n.standalone-state__card > span {\n  color: var(--lm-green-deep);\n}\n'''
+          css.write_text(text)
+
+          palette = Path('src/components/shell/GlobalCommandPalette.tsx')
+          value = palette.read_text()
+          label = '        aria-label="باز کردن جست‌وجو و فرمان"\n'
+          if label not in value:
+              anchor = '        aria-haspopup="dialog"\n'
+              if anchor not in value:
+                  raise SystemExit('Command Palette trigger anchor missing')
+              value = value.replace(anchor, label + anchor, 1)
+          palette.write_text(value)
           PY
 
       - name: Verify ordinary quality gates
