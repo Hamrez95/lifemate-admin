@@ -1,4 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("../src/lib/admin-api/analytics-catalog", () => ({
+  getAnalyticsCatalog: vi.fn(),
+}));
+vi.mock("../src/lib/admin-api/analytics-kpis", () => ({
+  getKpiValues: vi.fn(),
+}));
 
 import type { AnalyticsCatalog } from "../src/lib/admin-api/analytics-catalog";
 import {
