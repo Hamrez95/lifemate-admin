@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AdminPageState } from "@/src/components/admin-data-table";
@@ -113,8 +114,7 @@ function KpiCard({ definition, value }: { definition: AnalyticsKpiDefinition; va
             <b>مخرج:</b> {definition.denominator ?? "—"}
           </p>
           <p>
-            <b>تازگی:</b> {definition.freshnessRule}
-          </p>
+            <b>تازگی:</b> {definition.freshnessRule}</p>
         </div>
       </details>
     </article>
@@ -254,6 +254,11 @@ async function AnalyticsContent({ filters }: { filters: URLSearchParams }) {
             هر عددی که می‌بینی به تعریف نسخه‌دار و منبع مشخص وصل است. هر چیزی که هنوز قابل
             اندازه‌گیری نیست، عمداً «—» می‌ماند.
           </p>
+          <div>
+            <Link className="state-pill state-pill--safe" href="/analytics/cohorts">
+              مشاهده Acquisition / Retention Cohorts ←
+            </Link>
+          </div>
         </div>
         <div className={styles.heroStatus}>
           <div>
