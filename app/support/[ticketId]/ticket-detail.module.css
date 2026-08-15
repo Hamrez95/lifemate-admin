@@ -299,8 +299,7 @@
 .summaryFact {
   grid-column: 1 / -1;
   background:
-    radial-gradient(circle at 6% 50%, rgba(238, 139, 49, 0.07), transparent 26%),
-    #fff !important;
+    radial-gradient(circle at 6% 50%, rgba(238, 139, 49, 0.07), transparent 26%), #fff !important;
 }
 
 .sectionHeading {
@@ -360,8 +359,7 @@
   gap: 11px;
   border: 1px solid rgba(229, 224, 215, 0.88);
   border-radius: 16px;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(250, 249, 247, 0.92));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(250, 249, 247, 0.92));
   padding: 14px;
 }
 
@@ -545,9 +543,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  background:
-    radial-gradient(circle at 94% 20%, rgba(118, 87, 232, 0.08), transparent 30%),
-    #fff;
+  background: radial-gradient(circle at 94% 20%, rgba(118, 87, 232, 0.08), transparent 30%), #fff;
   padding: 16px;
 }
 
