@@ -73,7 +73,14 @@ function parseItem(value: unknown, domain: SearchDomain): SearchItem | null {
   const status = nullableText(item.status, 80);
   const badge = nullableText(item.badge, 80);
   const href = text(item.href, 320);
-  if (!id || !kind || !title || subtitle === undefined || status === undefined || badge === undefined) {
+  if (
+    !id ||
+    !kind ||
+    !title ||
+    subtitle === undefined ||
+    status === undefined ||
+    badge === undefined
+  ) {
     return null;
   }
   if (!href || !SAFE_HREF.test(href) || href.includes("//")) return null;
@@ -94,7 +101,11 @@ function parseGroup(value: unknown): SearchGroup | null {
   const pageSize = positiveInteger(group.pageSize, 10);
   if (page === null || page < 1 || pageSize === null || pageSize < 1) return null;
   if (group.availability === "unavailable") {
-    if (group.total !== null || group.unavailableReason !== "not_instrumented" || items.length > 0) {
+    if (
+      group.total !== null ||
+      group.unavailableReason !== "not_instrumented" ||
+      items.length > 0
+    ) {
       return null;
     }
     return {

@@ -133,7 +133,11 @@ function flatten(groups: SearchGroup[]): SearchItem[] {
 function parseSearchPayload(value: unknown): GlobalSearchData | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const body = value as Partial<GlobalSearchData>;
-  if (!Array.isArray(body.groups) || typeof body.page !== "number" || typeof body.pageSize !== "number") {
+  if (
+    !Array.isArray(body.groups) ||
+    typeof body.page !== "number" ||
+    typeof body.pageSize !== "number"
+  ) {
     return null;
   }
   if (!body.freshness || (body.freshness.status !== "fresh" && body.freshness.status !== "stale")) {
@@ -156,7 +160,10 @@ export function GlobalCommandPalette() {
 
   const permissionSet = useMemo(() => new Set(admin.permissions), [admin.permissions]);
   const commands = useMemo(
-    () => staticCommands.filter((command) => !command.permission || permissionSet.has(command.permission)),
+    () =>
+      staticCommands.filter(
+        (command) => !command.permission || permissionSet.has(command.permission),
+      ),
     [permissionSet],
   );
   const domains = useMemo(
@@ -247,9 +254,7 @@ export function GlobalCommandPalette() {
         }
         const data = parseSearchPayload(await response.json());
         setState(
-          data
-            ? { kind: "ready", data }
-            : { kind: "error", message: "پاسخ جست‌وجو معتبر نبود." },
+          data ? { kind: "ready", data } : { kind: "error", message: "پاسخ جست‌وجو معتبر نبود." },
         );
         setActiveIndex(0);
       } catch (error) {
@@ -357,7 +362,12 @@ export function GlobalCommandPalette() {
                 <span>LifeMate Command Center</span>
                 <h2 id="command-palette-title">جست‌وجوی امن و فرمان سریع</h2>
               </div>
-              <button type="button" onClick={close} className={styles.closeButton} aria-label="بستن">
+              <button
+                type="button"
+                onClick={close}
+                className={styles.closeButton}
+                aria-label="بستن"
+              >
                 Esc
               </button>
             </header>
@@ -387,11 +397,17 @@ export function GlobalCommandPalette() {
                     <section className={styles.group} aria-labelledby="recent-command-title">
                       <div className={styles.groupTitle}>
                         <h3 id="recent-command-title">مسیرهای اخیر غیرحساس</h3>
-                        <small>فقط workspaceهای ثابت ذخیره می‌شوند؛ نه query و نه شناسه رکورد.</small>
+                        <small>
+                          فقط workspaceهای ثابت ذخیره می‌شوند؛ نه query و نه شناسه رکورد.
+                        </small>
                       </div>
                       <div className={styles.commandGrid}>
                         {recents.map((recent) => (
-                          <button key={recent.key} type="button" onClick={() => navigate(recent.href)}>
+                          <button
+                            key={recent.key}
+                            type="button"
+                            onClick={() => navigate(recent.href)}
+                          >
                             <strong>{recent.title}</strong>
                             <span>{recent.href}</span>
                           </button>
@@ -406,7 +422,11 @@ export function GlobalCommandPalette() {
                     </div>
                     <div className={styles.commandGrid}>
                       {commands.map((command) => (
-                        <button key={command.key} type="button" onClick={() => selectCommand(command)}>
+                        <button
+                          key={command.key}
+                          type="button"
+                          onClick={() => selectCommand(command)}
+                        >
                           <strong>{command.title}</strong>
                           <span>{command.subtitle}</span>
                         </button>
@@ -414,8 +434,8 @@ export function GlobalCommandPalette() {
                     </div>
                   </section>
                   <p className={styles.hint}>
-                    عبارت‌های جست‌وجو در تاریخچه local ذخیره نمی‌شوند. Raw Health و Women Health در این
-                    جست‌وجو وجود ندارند.
+                    عبارت‌های جست‌وجو در تاریخچه local ذخیره نمی‌شوند. Raw Health و Women Health در
+                    این جست‌وجو وجود ندارند.
                   </p>
                 </>
               ) : !searchable ? (
@@ -432,8 +452,8 @@ export function GlobalCommandPalette() {
                 </div>
               ) : state.kind === "rate_limited" ? (
                 <div className={styles.state} role="status">
-                  تعداد جست‌وجوها زیاد شده است؛ حدود {state.retryAfterSeconds.toLocaleString("fa-IR")} ثانیه
-                  بعد دوباره تلاش کن.
+                  تعداد جست‌وجوها زیاد شده است؛ حدود{" "}
+                  {state.retryAfterSeconds.toLocaleString("fa-IR")} ثانیه بعد دوباره تلاش کن.
                 </div>
               ) : state.kind === "error" ? (
                 <div className={styles.state} role="alert">
@@ -464,13 +484,17 @@ export function GlobalCommandPalette() {
                         </small>
                       </div>
                       {group.availability === "unavailable" ? (
-                        <div className={styles.unavailable}>این دامنه هنوز منبع canonical جست‌وجو ندارد.</div>
+                        <div className={styles.unavailable}>
+                          این دامنه هنوز منبع canonical جست‌وجو ندارد.
+                        </div>
                       ) : (
                         <div className={styles.results}>
                           {group.items.map((item) => {
                             const flatIndex = resultItems.findIndex(
                               (candidate) =>
-                                candidate.domain === item.domain && candidate.id === item.id && candidate.kind === item.kind,
+                                candidate.domain === item.domain &&
+                                candidate.id === item.id &&
+                                candidate.kind === item.kind,
                             );
                             return (
                               <button
@@ -484,7 +508,9 @@ export function GlobalCommandPalette() {
                               >
                                 <div>
                                   <strong>{highlight(item.title, query)}</strong>
-                                  {item.subtitle ? <span>{highlight(item.subtitle, query)}</span> : null}
+                                  {item.subtitle ? (
+                                    <span>{highlight(item.subtitle, query)}</span>
+                                  ) : null}
                                 </div>
                                 <div className={styles.meta}>
                                   {item.badge ? <span>{item.badge}</span> : null}
@@ -499,11 +525,19 @@ export function GlobalCommandPalette() {
                   ))}
                   {page > 1 || hasNextPage ? (
                     <div className={styles.pagination}>
-                      <button type="button" disabled={page <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>
+                      <button
+                        type="button"
+                        disabled={page <= 1}
+                        onClick={() => setPage((value) => Math.max(1, value - 1))}
+                      >
                         صفحه قبل
                       </button>
                       <span>صفحه {page.toLocaleString("fa-IR")}</span>
-                      <button type="button" disabled={!hasNextPage} onClick={() => setPage((value) => value + 1)}>
+                      <button
+                        type="button"
+                        disabled={!hasNextPage}
+                        onClick={() => setPage((value) => value + 1)}
+                      >
                         صفحه بعد
                       </button>
                     </div>
