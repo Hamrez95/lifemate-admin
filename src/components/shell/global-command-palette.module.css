@@ -1,0 +1,307 @@
+.trigger {
+  display: inline-flex;
+  gap: 0.55rem;
+  align-items: center;
+  min-width: min(330px, 32vw);
+  min-height: 44px;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--lm-border);
+  border-radius: 14px;
+  background: var(--lm-surface-raised);
+  color: var(--lm-text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.trigger span:nth-child(2) {
+  flex: 1;
+  text-align: right;
+}
+
+.trigger kbd,
+.closeButton {
+  padding: 0.25rem 0.45rem;
+  border: 1px solid var(--lm-border);
+  border-radius: 8px;
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
+  font-family: inherit;
+  font-size: 0.72rem;
+}
+
+.backdrop {
+  position: fixed;
+  z-index: 2000;
+  inset: 0;
+  display: grid;
+  place-items: start center;
+  padding: max(7vh, 48px) 1rem 1rem;
+  background: color-mix(in srgb, var(--lm-navy) 35%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.dialog {
+  display: grid;
+  grid-template-rows: auto auto minmax(220px, 1fr) auto;
+  width: min(760px, 100%);
+  max-height: min(82vh, 760px);
+  overflow: hidden;
+  border: 1px solid var(--lm-border);
+  border-radius: 24px;
+  background: var(--lm-surface);
+  box-shadow: 0 28px 80px rgb(16 32 45 / 24%);
+  direction: rtl;
+}
+
+.header,
+.footer,
+.groupTitle,
+.results button,
+.pagination {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header {
+  padding: 1rem 1.1rem 0.8rem;
+}
+
+.header span {
+  color: var(--lm-green-deep);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.header h2 {
+  margin: 0.2rem 0 0;
+  color: var(--lm-text);
+  font-size: 1.15rem;
+}
+
+.closeButton {
+  min-width: 48px;
+  min-height: 36px;
+  cursor: pointer;
+}
+
+.searchBox {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin: 0 1rem 0.9rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--lm-border-strong);
+  border-radius: 16px;
+  background: var(--lm-surface-raised);
+}
+
+.searchBox:focus-within {
+  border-color: var(--lm-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lm-blue) 16%, transparent);
+}
+
+.searchBox input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--lm-text);
+  font: inherit;
+}
+
+.body {
+  overflow-y: auto;
+  padding: 0 1rem 1rem;
+  overscroll-behavior: contain;
+}
+
+.group {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+}
+
+.groupTitle {
+  align-items: end;
+}
+
+.groupTitle h3 {
+  margin: 0;
+  color: var(--lm-text);
+  font-size: 0.92rem;
+}
+
+.groupTitle small,
+.hint,
+.footer,
+.unavailable,
+.state {
+  color: var(--lm-text-muted);
+  font-size: 0.78rem;
+}
+
+.commandGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.commandGrid button,
+.results button {
+  min-height: 58px;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--lm-border);
+  border-radius: 14px;
+  background: var(--lm-surface-raised);
+  color: var(--lm-text);
+  font: inherit;
+  text-align: right;
+  cursor: pointer;
+}
+
+.commandGrid button {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.commandGrid span,
+.results span,
+.results small {
+  color: var(--lm-text-muted);
+  font-size: 0.76rem;
+}
+
+.results {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.results button[data-active="true"] {
+  border-color: color-mix(in srgb, var(--lm-blue) 50%, var(--lm-border));
+  background: var(--lm-blue-soft);
+}
+
+.results button > div:first-child {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
+}
+
+.results strong,
+.results span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.results mark {
+  border-radius: 3px;
+  background: var(--lm-orange-soft);
+  color: inherit;
+}
+
+.meta {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.meta span,
+.meta small {
+  padding: 0.2rem 0.4rem;
+  border-radius: 999px;
+  background: var(--lm-surface-soft);
+}
+
+.state,
+.unavailable,
+.stale {
+  margin-top: 0.9rem;
+  padding: 0.85rem;
+  border: 1px solid var(--lm-border);
+  border-radius: 14px;
+  background: var(--lm-surface-soft);
+  line-height: 1.7;
+}
+
+.stale {
+  border-color: color-mix(in srgb, var(--lm-orange) 36%, var(--lm-border));
+  background: var(--lm-orange-soft);
+  color: var(--lm-text);
+}
+
+.pagination {
+  margin-top: 0.9rem;
+}
+
+.pagination button {
+  min-height: 38px;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--lm-border);
+  border-radius: 11px;
+  background: var(--lm-surface-raised);
+  color: var(--lm-text);
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.footer {
+  flex-wrap: wrap;
+  padding: 0.7rem 1rem;
+  border-top: 1px solid var(--lm-border);
+  background: var(--lm-surface-soft);
+}
+
+.trigger:focus-visible,
+.closeButton:focus-visible,
+.commandGrid button:focus-visible,
+.results button:focus-visible,
+.pagination button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--lm-blue) 35%, transparent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .trigger {
+    min-width: 44px;
+    width: 44px;
+    padding-inline: 0.7rem;
+  }
+
+  .trigger span:nth-child(2),
+  .trigger kbd {
+    display: none;
+  }
+
+  .backdrop {
+    padding: 0;
+    place-items: stretch;
+  }
+
+  .dialog {
+    width: 100%;
+    max-height: 100dvh;
+    min-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .commandGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .dialog {
+    scroll-behavior: auto;
+  }
+}
