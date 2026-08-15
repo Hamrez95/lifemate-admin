@@ -1,0 +1,367 @@
+.page {
+  display: grid;
+  gap: 1.15rem;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
+  gap: 1.5rem;
+  align-items: center;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--lm-border);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 86% 18%, color-mix(in srgb, var(--lm-green) 16%, transparent), transparent 34%),
+    linear-gradient(135deg, var(--lm-surface), color-mix(in srgb, var(--lm-orange-soft) 45%, var(--lm-surface)));
+  box-shadow: var(--lm-shadow-sm);
+}
+
+.hero h2,
+.sectionHeading h3 {
+  margin: 0.35rem 0 0.55rem;
+  color: var(--lm-text-primary);
+}
+
+.hero h2 {
+  max-width: 760px;
+  font-size: clamp(1.55rem, 3vw, 2.35rem);
+  line-height: 1.35;
+}
+
+.hero p,
+.sectionHeading p {
+  margin: 0;
+  color: var(--lm-text-secondary);
+  line-height: 1.9;
+}
+
+.eyebrow,
+.sectionHeading span:first-child {
+  color: var(--lm-green);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.heroVisual {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  justify-content: center;
+  min-height: 130px;
+  padding: 1rem;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--lm-surface) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--lm-border) 80%, transparent);
+}
+
+.heroVisual span {
+  padding: 0.65rem 0.8rem;
+  border-radius: 16px;
+  background: var(--lm-surface);
+  box-shadow: var(--lm-shadow-xs);
+  font-weight: 800;
+}
+
+.heroVisual i {
+  color: var(--lm-violet);
+  font-style: normal;
+  font-weight: 900;
+}
+
+.secondaryAction,
+.detailLink,
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  border-radius: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.secondaryAction {
+  margin-top: 1rem;
+  padding: 0.6rem 0.9rem;
+  color: var(--lm-text-primary);
+  border: 1px solid var(--lm-border);
+  background: var(--lm-surface);
+}
+
+.sourceStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1.1rem;
+  align-items: center;
+  padding: 0.7rem 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--lm-border);
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-secondary);
+  font-size: 0.82rem;
+}
+
+.sourceStrip[data-stale="true"] {
+  border-color: color-mix(in srgb, var(--lm-orange) 45%, var(--lm-border));
+  background: var(--lm-orange-soft);
+  color: var(--lm-text-primary);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.summaryCard {
+  position: relative;
+  overflow: hidden;
+  padding: 1rem;
+  border: 1px solid var(--lm-border);
+  border-radius: 20px;
+  background: var(--lm-surface);
+  box-shadow: var(--lm-shadow-xs);
+}
+
+.summaryCard::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--lm-blue);
+}
+
+.summaryCard[data-tone="green"]::before {
+  background: var(--lm-green);
+}
+
+.summaryCard[data-tone="orange"]::before {
+  background: var(--lm-orange);
+}
+
+.summaryCard[data-tone="violet"]::before {
+  background: var(--lm-violet);
+}
+
+.summaryCard strong {
+  display: block;
+  margin: 0.35rem 0 0.15rem;
+  font-size: 1.45rem;
+}
+
+.summaryCard span,
+.summaryCard small {
+  color: var(--lm-text-secondary);
+}
+
+.createPanel {
+  padding: 1.15rem;
+  border: 1px solid color-mix(in srgb, var(--lm-green) 25%, var(--lm-border));
+  border-radius: 24px;
+  background: linear-gradient(140deg, var(--lm-surface), color-mix(in srgb, var(--lm-green-soft) 50%, var(--lm-surface)));
+}
+
+.sectionHeading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.permissionBadge,
+.statusBadge,
+.unavailableBadge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.permissionBadge {
+  padding: 0.4rem 0.7rem;
+  color: var(--lm-violet);
+  background: var(--lm-violet-soft);
+}
+
+.promotionForm {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.promotionForm label {
+  display: grid;
+  gap: 0.4rem;
+  color: var(--lm-text-primary);
+  font-weight: 700;
+}
+
+.promotionForm input,
+.promotionForm select,
+.promotionForm textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--lm-border);
+  border-radius: 13px;
+  background: var(--lm-surface);
+  color: var(--lm-text-primary);
+  font: inherit;
+}
+
+.promotionForm textarea {
+  resize: vertical;
+}
+
+.promotionForm small,
+.feedback {
+  color: var(--lm-text-secondary);
+  font-weight: 500;
+}
+
+.wideField {
+  grid-column: 1 / -1;
+}
+
+.feedback {
+  min-height: 1.4rem;
+}
+
+.feedback[data-status="success"] {
+  color: var(--lm-green);
+}
+
+.feedback[data-status="conflict"],
+.feedback[data-status="invalid"],
+.feedback[data-status="forbidden"] {
+  color: var(--lm-danger);
+}
+
+.primaryButton {
+  justify-self: start;
+  padding: 0.65rem 1rem;
+  border: 0;
+  color: white;
+  background: var(--lm-green);
+  cursor: pointer;
+}
+
+.primaryButton:disabled {
+  cursor: progress;
+  opacity: 0.65;
+}
+
+.statusBadge {
+  padding: 0.35rem 0.65rem;
+  color: var(--lm-text-secondary);
+  background: var(--lm-surface-soft);
+}
+
+.statusBadge[data-status="Active"] {
+  color: var(--lm-green);
+  background: var(--lm-green-soft);
+}
+
+.statusBadge[data-status="Draft"] {
+  color: var(--lm-violet);
+  background: var(--lm-violet-soft);
+}
+
+.statusBadge[data-status="Paused"] {
+  color: var(--lm-orange);
+  background: var(--lm-orange-soft);
+}
+
+.statusBadge[data-status="Expired"] {
+  color: var(--lm-text-secondary);
+  background: var(--lm-surface-soft);
+}
+
+.nameCell,
+.codeCell,
+.windowCell {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.nameCell small,
+.codeCell small,
+.windowCell small {
+  color: var(--lm-text-secondary);
+}
+
+.codeCell code {
+  width: fit-content;
+  direction: ltr;
+}
+
+.unavailableBadge {
+  padding: 0.35rem 0.6rem;
+  color: var(--lm-text-secondary);
+  background: var(--lm-surface-soft);
+}
+
+.detailLink {
+  padding: 0.45rem 0.7rem;
+  color: var(--lm-blue);
+  background: var(--lm-blue-soft);
+}
+
+.secondaryAction:focus-visible,
+.detailLink:focus-visible,
+.primaryButton:focus-visible,
+.promotionForm input:focus-visible,
+.promotionForm select:focus-visible,
+.promotionForm textarea:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--lm-blue) 35%, transparent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1050px) {
+  .summaryGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .formGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .hero {
+    grid-template-columns: 1fr;
+    border-radius: 22px;
+  }
+
+  .summaryGrid,
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sectionHeading {
+    flex-direction: column;
+  }
+
+  .primaryButton {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .secondaryAction,
+  .detailLink,
+  .primaryButton {
+    scroll-behavior: auto;
+  }
+}
