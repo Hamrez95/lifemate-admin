@@ -16,10 +16,7 @@ export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: [
-    ["line"],
-    ["html", { outputFolder: "playwright-report", open: "never" }],
-  ],
+  reporter: [["line"], ["html", { outputFolder: "playwright-report", open: "never" }]],
   use: {
     baseURL: "http://127.0.0.1:3100",
     locale: "fa-IR",

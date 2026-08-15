@@ -104,7 +104,8 @@ const corsHeaders = {
   "access-control-allow-origin": appOrigin,
   "access-control-allow-credentials": "true",
   "access-control-allow-methods": "GET,POST,OPTIONS",
-  "access-control-allow-headers": "authorization,apikey,content-type,x-client-info,x-supabase-api-version",
+  "access-control-allow-headers":
+    "authorization,apikey,content-type,x-client-info,x-supabase-api-version",
   vary: "Origin",
 };
 
@@ -165,11 +166,7 @@ export function startQaMockServices() {
 
     if (method === "POST" && url.pathname === "/auth/v1/verify") {
       const body = await readBody(request);
-      if (
-        body?.phone !== "+989121234567" ||
-        body?.token !== "123456" ||
-        body?.type !== "sms"
-      ) {
+      if (body?.phone !== "+989121234567" || body?.token !== "123456" || body?.type !== "sms") {
         return json(response, 400, { code: "otp_expired", message: "Invalid QA OTP." });
       }
       return json(response, 200, session("aal1"));
@@ -183,10 +180,7 @@ export function startQaMockServices() {
       return json(response, 200, user());
     }
 
-    if (
-      method === "POST" &&
-      url.pathname === `/auth/v1/factors/${factorId}/challenge`
-    ) {
+    if (method === "POST" && url.pathname === `/auth/v1/factors/${factorId}/challenge`) {
       return json(response, 200, {
         id: challengeId,
         type: "totp",
@@ -194,10 +188,7 @@ export function startQaMockServices() {
       });
     }
 
-    if (
-      method === "POST" &&
-      url.pathname === `/auth/v1/factors/${factorId}/verify`
-    ) {
+    if (method === "POST" && url.pathname === `/auth/v1/factors/${factorId}/verify`) {
       const body = await readBody(request);
       if (body?.challenge_id !== challengeId || body?.code !== "654321") {
         return json(response, 400, {

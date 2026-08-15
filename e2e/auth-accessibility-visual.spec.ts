@@ -41,8 +41,12 @@ test("forbidden state explains server-side authorization without leaking backend
   page,
 }) => {
   await page.goto("/forbidden");
-  await expect(page.getByRole("heading", { name: "این حساب برای این بخش مجوز ندارد." })).toBeVisible();
-  await expect(page.getByText(/permissionهای Command Center در سمت سرور بررسی می‌شوند/)).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "این حساب برای این بخش مجوز ندارد." }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(/permissionهای Command Center در سمت سرور بررسی می‌شوند/),
+  ).toBeVisible();
   await expect(page.locator("body")).not.toContainText("service_role");
   await expect(page.locator("body")).not.toContainText("DATABASE_URL");
   await expectNoSeriousA11yViolations(page);
