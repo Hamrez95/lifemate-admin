@@ -101,21 +101,20 @@ export type CommerceTransactionReadResult =
   | { kind: "invalid" }
   | { kind: "unavailable"; correlationId?: string };
 
+type CommerceRefundActionSuccessData = {
+  transactionId: string;
+  refundRequestId: string;
+  status: string;
+  amountMinor: string;
+  currency: string;
+  transactionStatus: string;
+  replayed: boolean;
+  workflow: "HumanReview";
+  providerActionExecuted: false;
+};
+
 export type CommerceRefundActionResult =
-  | {
-      kind: "ok";
-      data: {
-        transactionId: string;
-        refundRequestId: string;
-        status: string;
-        amountMinor: string;
-        currency: string;
-        transactionStatus: string;
-        replayed: boolean;
-        workflow: "HumanReview";
-        providerActionExecuted: false;
-      };
-    }
+  | { kind: "ok"; data: CommerceRefundActionSuccessData }
   | { kind: "unauthenticated" }
   | { kind: "forbidden"; message?: string }
   | { kind: "not_found"; message?: string }
@@ -170,10 +169,6 @@ async function problem(response: Response): Promise<{
 
 function isString(value: unknown): value is string {
   return typeof value === "string";
-}
-
-function nullableString(value: unknown): value is string | null {
-  return value === null || typeof value === "string";
 }
 
 function parseDetail(value: unknown): CommerceTransactionDetail | null {
@@ -291,7 +286,20 @@ export async function requestCommerceRefundWorkflow(input: {
     ) {
       return { kind: "unavailable" };
     }
-    return { kind: "ok", data: body as CommerceRefundActionResult & never } as CommerceRefundActionResult;
+    return {
+      kind: "ok",
+      data: {
+        transactionId: body.transactionId,
+        refundRequestId: body.refundRequestId,
+        status: body.status,
+        amountMinor: body.amountMinor,
+        currency: body.currency,
+        transactionStatus: body.transactionStatus,
+        replayed: body.replayed,
+        workflow: "HumanReview",
+        providerActionExecuted: false,
+      },
+    };
   }
 
   const issue = await problem(response);
@@ -305,12 +313,4 @@ export async function requestCommerceRefundWorkflow(input: {
     return { kind: "invalid", code: issue.code, message: issue.message };
   }
   return { kind: "unavailable", correlationId: issue.correlationId };
-}
-
-export function isCommerceTransactionStatus(value: string): value is CommerceTransactionStatus {
-  return TRANSACTION_STATUSES.has(value);
-}
-
-export function hasNullableString(value: unknown): value is string | null {
-  return nullableString(value);
 }
