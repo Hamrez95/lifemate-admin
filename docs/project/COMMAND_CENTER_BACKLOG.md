@@ -86,43 +86,31 @@ GitHub Issues are the canonical engineering tasks. This file is the durable inde
 
 ## Required Issue contract
 
-Every task Issue must be self-contained and include:
-
-- Goal
-- Scope
-- UI/UX
-- Backend/API
-- Permission
-- Privacy/Security
-- Loading / Empty / Error / Forbidden / Stale-Unavailable behavior
-- Responsive / RTL / Accessibility
-- Tests
-- Acceptance Criteria
-- Dependencies
-- Design Reference
-- Definition of Done
+Every task Issue must be self-contained and include Goal, Scope, UI/UX, Backend/API, Permission, Privacy/Security, state behavior, responsive/RTL/accessibility, Tests, Acceptance Criteria, Dependencies, Design Reference and Definition of Done.
 
 ## Global implementation invariants
 
 - No direct browser access to sensitive Supabase/admin/health tables.
 - All list APIs use server-side pagination and bounded limits.
 - Sensitive mutations require authorization, validation, idempotency, reason where applicable and immutable audit.
-- Raw health is default deny. Women Health is stricter.
-- Relationship does not automatically create Access Grant.
-- Admin role is not caregiver access.
-- Global Search must be domain allow-listed and permission-filtered; it is never an alternate path to raw health, Women Health or arbitrary SQL.
-- Alert/notification counts and lists must be permission-filtered so unauthorized resource existence is not leaked.
+- Raw Health is default deny. Women Health is stricter.
+- Relationship does not automatically create Access Grant; Admin role is not caregiver access.
+- Global Search is allow-listed and permission-filtered; it never exposes raw Health, Women Health or arbitrary SQL.
+- Notification counts/lists are permission-filtered and source failures are isolated; unauthorized resource existence must not leak through badges.
+- Operations notifications use metadata-only projections and never surface raw log/outbox payloads.
+- Missing Finance/Product alert instrumentation is explicit; no fake alerts are created.
 - AI phase 1 is read-only and cannot access raw health, execute unrestricted SQL, mutate business state or auto-publish social content.
 - Human approval is mandatory for social publishing.
 - Actual financials and forecast data are distinct.
-- No fake production metrics, search results or alerts; unavailable values render `—` or an explicit unavailable/not-instrumented state.
+- No fake production metrics, search results or alerts; unavailable values render `—` or explicit unavailable/not-instrumented state.
 
 ## Verified execution position
 
-Completed through `ADM-PLAT-002` (#4), with Core PR #198 and Admin PR #72 merged after required CI. Commerce remains complete through `ADM-COM-005` (#16), Core PR #197 / Admin PR #70.
+Completed through `ADM-PLAT-003` (#30): Core PR #201 / Admin PR #74. `ADM-PLAT-002` (#4) is Core #198 / Admin #72, and Commerce remains complete through `ADM-COM-005` (#16): Core #197 / Admin #70.
 
 Current strictly sequential focus:
 
-1. `ADM-PLAT-003` — Admin Notification Center / Alerts (#30)
+1. `ADM-QA-001` — E2E + Accessibility + Visual Regression + Security Denial Matrix (#5)
+2. `ADM-PERF-001` — Dataset Performance Guardrails (#39)
 
-Master Issue #49 is canonical for exact completion state and sequencing. `ADM-OPS-002` (#24) remains the separate production rollout gate; source merges do not imply deployment.
+The QA gate comes first because the main Command Center platform/search/notification surfaces now exist and should become regression-protected before additional feature breadth. Master Issue #49 is canonical. `ADM-OPS-002` (#24) remains the separate production rollout gate; source merges do not imply deployment.

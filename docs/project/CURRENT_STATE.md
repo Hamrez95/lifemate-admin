@@ -11,13 +11,14 @@ Last verified: 2026-08-15 (Asia/Tehran)
 
 ## Verified GitHub state
 
-At the ADM-PLAT-002 milestone sync:
+At the ADM-PLAT-003 milestone sync:
 
 - Commerce remains complete through `ADM-COM-005` (#16): Core PR #197 / Admin PR #70.
-- `ADM-PLAT-002` (#4) Secure Global Search / Command Palette is complete via Core PR #198 and Admin PR #72.
-- Core PR #198 passed Admin Edge API, PostgreSQL schema/restore, runtime/db-pressure smoke, readiness/edge and ecosystem gates before merge.
-- Admin PR #72 passed format, browser-secret boundary, lint, strict TypeScript, unit tests and production build before merge.
-- Master Issue #49 sets `ADM-PLAT-003` (#30) Admin Notification Center / Alerts as the current task.
+- `ADM-PLAT-002` (#4) Secure Global Search / Command Palette is complete via Core PR #198 / Admin PR #72.
+- `ADM-PLAT-003` (#30) Admin Notification Center / Alerts is complete via Core PR #201 / Admin PR #74.
+- Core #201 passed Admin Edge API, PostgreSQL schema/restore, edge/readiness, ecosystem and runtime/db-pressure smoke gates before merge.
+- Admin #74 passed format, browser-secret boundary, lint, strict TypeScript, unit tests and production build before merge.
+- Master Issue #49 sets `ADM-QA-001` (#5) as current work, followed by `ADM-PERF-001` (#39).
 - Source merge is **not** production deployment.
 
 Repository/privacy hardening and delivery environments remain tracked under `ADM-OPS-003` (#38).
@@ -41,22 +42,35 @@ Repository/privacy hardening and delivery environments remain tracked under `ADM
 - `ADM-COM-004` — Core PR #189 / Admin PR #69
 - `ADM-COM-005` — Core PR #197 / Admin PR #70
 - `ADM-PLAT-002` — Core PR #198 / Admin PR #72
+- `ADM-PLAT-003` — Core PR #201 / Admin PR #74
 
 ## Secure Global Search contract now in main
 
-The merged search surface is intentionally not a universal data explorer.
+- Search is an authenticated Admin API surface, not a universal data explorer.
+- Domains are allow-listed and independently permission-gated: users, support, commerce and campaigns.
+- Unauthorized domains are not queried and do not leak existence through counts.
+- Raw Health and Women Health are excluded entirely.
+- Minimum query length, bounded pagination and a database-backed per-admin rate limit are enforced.
+- Raw query text is not persisted for rate limiting or operational logs.
+- The browser uses a same-origin Next.js boundary; privileged secrets never enter browser code.
+- Campaign search stays explicit `not_instrumented` until a canonical source exists.
+- The Persian RTL Command Palette supports keyboard navigation, focus trapping and mobile fallback.
 
-- `GET /api/v1/search` exists only behind authenticated Admin API + MFA/AAL2 + active admin membership.
-- Search domains are allow-listed and independently permission-gated: users, support, commerce and campaigns.
-- Unauthorized domains are not queried and cannot leak existence through result counts.
-- Raw Health and Women Health are excluded from the search contract entirely.
-- Search enforces a minimum query length, bounded pagination and a database-backed per-admin rate limit.
-- Raw query text is not persisted for rate limiting and is redacted from operational search logs; logs contain bounded metadata such as query length/domain/page only.
-- User results come from the approved Admin user directory; support search uses redacted queue data; commerce search uses approved operational models.
-- Campaign search reports explicit `not_instrumented` for authorized callers until a canonical campaign source exists; it never fabricates results.
-- The Admin browser calls a same-origin Next.js server route; privileged Admin API credentials and `service_role` never enter browser code.
-- The Persian RTL Command Palette supports Cmd/Ctrl+K, Escape, arrow/Enter navigation, focus trapping, screen-reader semantics and a mobile fallback.
-- Local recent history stores only static non-sensitive workspace keys; query text and record identifiers are not stored.
+## Notification Center contract now in main
+
+- Bell count and notification list are filtered by the permission of each source domain before source data is loaded.
+- Approved real sources are Support, Security and Operations.
+- Support alerts use redacted ticket queue metadata for active SLA/Urgent conditions.
+- Security alerts use narrowly selected failed/elevated-denied Admin audit metadata; audit reason/metadata payloads are not sent to the browser.
+- Operations alerts use a SECURITY DEFINER metadata-only Outbox snapshot; `payload_json`, event/resource identifiers and secrets are not exposed.
+- Outbox alert thresholds follow the reviewed runbook: `<120s` healthy, `120–899s` warning, `>=900s` critical; DeadLetter and stale Processing locks are surfaced separately.
+- Finance and Product remain truthful `not_instrumented` sources until canonical alert sources exist; no demo alert is invented.
+- Exact unread totals are returned only when all authorized sources are complete. Partial source coverage returns lower-bound known counts plus explicit completeness/source states.
+- Per-admin read/unread presentation state is permission-checked, idempotent and audited; it never mutates source business state.
+- Acknowledge/dismiss actions are not invented for sources that do not support a canonical source-owned workflow.
+- Deep links are source-scoped and validated both in Core and the Admin server client.
+- The Persian RTL panel supports responsive mobile sheet layout, severity icon+text, freshness, Escape/focus trap and a limited live region for unread-count changes.
+- Raw Health and Women Health are not notification domains.
 
 ## Commerce contract now in main
 
@@ -70,27 +84,27 @@ The merged Commerce work includes plan/entitlement overview/detail, normalized t
 
 1. Admin Web does not query sensitive database tables directly.
 2. Supabase Auth + mandatory MFA/AAL2 precede the Admin API boundary.
-3. Authorization is enforced by the Admin API, not by navigation visibility.
-4. Medical data remains default-deny for ordinary admin roles.
-5. Women Health remains under a stricter sensitive-data boundary.
-6. Relationship, Consent, Access Grant and Admin Permission remain separate concepts.
-7. Admin role never implies caregiver access.
-8. Elevated sensitive access remains blocked until the approved break-glass workflow is implemented.
-9. Browser code never receives `service_role`, database passwords or payment-provider credentials.
-10. Unavailable production data renders `—` or an explicit unavailable/not-instrumented state; data is never fabricated.
+3. Authorization is enforced by the Admin API, not navigation visibility.
+4. Medical data remains default-deny for ordinary admin roles; Women Health is stricter.
+5. Relationship, Consent, Access Grant and Admin Permission remain separate concepts.
+6. Admin role never implies caregiver access.
+7. Elevated sensitive access remains blocked until the approved break-glass workflow is implemented.
+8. Browser code never receives `service_role`, database passwords or payment-provider credentials.
+9. Missing data/search/alert sources stay explicit unavailable/not-instrumented; production facts are never fabricated.
 
 ## Current implementation order
 
 Completed through:
 
-1. `ADM-PLAT-002` Secure Global Search / Command Palette (#4)
+1. `ADM-PLAT-003` Admin Notification Center / Alerts (#30)
 
 Current strictly sequential focus:
 
-2. `ADM-PLAT-003` Admin Notification Center / Alerts (#30)
+2. `ADM-QA-001` E2E + Accessibility + Visual Regression + Security Denial Matrix (#5)
+3. `ADM-PERF-001` Dataset Performance Guardrails (#39)
 
 The exact current sequence is maintained in Master Issue #49.
 
 ## Production rollout
 
-Merged code is not proof of production deployment. A read-only check of the live Supabase migration list on 2026-08-15 did not show the Command Center control-plane/Commerce migrations. Production migration/function rollout, Founder bootstrap, environment configuration and smoke verification remain gated under `ADM-OPS-002` (#24). Re-verify live Supabase immediately before any production write.
+Merged code is not proof of production deployment. A read-only check of the live Supabase migration list on 2026-08-15 did not show the Command Center control-plane/Commerce migrations at that time. Production migration/function rollout, Founder bootstrap, environment configuration and smoke verification remain gated under `ADM-OPS-002` (#24). Re-verify live Supabase immediately before any production write.
