@@ -145,7 +145,9 @@ function validFreshness(value: unknown): value is CommercePlanDetail["freshness"
 
 function validPage(body: Record<string, unknown>): boolean {
   return (
-    Number.isInteger(body.page) && Number.isInteger(body.pageSize) && validFreshness(body.freshness)
+    Number.isInteger(body.page) &&
+    Number.isInteger(body.pageSize) &&
+    validFreshness(body.freshness)
   );
 }
 
@@ -178,7 +180,15 @@ function validPlanDetail(value: unknown): value is CommercePlanDetail {
   if (!isRecord(value.subscriptionSummary) || !validCollection(value.subscriptions)) return false;
   if (!validInstrumentationState(value.changeHistory)) return false;
   if (!validInstrumentationState(value.transactionLinkage)) return false;
-  for (const key of ["total", "trial", "active", "pastDue", "cancelled", "expired", "refunded"]) {
+  for (const key of [
+    "total",
+    "trial",
+    "active",
+    "pastDue",
+    "cancelled",
+    "expired",
+    "refunded",
+  ]) {
     if (!nonNegativeInteger(value.subscriptionSummary[key])) return false;
   }
 
@@ -212,7 +222,8 @@ function validPlanDetail(value: unknown): value is CommercePlanDetail {
 
   for (const raw of value.subscriptions.items) {
     if (!isRecord(raw)) return false;
-    if (typeof raw.subscriptionId !== "string" || !UUID_PATTERN.test(raw.subscriptionId)) return false;
+    if (typeof raw.subscriptionId !== "string" || !UUID_PATTERN.test(raw.subscriptionId))
+      return false;
     for (const key of ["status", "startsAtUtc", "createdAtUtc", "updatedAtUtc"]) {
       if (typeof raw[key] !== "string") return false;
     }
@@ -244,7 +255,8 @@ function validEntitlementDetail(value: unknown): value is CommerceEntitlementDet
   if (!validCollection(value.entitlements)) return false;
   for (const raw of value.entitlements.items) {
     if (!isRecord(raw)) return false;
-    if (typeof raw.entitlementId !== "string" || !UUID_PATTERN.test(raw.entitlementId)) return false;
+    if (typeof raw.entitlementId !== "string" || !UUID_PATTERN.test(raw.entitlementId))
+      return false;
     for (const key of [
       "source",
       "storedStatus",
@@ -263,7 +275,8 @@ function validEntitlementDetail(value: unknown): value is CommerceEntitlementDet
   for (const raw of value.eventHistory.items) {
     if (!isRecord(raw)) return false;
     if (typeof raw.eventId !== "string" || !UUID_PATTERN.test(raw.eventId)) return false;
-    if (typeof raw.entitlementId !== "string" || !UUID_PATTERN.test(raw.entitlementId)) return false;
+    if (typeof raw.entitlementId !== "string" || !UUID_PATTERN.test(raw.entitlementId))
+      return false;
     for (const key of ["eventType", "occurredAtUtc", "recordedAtUtc"]) {
       if (typeof raw[key] !== "string") return false;
     }
