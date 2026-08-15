@@ -115,12 +115,13 @@ Every task Issue must be self-contained and include:
 - Actual financials and forecast data are distinct.
 - No fake production metrics; unavailable values render `—`.
 
-## First implementation sequence
+## Verified execution position
 
-1. `ADM-PLAT-001`
-2. `ADM-USR-001`
-3. `ADM-USR-002`
-4. `ADM-DATA-001`
-5. `ADM-ANL-001`
+Completed through `ADM-COM-003` (#36), merged as Core PR #186 and Admin PR #67.
 
-The first true vertical slice is `ADM-USR-001`: frontend + Admin API + permission check + approved read model + server pagination + tests + responsive UI.
+Current strictly sequential focus:
+
+1. `ADM-COM-004` — Transaction Detail / Audited Financial Actions (#37)
+2. `ADM-COM-005` — Promotions / Discount Codes (#16)
+
+Master Issue #49 is canonical for exact completion state and sequencing. `ADM-OPS-002` (#24) remains the separate production rollout gate; source merges do not imply deployment.
