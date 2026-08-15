@@ -1,0 +1,83 @@
+name: tmp-adm-qa-001-bootstrap
+
+on:
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'src/**'
+      - 'e2e/**'
+      - 'tests/**'
+      - 'scripts/qa/**'
+      - 'playwright.config.ts'
+      - 'docs/qa/**'
+      - '.github/workflows/qa.yml'
+      - '.github/workflows/tmp-adm-qa-001-bootstrap.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap-and-remove:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          show-progress: false
+          persist-credentials: true
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+
+      - name: Install and lock browser QA dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --save-dev @playwright/test @axe-core/playwright --no-audit --no-fund
+          npm pkg set 'scripts.test:e2e=playwright test'
+          npm pkg set 'scripts.test:e2e:update=playwright test --update-snapshots'
+          npm pkg set 'scripts.test:security-denial=vitest run tests/security-denial-matrix.test.ts tests/auth-mfa-security-contract.test.ts'
+          npm pkg set 'scripts.test:qa=npm run test:security-denial && npm run test:e2e'
+          npx playwright install --with-deps chromium
+
+      - name: Verify ordinary quality gates
+        shell: bash
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: qa_publishable_key_only
+          NEXT_PUBLIC_ADMIN_API_URL: http://127.0.0.1:54321
+        run: |
+          set -euo pipefail
+          npm run format
+          npm run security:check
+          npm run lint
+          npm run typecheck
+          npm test
+          npm run build
+
+      - name: Bootstrap and verify visual baselines
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run test:e2e:update
+          npm run test:e2e
+
+      - name: Commit locked QA harness and snapshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f .github/workflows/tmp-adm-qa-001-bootstrap.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            .github/workflows/qa.yml \
+            package.json package-lock.json \
+            playwright.config.ts \
+            app src \
+            e2e tests \
+            scripts/qa \
+            docs/qa
+          git commit -m 'test(admin): lock Command Center QA gate and visual baselines'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
