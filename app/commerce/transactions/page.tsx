@@ -91,7 +91,9 @@ function safeDay(value: string): string {
   return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "";
 }
 
-function parseQuery(input: Record<string, string | string[] | undefined>): TransactionsQuery {
+function parseQuery(
+  input: Record<string, string | string[] | undefined>,
+): TransactionsQuery {
   const pageSizeCandidate = boundedPage(one(input.pageSize), 25, 100);
   const status = one(input.status).trim();
   const q = one(input.q).trim();
@@ -173,15 +175,15 @@ function SummaryCard({
   );
 }
 
-function TransactionHero({ data }: { data: CommerceTransactionsResponse }) {
+function TransactionHero() {
   return (
     <section className={styles.hero} aria-labelledby="transactions-title">
       <div>
         <span className={styles.eyebrow}>Commerce Ledger · Read only</span>
         <h2 id="transactions-title">جریان مالی را ببین؛ بدون دیدن رازهای پرداخت</h2>
         <p>
-          Order قصد تجاری است، Transaction وضعیت مالی نرمال‌شده و Provider Event فقط مشاهده‌ی
-          ورودی درگاه. این سه مفهوم عمداً با هم ادغام نشده‌اند.
+          Order قصد تجاری است، Transaction وضعیت مالی نرمال‌شده و Provider Event فقط مشاهده‌ی ورودی
+          درگاه. این سه مفهوم عمداً با هم ادغام نشده‌اند.
         </p>
         <div className={styles.heroActions}>
           <Link href="/commerce" className={styles.secondaryAction}>
@@ -191,11 +193,17 @@ function TransactionHero({ data }: { data: CommerceTransactionsResponse }) {
         </div>
       </div>
       <div className={styles.heroVisual} aria-hidden="true">
-        <span className={styles.flowNode} data-kind="order">Order</span>
+        <span className={styles.flowNode} data-kind="order">
+          Order
+        </span>
         <i>←</i>
-        <span className={styles.flowNode} data-kind="transaction">Transaction</span>
+        <span className={styles.flowNode} data-kind="transaction">
+          Transaction
+        </span>
         <i>←</i>
-        <span className={styles.flowNode} data-kind="event">Event</span>
+        <span className={styles.flowNode} data-kind="event">
+          Event
+        </span>
       </div>
     </section>
   );
@@ -204,10 +212,30 @@ function TransactionHero({ data }: { data: CommerceTransactionsResponse }) {
 function Summary({ data }: { data: CommerceTransactionsResponse }) {
   return (
     <section className={styles.summaryGrid} aria-label="خلاصه تراکنش‌ها">
-      <SummaryCard label="کل تراکنش" value={data.summary.total} note="در فیلتر فعلی" tone="blue" />
-      <SummaryCard label="موفق" value={data.summary.succeeded} note="Normalized · Succeeded" tone="green" />
-      <SummaryCard label="در انتظار" value={data.summary.pending} note="نیازمند تکمیل جریان" tone="orange" />
-      <SummaryCard label="ناموفق" value={data.summary.failed} note="Normalized · Failed" tone="danger" />
+      <SummaryCard
+        label="کل تراکنش"
+        value={data.summary.total}
+        note="در فیلتر فعلی"
+        tone="blue"
+      />
+      <SummaryCard
+        label="موفق"
+        value={data.summary.succeeded}
+        note="Normalized · Succeeded"
+        tone="green"
+      />
+      <SummaryCard
+        label="در انتظار"
+        value={data.summary.pending}
+        note="نیازمند تکمیل جریان"
+        tone="orange"
+      />
+      <SummaryCard
+        label="ناموفق"
+        value={data.summary.failed}
+        note="Normalized · Failed"
+        tone="danger"
+      />
       <SummaryCard
         label="بازپرداخت / برگشت"
         value={data.summary.refunded + data.summary.chargeback}
@@ -221,7 +249,11 @@ function Summary({ data }: { data: CommerceTransactionsResponse }) {
 function AnomalyPanel({ data }: { data: CommerceTransactionsResponse }) {
   const clean = data.anomalies.duplicateEvents === 0 && data.anomalies.outOfOrderEvents === 0;
   return (
-    <section className={styles.anomalyPanel} data-clean={clean} aria-labelledby="provider-events-title">
+    <section
+      className={styles.anomalyPanel}
+      data-clean={clean}
+      aria-labelledby="provider-events-title"
+    >
       <div>
         <span>Provider Event Diagnostics</span>
         <h3 id="provider-events-title">سلامت ترتیب رویدادهای درگاه</h3>
@@ -244,7 +276,13 @@ function AnomalyPanel({ data }: { data: CommerceTransactionsResponse }) {
   );
 }
 
-function Filters({ query, data }: { query: TransactionsQuery; data: CommerceTransactionsResponse }) {
+function Filters({
+  query,
+  data,
+}: {
+  query: TransactionsQuery;
+  data: CommerceTransactionsResponse;
+}) {
   return (
     <AdminTableFilterBar
       action="/commerce/transactions"
@@ -307,7 +345,11 @@ function Filters({ query, data }: { query: TransactionsQuery; data: CommerceTran
       </div>
       <div className="admin-list-filter admin-list-filter--compact">
         <label htmlFor="transaction-page-size">تعداد در صفحه</label>
-        <select id="transaction-page-size" name="pageSize" defaultValue={String(query.pageSize)}>
+        <select
+          id="transaction-page-size"
+          name="pageSize"
+          defaultValue={String(query.pageSize)}
+        >
           <option value="25">۲۵</option>
           <option value="50">۵۰</option>
           <option value="100">۱۰۰</option>
@@ -330,7 +372,9 @@ const transactionColumns: readonly AdminTableColumn<CommerceTransactionRow>[] = 
   {
     key: "amount",
     header: "مبلغ",
-    render: (row) => <strong className={styles.amount}>{formatAmount(row.amountMinor, row.currency)}</strong>,
+    render: (row) => (
+      <strong className={styles.amount}>{formatAmount(row.amountMinor, row.currency)}</strong>
+    ),
   },
   {
     key: "product",
@@ -365,7 +409,9 @@ const transactionColumns: readonly AdminTableColumn<CommerceTransactionRow>[] = 
   {
     key: "time",
     header: "دریافت",
-    render: (row) => <time dateTime={row.receivedAtUtc}>{formatDateTime(row.receivedAtUtc)}</time>,
+    render: (row) => (
+      <time dateTime={row.receivedAtUtc}>{formatDateTime(row.receivedAtUtc)}</time>
+    ),
   },
   {
     key: "reference",
@@ -384,7 +430,8 @@ function RecentOrders({ data }: { data: CommerceTransactionsResponse }) {
           <h3 id="recent-orders-title">سفارش‌های اخیر</h3>
           <p>
             Order یعنی قصد خرید/تمدید؛ موفق بودن Transaction را نتیجه‌گیری نمی‌کند. فیلتر provider و
-            وضعیت Transaction روی این بخش اعمال نمی‌شود.
+            وضعیت مالی از طریق Transaction متصل اعمال می‌شود؛ Order بدون Transaction هنگام استفاده
+            از این دو فیلتر نمایش داده نمی‌شود.
           </p>
         </div>
         <span className={styles.resultChip}>
@@ -411,11 +458,15 @@ function RecentOrders({ data }: { data: CommerceTransactionsResponse }) {
               <dl>
                 <div>
                   <dt>Order ID</dt>
-                  <dd><code>{shortId(order.orderId)}</code></dd>
+                  <dd>
+                    <code>{shortId(order.orderId)}</code>
+                  </dd>
                 </div>
                 <div>
                   <dt>آخرین تغییر</dt>
-                  <dd><time dateTime={order.updatedAtUtc}>{formatDateTime(order.updatedAtUtc)}</time></dd>
+                  <dd>
+                    <time dateTime={order.updatedAtUtc}>{formatDateTime(order.updatedAtUtc)}</time>
+                  </dd>
                 </div>
               </dl>
             </article>
@@ -457,7 +508,7 @@ async function TransactionsContent({ query }: { query: TransactionsQuery }) {
 
   return (
     <div className={styles.page} dir="rtl">
-      <TransactionHero data={data} />
+      <TransactionHero />
       <div className={styles.sourceStrip} aria-label="منبع و تازگی داده">
         <span>{data.source.label}</span>
         <span>Snapshot: {formatDateTime(data.freshness.asOfUtc)}</span>
@@ -490,7 +541,9 @@ async function TransactionsContent({ query }: { query: TransactionsQuery }) {
   );
 }
 
-export default async function CommerceTransactionsPage({ searchParams }: TransactionsPageProps) {
+export default async function CommerceTransactionsPage({
+  searchParams,
+}: TransactionsPageProps) {
   const admin = await requireAdminAccess();
   const query = parseQuery(await searchParams);
   const canReadCommerce = admin.permissions.includes("commerce.read");
