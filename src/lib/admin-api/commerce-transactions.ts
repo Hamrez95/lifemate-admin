@@ -95,8 +95,7 @@ export type CommerceTransactionsResult =
   | { kind: "invalid" }
   | { kind: "unavailable"; correlationId?: string };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const INTEGER_PATTERN = /^\d+$/;
 const AMOUNT_PATTERN = /^\d+$/;
 const STATUS_SET = new Set<string>(transactionStatuses);
@@ -132,11 +131,16 @@ function parseTransaction(raw: unknown): CommerceTransactionRow | null {
   for (const key of ["productCode", "productName", "provider", "providerStatus", "currency"]) {
     if (typeof row[key] !== "string") return null;
   }
-  if (typeof row.normalizedStatus !== "string" || !STATUS_SET.has(row.normalizedStatus)) return null;
+  if (typeof row.normalizedStatus !== "string" || !STATUS_SET.has(row.normalizedStatus))
+    return null;
   if (!amount(row.amountMinor)) return null;
   if (!timestamp(row.occurredAtUtc) || !timestamp(row.receivedAtUtc)) return null;
-  if (typeof row.observationState !== "string" || !OBSERVATIONS.has(row.observationState)) return null;
-  if (!nullableString(row.latestEventOccurredAtUtc) || !nullableString(row.latestEventReceivedAtUtc)) {
+  if (typeof row.observationState !== "string" || !OBSERVATIONS.has(row.observationState))
+    return null;
+  if (
+    !nullableString(row.latestEventOccurredAtUtc) ||
+    !nullableString(row.latestEventReceivedAtUtc)
+  ) {
     return null;
   }
   if (row.latestEventOccurredAtUtc && !timestamp(row.latestEventOccurredAtUtc)) return null;
@@ -283,11 +287,14 @@ export async function getCommerceTransactions(
   const config = getPublicRuntimeConfig();
   let response: Response;
   try {
-    response = await fetch(`${config.adminApiUrl}/api/v1/commerce/transactions?${params.toString()}`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-      signal: AbortSignal.timeout(10_000),
-    });
+    response = await fetch(
+      `${config.adminApiUrl}/api/v1/commerce/transactions?${params.toString()}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+        signal: AbortSignal.timeout(10_000),
+      },
+    );
   } catch {
     return { kind: "unavailable" };
   }
