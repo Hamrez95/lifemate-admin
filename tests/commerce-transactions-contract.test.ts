@@ -3,6 +3,8 @@ import { resolve } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { tehranDayBoundaryToUtc } from "@/src/lib/time-zone";
+
 function source(path: string): string {
   return readFileSync(resolve(process.cwd(), path), "utf8");
 }
@@ -61,6 +63,24 @@ describe("ADM-COM-003 Transactions / Orders List", () => {
     expect(page).toContain('params.set("to"');
     expect(page).toContain('params.set("q"');
     expect(page).toContain("data.transactions.total");
+  });
+
+  it("converts Tehran calendar-day filters to their UTC instants", () => {
+    expect(tehranDayBoundaryToUtc("2026-08-15", "start")).toBe("2026-08-14T20:30:00.000Z");
+    expect(tehranDayBoundaryToUtc("2026-08-15", "end")).toBe("2026-08-15T20:29:59.999Z");
+
+    const page = source("app/commerce/transactions/page.tsx");
+    expect(page).toContain('tehranDayBoundaryToUtc(query.from, "start")');
+    expect(page).toContain('tehranDayBoundaryToUtc(query.to, "end")');
+    expect(page).not.toContain('`${query.from}T00:00:00.000Z`');
+    expect(page).not.toContain('`${query.to}T23:59:59.999Z`');
+  });
+
+  it("is discoverable from the commerce overview", () => {
+    const commerceOverview = source("app/commerce/page.tsx");
+
+    expect(commerceOverview).toContain('href="/commerce/transactions"');
+    expect(commerceOverview).toContain("مشاهده تراکنش‌ها و سفارش‌ها");
   });
 
   it("has a distinctive responsive RTL and accessible LifeMate visual treatment", () => {
