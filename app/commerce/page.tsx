@@ -125,6 +125,9 @@ function CommerceHero({ data }: { data: CommerceOverviewResponse }) {
           این صفحه فقط وضعیت تجاری واقعی را نشان می‌دهد. اطلاعات کارت، مرجع پرداخت و شناسه‌های حساس
           provider عمداً وارد پنل نمی‌شوند.
         </p>
+        <div className={styles.tablePlan}>
+          <Link href="/commerce/transactions">مشاهده تراکنش‌ها و سفارش‌ها</Link>
+        </div>
       </div>
       <div className={styles.heroStats}>
         <div>
