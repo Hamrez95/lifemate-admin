@@ -29,7 +29,7 @@ describe("ADM-COM-004 Transaction Detail / Audited Financial Actions", () => {
 
     expect(client).toContain("amountMinor: string");
     expect(client).toContain("accountLinked: boolean");
-    expect(client).toContain('providerActionExecuted: false');
+    expect(client).toContain("providerActionExecuted: false");
     expect(client).not.toContain("cardNumber");
     expect(client).not.toContain("paymentCredential");
     expect(client).not.toContain("providerReference");

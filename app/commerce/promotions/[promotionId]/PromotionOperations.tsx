@@ -54,15 +54,11 @@ export function PromotionOperations({ data, products, canWrite }: Props) {
     changePromotionStatusAction,
     initialPromotionDetailActionState,
   );
-  const [discountType, setDiscountType] = useState<PromotionDiscountType>(
-    promotion.discount.type,
-  );
+  const [discountType, setDiscountType] = useState<PromotionDiscountType>(promotion.discount.type);
   const [editKey, setEditKey] = useState(() => crypto.randomUUID());
   const [statusKey, setStatusKey] = useState(() => crypto.randomUUID());
   const editable =
-    canWrite &&
-    promotion.effectiveStatus !== "Active" &&
-    promotion.effectiveStatus !== "Expired";
+    canWrite && promotion.effectiveStatus !== "Active" && promotion.effectiveStatus !== "Expired";
   const statusMutable = canWrite && promotion.effectiveStatus !== "Expired";
   const statusOptions = useMemo(
     () =>
@@ -90,8 +86,8 @@ export function PromotionOperations({ data, products, canWrite }: Props) {
       ) : null}
       {promotion.effectiveStatus === "Active" ? (
         <div className={styles.safetyNote} data-tone="attention">
-          برای تغییر مبلغ، درصد، زمان یا کد، ابتدا پروموشن را Pause کن. Core نیز این قانون را enforce
-          می‌کند.
+          برای تغییر مبلغ، درصد، زمان یا کد، ابتدا پروموشن را Pause کن. Core نیز این قانون را
+          enforce می‌کند.
         </div>
       ) : null}
       {promotion.effectiveStatus === "Expired" ? (
@@ -166,9 +162,7 @@ export function PromotionOperations({ data, products, canWrite }: Props) {
                 name="discountType"
                 value={discountType}
                 disabled={!editable || editPending}
-                onChange={(event) =>
-                  setDiscountType(event.target.value as PromotionDiscountType)
-                }
+                onChange={(event) => setDiscountType(event.target.value as PromotionDiscountType)}
               >
                 <option value="Percentage">درصدی</option>
                 <option value="FixedAmount">مبلغ ثابت</option>
@@ -281,7 +275,11 @@ export function PromotionOperations({ data, products, canWrite }: Props) {
           <div className={styles.feedback} data-status={editState.status} aria-live="polite">
             {editState.message ?? ""}
           </div>
-          <button className={styles.primaryButton} type="submit" disabled={!editable || editPending}>
+          <button
+            className={styles.primaryButton}
+            type="submit"
+            disabled={!editable || editPending}
+          >
             {editPending ? "در حال ثبت…" : "ثبت تغییر Rule"}
           </button>
         </form>

@@ -123,8 +123,7 @@ export type PromotionMutationResult =
   | { kind: "invalid"; code?: string; message?: string }
   | { kind: "unavailable"; correlationId?: string };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
 const AMOUNT_PATTERN = /^\d+$/;
 const CURRENCY_PATTERN = /^[A-Z]{3}$/;
@@ -166,7 +165,9 @@ function isCodeStatus(value: unknown): value is DiscountCodeStatus {
   return value === "Active" || value === "Disabled";
 }
 
-function parseProduct(value: unknown): { id: string; code: string; name: string } | null | undefined {
+function parseProduct(
+  value: unknown,
+): { id: string; code: string; name: string } | null | undefined {
   if (value === null) return null;
   if (!isRecord(value) || !isUuid(value.id) || !isString(value.code) || !isString(value.name)) {
     return undefined;
@@ -203,7 +204,10 @@ function parseDiscount(value: unknown): CommercePromotionRow["discount"] | null 
   if (value.type === "Percentage" && (percentage === null || fixed !== null || currency !== null)) {
     return null;
   }
-  if (value.type === "FixedAmount" && (fixed === null || currency === null || percentage !== null)) {
+  if (
+    value.type === "FixedAmount" &&
+    (fixed === null || currency === null || percentage !== null)
+  ) {
     return null;
   }
   return {
@@ -269,23 +273,36 @@ function parsePromotion(value: unknown, list: boolean): CommercePromotionRow | n
 }
 
 function parseFreshness(value: unknown): { status: "fresh" | "stale"; asOfUtc: string } | null {
-  if (!isRecord(value) || (value.status !== "fresh" && value.status !== "stale") || !isDateTime(value.asOfUtc)) {
+  if (
+    !isRecord(value) ||
+    (value.status !== "fresh" && value.status !== "stale") ||
+    !isDateTime(value.asOfUtc)
+  ) {
     return null;
   }
   return { status: value.status, asOfUtc: value.asOfUtc };
 }
 
 function parseList(value: unknown): CommercePromotionsResponse | null {
-  if (!isRecord(value) || !Array.isArray(value.products) || !Array.isArray(value.items)) return null;
+  if (!isRecord(value) || !Array.isArray(value.products) || !Array.isArray(value.items))
+    return null;
   const products = value.products.map(parseProduct);
   const items = value.items.map((item) => parsePromotion(item, true));
   if (products.some((item) => !item) || items.some((item) => !item)) return null;
   if (!isRecord(value.summary) || !isRecord(value.filters) || !isRecord(value.source)) return null;
   const summaryKeys = ["total", "draft", "active", "paused", "expired"] as const;
-  if (summaryKeys.some((key) => !Number.isInteger(value.summary[key]) || Number(value.summary[key]) < 0)) {
+  if (
+    summaryKeys.some(
+      (key) => !Number.isInteger(value.summary[key]) || Number(value.summary[key]) < 0,
+    )
+  ) {
     return null;
   }
-  if (!Number.isInteger(value.total) || !Number.isInteger(value.page) || !Number.isInteger(value.pageSize)) {
+  if (
+    !Number.isInteger(value.total) ||
+    !Number.isInteger(value.page) ||
+    !Number.isInteger(value.pageSize)
+  ) {
     return null;
   }
   const freshness = parseFreshness(value.freshness);
@@ -317,7 +334,12 @@ function parseList(value: unknown): CommercePromotionsResponse | null {
 function parseDetail(value: unknown): CommercePromotionDetail | null {
   if (!isRecord(value)) return null;
   const row = parsePromotion(value.promotion, false);
-  if (!row || !Array.isArray(value.codes) || !isRecord(value.auditEvidence) || !isRecord(value.source)) {
+  if (
+    !row ||
+    !Array.isArray(value.codes) ||
+    !isRecord(value.auditEvidence) ||
+    !isRecord(value.source)
+  ) {
     return null;
   }
   const codes = value.codes.map((candidate) => {
@@ -374,19 +396,12 @@ function parseDetail(value: unknown): CommercePromotionDetail | null {
       };
     });
     if (items.some((item) => item === null)) return null;
-    auditEvidence = { state: "ready", items: items as NonNullable<typeof items[number]>[] };
+    auditEvidence = { state: "ready", items: items as NonNullable<(typeof items)[number]>[] };
   } else {
     return null;
   }
   const freshness = parseFreshness(value.freshness);
   if (!freshness || value.source.kind !== "canonical" || !isString(value.source.label)) return null;
-  const promotion = {
-    ...row,
-    primaryCodeMasked: undefined,
-    primaryCodeStatus: undefined,
-    primaryCodeMaxRedemptions: undefined,
-    codeCount: undefined,
-  };
   const {
     primaryCodeMasked: _masked,
     primaryCodeStatus: _status,
@@ -413,7 +428,9 @@ async function accessToken(): Promise<string | null> {
   return session?.access_token ?? null;
 }
 
-async function problem(response: Response): Promise<{ code?: string; message?: string; correlationId?: string }> {
+async function problem(
+  response: Response,
+): Promise<{ code?: string; message?: string; correlationId?: string }> {
   try {
     const body = (await response.json()) as Record<string, unknown>;
     return {
@@ -446,7 +463,10 @@ async function authorizedFetch(path: string, init?: RequestInit): Promise<Respon
   });
 }
 
-function mapReadFailure(response: Response, issue: Awaited<ReturnType<typeof problem>>): PromotionReadResult<never> {
+function mapReadFailure(
+  response: Response,
+  issue: Awaited<ReturnType<typeof problem>>,
+): PromotionReadResult<never> {
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden" };
   if (response.status === 404) return { kind: "not_found" };
@@ -461,12 +481,15 @@ function mapMutationFailure(
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden", message: issue.message };
   if (response.status === 404) return { kind: "not_found", message: issue.message };
-  if (response.status === 409) return { kind: "conflict", code: issue.code, message: issue.message };
+  if (response.status === 409)
+    return { kind: "conflict", code: issue.code, message: issue.message };
   if (response.status === 400) return { kind: "invalid", code: issue.code, message: issue.message };
   return { kind: "unavailable", correlationId: issue.correlationId };
 }
 
-export async function getCommercePromotions(params: URLSearchParams): Promise<PromotionReadResult<CommercePromotionsResponse>> {
+export async function getCommercePromotions(
+  params: URLSearchParams,
+): Promise<PromotionReadResult<CommercePromotionsResponse>> {
   let response: Response;
   try {
     const fetched = await authorizedFetch(`/api/v1/commerce/promotions?${params.toString()}`);
@@ -541,8 +564,14 @@ export function updateCommercePromotion(
   payload: PromotionUpdatePayload,
   idempotencyKey: string,
 ) {
-  if (!UUID_PATTERN.test(promotionId)) return Promise.resolve({ kind: "not_found" } as PromotionMutationResult);
-  return mutatePromotion(`/api/v1/commerce/promotions/${promotionId}`, "PUT", payload, idempotencyKey);
+  if (!UUID_PATTERN.test(promotionId))
+    return Promise.resolve({ kind: "not_found" } as PromotionMutationResult);
+  return mutatePromotion(
+    `/api/v1/commerce/promotions/${promotionId}`,
+    "PUT",
+    payload,
+    idempotencyKey,
+  );
 }
 
 export function setCommercePromotionStatus(
@@ -551,7 +580,8 @@ export function setCommercePromotionStatus(
   reason: string,
   idempotencyKey: string,
 ) {
-  if (!UUID_PATTERN.test(promotionId)) return Promise.resolve({ kind: "not_found" } as PromotionMutationResult);
+  if (!UUID_PATTERN.test(promotionId))
+    return Promise.resolve({ kind: "not_found" } as PromotionMutationResult);
   return mutatePromotion(
     `/api/v1/commerce/promotions/${promotionId}/actions/status`,
     "POST",

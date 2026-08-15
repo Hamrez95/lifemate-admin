@@ -88,7 +88,10 @@ function DetailHero({ data }: { data: CommercePromotionDetail }) {
 function Facts({ data }: { data: CommercePromotionDetail }) {
   const promotion = data.promotion;
   const facts = [
-    ["محصول", promotion.product ? `${promotion.product.name} · ${promotion.product.code}` : "همه محصولات"],
+    [
+      "محصول",
+      promotion.product ? `${promotion.product.name} · ${promotion.product.code}` : "همه محصولات",
+    ],
     ["تخفیف", formatDiscount(data)],
     ["شروع", formatDateTime(promotion.startsAtUtc)],
     ["پایان", formatDateTime(promotion.endsAtUtc)],
@@ -162,14 +165,19 @@ function AuditEvidence({ data }: { data: CommercePromotionDetail }) {
         <div>
           <span>Immutable audit evidence</span>
           <h3 id="promotion-audit-title">شواهد تغییرات</h3>
-          <p>Actor identifier نمایش داده نمی‌شود؛ فقط linked state، نتیجه، دلیل و correlation دیده می‌شود.</p>
+          <p>
+            Actor identifier نمایش داده نمی‌شود؛ فقط linked state، نتیجه، دلیل و correlation دیده
+            می‌شود.
+          </p>
         </div>
         {evidence.state === "forbidden" ? (
           <span className={styles.permissionBadge}>security.audit.read</span>
         ) : null}
       </div>
       {evidence.state === "forbidden" ? (
-        <div className={styles.safetyNote}>برای مشاهده Audit این منبع، مجوز security.audit.read لازم است.</div>
+        <div className={styles.safetyNote}>
+          برای مشاهده Audit این منبع، مجوز security.audit.read لازم است.
+        </div>
       ) : evidence.items.length === 0 ? (
         <AdminPageState state="empty" title="رخداد Audit برای این پروموشن وجود ندارد" />
       ) : (
@@ -183,7 +191,9 @@ function AuditEvidence({ data }: { data: CommercePromotionDetail }) {
               <p>{event.reason ?? "بدون دلیل متنی"}</p>
               <footer>
                 <time dateTime={event.occurredAtUtc}>{formatDateTime(event.occurredAtUtc)}</time>
-                <code>{event.correlationId.slice(0, 8)}…{event.correlationId.slice(-4)}</code>
+                <code>
+                  {event.correlationId.slice(0, 8)}…{event.correlationId.slice(-4)}
+                </code>
               </footer>
             </article>
           ))}
@@ -259,7 +269,11 @@ export default async function CommercePromotionDetailPage({ params }: PromotionD
 
   return (
     <AdminSessionProvider admin={admin}>
-      <AdminShell activeSlug="commerce" title="جزئیات پروموشن" subtitle="Rule، Code، lifecycle و Audit">
+      <AdminShell
+        activeSlug="commerce"
+        title="جزئیات پروموشن"
+        subtitle="Rule، Code، lifecycle و Audit"
+      >
         {!canRead ? (
           <AdminPageState state="forbidden" />
         ) : (

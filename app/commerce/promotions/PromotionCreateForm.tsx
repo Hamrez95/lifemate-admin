@@ -86,7 +86,9 @@ export function PromotionCreateForm({ products, canWrite }: Props) {
               name="discountType"
               value={discountType}
               disabled={pending}
-              onChange={(event) => setDiscountType(event.target.value as "Percentage" | "FixedAmount")}
+              onChange={(event) =>
+                setDiscountType(event.target.value as "Percentage" | "FixedAmount")
+              }
             >
               <option value="Percentage">درصدی</option>
               <option value="FixedAmount">مبلغ ثابت</option>
@@ -95,17 +97,38 @@ export function PromotionCreateForm({ products, canWrite }: Props) {
           {discountType === "Percentage" ? (
             <label>
               <span>درصد تخفیف</span>
-              <input name="percentage" type="number" min="1" max="100" required disabled={pending} />
+              <input
+                name="percentage"
+                type="number"
+                min="1"
+                max="100"
+                required
+                disabled={pending}
+              />
             </label>
           ) : (
             <>
               <label>
                 <span>مبلغ ثابت · واحد کوچک ارز</span>
-                <input name="fixedAmountMinor" inputMode="numeric" pattern="[0-9]+" required disabled={pending} />
+                <input
+                  name="fixedAmountMinor"
+                  inputMode="numeric"
+                  pattern="[0-9]+"
+                  required
+                  disabled={pending}
+                />
               </label>
               <label>
                 <span>ارز</span>
-                <input name="currency" defaultValue="IRR" pattern="[A-Za-z]{3}" maxLength={3} dir="ltr" required disabled={pending} />
+                <input
+                  name="currency"
+                  defaultValue="IRR"
+                  pattern="[A-Za-z]{3}"
+                  maxLength={3}
+                  dir="ltr"
+                  required
+                  disabled={pending}
+                />
               </label>
             </>
           )}
@@ -119,11 +142,25 @@ export function PromotionCreateForm({ products, canWrite }: Props) {
           </label>
           <label>
             <span>سقف استفاده کل</span>
-            <input name="maxRedemptions" type="number" min="1" max="10000000" disabled={pending} placeholder="نامحدود" />
+            <input
+              name="maxRedemptions"
+              type="number"
+              min="1"
+              max="10000000"
+              disabled={pending}
+              placeholder="نامحدود"
+            />
           </label>
           <label>
             <span>سقف استفاده این کد</span>
-            <input name="codeMaxRedemptions" type="number" min="1" max="10000000" disabled={pending} placeholder="نامحدود" />
+            <input
+              name="codeMaxRedemptions"
+              type="number"
+              min="1"
+              max="10000000"
+              disabled={pending}
+              placeholder="نامحدود"
+            />
           </label>
         </div>
         <label className={styles.wideField}>

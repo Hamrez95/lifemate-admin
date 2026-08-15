@@ -35,9 +35,7 @@ describe("ADM-COM-005 Promotions / Discount Codes", () => {
   it("uses independent read and mutation permissions", () => {
     const page = source("app/commerce/promotions/page.tsx");
     const form = source("app/commerce/promotions/PromotionCreateForm.tsx");
-    const operations = source(
-      "app/commerce/promotions/[promotionId]/PromotionOperations.tsx",
-    );
+    const operations = source("app/commerce/promotions/[promotionId]/PromotionOperations.tsx");
 
     expect(page).toContain('admin.permissions.includes("commerce.read")');
     expect(page).toContain('admin.permissions.includes("commerce.promo.write")');
@@ -67,9 +65,7 @@ describe("ADM-COM-005 Promotions / Discount Codes", () => {
 
   it("makes edits and lifecycle changes separate reasoned idempotent actions", () => {
     const actions = source("app/commerce/promotions/[promotionId]/actions.ts");
-    const operations = source(
-      "app/commerce/promotions/[promotionId]/PromotionOperations.tsx",
-    );
+    const operations = source("app/commerce/promotions/[promotionId]/PromotionOperations.tsx");
 
     expect(actions).toContain("updateCommercePromotion");
     expect(actions).toContain("setCommercePromotionStatus");
@@ -86,7 +82,7 @@ describe("ADM-COM-005 Promotions / Discount Codes", () => {
 
     expect(list).toContain('state="forbidden"');
     expect(list).toContain('state="unavailable"');
-    expect(list).toContain("data.freshness.status === \"stale\"");
+    expect(list).toContain('data.freshness.status === "stale"');
     expect(detail).toContain('state="empty"');
     expect(detail).toContain('state="error"');
     expect(detail).toContain("security.audit.read");

@@ -16,8 +16,7 @@ export type PromotionActionState = {
 
 export const initialPromotionActionState: PromotionActionState = { status: "idle" };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
 const CODE_PATTERN = /^[A-Z0-9][A-Z0-9._-]{2,63}$/;
 const AMOUNT_PATTERN = /^\d+$/;
@@ -31,9 +30,7 @@ function optionalPositiveInteger(value: string): number | null | undefined {
   if (!value) return null;
   if (!/^\d+$/.test(value)) return undefined;
   const parsed = Number(value);
-  return Number.isSafeInteger(parsed) && parsed > 0 && parsed <= 10_000_000
-    ? parsed
-    : undefined;
+  return Number.isSafeInteger(parsed) && parsed > 0 && parsed <= 10_000_000 ? parsed : undefined;
 }
 
 function mutationState(

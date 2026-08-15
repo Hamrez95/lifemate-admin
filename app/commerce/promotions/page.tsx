@@ -127,8 +127,8 @@ function Hero() {
         <span className={styles.eyebrow}>Commerce · Promotion Rules</span>
         <h2 id="promotions-title">تخفیف را مدیریت کن، بدون دست‌زدن به Plan و Entitlement</h2>
         <p>
-          Promotion قانون تجاری است و Discount Code کلید استفاده از آن؛ هیچ‌کدام Plan، Entitlement یا
-          Transaction نیستند. تغییرات مالی با دلیل و idempotency ثبت می‌شوند.
+          Promotion قانون تجاری است و Discount Code کلید استفاده از آن؛ هیچ‌کدام Plan، Entitlement
+          یا Transaction نیستند. تغییرات مالی با دلیل و idempotency ثبت می‌شوند.
         </p>
         <Link href="/commerce" className={styles.secondaryAction}>
           بازگشت به نمای تجارت
@@ -285,12 +285,20 @@ const columns: readonly AdminTableColumn<CommercePromotionRow>[] = [
   },
 ];
 
-async function PromotionsContent({ query, canWrite }: { query: PromotionsQuery; canWrite: boolean }) {
+async function PromotionsContent({
+  query,
+  canWrite,
+}: {
+  query: PromotionsQuery;
+  canWrite: boolean;
+}) {
   const result = await getCommercePromotions(apiParams(query));
   if (result.kind === "unauthenticated") redirect("/login");
   if (result.kind === "forbidden") return <AdminPageState state="forbidden" />;
   if (result.kind === "invalid") {
-    return <AdminPageState state="error" title="فیلتر پروموشن معتبر نیست" description={result.message} />;
+    return (
+      <AdminPageState state="error" title="فیلتر پروموشن معتبر نیست" description={result.message} />
+    );
   }
   if (result.kind === "unavailable") {
     return (
@@ -304,7 +312,8 @@ async function PromotionsContent({ query, canWrite }: { query: PromotionsQuery; 
 
   const { data } = result;
   const previousHref = data.page > 1 ? pageHref(query, data.page - 1) : undefined;
-  const nextHref = data.page * data.pageSize < data.total ? pageHref(query, data.page + 1) : undefined;
+  const nextHref =
+    data.page * data.pageSize < data.total ? pageHref(query, data.page + 1) : undefined;
 
   return (
     <div className={styles.page} dir="rtl">
@@ -348,7 +357,11 @@ export default async function CommercePromotionsPage({ searchParams }: Promotion
 
   return (
     <AdminSessionProvider admin={admin}>
-      <AdminShell activeSlug="commerce" title="پروموشن و کد تخفیف" subtitle="قوانین تجاری قابل ممیزی LifeMate">
+      <AdminShell
+        activeSlug="commerce"
+        title="پروموشن و کد تخفیف"
+        subtitle="قوانین تجاری قابل ممیزی LifeMate"
+      >
         {!canRead ? (
           <AdminPageState state="forbidden" />
         ) : (

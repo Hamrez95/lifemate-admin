@@ -19,8 +19,7 @@ export type PromotionDetailActionState = {
 
 export const initialPromotionDetailActionState: PromotionDetailActionState = { status: "idle" };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
 const CODE_PATTERN = /^[A-Z0-9][A-Z0-9._-]{2,63}$/;
 const AMOUNT_PATTERN = /^\d+$/;
@@ -34,12 +33,13 @@ function optionalPositiveInteger(value: string): number | null | undefined {
   if (!value) return null;
   if (!/^\d+$/.test(value)) return undefined;
   const parsed = Number(value);
-  return Number.isSafeInteger(parsed) && parsed > 0 && parsed <= 10_000_000
-    ? parsed
-    : undefined;
+  return Number.isSafeInteger(parsed) && parsed > 0 && parsed <= 10_000_000 ? parsed : undefined;
 }
 
-function stateFromMutation(result: PromotionMutationResult, successMessage: string): PromotionDetailActionState {
+function stateFromMutation(
+  result: PromotionMutationResult,
+  successMessage: string,
+): PromotionDetailActionState {
   if (result.kind === "ok") return { status: "success", message: successMessage };
   if (result.kind === "forbidden" || result.kind === "unauthenticated") {
     return {
@@ -59,7 +59,10 @@ function stateFromMutation(result: PromotionMutationResult, successMessage: stri
     };
     return {
       status: "conflict",
-      message: (result.code && messages[result.code]) || result.message || "تغییر با وضعیت فعلی تعارض دارد.",
+      message:
+        (result.code && messages[result.code]) ||
+        result.message ||
+        "تغییر با وضعیت فعلی تعارض دارد.",
     };
   }
   if (result.kind === "invalid" || result.kind === "not_found") {
@@ -142,7 +145,12 @@ export async function updatePromotionAction(
   let fixedCurrency: string | null = null;
   if (discountType === "Percentage") {
     const percentage = Number(percentageRaw);
-    if (!/^\d+$/.test(percentageRaw) || !Number.isInteger(percentage) || percentage < 1 || percentage > 100) {
+    if (
+      !/^\d+$/.test(percentageRaw) ||
+      !Number.isInteger(percentage) ||
+      percentage < 1 ||
+      percentage > 100
+    ) {
       return { status: "invalid", message: "درصد تخفیف باید بین ۱ تا ۱۰۰ باشد." };
     }
     percentageBasisPoints = percentage * 100;
