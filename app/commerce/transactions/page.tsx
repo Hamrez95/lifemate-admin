@@ -403,9 +403,17 @@ const transactionColumns: readonly AdminTableColumn<CommerceTransactionRow>[] = 
   },
   {
     key: "reference",
-    header: "شناسه داخلی",
-    render: (row) => <code className={styles.identifier}>{shortId(row.transactionId)}</code>,
-    hideOnMobile: true,
+    header: "جزئیات",
+    render: (row) => (
+      <Link
+        href={`/commerce/transactions/${row.transactionId}`}
+        className={styles.detailLink}
+        aria-label={`مشاهده جزئیات تراکنش ${shortId(row.transactionId)}`}
+      >
+        <code className={styles.identifier}>{shortId(row.transactionId)}</code>
+        <span aria-hidden="true">←</span>
+      </Link>
+    ),
   },
 ];
 
@@ -507,7 +515,7 @@ async function TransactionsContent({ query }: { query: TransactionsQuery }) {
       <Filters query={query} data={data} />
       <AdminDataTable
         title="تراکنش‌ها"
-        description="وضعیت مالی نرمال‌شده؛ بدون credential، payload خام یا provider reference. برای جزئیات عملیاتی مالی، ADM-COM-004 مسیر جدا خواهد داشت."
+        description="وضعیت مالی نرمال‌شده؛ بدون credential، payload خام یا provider reference. هر تراکنش مسیر جزئیات audit-ready جدا دارد."
         rows={data.transactions.items}
         columns={transactionColumns}
         rowKey={(row) => row.transactionId}
