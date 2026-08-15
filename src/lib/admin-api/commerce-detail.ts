@@ -119,8 +119,7 @@ export type CommerceDetailResult<T> =
   | { kind: "invalid" }
   | { kind: "unavailable"; correlationId?: string };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const NON_NEGATIVE_INTEGER_STRING = /^\d+$/;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -138,24 +137,19 @@ function nullableString(value: unknown): value is string | null {
 function validFreshness(value: unknown): value is CommercePlanDetail["freshness"] {
   if (!isRecord(value)) return false;
   return (
-    (value.status === "fresh" || value.status === "stale") &&
-    typeof value.asOfUtc === "string"
+    (value.status === "fresh" || value.status === "stale") && typeof value.asOfUtc === "string"
   );
 }
 
 function validPage(body: Record<string, unknown>): boolean {
   return (
-    Number.isInteger(body.page) &&
-    Number.isInteger(body.pageSize) &&
-    validFreshness(body.freshness)
+    Number.isInteger(body.page) && Number.isInteger(body.pageSize) && validFreshness(body.freshness)
   );
 }
 
 function validInstrumentationState(value: unknown): value is InstrumentationState {
   return (
-    isRecord(value) &&
-    typeof value.instrumented === "boolean" &&
-    typeof value.reason === "string"
+    isRecord(value) && typeof value.instrumented === "boolean" && typeof value.reason === "string"
   );
 }
 
@@ -180,15 +174,7 @@ function validPlanDetail(value: unknown): value is CommercePlanDetail {
   if (!isRecord(value.subscriptionSummary) || !validCollection(value.subscriptions)) return false;
   if (!validInstrumentationState(value.changeHistory)) return false;
   if (!validInstrumentationState(value.transactionLinkage)) return false;
-  for (const key of [
-    "total",
-    "trial",
-    "active",
-    "pastDue",
-    "cancelled",
-    "expired",
-    "refunded",
-  ]) {
+  for (const key of ["total", "trial", "active", "pastDue", "cancelled", "expired", "refunded"]) {
     if (!nonNegativeInteger(value.subscriptionSummary[key])) return false;
   }
 
@@ -212,10 +198,7 @@ function validPlanDetail(value: unknown): value is CommercePlanDetail {
       if (typeof raw[key] !== "string") return false;
     }
     if (!Number.isInteger(raw.billingPeriodMonths)) return false;
-    if (
-      typeof raw.amountMinor !== "string" ||
-      !NON_NEGATIVE_INTEGER_STRING.test(raw.amountMinor)
-    ) {
+    if (typeof raw.amountMinor !== "string" || !NON_NEGATIVE_INTEGER_STRING.test(raw.amountMinor)) {
       return false;
     }
   }
@@ -227,7 +210,8 @@ function validPlanDetail(value: unknown): value is CommercePlanDetail {
     for (const key of ["status", "startsAtUtc", "createdAtUtc", "updatedAtUtc"]) {
       if (typeof raw[key] !== "string") return false;
     }
-    if (!nullableString(raw.currentPeriodEndUtc) || !nullableString(raw.cancelledAtUtc)) return false;
+    if (!nullableString(raw.currentPeriodEndUtc) || !nullableString(raw.cancelledAtUtc))
+      return false;
   }
   return true;
 }
@@ -337,10 +321,7 @@ export async function getCommercePlanDetail(
   params: URLSearchParams,
 ): Promise<CommerceDetailResult<CommercePlanDetail>> {
   if (!UUID_PATTERN.test(planId)) return { kind: "not_found" };
-  return requestDetail(
-    `/api/v1/commerce/plans/${planId}?${params.toString()}`,
-    validPlanDetail,
-  );
+  return requestDetail(`/api/v1/commerce/plans/${planId}?${params.toString()}`, validPlanDetail);
 }
 
 export async function getCommerceEntitlementDetail(
