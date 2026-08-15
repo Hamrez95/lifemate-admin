@@ -448,6 +448,14 @@
   white-space: nowrap;
 }
 
+.page :global(a:focus-visible),
+.page :global(button:focus-visible),
+.page :global(select:focus-visible),
+.page :global(input:focus-visible) {
+  outline: 3px solid rgba(52, 120, 246, 0.24);
+  outline-offset: 2px;
+}
+
 @media (max-width: 1180px) {
   .summaryGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -518,5 +526,15 @@
   .highlightPanel li {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page :global(a),
+  .page :global(button),
+  .page :global(select),
+  .page :global(input) {
+    animation: none !important;
+    transition: none !important;
   }
 }
