@@ -42,12 +42,16 @@ The browser does not directly query healthcare/admin tables and never contains p
 
 ## Current execution position
 
-As of the 2026-08-15 milestone sync, implementation is verified complete through `ADM-COM-003` (#36): Core PR #186 and Admin PR #67 are merged and the Issue is closed.
+As of the 2026-08-15 milestone sync, Commerce is verified complete through `ADM-COM-005` (#16):
+
+- `ADM-COM-004` — Core PR #189 / Admin PR #69.
+- `ADM-COM-005` — Core PR #197 / Admin PR #70.
+- Admin PR #70 passed format, browser-secret boundary, lint, TypeScript, unit tests and production build before merge.
 
 The next strictly sequential task is:
 
-1. `ADM-COM-004` — Transaction Detail / Audited Financial Actions (#37)
-2. then `ADM-COM-005` — Promotions / Discount Codes (#16)
+1. `ADM-PLAT-002` — Secure Global Search / Command Palette (#4)
+2. then `ADM-PLAT-003` — Admin Notification Center / Alerts (#30)
 
 Always re-read Master Issue #49 before starting, because it is canonical and may have advanced since this document was written. Do not start a later feature merely because its UI is easier.
 
@@ -84,21 +88,29 @@ Production rollout remains a separate gate under `ADM-OPS-002` (#24). Before tha
 - compare live state to the exact core migration/function version;
 - only then follow the gated rollout Issue.
 
-Do not apply migrations or deploy functions as a side effect of unrelated feature work.
+A read-only migration check on 2026-08-15 did not show the Command Center control-plane/Commerce migrations in live Supabase. Do not apply migrations or deploy functions as a side effect of unrelated feature work.
 
 ## Commerce safety contract
 
-The merged ADM-COM-003 slice intentionally keeps:
+The merged Commerce slices intentionally keep:
 
-`Order ≠ Transaction ≠ Provider Event`
+`Plan ≠ Entitlement ≠ Order ≠ Transaction ≠ Provider Event ≠ Promotion ≠ Discount Code`
 
 - Order is commercial intent.
 - Transaction is normalized financial state.
 - Provider Event is an observation received from an external provider.
+- Promotion is a commercial rule; Discount Code is a redeemable code attached to that rule.
 - Provider references remain hash-only in persistence and do not enter the Admin browser contract.
-- `amountMinor` is string-backed for bigint precision safety.
-- Admin browser receives `accountLinked` rather than an account identifier.
-- Financial mutations introduced by later tasks require explicit permission and immutable audit rather than inheriting `commerce.read` automatically.
+- Minor-unit money remains string-backed where PostgreSQL bigint precision matters.
+- Admin browser receives privacy-minimized identity state rather than raw account identifiers in financial surfaces.
+- Refund requests use explicit `commerce.refund`; promotion mutations use canonical `commerce.promo.write`; neither permission is inherited from `commerce.read`.
+- Promotion creation is Draft-only; financial-rule edits and lifecycle transitions are reasoned, idempotent and audited.
+- List code values are masked and code filtering is exact-only to reduce enumeration risk.
+- Redemption counts remain explicit unavailable/null until a canonical source exists; never fabricate them.
+
+## Next-task security focus — ADM-PLAT-002
+
+Secure Global Search must not become an RBAC bypass. Search adapters may only return resources from domains the current admin is already authorized to read. Lack of permission must not leak resource existence. Raw health and Women Health are excluded. Queries and result counts must be bounded, logs must avoid raw sensitive query text, and browser code must continue to use the Admin API rather than direct database access.
 
 ## Design use
 
