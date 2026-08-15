@@ -30,6 +30,7 @@ export function Sidebar({ activeSlug }: SidebarProps) {
                   className="nav-item"
                   data-active={active ? "true" : "false"}
                   href={workspaceHref(workspace)}
+                  aria-label={workspace.label}
                   aria-current={active ? "page" : undefined}
                 >
                   <span className="nav-item__symbol" aria-hidden="true">

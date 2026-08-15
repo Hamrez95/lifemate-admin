@@ -5,11 +5,11 @@
   --lm-surface-raised: #ffffff;
   --lm-surface-soft: #f4f2ed;
   --lm-text: #152238;
-  --lm-text-muted: #697386;
+  --lm-text-muted: #596478;
   --lm-border: #e5e0d7;
   --lm-border-strong: #d9d2c7;
   --lm-green: #17ad68;
-  --lm-green-deep: #0d8a52;
+  --lm-green-deep: #087a47;
   --lm-green-soft: #eaf8f0;
   --lm-blue: #3478f6;
   --lm-blue-soft: #edf4ff;
@@ -930,4 +930,9 @@ input:focus-visible,
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+/* ADM-QA-001 verified WCAG contrast repairs */
+.standalone-state__card > span {
+  color: var(--lm-green-deep);
 }

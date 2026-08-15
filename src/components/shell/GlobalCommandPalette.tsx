@@ -338,6 +338,7 @@ export function GlobalCommandPalette() {
         type="button"
         className={styles.trigger}
         onClick={() => setOpen(true)}
+        aria-label="باز کردن جست‌وجو و فرمان"
         aria-haspopup="dialog"
         aria-expanded={open}
       >

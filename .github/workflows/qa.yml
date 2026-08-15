@@ -1,0 +1,70 @@
+name: admin-qa
+
+on:
+  pull_request:
+    paths:
+      - "app/**"
+      - "src/**"
+      - "e2e/**"
+      - "tests/**"
+      - "scripts/qa/**"
+      - "playwright.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - "docs/qa/**"
+      - ".github/workflows/qa.yml"
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "src/**"
+      - "e2e/**"
+      - "tests/**"
+      - "scripts/qa/**"
+      - "playwright.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - "docs/qa/**"
+      - ".github/workflows/qa.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: admin-qa-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-security-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          show-progress: false
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install pinned Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Run security denial matrix and browser QA
+        run: npm run test:qa
+
+      - name: Upload Playwright QA artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: command-center-playwright-${{ github.run_id }}
+          path: |
+            playwright-report
+            test-results/playwright
+          if-no-files-found: ignore
+          retention-days: 7

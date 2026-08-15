@@ -15,7 +15,11 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "security:check": "node scripts/security-check.mjs"
+    "security:check": "node scripts/security-check.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:update": "playwright test --update-snapshots",
+    "test:security-denial": "vitest run tests/security-denial-matrix.test.ts tests/auth-mfa-security-contract.test.ts",
+    "test:qa": "npm run test:security-denial && npm run test:e2e"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.4",
@@ -25,6 +29,8 @@
     "react-dom": "19.2.7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.62.1",
     "@types/node": "^24.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",

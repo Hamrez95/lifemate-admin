@@ -4,7 +4,7 @@ type LifeMateLogoProps = {
 
 export function LifeMateLogo({ compact = false }: LifeMateLogoProps) {
   return (
-    <div className="brand" aria-label="LifeMate">
+    <div className="brand" role="img" aria-label="LifeMate">
       <svg className="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
         <path d="M18 10c-5 0-9 4-9 9s4 9 9 9h6" />
         <path d="M30 38c5 0 9-4 9-9s-4-9-9-9h-6" />
