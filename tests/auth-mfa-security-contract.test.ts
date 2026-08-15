@@ -37,7 +37,7 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(server).toContain('cache: "no-store"');
     expect(server).toContain("AbortSignal.timeout(10_000)");
     expect(proxy).toContain("await supabase.auth.getClaims()");
-    expect(proxy).not.toContain("getSession()");
+    expect(proxy).not.toContain("supabase.auth.getSession(");
   });
 
   it("keeps login errors generic and does not log OTP TOTP or enrollment secrets", () => {
