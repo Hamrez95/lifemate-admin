@@ -315,9 +315,16 @@ function AuditEvidence({
 
 function SourceStrip({ data }: { data: CommerceTransactionDetail }) {
   return (
-    <div className={styles.sourceStrip} aria-label="منبع و تازگی داده">
+    <div
+      className={styles.sourceStrip}
+      data-status={data.freshness.status}
+      aria-label="منبع و تازگی داده"
+    >
       <span>{data.source.label}</span>
       <span>Snapshot: {formatDateTime(data.freshness.asOfUtc)}</span>
+      <span>
+        {data.freshness.status === "stale" ? "وضعیت داده: نیازمند تازه‌سازی" : "وضعیت داده: تازه"}
+      </span>
       <span>Provider reference و account identifier در مرورگر وجود ندارند</span>
     </div>
   );
@@ -343,9 +350,7 @@ async function TransactionDetailContent({ transactionId }: { transactionId: stri
     return (
       <AdminPageState
         state="unavailable"
-        description={
-          result.correlationId ? `کد پیگیری: ${result.correlationId}` : undefined
-        }
+        description={result.correlationId ? `کد پیگیری: ${result.correlationId}` : undefined}
       />
     );
   }
