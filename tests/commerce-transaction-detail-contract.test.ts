@@ -98,7 +98,7 @@ describe("ADM-COM-004 Transaction Detail / Audited Financial Actions", () => {
     expect(page).toContain('dir="rtl"');
     expect(page).toContain('aria-labelledby="provider-timeline-title"');
     expect(operation).toContain('aria-labelledby="refund-title"');
-    expect(css).toContain("var(--lm-green)");
+    expect(css).toContain("var(--lm-green-deep)");
     expect(css).toContain("var(--lm-blue)");
     expect(css).toContain("var(--lm-orange-soft)");
     expect(css).toContain("var(--lm-violet-soft)");
