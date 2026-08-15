@@ -1,0 +1,46 @@
+name: tmp-adm-plat-002-ts-fix
+
+on:
+  pull_request:
+    paths:
+      - 'src/components/shell/GlobalCommandPalette.tsx'
+      - '.github/workflows/tmp-adm-plat-002-ts-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-and-remove:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          persist-credentials: true
+          show-progress: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+      - name: Fix strict NodeList indexing and remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('src/components/shell/GlobalCommandPalette.tsx')
+          text = path.read_text()
+          old = '''      const first = focusable[0];\n      const last = focusable[focusable.length - 1];'''
+          new = '''      const first = focusable[0]!;\n      const last = focusable[focusable.length - 1]!;'''
+          if old not in text:
+              raise SystemExit('NodeList anchor missing')
+          path.write_text(text.replace(old, new, 1))
+          PY
+          npm install --no-audit --no-fund
+          npm run format
+          git rm -f .github/workflows/tmp-adm-plat-002-ts-fix.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/components/shell/GlobalCommandPalette.tsx
+          git commit -m 'fix(admin): satisfy strict focus trap indexing'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
