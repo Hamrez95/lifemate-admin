@@ -174,7 +174,7 @@ function FeatureRules({ data }: { data: CommercePlanDetail }) {
         <>
           {data.featureRules.total > data.featureRules.items.length ? (
             <p className={styles.emptyNote}>
-              {data.featureRules.items.length.toLocaleString("fa-IR")} قاعده از مجموع {" "}
+              {data.featureRules.items.length.toLocaleString("fa-IR")} قاعده از مجموع{" "}
               {data.featureRules.total.toLocaleString("fa-IR")} قاعده نمایش داده می‌شود.
             </p>
           ) : null}
@@ -219,7 +219,7 @@ function Prices({ data }: { data: CommercePlanDetail }) {
         <>
           {data.prices.total > data.prices.items.length ? (
             <p className={styles.emptyNote}>
-              {data.prices.items.length.toLocaleString("fa-IR")} قیمت اخیر از مجموع {" "}
+              {data.prices.items.length.toLocaleString("fa-IR")} قیمت اخیر از مجموع{" "}
               {data.prices.total.toLocaleString("fa-IR")} رکورد نمایش داده می‌شود.
             </p>
           ) : null}
@@ -240,7 +240,8 @@ function Prices({ data }: { data: CommercePlanDetail }) {
                   <span>{price.billingPeriodMonths.toLocaleString("fa-IR")} ماهه</span>
                 </div>
                 <p>
-                  از {formatDateTime(price.effectiveFromUtc)} تا {formatDateTime(price.effectiveToUtc)}
+                  از {formatDateTime(price.effectiveFromUtc)} تا{" "}
+                  {formatDateTime(price.effectiveToUtc)}
                 </p>
               </article>
             ))}
@@ -334,8 +335,8 @@ async function PlanContent({ planId, page }: { planId: string; page: number }) {
       <Hero data={data} />
       {data.plan.status === "Retired" || data.product.status === "Retired" ? (
         <div className={styles.warning}>
-          <strong>هشدار lifecycle:</strong> این پلن یا محصول بازنشسته است؛ وضعیت را به‌عنوان داده تاریخی
-          بخوان و فعال بودن دسترسی کاربران را از Entitlement نتیجه بگیر، نه از Plan.
+          <strong>هشدار lifecycle:</strong> این پلن یا محصول بازنشسته است؛ وضعیت را به‌عنوان داده
+          تاریخی بخوان و فعال بودن دسترسی کاربران را از Entitlement نتیجه بگیر، نه از Plan.
         </div>
       ) : null}
       <PlanFacts data={data} />
