@@ -107,6 +107,10 @@
   color: var(--lm-green-deep);
 }
 
+.statusBadge[data-status="Active"] {
+  border-color: var(--lm-green);
+}
+
 .statusBadge[data-status="Retired"],
 .statusBadge[data-status="Expired"],
 .statusBadge[data-status="Revoked"],
