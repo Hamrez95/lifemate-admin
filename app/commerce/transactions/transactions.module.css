@@ -431,7 +431,8 @@
   gap: 11px;
   border: 1px solid var(--lm-border);
   border-radius: 18px;
-  background: linear-gradient(145deg, rgba(255, 242, 232, 0.42), transparent 45%), var(--lm-surface-raised);
+  background:
+    linear-gradient(145deg, rgba(255, 242, 232, 0.42), transparent 45%), var(--lm-surface-raised);
   padding: 16px;
 }
 
