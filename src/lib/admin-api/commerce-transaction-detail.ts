@@ -122,15 +122,29 @@ export type CommerceRefundActionResult =
   | { kind: "invalid"; code?: string; message?: string }
   | { kind: "unavailable"; correlationId?: string };
 
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
-const TRANSACTION_STATUSES = new Set([
+const AMOUNT_MINOR_PATTERN = /^\d+$/;
+const CURRENCY_PATTERN = /^[A-Z]{3}$/;
+const TRANSACTION_STATUSES = new Set<CommerceTransactionStatus>([
   "Pending",
   "Succeeded",
   "Failed",
   "Cancelled",
   "Refunded",
   "Chargeback",
+]);
+const OBSERVATION_STATES = new Set<CommerceProviderEvent["observationState"]>([
+  "InOrder",
+  "Duplicate",
+  "OutOfOrder",
+]);
+const REFUND_CAPABILITY_REASONS = new Set<CommerceTransactionDetail["refundCapability"]["reason"]>([
+  "Available",
+  "MissingPermission",
+  "TransactionNotEligible",
+  "WorkflowAlreadyActive",
 ]);
 
 async function accessToken(): Promise<string | null> {
@@ -166,38 +180,312 @@ async function problem(response: Response): Promise<{
   }
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
 function isString(value: unknown): value is string {
   return typeof value === "string";
 }
 
+function isSafeText(value: unknown, maxLength = 1000): value is string {
+  return isString(value) && value.length > 0 && value.length <= maxLength;
+}
+
+function isNullableText(value: unknown, maxLength = 1000): value is string | null {
+  return value === null || (isString(value) && value.length <= maxLength);
+}
+
+function isUuid(value: unknown): value is string {
+  return isString(value) && UUID_PATTERN.test(value);
+}
+
+function isNullableUuid(value: unknown): value is string | null {
+  return value === null || isUuid(value);
+}
+
+function isDateTime(value: unknown): value is string {
+  return isString(value) && value.length <= 64 && !Number.isNaN(Date.parse(value));
+}
+
+function isNullableDateTime(value: unknown): value is string | null {
+  return value === null || isDateTime(value);
+}
+
+function isAmountMinor(value: unknown): value is string {
+  return isString(value) && AMOUNT_MINOR_PATTERN.test(value);
+}
+
+function isCurrency(value: unknown): value is string {
+  return isString(value) && CURRENCY_PATTERN.test(value);
+}
+
+function isTransactionStatus(value: unknown): value is CommerceTransactionStatus {
+  return isString(value) && TRANSACTION_STATUSES.has(value as CommerceTransactionStatus);
+}
+
+function parseProduct(value: unknown): CommerceTransactionDetail["transaction"]["product"] | null {
+  if (!isRecord(value) || !isSafeText(value.code, 64) || !isSafeText(value.name, 200)) {
+    return null;
+  }
+  return { code: value.code, name: value.name };
+}
+
+function parseOrder(value: unknown): CommerceTransactionDetail["transaction"]["order"] | undefined {
+  if (value === null) return null;
+  if (
+    !isRecord(value) ||
+    !isUuid(value.orderId) ||
+    !isSafeText(value.status, 64) ||
+    !isAmountMinor(value.amountMinor) ||
+    !isCurrency(value.currency) ||
+    !isDateTime(value.occurredAtUtc) ||
+    !isDateTime(value.createdAtUtc) ||
+    !isDateTime(value.updatedAtUtc)
+  ) {
+    return undefined;
+  }
+  return {
+    orderId: value.orderId,
+    status: value.status,
+    amountMinor: value.amountMinor,
+    currency: value.currency,
+    occurredAtUtc: value.occurredAtUtc,
+    createdAtUtc: value.createdAtUtc,
+    updatedAtUtc: value.updatedAtUtc,
+  };
+}
+
+function parsePlan(
+  value: unknown,
+): NonNullable<NonNullable<CommerceTransactionDetail["transaction"]["subscription"]>["plan"]> | null | undefined {
+  if (value === null) return null;
+  if (
+    !isRecord(value) ||
+    !isUuid(value.planId) ||
+    !isSafeText(value.code, 64) ||
+    !isSafeText(value.name, 200)
+  ) {
+    return undefined;
+  }
+  return { planId: value.planId, code: value.code, name: value.name };
+}
+
+function parseSubscription(
+  value: unknown,
+): CommerceTransactionDetail["transaction"]["subscription"] | undefined {
+  if (value === null) return null;
+  if (
+    !isRecord(value) ||
+    !isUuid(value.subscriptionId) ||
+    !isSafeText(value.status, 64) ||
+    !isDateTime(value.startsAtUtc) ||
+    !isNullableDateTime(value.currentPeriodEndUtc) ||
+    !isNullableDateTime(value.cancelledAtUtc)
+  ) {
+    return undefined;
+  }
+  const plan = parsePlan(value.plan);
+  if (plan === undefined) return undefined;
+  return {
+    subscriptionId: value.subscriptionId,
+    status: value.status,
+    startsAtUtc: value.startsAtUtc,
+    currentPeriodEndUtc: value.currentPeriodEndUtc,
+    cancelledAtUtc: value.cancelledAtUtc,
+    plan,
+  };
+}
+
+function parseTransaction(value: unknown): CommerceTransactionDetail["transaction"] | null {
+  if (!isRecord(value)) return null;
+  const product = parseProduct(value.product);
+  const order = parseOrder(value.order);
+  const subscription = parseSubscription(value.subscription);
+  if (
+    !product ||
+    order === undefined ||
+    subscription === undefined ||
+    !isUuid(value.transactionId) ||
+    !isNullableUuid(value.orderId) ||
+    !isNullableUuid(value.subscriptionId) ||
+    typeof value.accountLinked !== "boolean" ||
+    !isSafeText(value.provider, 128) ||
+    !isSafeText(value.providerStatus, 256) ||
+    !isTransactionStatus(value.normalizedStatus) ||
+    !isAmountMinor(value.amountMinor) ||
+    !isCurrency(value.currency) ||
+    !isDateTime(value.occurredAtUtc) ||
+    !isDateTime(value.receivedAtUtc) ||
+    !isDateTime(value.createdAtUtc) ||
+    !isDateTime(value.updatedAtUtc)
+  ) {
+    return null;
+  }
+  return {
+    transactionId: value.transactionId,
+    orderId: value.orderId,
+    subscriptionId: value.subscriptionId,
+    accountLinked: value.accountLinked,
+    product,
+    provider: value.provider,
+    providerStatus: value.providerStatus,
+    normalizedStatus: value.normalizedStatus,
+    amountMinor: value.amountMinor,
+    currency: value.currency,
+    occurredAtUtc: value.occurredAtUtc,
+    receivedAtUtc: value.receivedAtUtc,
+    createdAtUtc: value.createdAtUtc,
+    updatedAtUtc: value.updatedAtUtc,
+    order,
+    subscription,
+  };
+}
+
+function parseProviderEvent(value: unknown): CommerceProviderEvent | null {
+  if (
+    !isRecord(value) ||
+    !isUuid(value.eventId) ||
+    !isSafeText(value.providerStatus, 256) ||
+    !isTransactionStatus(value.normalizedStatus) ||
+    !isString(value.observationState) ||
+    !OBSERVATION_STATES.has(value.observationState as CommerceProviderEvent["observationState"]) ||
+    !isDateTime(value.occurredAtUtc) ||
+    !isDateTime(value.receivedAtUtc) ||
+    !isDateTime(value.recordedAtUtc)
+  ) {
+    return null;
+  }
+  return {
+    eventId: value.eventId,
+    providerStatus: value.providerStatus,
+    normalizedStatus: value.normalizedStatus,
+    observationState: value.observationState as CommerceProviderEvent["observationState"],
+    occurredAtUtc: value.occurredAtUtc,
+    receivedAtUtc: value.receivedAtUtc,
+    recordedAtUtc: value.recordedAtUtc,
+  };
+}
+
+function parseRefundRequest(value: unknown): CommerceRefundRequest | null {
+  if (
+    !isRecord(value) ||
+    !isUuid(value.refundRequestId) ||
+    !isSafeText(value.status, 64) ||
+    !isAmountMinor(value.amountMinor) ||
+    !isCurrency(value.currency) ||
+    !isSafeText(value.reason, 1000) ||
+    !isDateTime(value.requestedAtUtc) ||
+    !isNullableDateTime(value.reviewedAtUtc) ||
+    !isNullableText(value.resolutionReason, 1000) ||
+    !isDateTime(value.updatedAtUtc)
+  ) {
+    return null;
+  }
+  return {
+    refundRequestId: value.refundRequestId,
+    status: value.status,
+    amountMinor: value.amountMinor,
+    currency: value.currency,
+    reason: value.reason,
+    requestedAtUtc: value.requestedAtUtc,
+    reviewedAtUtc: value.reviewedAtUtc,
+    resolutionReason: value.resolutionReason,
+    updatedAtUtc: value.updatedAtUtc,
+  };
+}
+
+function parseAuditEvent(value: unknown): CommerceAuditEvent | null {
+  if (
+    !isRecord(value) ||
+    !isUuid(value.auditEventId) ||
+    !isSafeText(value.action, 200) ||
+    !isSafeText(value.result, 64) ||
+    !isNullableText(value.reason, 1000) ||
+    !isUuid(value.correlationId) ||
+    typeof value.actorLinked !== "boolean" ||
+    !isDateTime(value.occurredAtUtc)
+  ) {
+    return null;
+  }
+  return {
+    auditEventId: value.auditEventId,
+    action: value.action,
+    result: value.result,
+    reason: value.reason,
+    correlationId: value.correlationId,
+    actorLinked: value.actorLinked,
+    occurredAtUtc: value.occurredAtUtc,
+  };
+}
+
 function parseDetail(value: unknown): CommerceTransactionDetail | null {
-  if (!value || typeof value !== "object") return null;
-  const body = value as Record<string, unknown>;
-  if (!body.transaction || typeof body.transaction !== "object") return null;
-  const transaction = body.transaction as Record<string, unknown>;
+  if (!isRecord(value)) return null;
+  const transaction = parseTransaction(value.transaction);
+  if (!transaction || !Array.isArray(value.providerEvents) || !Array.isArray(value.refundRequests)) {
+    return null;
+  }
+  const providerEvents = value.providerEvents.map(parseProviderEvent);
+  const refundRequests = value.refundRequests.map(parseRefundRequest);
+  if (providerEvents.some((item) => item === null) || refundRequests.some((item) => item === null)) {
+    return null;
+  }
+
+  if (!isRecord(value.auditEvidence)) return null;
+  let auditEvidence: CommerceTransactionDetail["auditEvidence"];
+  if (value.auditEvidence.state === "forbidden") {
+    auditEvidence = { state: "forbidden" };
+  } else if (value.auditEvidence.state === "ready" && Array.isArray(value.auditEvidence.items)) {
+    const items = value.auditEvidence.items.map(parseAuditEvent);
+    if (items.some((item) => item === null)) return null;
+    auditEvidence = { state: "ready", items: items as CommerceAuditEvent[] };
+  } else {
+    return null;
+  }
+
   if (
-    !isString(transaction.transactionId) ||
-    !UUID_PATTERN.test(transaction.transactionId)
+    !isRecord(value.refundCapability) ||
+    typeof value.refundCapability.available !== "boolean" ||
+    value.refundCapability.permissionRequired !== "commerce.refund" ||
+    !isString(value.refundCapability.reason) ||
+    !REFUND_CAPABILITY_REASONS.has(
+      value.refundCapability.reason as CommerceTransactionDetail["refundCapability"]["reason"],
+    )
   ) {
     return null;
   }
-  if (!isString(transaction.amountMinor) || !isString(transaction.currency)) return null;
+
   if (
-    !isString(transaction.normalizedStatus) ||
-    !TRANSACTION_STATUSES.has(transaction.normalizedStatus)
+    !isRecord(value.source) ||
+    value.source.kind !== "canonical" ||
+    !isSafeText(value.source.label, 200)
   ) {
     return null;
   }
-  if (typeof transaction.accountLinked !== "boolean") return null;
-  if (!Array.isArray(body.providerEvents) || !Array.isArray(body.refundRequests)) return null;
-  if (!body.auditEvidence || typeof body.auditEvidence !== "object") return null;
-  if (!body.refundCapability || typeof body.refundCapability !== "object") return null;
-  if (!body.source || typeof body.source !== "object") return null;
-  if (!body.freshness || typeof body.freshness !== "object") return null;
-  const freshness = body.freshness as Record<string, unknown>;
-  if (freshness.status !== "fresh" && freshness.status !== "stale") return null;
-  if (!isString(freshness.asOfUtc)) return null;
-  return body as unknown as CommerceTransactionDetail;
+  if (
+    !isRecord(value.freshness) ||
+    (value.freshness.status !== "fresh" && value.freshness.status !== "stale") ||
+    !isDateTime(value.freshness.asOfUtc)
+  ) {
+    return null;
+  }
+
+  return {
+    transaction,
+    providerEvents: providerEvents as CommerceProviderEvent[],
+    refundRequests: refundRequests as CommerceRefundRequest[],
+    auditEvidence,
+    refundCapability: {
+      available: value.refundCapability.available,
+      permissionRequired: "commerce.refund",
+      reason: value.refundCapability.reason as CommerceTransactionDetail["refundCapability"]["reason"],
+    },
+    source: { kind: "canonical", label: value.source.label },
+    freshness: {
+      status: value.freshness.status,
+      asOfUtc: value.freshness.asOfUtc,
+    },
+  };
 }
 
 export async function getCommerceTransactionDetail(
@@ -271,14 +559,12 @@ export async function requestCommerceRefundWorkflow(input: {
   if (response.ok) {
     const body = (await response.json()) as Record<string, unknown>;
     if (
-      !isString(body.transactionId) ||
-      !UUID_PATTERN.test(body.transactionId) ||
-      !isString(body.refundRequestId) ||
-      !UUID_PATTERN.test(body.refundRequestId) ||
-      !isString(body.status) ||
-      !isString(body.amountMinor) ||
-      !isString(body.currency) ||
-      !isString(body.transactionStatus) ||
+      !isUuid(body.transactionId) ||
+      !isUuid(body.refundRequestId) ||
+      !isSafeText(body.status, 64) ||
+      !isAmountMinor(body.amountMinor) ||
+      !isCurrency(body.currency) ||
+      !isTransactionStatus(body.transactionStatus) ||
       typeof body.replayed !== "boolean" ||
       body.workflow !== "HumanReview" ||
       body.providerActionExecuted !== false
