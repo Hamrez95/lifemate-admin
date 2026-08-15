@@ -28,17 +28,17 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
+          import re
+
           path = Path('src/lib/admin-api/commerce-promotions.ts')
           text = path.read_text()
 
-          projection_old = '''  const {
-            primaryCodeMasked: _masked,
-            primaryCodeStatus: _status,
-            primaryCodeMaxRedemptions: _limit,
-            codeCount: _count,
-            ...detailPromotion
-          } = row;'''
-          projection_new = '''  const detailPromotion: CommercePromotionDetail["promotion"] = {
+          pattern = re.compile(
+              r'\s*const\s*\{\s*primaryCodeMasked:\s*_masked,\s*primaryCodeStatus:\s*_status,\s*primaryCodeMaxRedemptions:\s*_limit,\s*codeCount:\s*_count,\s*\.\.\.detailPromotion\s*\}\s*=\s*row;',
+              re.MULTILINE,
+          )
+          replacement = '''
+          const detailPromotion: CommercePromotionDetail["promotion"] = {
             promotionId: row.promotionId,
             name: row.name,
             description: row.description,
@@ -53,14 +53,14 @@ jobs:
             createdAtUtc: row.createdAtUtc,
             updatedAtUtc: row.updatedAtUtc,
           };'''
-          if projection_old not in text:
-              raise SystemExit('expected projection block not found')
-          text = text.replace(projection_old, projection_new)
+          text, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit(f'expected one detail projection block, found {count}')
 
-          guard = '  if (!isRecord(value.summary) || !isRecord(value.filters) || !isRecord(value.source)) return null;\n'
+          guard = 'if (!isRecord(value.summary) || !isRecord(value.filters) || !isRecord(value.source)) return null;'
           if guard not in text:
               raise SystemExit('expected summary guard not found')
-          text = text.replace(guard, guard + '  const summary = value.summary;\n', 1)
+          text = text.replace(guard, guard + '\n  const summary = value.summary;', 1)
           text = text.replace('value.summary[key]', 'summary[key]')
           text = text.replace('Number(value.summary.total)', 'Number(summary.total)')
           text = text.replace('Number(value.summary.draft)', 'Number(summary.draft)')
