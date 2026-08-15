@@ -92,14 +92,16 @@ Every task Issue must be self-contained and include Goal, Scope, UI/UX, Backend/
 
 - No direct browser access to sensitive Supabase/admin/health tables.
 - All list APIs use server-side pagination and bounded limits.
+- Current Command Center pageable API ceilings are max page 100 and max page size 100; stricter endpoint-specific limits remain stricter.
+- Serialized Admin API JSON responses have a 512 KiB fail-closed budget.
+- Admin server clients use `cache: "no-store"` and bounded timeouts of at most 10 seconds; timeout means unavailable, not empty/zero.
 - Sensitive mutations require authorization, validation, idempotency, reason where applicable and immutable audit.
 - Raw Health is default deny. Women Health is stricter.
 - Relationship does not automatically create Access Grant; Admin role is not caregiver access.
 - Global Search is allow-listed and permission-filtered; it never exposes raw Health, Women Health or arbitrary SQL.
 - Notification counts/lists are permission-filtered; Operations alerts use metadata-only projections; missing source instrumentation is explicit.
-- `admin-qa` is now a permanent merge gate: isolated synthetic MFA E2E, denial matrix, Axe, responsive/RTL and visual baselines; CI retries stay zero.
-- Performance work must measure representative approved read models/endpoints without importing PII/PHI or production secrets into fixtures/logs/artifacts.
-- Large-list APIs remain bounded; query/index/cache/rate-limit changes require representative explain/benchmark evidence and safe failure behavior.
+- `admin-qa` is a permanent merge gate: isolated synthetic MFA E2E, denial matrix, Axe, responsive/RTL and visual baselines; CI retries stay zero.
+- Performance fixtures, caches and telemetry must not import production PII/PHI, raw search text, secrets, payment/provider payloads, Health or Women Health content.
 - AI phase 1 is read-only and cannot access raw health, execute unrestricted SQL, mutate business state or auto-publish social content.
 - Human approval is mandatory for social publishing.
 - Actual financials and forecast data are distinct.
@@ -107,10 +109,10 @@ Every task Issue must be self-contained and include Goal, Scope, UI/UX, Backend/
 
 ## Verified execution position
 
-Completed through `ADM-QA-001` (#5): Admin PR #76. `ADM-PLAT-003` (#30) is Core #201 / Admin #74; `ADM-PLAT-002` (#4) is Core #198 / Admin #72; Commerce remains complete through `ADM-COM-005` (#16): Core #197 / Admin #70.
+Completed through `ADM-PERF-001` (#39): Core PR #231 / Admin PR #78. `ADM-QA-001` (#5) is Admin #76, `ADM-PLAT-003` (#30) is Core #201 / Admin #74, `ADM-PLAT-002` (#4) is Core #198 / Admin #72, and Commerce remains complete through `ADM-COM-005` (#16): Core #197 / Admin #70.
 
 Current strictly sequential focus:
 
-1. `ADM-PERF-001` — Dataset Performance Guardrails (#39)
+1. `ADM-HOME-001` — Founder / Executive Overview (#6)
 
-The browser/security regression gate is now permanent, so performance guardrails are the current foundation task before additional feature breadth. Master Issue #49 is canonical. `ADM-OPS-002` (#24) remains the separate production rollout gate; source merges do not imply deployment.
+The platform is now protected by permanent browser/security QA and dataset performance guardrails. The current task is to replace the Home foundation placeholders with trusted, permission-aware, freshness-labelled executive data only. Master Issue #49 is canonical. `ADM-OPS-002` (#24) remains the separate production rollout gate; source merges do not imply deployment.
