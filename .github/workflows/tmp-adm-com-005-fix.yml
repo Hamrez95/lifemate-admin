@@ -1,0 +1,48 @@
+name: tmp-adm-com-005-fix
+
+on:
+  pull_request:
+    paths:
+      - 'src/lib/admin-api/commerce-promotions.ts'
+      - '.github/workflows/tmp-adm-com-005-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          show-progress: false
+          persist-credentials: true
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+      - name: Repair projection and verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('src/lib/admin-api/commerce-promotions.ts')
+          text = path.read_text()
+          old = '''  const {\n    primaryCodeMasked: _masked,\n    primaryCodeStatus: _status,\n    primaryCodeMaxRedemptions: _limit,\n    codeCount: _count,\n    ...detailPromotion\n  } = row;'''
+          new = '''  const detailPromotion: CommercePromotionDetail["promotion"] = {\n    promotionId: row.promotionId,\n    name: row.name,\n    description: row.description,\n    product: row.product,\n    discount: row.discount,\n    storedStatus: row.storedStatus,\n    effectiveStatus: row.effectiveStatus,\n    startsAtUtc: row.startsAtUtc,\n    endsAtUtc: row.endsAtUtc,\n    maxRedemptions: row.maxRedemptions,\n    redemptionSummary: row.redemptionSummary,\n    createdAtUtc: row.createdAtUtc,\n    updatedAtUtc: row.updatedAtUtc,\n  };'''
+          if old not in text:
+              raise SystemExit('expected projection block not found')
+          path.write_text(text.replace(old, new))
+          PY
+          npm install --no-audit --no-fund
+          npm run format
+          npm run lint
+          npm run typecheck
+          npm test
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/lib/admin-api/commerce-promotions.ts
+          git commit -m 'fix(commerce): keep detail projection lint clean'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
