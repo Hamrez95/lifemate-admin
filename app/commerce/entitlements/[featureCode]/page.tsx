@@ -35,6 +35,7 @@ const dateTimeFormatter = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
 
 const statusLabels: Record<string, string> = {
   Active: "فعال",
+  Scheduled: "زمان‌بندی‌شده",
   Revoked: "لغوشده",
   Expired: "منقضی",
   Retired: "بازنشسته",
@@ -194,10 +195,13 @@ const entitlementColumns: readonly AdminTableColumn<EntitlementRow>[] = [
   },
   {
     key: "status",
-    header: "وضعیت",
+    header: "وضعیت مؤثر",
     render: (row) => (
-      <span className={styles.statusBadge} data-status={row.status}>
-        {statusLabels[row.status] ?? row.status}
+      <span className={styles.statusBadge} data-status={row.effectiveStatus}>
+        {statusLabels[row.effectiveStatus] ?? row.effectiveStatus}
+        {row.storedStatus !== row.effectiveStatus
+          ? ` · ذخیره‌شده: ${statusLabels[row.storedStatus] ?? row.storedStatus}`
+          : ""}
       </span>
     ),
   },
@@ -276,8 +280,8 @@ async function EntitlementContent({ featureCode, page }: { featureCode: string; 
     <div className={styles.page}>
       <Hero data={data} />
       <div className={styles.warning}>
-        <strong>تعریف «فعال مؤثر»:</strong> status باید Active باشد، زمان شروع رسیده باشد و زمان انقضا
-        نگذشته باشد. Grant زمان‌بندی‌شده جدا نمایش داده می‌شود.
+        <strong>تعریف «فعال مؤثر»:</strong> status ذخیره‌شده به‌تنهایی کافی نیست؛ زمان شروع و انقضا هم
+        اعمال می‌شوند. اگر وضعیت مؤثر با وضعیت ذخیره‌شده فرق کند، هر دو در جدول دیده می‌شوند.
       </div>
       <Summary data={data} />
       <ProductRules data={data} />
