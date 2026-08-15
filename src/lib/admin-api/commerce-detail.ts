@@ -91,7 +91,8 @@ export type CommerceEntitlementDetail = {
   entitlements: BoundedCollection<{
     entitlementId: string;
     source: string;
-    status: string;
+    storedStatus: string;
+    effectiveStatus: string;
     targetKind: string;
     startsAtUtc: string;
     expiresAtUtc: string | null;
@@ -246,7 +247,8 @@ function validEntitlementDetail(value: unknown): value is CommerceEntitlementDet
     if (typeof raw.entitlementId !== "string" || !UUID_PATTERN.test(raw.entitlementId)) return false;
     for (const key of [
       "source",
-      "status",
+      "storedStatus",
+      "effectiveStatus",
       "targetKind",
       "startsAtUtc",
       "createdAtUtc",
