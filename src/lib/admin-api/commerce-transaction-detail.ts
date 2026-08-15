@@ -122,8 +122,7 @@ export type CommerceRefundActionResult =
   | { kind: "invalid"; code?: string; message?: string }
   | { kind: "unavailable"; correlationId?: string };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
 const TRANSACTION_STATUSES = new Set([
   "Pending",
@@ -176,7 +175,10 @@ function parseDetail(value: unknown): CommerceTransactionDetail | null {
   const body = value as Record<string, unknown>;
   if (!body.transaction || typeof body.transaction !== "object") return null;
   const transaction = body.transaction as Record<string, unknown>;
-  if (!isString(transaction.transactionId) || !UUID_PATTERN.test(transaction.transactionId)) {
+  if (
+    !isString(transaction.transactionId) ||
+    !UUID_PATTERN.test(transaction.transactionId)
+  ) {
     return null;
   }
   if (!isString(transaction.amountMinor) || !isString(transaction.currency)) return null;
@@ -207,14 +209,11 @@ export async function getCommerceTransactionDetail(
   const config = getPublicRuntimeConfig();
   let response: Response;
   try {
-    response = await fetch(
-      `${config.adminApiUrl}/api/v1/commerce/transactions/${transactionId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: "no-store",
-        signal: AbortSignal.timeout(10_000),
-      },
-    );
+    response = await fetch(`${config.adminApiUrl}/api/v1/commerce/transactions/${transactionId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+      signal: AbortSignal.timeout(10_000),
+    });
   } catch {
     return { kind: "unavailable" };
   }
@@ -304,8 +303,12 @@ export async function requestCommerceRefundWorkflow(input: {
 
   const issue = await problem(response);
   if (response.status === 401) return { kind: "unauthenticated" };
-  if (response.status === 403) return { kind: "forbidden", message: issue.message };
-  if (response.status === 404) return { kind: "not_found", message: issue.message };
+  if (response.status === 403) {
+    return { kind: "forbidden", message: issue.message };
+  }
+  if (response.status === 404) {
+    return { kind: "not_found", message: issue.message };
+  }
   if (response.status === 409) {
     return { kind: "conflict", code: issue.code, message: issue.message };
   }
