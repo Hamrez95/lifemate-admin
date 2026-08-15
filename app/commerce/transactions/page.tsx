@@ -20,6 +20,7 @@ import {
   type TransactionStatus,
 } from "@/src/lib/admin-api/commerce-transactions";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
+import { tehranDayBoundaryToUtc } from "@/src/lib/time-zone";
 
 import styles from "./transactions.module.css";
 
@@ -91,9 +92,7 @@ function safeDay(value: string): string {
   return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "";
 }
 
-function parseQuery(
-  input: Record<string, string | string[] | undefined>,
-): TransactionsQuery {
+function parseQuery(input: Record<string, string | string[] | undefined>): TransactionsQuery {
   const pageSizeCandidate = boundedPage(one(input.pageSize), 25, 100);
   const status = one(input.status).trim();
   const q = one(input.q).trim();
@@ -117,8 +116,8 @@ function apiParams(query: TransactionsQuery): URLSearchParams {
   if (query.product) params.set("product", query.product);
   if (query.provider) params.set("provider", query.provider);
   if (query.status) params.set("status", query.status);
-  if (query.from) params.set("from", `${query.from}T00:00:00.000Z`);
-  if (query.to) params.set("to", `${query.to}T23:59:59.999Z`);
+  if (query.from) params.set("from", tehranDayBoundaryToUtc(query.from, "start"));
+  if (query.to) params.set("to", tehranDayBoundaryToUtc(query.to, "end"));
   if (query.q) params.set("q", query.q);
   return params;
 }
@@ -212,12 +211,7 @@ function TransactionHero() {
 function Summary({ data }: { data: CommerceTransactionsResponse }) {
   return (
     <section className={styles.summaryGrid} aria-label="خلاصه تراکنش‌ها">
-      <SummaryCard
-        label="کل تراکنش"
-        value={data.summary.total}
-        note="در فیلتر فعلی"
-        tone="blue"
-      />
+      <SummaryCard label="کل تراکنش" value={data.summary.total} note="در فیلتر فعلی" tone="blue" />
       <SummaryCard
         label="موفق"
         value={data.summary.succeeded}
@@ -345,11 +339,7 @@ function Filters({
       </div>
       <div className="admin-list-filter admin-list-filter--compact">
         <label htmlFor="transaction-page-size">تعداد در صفحه</label>
-        <select
-          id="transaction-page-size"
-          name="pageSize"
-          defaultValue={String(query.pageSize)}
-        >
+        <select id="transaction-page-size" name="pageSize" defaultValue={String(query.pageSize)}>
           <option value="25">۲۵</option>
           <option value="50">۵۰</option>
           <option value="100">۱۰۰</option>
@@ -409,9 +399,7 @@ const transactionColumns: readonly AdminTableColumn<CommerceTransactionRow>[] = 
   {
     key: "time",
     header: "دریافت",
-    render: (row) => (
-      <time dateTime={row.receivedAtUtc}>{formatDateTime(row.receivedAtUtc)}</time>
-    ),
+    render: (row) => <time dateTime={row.receivedAtUtc}>{formatDateTime(row.receivedAtUtc)}</time>,
   },
   {
     key: "reference",
@@ -541,9 +529,7 @@ async function TransactionsContent({ query }: { query: TransactionsQuery }) {
   );
 }
 
-export default async function CommerceTransactionsPage({
-  searchParams,
-}: TransactionsPageProps) {
+export default async function CommerceTransactionsPage({ searchParams }: TransactionsPageProps) {
   const admin = await requireAdminAccess();
   const query = parseQuery(await searchParams);
   const canReadCommerce = admin.permissions.includes("commerce.read");
