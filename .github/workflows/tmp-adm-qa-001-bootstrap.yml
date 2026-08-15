@@ -64,26 +64,43 @@ jobs:
           npm run test:e2e:update 2>&1 | tee /tmp/lifemate-e2e-update.log
           rc=${PIPESTATUS[0]}
           if [ "$rc" -ne 0 ]; then
-            python3 - <<'PY'
-          from pathlib import Path
-          value = Path('/tmp/lifemate-e2e-update.log').read_text(errors='replace')[-12000:]
-          value = value.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-          print(f'::error title=Playwright baseline bootstrap failure::{value}')
-          PY
             exit "$rc"
           fi
 
           npm run test:e2e 2>&1 | tee /tmp/lifemate-e2e-verify.log
           rc=${PIPESTATUS[0]}
           if [ "$rc" -ne 0 ]; then
-            python3 - <<'PY'
-          from pathlib import Path
-          value = Path('/tmp/lifemate-e2e-verify.log').read_text(errors='replace')[-12000:]
-          value = value.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-          print(f'::error title=Playwright verification failure::{value}')
-          PY
             exit "$rc"
           fi
+
+      - name: Persist Playwright failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/qa/diagnostics
+          {
+            echo '# Temporary ADM-QA-001 Playwright bootstrap diagnostic'
+            echo
+            echo 'This file is generated only when the temporary bootstrap workflow fails and must be removed by the corrective commit.'
+            echo
+            echo '## update-snapshots output'
+            echo '```text'
+            if [ -f /tmp/lifemate-e2e-update.log ]; then tail -c 20000 /tmp/lifemate-e2e-update.log; else echo 'No update log was produced.'; fi
+            echo
+            echo '```'
+            echo
+            echo '## verification output'
+            echo '```text'
+            if [ -f /tmp/lifemate-e2e-verify.log ]; then tail -c 20000 /tmp/lifemate-e2e-verify.log; else echo 'Verification did not run.'; fi
+            echo
+            echo '```'
+          } > docs/qa/diagnostics/playwright-bootstrap-failure.md
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/qa/diagnostics/playwright-bootstrap-failure.md
+          git commit -m 'chore(qa): capture Playwright bootstrap failure [skip ci]'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
       - name: Commit locked QA harness and snapshots
         shell: bash
