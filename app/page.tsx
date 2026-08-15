@@ -1,19 +1,21 @@
-import { FounderOverview } from "@/src/components/dashboard/FounderOverview";
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
+import { FounderOverview } from "@/src/components/dashboard/FounderOverview";
 import { AdminShell } from "@/src/components/shell/AdminShell";
+import { getFounderOverview } from "@/src/lib/admin-api/founder-overview";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
 export default async function CommandCenterPage() {
   const admin = await requireAdminAccess();
+  const overview = await getFounderOverview(admin.permissions);
 
   return (
     <AdminSessionProvider admin={admin}>
       <AdminShell
         activeSlug=""
         title="مرکز فرماندهی"
-        subtitle="نمای مدیریتی LifeMate؛ اعداد فقط پس از اتصال KPIهای قابل اعتماد نمایش داده می‌شوند"
+        subtitle="نمای اجرایی Founder با داده‌های واقعی، مجاز و دارای freshness"
       >
-        <FounderOverview />
+        <FounderOverview data={overview} />
       </AdminShell>
     </AdminSessionProvider>
   );
