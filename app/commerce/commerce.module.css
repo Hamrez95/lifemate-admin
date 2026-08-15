@@ -229,7 +229,13 @@
   border: 1px solid var(--lm-border);
   border-radius: 16px;
   background: linear-gradient(145deg, #fff, #fbfdff);
+  color: inherit;
   padding: 13px;
+  text-decoration: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
 }
 
 .planCard > div:first-child {
@@ -344,7 +350,20 @@
   border: 1px solid transparent;
   border-radius: 13px;
   background: var(--lm-surface-soft);
+  color: inherit;
   padding: 10px;
+  text-decoration: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.planCard:hover,
+.entitlementRow:hover {
+  border-color: rgba(52, 120, 246, 0.22);
+  box-shadow: 0 10px 24px rgba(34, 48, 68, 0.07);
+  transform: translateY(-1px);
 }
 
 .entitlementName {
@@ -433,6 +452,14 @@
 .tablePlan {
   display: grid;
   gap: 3px;
+}
+
+.tablePlan a {
+  width: max-content;
+  color: var(--lm-blue);
+  font-weight: 850;
+  text-decoration-color: rgba(52, 120, 246, 0.28);
+  text-underline-offset: 3px;
 }
 
 .tablePlan strong {
