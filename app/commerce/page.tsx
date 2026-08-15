@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
@@ -202,7 +203,11 @@ function PlanDistribution({ rows }: { rows: CommercePlanDistribution[] }) {
       ) : (
         <div className={styles.planGrid}>
           {rows.map((row) => (
-            <article className={styles.planCard} key={row.planId}>
+            <Link
+              className={styles.planCard}
+              href={`/commerce/plans/${row.planId}`}
+              key={row.planId}
+            >
               <div>
                 <span className={styles.productBadge}>{row.productName}</span>
                 <span className={styles.statusPill} data-status={row.planStatus}>
@@ -221,7 +226,7 @@ function PlanDistribution({ rows }: { rows: CommercePlanDistribution[] }) {
                   <dd>{row.activeSubscriptions.toLocaleString("fa-IR")}</dd>
                 </div>
               </dl>
-            </article>
+            </Link>
           ))}
         </div>
       )}
@@ -250,7 +255,11 @@ function EntitlementCoverage({ rows }: { rows: CommerceEntitlementCoverage[] }) 
             const total = row.active + row.expired + row.revoked;
             const activePercent = total > 0 ? Math.round((row.active / total) * 100) : 0;
             return (
-              <div className={styles.entitlementRow} key={row.featureCode}>
+              <Link
+                className={styles.entitlementRow}
+                href={`/commerce/entitlements/${encodeURIComponent(row.featureCode)}`}
+                key={row.featureCode}
+              >
                 <div className={styles.entitlementName}>
                   <code>{row.featureCode}</code>
                   <span>{row.active.toLocaleString("fa-IR")} فعال</span>
@@ -265,7 +274,7 @@ function EntitlementCoverage({ rows }: { rows: CommerceEntitlementCoverage[] }) 
                   {row.expired.toLocaleString("fa-IR")} منقضی ·{" "}
                   {row.revoked.toLocaleString("fa-IR")} لغوشده
                 </small>
-              </div>
+              </Link>
             );
           })}
         </div>
@@ -338,7 +347,7 @@ const subscriptionColumns: readonly AdminTableColumn<CommerceSubscriptionRow>[] 
     header: "پلن",
     render: (row) => (
       <div className={styles.tablePlan}>
-        <strong>{row.planName}</strong>
+        <Link href={`/commerce/plans/${row.planId}`}>{row.planName}</Link>
         <code>{row.planCode}</code>
       </div>
     ),
