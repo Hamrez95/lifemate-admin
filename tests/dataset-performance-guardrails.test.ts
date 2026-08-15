@@ -25,9 +25,7 @@ describe("ADM-PERF-001 Admin API client guardrails", () => {
         'cache: "no-store"',
       );
 
-      const timeoutMatches = [
-        ...source.matchAll(/AbortSignal\.timeout\(([\d_]+)\)/g),
-      ];
+      const timeoutMatches = [...source.matchAll(/AbortSignal\.timeout\(([\d_]+)\)/g)];
       expect(timeoutMatches.length, `${path.basename(file)} must set a timeout`).toBeGreaterThan(0);
 
       for (const match of timeoutMatches) {
