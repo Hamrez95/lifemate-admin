@@ -174,17 +174,24 @@ function CohortWorkspace({ report }: { report: AnalyticsCohortReport }) {
       <section className={styles.hero} aria-labelledby="cohort-hero-title">
         <div>
           <p className={styles.eyebrow}>Acquisition → Activation → Retention</p>
-          <h2 id="cohort-hero-title">رشد را فقط جایی اندازه می‌گیریم که تاریخچه قابل اثبات داریم.</h2>
+          <h2 id="cohort-hero-title">
+            رشد را فقط جایی اندازه می‌گیریم که تاریخچه قابل اثبات داریم.
+          </h2>
           <p>
             Acquisition فعلی از account_created واقعی می‌آید. Activation و D1/D7/D30 تا زمان
-            instrumentation رویدادهای canonical عمداً «—» می‌مانند؛ last-active snapshot جایگزین تاریخچه
-            retention نمی‌شود.
+            instrumentation رویدادهای canonical عمداً «—» می‌مانند؛ last-active snapshot جایگزین
+            تاریخچه retention نمی‌شود.
           </p>
         </div>
         <div className={styles.definitionPanel}>
           <span>Definition v{report.definition.version.toLocaleString("fa-IR")}</span>
-          <strong>Taxonomy v{report.definition.eventTaxonomyVersion.toLocaleString("fa-IR")}</strong>
-          <small>Asia/Tehran · suppression &lt; {numberFormat.format(report.definition.suppressionThreshold)}</small>
+          <strong>
+            Taxonomy v{report.definition.eventTaxonomyVersion.toLocaleString("fa-IR")}
+          </strong>
+          <small>
+            Asia/Tehran · suppression &lt;{" "}
+            {numberFormat.format(report.definition.suppressionThreshold)}
+          </small>
         </div>
       </section>
 
@@ -221,7 +228,9 @@ function CohortWorkspace({ report }: { report: AnalyticsCohortReport }) {
         <article className={styles.summaryCard} data-tone="green">
           <span>Acquisition</span>
           <strong>
-            {report.acquisition.total === null ? "—" : numberFormat.format(report.acquisition.total)}
+            {report.acquisition.total === null
+              ? "—"
+              : numberFormat.format(report.acquisition.total)}
           </strong>
           <p>account_created · {stateLabel(report.acquisition.state)}</p>
           <small>تا {formatDateTime(report.acquisition.asOfUtc)}</small>
@@ -244,8 +253,8 @@ function CohortWorkspace({ report }: { report: AnalyticsCohortReport }) {
             <p className={styles.eyebrow}>Cohort table</p>
             <h3 id="cohort-table-title">Cohortهای Acquisition</h3>
             <p>
-              Cohortهای ۱ تا {numberFormat.format(report.definition.suppressionThreshold - 1)} نفر قبل از
-              رسیدن به مرورگر suppress می‌شوند. صفر واقعی با unavailable یکی نیست.
+              Cohortهای ۱ تا {numberFormat.format(report.definition.suppressionThreshold - 1)} نفر
+              قبل از رسیدن به مرورگر suppress می‌شوند. صفر واقعی با unavailable یکی نیست.
             </p>
           </div>
           <span className={styles.stateBadge} data-state={report.acquisition.state}>
@@ -299,7 +308,10 @@ function CohortWorkspace({ report }: { report: AnalyticsCohortReport }) {
           </div>
           <div>
             <dt>Privacy</dt>
-            <dd>Aggregate only · suppression &lt; {numberFormat.format(report.definition.suppressionThreshold)}</dd>
+            <dd>
+              Aggregate only · suppression &lt;{" "}
+              {numberFormat.format(report.definition.suppressionThreshold)}
+            </dd>
           </div>
         </dl>
       </section>
@@ -324,7 +336,11 @@ export default async function CohortsPage({ searchParams }: CohortsPageProps) {
         {!canRead || result?.kind === "forbidden" ? (
           <AdminPageState state="forbidden" />
         ) : result?.kind === "invalid" ? (
-          <AdminPageState state="error" title="فیلتر cohort معتبر نیست" description={result.message} />
+          <AdminPageState
+            state="error"
+            title="فیلتر cohort معتبر نیست"
+            description={result.message}
+          />
         ) : result?.kind === "unavailable" ? (
           <AdminPageState
             state="unavailable"
