@@ -25,7 +25,9 @@ describe("ADM-ANL-002 cohort workspace routing and privacy", () => {
   it("does not expose a user-level export action", () => {
     const page = source("app/analytics/cohorts/page.tsx");
 
-    expect(page).not.toMatch(/export csv|download csv|user-level export|خروجی کاربران/i);
+    expect(page).not.toMatch(
+      /export csv|download csv|user-level export|خروجی کاربران/i,
+    );
     expect(page).toContain("app_opened history");
     expect(page).toContain("profile_completed");
   });
