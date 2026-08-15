@@ -20,6 +20,7 @@ describe("ADM-PLAT-002 Secure Global Search / Command Palette", () => {
     expect(client).not.toContain(".from(");
     expect(client).not.toContain("service_role");
     expect(route).toContain('const ALLOWED_PARAMS = new Set(["q", "types", "page", "pageSize"])');
+    expect(route).not.toContain("service_role");
     expect(palette).toContain("/api/admin/search?");
     expect(palette).not.toContain("adminApiUrl");
   });
