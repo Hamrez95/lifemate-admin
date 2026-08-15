@@ -114,7 +114,8 @@ function KpiCard({ definition, value }: { definition: AnalyticsKpiDefinition; va
             <b>مخرج:</b> {definition.denominator ?? "—"}
           </p>
           <p>
-            <b>تازگی:</b> {definition.freshnessRule}</p>
+            <b>تازگی:</b> {definition.freshnessRule}
+          </p>
         </div>
       </details>
     </article>
