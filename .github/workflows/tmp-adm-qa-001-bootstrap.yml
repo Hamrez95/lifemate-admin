@@ -42,7 +42,7 @@ jobs:
           npm pkg set 'scripts.test:qa=npm run test:security-denial && npm run test:e2e'
           npx playwright install --with-deps chromium
 
-      - name: Apply verified accessibility repair
+      - name: Apply verified accessibility repairs
         shell: bash
         run: |
           set -euo pipefail
@@ -54,7 +54,11 @@ jobs:
           new = '--lm-green-deep: #087a47;'
           if old not in text and new not in text:
               raise SystemExit('green-deep token anchor missing')
-          path.write_text(text.replace(old, new, 1))
+          text = text.replace(old, new, 1)
+          marker = '/* ADM-QA-001 verified WCAG contrast repairs */'
+          if marker not in text:
+              text += '''\n\n/* ADM-QA-001 verified WCAG contrast repairs */\n.standalone-state__card > span {\n  color: var(--lm-green-deep);\n}\n\n.operator-chip__logout {\n  color: #4b5668;\n}\n'''
+          path.write_text(text)
           PY
 
       - name: Verify ordinary quality gates
