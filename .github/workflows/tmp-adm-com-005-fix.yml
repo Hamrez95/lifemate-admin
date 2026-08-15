@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 24
-      - name: Repair projection and verify
+      - name: Repair promotion client and verify
         shell: bash
         run: |
           set -euo pipefail
@@ -30,11 +30,24 @@ jobs:
           from pathlib import Path
           path = Path('src/lib/admin-api/commerce-promotions.ts')
           text = path.read_text()
-          old = '''  const {\n    primaryCodeMasked: _masked,\n    primaryCodeStatus: _status,\n    primaryCodeMaxRedemptions: _limit,\n    codeCount: _count,\n    ...detailPromotion\n  } = row;'''
-          new = '''  const detailPromotion: CommercePromotionDetail["promotion"] = {\n    promotionId: row.promotionId,\n    name: row.name,\n    description: row.description,\n    product: row.product,\n    discount: row.discount,\n    storedStatus: row.storedStatus,\n    effectiveStatus: row.effectiveStatus,\n    startsAtUtc: row.startsAtUtc,\n    endsAtUtc: row.endsAtUtc,\n    maxRedemptions: row.maxRedemptions,\n    redemptionSummary: row.redemptionSummary,\n    createdAtUtc: row.createdAtUtc,\n    updatedAtUtc: row.updatedAtUtc,\n  };'''
-          if old not in text:
+
+          projection_old = '''  const {\n    primaryCodeMasked: _masked,\n    primaryCodeStatus: _status,\n    primaryCodeMaxRedemptions: _limit,\n    codeCount: _count,\n    ...detailPromotion\n  } = row;'''
+          projection_new = '''  const detailPromotion: CommercePromotionDetail["promotion"] = {\n    promotionId: row.promotionId,\n    name: row.name,\n    description: row.description,\n    product: row.product,\n    discount: row.discount,\n    storedStatus: row.storedStatus,\n    effectiveStatus: row.effectiveStatus,\n    startsAtUtc: row.startsAtUtc,\n    endsAtUtc: row.endsAtUtc,\n    maxRedemptions: row.maxRedemptions,\n    redemptionSummary: row.redemptionSummary,\n    createdAtUtc: row.createdAtUtc,\n    updatedAtUtc: row.updatedAtUtc,\n  };'''
+          if projection_old not in text:
               raise SystemExit('expected projection block not found')
-          path.write_text(text.replace(old, new))
+          text = text.replace(projection_old, projection_new)
+
+          summary_old = '''  if (!isRecord(value.summary) || !isRecord(value.filters) || !isRecord(value.source)) return null;\n  const summaryKeys = ["total", "draft", "active", "paused", "expired"] as const;\n  if (summaryKeys.some((key) => !Number.isInteger(value.summary[key]) || Number(value.summary[key]) < 0)) {\n    return null;\n  }'''
+          summary_new = '''  if (!isRecord(value.summary) || !isRecord(value.filters) || !isRecord(value.source)) return null;\n  const summary = value.summary;\n  const summaryKeys = ["total", "draft", "active", "paused", "expired"] as const;\n  if (summaryKeys.some((key) => !Number.isInteger(summary[key]) || Number(summary[key]) < 0)) {\n    return null;\n  }'''
+          if summary_old not in text:
+              raise SystemExit('expected summary validation block not found')
+          text = text.replace(summary_old, summary_new)
+          text = text.replace('total: Number(value.summary.total)', 'total: Number(summary.total)')
+          text = text.replace('draft: Number(value.summary.draft)', 'draft: Number(summary.draft)')
+          text = text.replace('active: Number(value.summary.active)', 'active: Number(summary.active)')
+          text = text.replace('paused: Number(value.summary.paused)', 'paused: Number(summary.paused)')
+          text = text.replace('expired: Number(value.summary.expired)', 'expired: Number(summary.expired)')
+          path.write_text(text)
           PY
           npm install --no-audit --no-fund
           npm run format
@@ -44,5 +57,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add src/lib/admin-api/commerce-promotions.ts
-          git commit -m 'fix(commerce): keep detail projection lint clean'
+          git commit -m 'fix(commerce): validate promotion client types'
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
