@@ -42,16 +42,16 @@ The browser does not directly query healthcare/admin tables and never contains p
 
 ## Current execution position
 
-As of the 2026-08-15 milestone sync, Commerce is verified complete through `ADM-COM-005` (#16):
+As of the 2026-08-15 milestone sync:
 
-- `ADM-COM-004` — Core PR #189 / Admin PR #69.
-- `ADM-COM-005` — Core PR #197 / Admin PR #70.
-- Admin PR #70 passed format, browser-secret boundary, lint, TypeScript, unit tests and production build before merge.
+- Commerce is verified complete through `ADM-COM-005` (#16): Core PR #197 / Admin PR #70.
+- `ADM-PLAT-002` Secure Global Search / Command Palette (#4) is complete via Core PR #198 / Admin PR #72.
+- Core #198 passed Admin Edge API, schema/restore, runtime/db-pressure smoke, readiness and ecosystem gates.
+- Admin #72 passed format, browser-secret boundary, lint, strict TypeScript, unit tests and production build.
 
-The next strictly sequential task is:
+The current strictly sequential task is:
 
-1. `ADM-PLAT-002` — Secure Global Search / Command Palette (#4)
-2. then `ADM-PLAT-003` — Admin Notification Center / Alerts (#30)
+1. `ADM-PLAT-003` — Admin Notification Center / Alerts (#30)
 
 Always re-read Master Issue #49 before starting, because it is canonical and may have advanced since this document was written. Do not start a later feature merely because its UI is easier.
 
@@ -68,7 +68,7 @@ For each Issue:
 7. Sensitive mutations require permission, validation, idempotency, reason where appropriate and immutable audit.
 8. Implement Loading, Empty, Error, Forbidden and Stale/Unavailable states.
 9. Persian/RTL is the default; support responsive behavior and WCAG 2.2 AA.
-10. Never invent KPI values. Render `—` when the source is unavailable.
+10. Never invent KPI values, search results or alerts. Render `—` / unavailable / not-instrumented truthfully.
 11. Run repository-required checks and security checks.
 12. Open a PR; merge only after green CI and resolved review concerns.
 13. Close the Issue, update the Master checklist and update `CURRENT_STATE.md` for milestones.
@@ -90,6 +90,20 @@ Production rollout remains a separate gate under `ADM-OPS-002` (#24). Before tha
 
 A read-only migration check on 2026-08-15 did not show the Command Center control-plane/Commerce migrations in live Supabase. Do not apply migrations or deploy functions as a side effect of unrelated feature work.
 
+## Secure Global Search safety contract
+
+The merged `ADM-PLAT-002` slice intentionally limits search:
+
+- domains are allow-listed and mapped to their existing read permissions;
+- unauthorized domains are not queried and cannot leak existence through counts;
+- raw Health and Women Health are not search domains;
+- query length and pagination are bounded;
+- rate limiting is database-backed per admin without persisting raw query text;
+- operational search logs omit raw query text;
+- browser requests use a same-origin server route rather than direct DB/Admin API secrets;
+- local recent history contains only safe static workspace keys, never search query text or record IDs;
+- campaign search is explicitly not-instrumented until its canonical source exists rather than returning demo data.
+
 ## Commerce safety contract
 
 The merged Commerce slices intentionally keep:
@@ -102,15 +116,14 @@ The merged Commerce slices intentionally keep:
 - Promotion is a commercial rule; Discount Code is a redeemable code attached to that rule.
 - Provider references remain hash-only in persistence and do not enter the Admin browser contract.
 - Minor-unit money remains string-backed where PostgreSQL bigint precision matters.
-- Admin browser receives privacy-minimized identity state rather than raw account identifiers in financial surfaces.
 - Refund requests use explicit `commerce.refund`; promotion mutations use canonical `commerce.promo.write`; neither permission is inherited from `commerce.read`.
 - Promotion creation is Draft-only; financial-rule edits and lifecycle transitions are reasoned, idempotent and audited.
 - List code values are masked and code filtering is exact-only to reduce enumeration risk.
 - Redemption counts remain explicit unavailable/null until a canonical source exists; never fabricate them.
 
-## Next-task security focus — ADM-PLAT-002
+## Next-task security focus — ADM-PLAT-003
 
-Secure Global Search must not become an RBAC bypass. Search adapters may only return resources from domains the current admin is already authorized to read. Lack of permission must not leak resource existence. Raw health and Women Health are excluded. Queries and result counts must be bounded, logs must avoid raw sensitive query text, and browser code must continue to use the Admin API rather than direct database access.
+The Notification Center must aggregate only real approved sources. Every alert and unread count is filtered by the permission of its source domain so hidden domains cannot leak existence through the bell badge. Raw Health, Women Health, secrets and raw log/provider payloads are excluded. Summaries are redacted and deep links are allow-listed/validated. Source failures must be isolated so one unavailable source does not make other alert groups untruthful. Acknowledge/read mutations are only added where there is a canonical source contract and must be idempotent/audited where required.
 
 ## Design use
 

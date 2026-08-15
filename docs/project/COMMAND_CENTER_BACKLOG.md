@@ -110,18 +110,19 @@ Every task Issue must be self-contained and include:
 - Raw health is default deny. Women Health is stricter.
 - Relationship does not automatically create Access Grant.
 - Admin role is not caregiver access.
+- Global Search must be domain allow-listed and permission-filtered; it is never an alternate path to raw health, Women Health or arbitrary SQL.
+- Alert/notification counts and lists must be permission-filtered so unauthorized resource existence is not leaked.
 - AI phase 1 is read-only and cannot access raw health, execute unrestricted SQL, mutate business state or auto-publish social content.
 - Human approval is mandatory for social publishing.
 - Actual financials and forecast data are distinct.
-- No fake production metrics; unavailable values render `—`.
+- No fake production metrics, search results or alerts; unavailable values render `—` or an explicit unavailable/not-instrumented state.
 
 ## Verified execution position
 
-Completed through `ADM-COM-005` (#16), with Core PR #197 and Admin PR #70 merged after required CI. `ADM-COM-004` (#37) is also complete via Core PR #189 and Admin PR #69.
+Completed through `ADM-PLAT-002` (#4), with Core PR #198 and Admin PR #72 merged after required CI. Commerce remains complete through `ADM-COM-005` (#16), Core PR #197 / Admin PR #70.
 
 Current strictly sequential focus:
 
-1. `ADM-PLAT-002` — Secure Global Search / Command Palette (#4)
-2. `ADM-PLAT-003` — Admin Notification Center / Alerts (#30)
+1. `ADM-PLAT-003` — Admin Notification Center / Alerts (#30)
 
 Master Issue #49 is canonical for exact completion state and sequencing. `ADM-OPS-002` (#24) remains the separate production rollout gate; source merges do not imply deployment.

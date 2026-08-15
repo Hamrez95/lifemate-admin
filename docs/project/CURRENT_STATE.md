@@ -11,12 +11,13 @@ Last verified: 2026-08-15 (Asia/Tehran)
 
 ## Verified GitHub state
 
-At the ADM-COM-005 milestone sync:
+At the ADM-PLAT-002 milestone sync:
 
-- `ADM-COM-004` (#37) is complete via Core PR #189 and Admin PR #69.
-- `ADM-COM-005` (#16) is complete via Core PR #197 and Admin PR #70.
-- Admin PR #70 passed `admin-web-ci` through format, browser-secret boundary, lint, TypeScript, unit tests and production build before merge.
-- Master Issue #49 marks Commerce complete through ADM-COM-005 and sets `ADM-PLAT-002` (#4) as the next task.
+- Commerce remains complete through `ADM-COM-005` (#16): Core PR #197 / Admin PR #70.
+- `ADM-PLAT-002` (#4) Secure Global Search / Command Palette is complete via Core PR #198 and Admin PR #72.
+- Core PR #198 passed Admin Edge API, PostgreSQL schema/restore, runtime/db-pressure smoke, readiness/edge and ecosystem gates before merge.
+- Admin PR #72 passed format, browser-secret boundary, lint, strict TypeScript, unit tests and production build before merge.
+- Master Issue #49 sets `ADM-PLAT-003` (#30) Admin Notification Center / Alerts as the current task.
 - Source merge is **not** production deployment.
 
 Repository/privacy hardening and delivery environments remain tracked under `ADM-OPS-003` (#38).
@@ -39,6 +40,23 @@ Repository/privacy hardening and delivery environments remain tracked under `ADM
 - `ADM-COM-003` — Core PR #186 / Admin PR #67
 - `ADM-COM-004` — Core PR #189 / Admin PR #69
 - `ADM-COM-005` — Core PR #197 / Admin PR #70
+- `ADM-PLAT-002` — Core PR #198 / Admin PR #72
+
+## Secure Global Search contract now in main
+
+The merged search surface is intentionally not a universal data explorer.
+
+- `GET /api/v1/search` exists only behind authenticated Admin API + MFA/AAL2 + active admin membership.
+- Search domains are allow-listed and independently permission-gated: users, support, commerce and campaigns.
+- Unauthorized domains are not queried and cannot leak existence through result counts.
+- Raw Health and Women Health are excluded from the search contract entirely.
+- Search enforces a minimum query length, bounded pagination and a database-backed per-admin rate limit.
+- Raw query text is not persisted for rate limiting and is redacted from operational search logs; logs contain bounded metadata such as query length/domain/page only.
+- User results come from the approved Admin user directory; support search uses redacted queue data; commerce search uses approved operational models.
+- Campaign search reports explicit `not_instrumented` for authorized callers until a canonical campaign source exists; it never fabricates results.
+- The Admin browser calls a same-origin Next.js server route; privileged Admin API credentials and `service_role` never enter browser code.
+- The Persian RTL Command Palette supports Cmd/Ctrl+K, Escape, arrow/Enter navigation, focus trapping, screen-reader semantics and a mobile fallback.
+- Local recent history stores only static non-sensitive workspace keys; query text and record identifiers are not stored.
 
 ## Commerce contract now in main
 
@@ -46,20 +64,7 @@ Commerce intentionally keeps these concepts separate:
 
 `Plan ≠ Entitlement ≠ Order ≠ Transaction ≠ Provider Event ≠ Promotion ≠ Discount Code`
 
-The merged Commerce work now includes:
-
-- plan/entitlement overview and detail;
-- normalized transaction/order list and transaction detail;
-- Provider Event observation timeline without exposing raw provider references;
-- audited human-review refund requests behind `commerce.refund`;
-- Promotion and Discount Code persistence and Admin API contracts;
-- Promotion reads behind `commerce.read` and mutations behind canonical `commerce.promo.write`;
-- Draft-only promotion creation, reasoned/idempotent/audited rule edits and Active/Paused lifecycle actions;
-- exact-code lookup and masked list codes to reduce code enumeration risk;
-- string-backed minor-unit money at API boundaries where bigint precision matters;
-- redemption summaries rendered explicitly unavailable/null until a canonical source is instrumented;
-- Persian-first RTL promotion list/detail/create/edit UX with correct Tehran-local datetime conversion to UTC;
-- no card data, payment credentials, raw provider references or account identifiers in browser Commerce contracts.
+The merged Commerce work includes plan/entitlement overview/detail, normalized transaction/order list/detail, provider-event observations, audited refund requests, promotion/discount-code lifecycle management, exact-code enumeration controls and truthful unavailable redemption summaries.
 
 ## Security rules that remain active
 
@@ -71,19 +76,18 @@ The merged Commerce work now includes:
 6. Relationship, Consent, Access Grant and Admin Permission remain separate concepts.
 7. Admin role never implies caregiver access.
 8. Elevated sensitive access remains blocked until the approved break-glass workflow is implemented.
-9. Browser code never receives `service_role` or payment-provider credentials.
-10. Unavailable production data renders `—` or an explicit unavailable state; metrics are never fabricated.
+9. Browser code never receives `service_role`, database passwords or payment-provider credentials.
+10. Unavailable production data renders `—` or an explicit unavailable/not-instrumented state; data is never fabricated.
 
 ## Current implementation order
 
 Completed through:
 
-1. `ADM-COM-005` Promotions / Discount Codes (#16)
+1. `ADM-PLAT-002` Secure Global Search / Command Palette (#4)
 
-Next, strictly sequential:
+Current strictly sequential focus:
 
-2. `ADM-PLAT-002` Secure Global Search / Command Palette (#4)
-3. `ADM-PLAT-003` Admin Notification Center / Alerts (#30)
+2. `ADM-PLAT-003` Admin Notification Center / Alerts (#30)
 
 The exact current sequence is maintained in Master Issue #49.
 
