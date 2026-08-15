@@ -11,17 +11,18 @@ Last verified: 2026-08-16 (Asia/Tehran)
 
 ## Verified GitHub state
 
-At the ADM-HOME-001 milestone sync:
+At the ADM-ANL-002 milestone sync:
 
 - Commerce remains complete through `ADM-COM-005` (#16): Core PR #197 / Admin PR #70.
 - `ADM-PLAT-002` (#4) Secure Global Search / Command Palette: Core #198 / Admin #72.
 - `ADM-PLAT-003` (#30) Admin Notification Center / Alerts: Core #201 / Admin #74.
-- `ADM-QA-001` (#5) is complete via Admin PR #76; permanent `admin-web-ci` and `admin-qa` are active.
-- `ADM-PERF-001` (#39) is complete via Core PR #231 / Admin PR #78.
-- `ADM-HOME-001` (#6) is complete via Admin PR #80.
-- Admin #80 passed format, browser-secret boundary, lint, strict TypeScript, unit tests, production build and permanent browser/security/a11y QA before merge.
-- Existing permission-enforced Core APIs were sufficient for Home; no new Core endpoint/migration was required for #6.
-- Master Issue #49 sets `ADM-ANL-002` (#13) Acquisition / Activation / Retention / Cohorts as the current task.
+- `ADM-QA-001` (#5): Admin PR #76; permanent `admin-web-ci` and `admin-qa` are active.
+- `ADM-PERF-001` (#39): Core PR #231 / Admin PR #78.
+- `ADM-HOME-001` (#6): Admin PR #80.
+- `ADM-ANL-002` (#13): Admin PR #82.
+- Admin #82 passed format, browser-secret boundary, lint, strict TypeScript, unit tests, production build and permanent browser/security/a11y QA before merge.
+- Existing Analytics Catalog/KPI Core APIs were sufficient for #13; no new Core migration/endpoint was required.
+- Master Issue #49 sets `ADM-MKT-001` (#40) Marketing Metrics Overview as the current task.
 - Source merge is **not** production deployment.
 
 Repository/privacy hardening and delivery environments remain tracked under `ADM-OPS-003` (#38).
@@ -49,33 +50,41 @@ Repository/privacy hardening and delivery environments remain tracked under `ADM
 - `ADM-QA-001` — Admin PR #76
 - `ADM-PERF-001` — Core PR #231 / Admin PR #78
 - `ADM-HOME-001` — Admin PR #80
+- `ADM-ANL-002` — Admin PR #82
 
-## Founder / Executive Overview now in main
+## Acquisition / Activation / Retention contract now in main
+
+- `/analytics/cohorts` is available only through the existing `analytics.read` boundary.
+- Acquisition cohorts use the real daily `accounts_created` series and preserve its current `partial` provenance.
+- `profile_completed` is still planned, so activation conversion remains explicit unavailable.
+- `app_opened` history is still planned, so D1/D7/D30 retention is explicit unavailable and is **not** reconstructed from `last_active_at_utc` snapshots.
+- Acquisition-channel attribution and churn/return remain unavailable until canonical historical sources exist.
+- Cohort filters are bounded to 180 Tehran calendar days.
+- Non-zero cohorts smaller than 20 are suppressed before browser delivery; zero remains a real zero and is distinct from unavailable/suppressed.
+- The browser contract is aggregate-only and contains no account/person/user identifiers or user-level export.
+- The workspace carries versioned taxonomy/KPI definitions and provides a keyboard-scrollable textual table instead of relying only on a heatmap.
+
+## Founder / Executive Overview contract
 
 - Home composes only existing server-side, permission-enforced Analytics KPI, Relationship overview, Commerce overview and Notification Center sources.
 - Unauthorized domain sources are not queried, so hidden cards do not leak counts.
 - Every displayed metric carries source/freshness state; unavailable/not-instrumented remains explicit and never becomes a fabricated zero.
-- Analytics preserves the canonical KPI `partial`/`unavailable` semantics rather than upgrading fallback data into false certainty.
-- Active Relationships are labelled only as Relationships; Consent and Access Grant remain separate concepts.
-- Active subscriptions are labelled as subscriptions and are not inferred to be paying-user counts.
-- Support/Security/Operations/Finance/Product attention states reuse the permission-filtered Notification Center and safe deep links.
+- Active Relationships are not Consent/Access Grant; active subscriptions are not inferred to be paying-user counts.
 - Raw Health and Women Health are excluded from Home aggregation.
-- Per-source failure isolation keeps one unavailable backend source from collapsing the full executive page.
 
 ## Permanent QA gate
 
 - `.github/workflows/qa.yml` remains a permanent PR/main browser-security gate in addition to `admin-web-ci`.
-- It runs synthetic existing-account OTP -> verified TOTP -> AAL2 -> server claims/workspace authorization without production accounts, PII/PHI, service-role credentials or an application auth bypass.
-- Representative permission-denial tests, Axe serious/critical checks, desktop/mobile visual baselines, RTL/keyboard smoke and zero CI retries remain enforced.
+- It uses synthetic OTP/TOTP/AAL2 without production accounts, PII/PHI, service-role credentials or an application auth bypass.
+- Permission denial, Axe serious/critical checks, desktop/mobile visual baselines, RTL/keyboard smoke and zero CI retries remain enforced.
 - Do not weaken this gate to make future UI work pass.
 
-## Dataset performance guardrails now in main
+## Dataset performance guardrails
 
-- All current pageable Command Center API list surfaces are capped at 100 pages and 100 rows/page; endpoint-specific stricter page-size limits remain stricter.
-- Relationship ledger keeps its independent maximum 366-day time window; Global Search keeps its stricter page-size and DB-backed per-admin throttle.
-- Serialized Admin API JSON responses fail closed above 512 KiB before browser delivery.
-- Admin responses remain `Cache-Control: no-store` and Admin server clients keep bounded timeouts of at most 10 seconds.
-- Performance fixtures/telemetry remain privacy-minimized: no production PII/PHI, raw search text, tokens, payment credentials, provider payloads, Health or Women Health content.
+- Current pageable Command Center API list surfaces are capped at 100 pages and 100 rows/page; stricter endpoint-specific limits remain stricter.
+- Serialized Admin API JSON responses fail closed above 512 KiB.
+- Admin responses remain `Cache-Control: no-store`; Admin server clients keep timeouts at or below 10 seconds.
+- Performance fixtures/telemetry must not contain production PII/PHI, raw search text, secrets, provider payloads, Health or Women Health content.
 - Timeout/unavailable remains distinct from empty/zero data.
 
 ## Security rules that remain active
@@ -88,17 +97,17 @@ Repository/privacy hardening and delivery environments remain tracked under `ADM
 6. Admin role never implies caregiver access.
 7. Elevated sensitive access remains blocked until the approved break-glass workflow is implemented.
 8. Browser code never receives `service_role`, database passwords or payment-provider credentials.
-9. Missing data/search/alert/KPI sources stay explicit unavailable/not-instrumented; production facts are never fabricated.
+9. Missing data/search/alert/KPI/attribution sources stay explicit unavailable/not-instrumented; production facts are never fabricated.
 
 ## Current implementation order
 
 Completed through:
 
-1. `ADM-HOME-001` Founder / Executive Overview (#6)
+1. `ADM-ANL-002` Acquisition / Activation / Retention / Cohorts (#13)
 
 Current strictly sequential focus:
 
-2. `ADM-ANL-002` Acquisition / Activation / Retention / Cohorts (#13)
+2. `ADM-MKT-001` Marketing Metrics Overview (#40)
 
 The exact current sequence is maintained in Master Issue #49.
 
