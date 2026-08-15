@@ -2,12 +2,7 @@ import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
 export type CommerceTransactionStatus =
-  | "Pending"
-  | "Succeeded"
-  | "Failed"
-  | "Cancelled"
-  | "Refunded"
-  | "Chargeback";
+  "Pending" | "Succeeded" | "Failed" | "Cancelled" | "Refunded" | "Chargeback";
 
 export type CommerceProviderEvent = {
   eventId: string;
@@ -77,17 +72,11 @@ export type CommerceTransactionDetail = {
   };
   providerEvents: CommerceProviderEvent[];
   refundRequests: CommerceRefundRequest[];
-  auditEvidence:
-    | { state: "forbidden" }
-    | { state: "ready"; items: CommerceAuditEvent[] };
+  auditEvidence: { state: "forbidden" } | { state: "ready"; items: CommerceAuditEvent[] };
   refundCapability: {
     available: boolean;
     permissionRequired: "commerce.refund";
-    reason:
-      | "Available"
-      | "MissingPermission"
-      | "TransactionNotEligible"
-      | "WorkflowAlreadyActive";
+    reason: "Available" | "MissingPermission" | "TransactionNotEligible" | "WorkflowAlreadyActive";
   };
   source: { kind: "canonical"; label: string };
   freshness: { status: "fresh" | "stale"; asOfUtc: string };
@@ -122,8 +111,7 @@ export type CommerceRefundActionResult =
   | { kind: "invalid"; code?: string; message?: string }
   | { kind: "unavailable"; correlationId?: string };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
 const AMOUNT_MINOR_PATTERN = /^\d+$/;
 const CURRENCY_PATTERN = /^[A-Z]{3}$/;
@@ -172,8 +160,7 @@ async function problem(response: Response): Promise<{
           : typeof body.message === "string"
             ? body.message
             : undefined,
-      correlationId:
-        typeof body.correlationId === "string" ? body.correlationId : undefined,
+      correlationId: typeof body.correlationId === "string" ? body.correlationId : undefined,
     };
   } catch {
     return {};
@@ -258,7 +245,10 @@ function parseOrder(value: unknown): CommerceTransactionDetail["transaction"]["o
 
 function parsePlan(
   value: unknown,
-): NonNullable<NonNullable<CommerceTransactionDetail["transaction"]["subscription"]>["plan"]> | null | undefined {
+):
+  | NonNullable<NonNullable<CommerceTransactionDetail["transaction"]["subscription"]>["plan"]>
+  | null
+  | undefined {
   if (value === null) return null;
   if (
     !isRecord(value) ||
@@ -422,12 +412,19 @@ function parseAuditEvent(value: unknown): CommerceAuditEvent | null {
 function parseDetail(value: unknown): CommerceTransactionDetail | null {
   if (!isRecord(value)) return null;
   const transaction = parseTransaction(value.transaction);
-  if (!transaction || !Array.isArray(value.providerEvents) || !Array.isArray(value.refundRequests)) {
+  if (
+    !transaction ||
+    !Array.isArray(value.providerEvents) ||
+    !Array.isArray(value.refundRequests)
+  ) {
     return null;
   }
   const providerEvents = value.providerEvents.map(parseProviderEvent);
   const refundRequests = value.refundRequests.map(parseRefundRequest);
-  if (providerEvents.some((item) => item === null) || refundRequests.some((item) => item === null)) {
+  if (
+    providerEvents.some((item) => item === null) ||
+    refundRequests.some((item) => item === null)
+  ) {
     return null;
   }
 
@@ -478,7 +475,8 @@ function parseDetail(value: unknown): CommerceTransactionDetail | null {
     refundCapability: {
       available: value.refundCapability.available,
       permissionRequired: "commerce.refund",
-      reason: value.refundCapability.reason as CommerceTransactionDetail["refundCapability"]["reason"],
+      reason: value.refundCapability
+        .reason as CommerceTransactionDetail["refundCapability"]["reason"],
     },
     source: { kind: "canonical", label: value.source.label },
     freshness: {

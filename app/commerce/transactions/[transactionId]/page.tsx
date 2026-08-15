@@ -244,7 +244,9 @@ function RefundHistory({ requests }: { requests: CommerceRefundRequest[] }) {
             <article key={request.refundRequestId}>
               <div className={styles.refundTopline}>
                 <span data-refund-status={request.status}>{request.status}</span>
-                <time dateTime={request.requestedAtUtc}>{formatDateTime(request.requestedAtUtc)}</time>
+                <time dateTime={request.requestedAtUtc}>
+                  {formatDateTime(request.requestedAtUtc)}
+                </time>
               </div>
               <strong>{formatAmount(request.amountMinor, request.currency)}</strong>
               <p>{request.reason}</p>
@@ -261,11 +263,7 @@ function RefundHistory({ requests }: { requests: CommerceRefundRequest[] }) {
   );
 }
 
-function AuditEvidence({
-  evidence,
-}: {
-  evidence: CommerceTransactionDetail["auditEvidence"];
-}) {
+function AuditEvidence({ evidence }: { evidence: CommerceTransactionDetail["auditEvidence"] }) {
   if (evidence.state === "forbidden") {
     return (
       <section className={styles.auditPanel} aria-labelledby="audit-title">
@@ -287,7 +285,9 @@ function AuditEvidence({
         <div>
           <span>Immutable audit evidence</span>
           <h3 id="audit-title">شواهد ممیزی</h3>
-          <p>شناسه حساب عامل نمایش داده نمی‌شود؛ فقط نتیجه، دلیل، زمان و correlation قابل مشاهده است.</p>
+          <p>
+            شناسه حساب عامل نمایش داده نمی‌شود؛ فقط نتیجه، دلیل، زمان و correlation قابل مشاهده است.
+          </p>
         </div>
       </div>
       {evidence.items.length === 0 ? (

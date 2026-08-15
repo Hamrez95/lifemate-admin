@@ -29,7 +29,7 @@ describe("ADM-COM-004 Transaction Detail / Audited Financial Actions", () => {
 
     expect(client).toContain("amountMinor: string");
     expect(client).toContain("accountLinked: boolean");
-    expect(client).toContain('providerActionExecuted: false');
+    expect(client).toContain("providerActionExecuted: false");
     expect(client).not.toContain("cardNumber");
     expect(client).not.toContain("paymentCredential");
     expect(client).not.toContain("providerReference");
@@ -92,12 +92,13 @@ describe("ADM-COM-004 Transaction Detail / Audited Financial Actions", () => {
 
   it("keeps Persian RTL visuals responsive, keyboard-visible and motion-aware", () => {
     const page = source("app/commerce/transactions/[transactionId]/page.tsx");
+    const operation = source("app/commerce/transactions/[transactionId]/RefundOperation.tsx");
     const css = source("app/commerce/transactions/[transactionId]/transaction-detail.module.css");
 
     expect(page).toContain('dir="rtl"');
     expect(page).toContain('aria-labelledby="provider-timeline-title"');
-    expect(page).toContain('aria-labelledby="refund-title"');
-    expect(css).toContain("var(--lm-green)");
+    expect(operation).toContain('aria-labelledby="refund-title"');
+    expect(css).toContain("var(--lm-green-deep)");
     expect(css).toContain("var(--lm-blue)");
     expect(css).toContain("var(--lm-orange-soft)");
     expect(css).toContain("var(--lm-violet-soft)");

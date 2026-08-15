@@ -127,6 +127,7 @@ function CommerceHero({ data }: { data: CommerceOverviewResponse }) {
         </p>
         <div className={styles.tablePlan}>
           <Link href="/commerce/transactions">مشاهده تراکنش‌ها و سفارش‌ها</Link>
+          <Link href="/commerce/promotions">مدیریت پروموشن‌ها و کدهای تخفیف</Link>
         </div>
       </div>
       <div className={styles.heroStats}>

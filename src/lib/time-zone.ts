@@ -1,4 +1,5 @@
 const ISO_DAY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const ISO_LOCAL_MINUTE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/;
 
 const formatterCache = new Map<string, Intl.DateTimeFormat>();
 
@@ -35,6 +36,16 @@ function timeZoneOffsetMs(instantMs: number, timeZone: string): number {
   return asUtc - instantWithoutMilliseconds;
 }
 
+function localClockToUtc(localAsUtc: number, timeZone: string): string {
+  let instant = localAsUtc;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const next = localAsUtc - timeZoneOffsetMs(instant, timeZone);
+    if (next === instant) break;
+    instant = next;
+  }
+  return new Date(instant).toISOString();
+}
+
 export function localDayBoundaryToUtc(
   day: string,
   timeZone: string,
@@ -51,16 +62,28 @@ export function localDayBoundaryToUtc(
       ? Date.UTC(year, month - 1, date, 0, 0, 0, 0)
       : Date.UTC(year, month - 1, date, 23, 59, 59, 999);
 
-  let instant = localAsUtc;
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    const next = localAsUtc - timeZoneOffsetMs(instant, timeZone);
-    if (next === instant) break;
-    instant = next;
-  }
+  return localClockToUtc(localAsUtc, timeZone);
+}
 
-  return new Date(instant).toISOString();
+export function localDateTimeToUtc(value: string, timeZone: string): string {
+  const match = ISO_LOCAL_MINUTE_PATTERN.exec(value);
+  if (!match) throw new RangeError("Expected an ISO local date-time to minute precision");
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const date = Number(match[3]);
+  const hour = Number(match[4]);
+  const minute = Number(match[5]);
+  if (month < 1 || month > 12 || date < 1 || date > 31 || hour > 23 || minute > 59) {
+    throw new RangeError("Local date-time fields are out of range");
+  }
+  const localAsUtc = Date.UTC(year, month - 1, date, hour, minute, 0, 0);
+  return localClockToUtc(localAsUtc, timeZone);
 }
 
 export function tehranDayBoundaryToUtc(day: string, boundary: "start" | "end"): string {
   return localDayBoundaryToUtc(day, "Asia/Tehran", boundary);
+}
+
+export function tehranLocalDateTimeToUtc(value: string): string {
+  return localDateTimeToUtc(value, "Asia/Tehran");
 }
