@@ -251,7 +251,7 @@ function EntitlementCoverage({ rows }: { rows: CommerceEntitlementCoverage[] }) 
         <AdminPageState state="empty" title="Entitlement قابل نمایشی وجود ندارد" />
       ) : (
         <div className={styles.entitlementList}>
-          {rows.slice(0, 12).map((row) => {
+          {rows.map((row) => {
             const total = row.active + row.expired + row.revoked;
             const activePercent = total > 0 ? Math.round((row.active / total) * 100) : 0;
             return (
@@ -449,13 +449,14 @@ async function CommerceContent({ query }: { query: CommerceQuery }) {
   return (
     <div className={styles.page}>
       <CommerceHero data={data} />
+      <div className={styles.contextStrip} aria-label="تعریف شاخص‌های خلاصه تجارت">
+        <span>منبع Subscription: commerce.subscriptions.status</span>
+        <span>منبع Entitlement: commerce.entitlements با grant مؤثر در همین لحظه</span>
+        <span>فیلتر محصول روی خلاصه اعمال می‌شود؛ فیلتر وضعیت فقط جدول را محدود می‌کند</span>
+        <span>Snapshot: {formatDateTime(data.freshness.asOfUtc)}</span>
+      </div>
       <SummaryGrid data={data} />
       <Filters query={query} data={data} />
-      <div className={styles.contextStrip}>
-        <span>منبع: commerce canonical model</span>
-        <span>آخرین دریافت: {formatDateTime(data.freshness.asOfUtc)}</span>
-        <span>هیچ مقدار درآمدی در این تسک حدس زده نشده است</span>
-      </div>
       <div className={styles.twoColumn}>
         <PlanDistribution rows={data.planDistribution} />
         <EntitlementCoverage rows={data.entitlementCoverage} />
