@@ -2,16 +2,16 @@
 
 Use this file when a new AI model, engineer or reviewer enters the project.
 
-## Read first, in this order
+## Read first
 
-1. `AGENTS.md` — repository engineering and security rules.
-2. `SECURITY.md` — non-negotiable security boundaries.
-3. `docs/project/CURRENT_STATE.md` — verified state, what is merged vs deployed.
-4. `docs/project/ROADMAP.md` — implementation order and release gates.
-5. `docs/project/COMMAND_CENTER_BACKLOG.md` — durable backlog index.
-6. `docs/project/DESIGN_REFERENCE_INDEX.md` — approved visual references.
-7. Master Issue #49 and the GitHub Issue you are about to implement, including dependencies and acceptance criteria.
-8. Relevant files in core `Hamrez95/LifeMate` when the task changes Admin API contracts, read models, migrations or restricted runtime permissions.
+1. `AGENTS.md`
+2. `SECURITY.md`
+3. `docs/project/CURRENT_STATE.md`
+4. `docs/project/ROADMAP.md`
+5. `docs/project/COMMAND_CENTER_BACKLOG.md`
+6. `docs/project/DESIGN_REFERENCE_INDEX.md`
+7. Master Issue #49 and the Issue currently being implemented
+8. Relevant Core files in `Hamrez95/LifeMate` whenever Admin API contracts/read models/migrations/permissions change
 
 Do not infer production state from merged code. Re-verify live Supabase before deployment or schema claims.
 
@@ -33,7 +33,7 @@ The browser does not directly query healthcare/admin tables and never contains p
 
 ## Sensitive-data rules
 
-- Raw health: default deny.
+- Raw Health: default deny.
 - Women Health: stricter default deny.
 - Founder/Super Admin ordinary role membership is not a health-data bypass.
 - `health.read.elevated` and `women_health.read.elevated` are not ordinary role permissions.
@@ -44,87 +44,77 @@ The browser does not directly query healthcare/admin tables and never contains p
 
 As of the 2026-08-15 milestone sync:
 
-- Commerce is verified complete through `ADM-COM-005` (#16): Core PR #197 / Admin PR #70.
-- `ADM-PLAT-002` Secure Global Search / Command Palette (#4) is complete via Core PR #198 / Admin PR #72.
-- Core #198 passed Admin Edge API, schema/restore, runtime/db-pressure smoke, readiness and ecosystem gates.
-- Admin #72 passed format, browser-secret boundary, lint, strict TypeScript, unit tests and production build.
+- Commerce is complete through `ADM-COM-005` (#16): Core PR #197 / Admin PR #70.
+- `ADM-PLAT-002` Secure Global Search / Command Palette (#4): Core #198 / Admin #72.
+- `ADM-PLAT-003` Admin Notification Center / Alerts (#30): Core #201 / Admin #74.
+- Core #201 passed Admin Edge API, PostgreSQL schema/restore, edge/readiness, ecosystem and runtime/db-pressure smoke gates.
+- Admin #74 passed format, browser-secret boundary, lint, strict TypeScript, unit tests and production build.
 
-The current strictly sequential task is:
+Current sequential execution:
 
-1. `ADM-PLAT-003` — Admin Notification Center / Alerts (#30)
+1. `ADM-QA-001` — E2E + Accessibility + Visual Regression + Security Denial Matrix (#5)
+2. `ADM-PERF-001` — Dataset Performance Guardrails (#39)
 
-Always re-read Master Issue #49 before starting, because it is canonical and may have advanced since this document was written. Do not start a later feature merely because its UI is easier.
+Always re-read Master Issue #49 before starting because it is canonical and may have advanced.
 
 ## Engineering workflow
 
 For each Issue:
 
 1. Fetch latest `main` and verify its SHA.
-2. Confirm the Issue is still open and dependencies are satisfied.
+2. Confirm the Issue is open and dependencies are satisfied.
 3. Create a fresh feature branch from latest `main`.
 4. Preserve existing architecture unless the Issue explicitly approves a change.
 5. Implement frontend + server/API + data/read model together when the Issue is a vertical slice.
-6. All list endpoints use server-side pagination and bounded query limits.
-7. Sensitive mutations require permission, validation, idempotency, reason where appropriate and immutable audit.
+6. Keep list endpoints paginated and bounded.
+7. Sensitive mutations require authorization, validation, idempotency, reason where appropriate and immutable audit.
 8. Implement Loading, Empty, Error, Forbidden and Stale/Unavailable states.
-9. Persian/RTL is the default; support responsive behavior and WCAG 2.2 AA.
-10. Never invent KPI values, search results or alerts. Render `—` / unavailable / not-instrumented truthfully.
+9. Persian/RTL is default; support responsive behavior and WCAG 2.2 AA.
+10. Never invent KPI values, search results or alerts.
 11. Run repository-required checks and security checks.
 12. Open a PR; merge only after green CI and resolved review concerns.
-13. Close the Issue, update the Master checklist and update `CURRENT_STATE.md` for milestones.
+13. Close the Issue, update Master and durable project state.
 14. Sync Trello only after GitHub completion bookkeeping is correct.
-
-## GitHub write verification
-
-After every branch/Issue/commit/PR write, immediately fetch the created/updated resource. Never report a write as successful without a successful connector response and verification read.
 
 ## Supabase deployment safety
 
-Production rollout remains a separate gate under `ADM-OPS-002` (#24). Before that task performs any write:
-
-- list production migrations;
-- list deployed Edge Functions;
-- inspect approved live schemas/read models as needed;
-- compare live state to the exact core migration/function version;
-- only then follow the gated rollout Issue.
-
-A read-only migration check on 2026-08-15 did not show the Command Center control-plane/Commerce migrations in live Supabase. Do not apply migrations or deploy functions as a side effect of unrelated feature work.
+Production rollout remains a separate gate under `ADM-OPS-002` (#24). Before that task performs any write, re-list production migrations/functions and compare live state to the exact reviewed Core version. Do not deploy migrations/functions as a side effect of feature or QA work.
 
 ## Secure Global Search safety contract
 
-The merged `ADM-PLAT-002` slice intentionally limits search:
+- Domains are allow-listed and permission mapped.
+- Unauthorized domains are never queried and cannot leak existence through counts.
+- Raw Health and Women Health are not search domains.
+- Query length/pagination are bounded and rate limiting is DB-backed per admin.
+- Raw query text is not persisted/logged.
+- Browser requests use same-origin server routes.
+- Recent history stores safe static workspace keys only.
+- Campaign search is explicit not-instrumented until a canonical source exists.
 
-- domains are allow-listed and mapped to their existing read permissions;
-- unauthorized domains are not queried and cannot leak existence through counts;
-- raw Health and Women Health are not search domains;
-- query length and pagination are bounded;
-- rate limiting is database-backed per admin without persisting raw query text;
-- operational search logs omit raw query text;
-- browser requests use a same-origin server route rather than direct DB/Admin API secrets;
-- local recent history contains only safe static workspace keys, never search query text or record IDs;
-- campaign search is explicitly not-instrumented until its canonical source exists rather than returning demo data.
+## Notification Center safety contract
+
+- Each source requires its existing domain permission; the bell badge is filtered by the same source permissions as the list.
+- Real source adapters currently exist for Support, Security and Operations.
+- Finance/Product return explicit not-instrumented source states until canonical alert sources exist.
+- Support uses redacted SLA/Urgent queue data only.
+- Security uses a narrow subset of failed/elevated-denied audit metadata; reasons/metadata payloads are not returned.
+- Operations uses a metadata-only SECURITY DEFINER Outbox snapshot. Raw event/resource identifiers and `payload_json` are excluded.
+- Exact unread totals are only claimed when all authorized sources are complete; otherwise known lower-bound counts and partial completeness are returned.
+- Per-admin read/unread state is permission-checked, idempotent and audited without mutating source business state.
+- Deep links are source-scoped and validated in Core and Admin server code.
+- No acknowledge/dismiss mutation is exposed unless a source-owned canonical workflow exists.
+- Raw Health and Women Health are not notification sources.
 
 ## Commerce safety contract
 
-The merged Commerce slices intentionally keep:
-
 `Plan ≠ Entitlement ≠ Order ≠ Transaction ≠ Provider Event ≠ Promotion ≠ Discount Code`
 
-- Order is commercial intent.
-- Transaction is normalized financial state.
-- Provider Event is an observation received from an external provider.
-- Promotion is a commercial rule; Discount Code is a redeemable code attached to that rule.
-- Provider references remain hash-only in persistence and do not enter the Admin browser contract.
-- Minor-unit money remains string-backed where PostgreSQL bigint precision matters.
-- Refund requests use explicit `commerce.refund`; promotion mutations use canonical `commerce.promo.write`; neither permission is inherited from `commerce.read`.
-- Promotion creation is Draft-only; financial-rule edits and lifecycle transitions are reasoned, idempotent and audited.
-- List code values are masked and code filtering is exact-only to reduce enumeration risk.
-- Redemption counts remain explicit unavailable/null until a canonical source exists; never fabricate them.
+Provider references remain hash-only; bigint money stays lossless; refund and promotion writes use separate explicit permissions; promotion writes are reasoned/idempotent/audited; list codes are masked and exact-only filters reduce enumeration; unavailable redemption counts are never fabricated.
 
-## Next-task security focus — ADM-PLAT-003
+## Current QA focus — ADM-QA-001
 
-The Notification Center must aggregate only real approved sources. Every alert and unread count is filtered by the permission of its source domain so hidden domains cannot leak existence through the bell badge. Raw Health, Women Health, secrets and raw log/provider payloads are excluded. Summaries are redacted and deep links are allow-listed/validated. Source failures must be isolated so one unavailable source does not make other alert groups untruthful. Acknowledge/read mutations are only added where there is a canonical source contract and must be idempotent/audited where required.
+The QA gate should protect the established Command Center surfaces rather than introduce production fixtures or privileged shortcuts. Use deterministic local/test-only auth/API strategies, never production PII/PHI. Cover 401/403/no-leak behavior, role×permission route/API denial, Health/Women Health elevated denial, keyboard/a11y, representative loading/empty/error/forbidden/stale states, RTL/responsive smoke and reviewable visual artifacts. Flaky tests must have an explicit policy rather than retries hiding failures.
 
 ## Design use
 
-Approved mockups are structural/visual references, not a source of canonical data or exact OCR copy. Use product specifications and Issue acceptance criteria for data contracts and wording. Keep LifeMate warm, light, Persian-first and professional; do not turn it into a generic dark SaaS dashboard.
+Approved mockups are structural/visual references, not canonical production data. Keep LifeMate warm, light, Persian-first and professional; do not replace it with a generic dark admin template.
