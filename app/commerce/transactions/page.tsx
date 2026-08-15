@@ -414,7 +414,6 @@ const transactionColumns: readonly AdminTableColumn<CommerceTransactionRow>[] = 
         <span aria-hidden="true">←</span>
       </Link>
     ),
-    hideOnMobile: true,
   },
 ];
 
