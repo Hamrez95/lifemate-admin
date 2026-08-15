@@ -85,6 +85,18 @@ describe("ADM-PLAT-003 Admin Notification Center / Alerts", () => {
     expect(component).toContain("منبع قدیمی");
   });
 
+  it("does not invent acknowledge or dismiss mutations for sources that only support read state", () => {
+    const client = source("src/lib/admin-api/notifications.ts");
+    const component = source("src/components/shell/NotificationCenter.tsx");
+
+    expect(client).toContain("canAcknowledge: false");
+    expect(client).toContain("canDismiss: false");
+    expect(client).toContain("row.canAcknowledge !== false");
+    expect(client).toContain("row.canDismiss !== false");
+    expect(component).not.toContain("acknowledge");
+    expect(component).not.toContain("dismiss");
+  });
+
   it("is keyboard accessible responsive RTL and not color-only", () => {
     const component = source("src/components/shell/NotificationCenter.tsx");
     const css = source("src/components/shell/notification-center.module.css");
