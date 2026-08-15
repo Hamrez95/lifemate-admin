@@ -15,15 +15,17 @@ export type SupportActionFormState = {
 
 export const initialSupportActionFormState: SupportActionFormState = { status: "idle" };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function text(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
 }
 
-function payloadFor(action: SupportTicketAction, formData: FormData): SupportTicketActionPayload | null {
+function payloadFor(
+  action: SupportTicketAction,
+  formData: FormData,
+): SupportTicketActionPayload | null {
   if (action === "add_note") {
     const note = text(formData, "note").trim();
     return note.length >= 10 && note.length <= 2000 ? { note } : null;
@@ -85,7 +87,7 @@ export async function runSupportTicketAction(
       status: "forbidden",
       message:
         result.kind === "forbidden"
-          ? result.message ?? "مجوز support.write برای این عملیات لازم است."
+          ? (result.message ?? "مجوز support.write برای این عملیات لازم است.")
           : "نشست مدیریتی معتبر نیست؛ دوباره وارد شوید.",
     };
   }
@@ -95,7 +97,7 @@ export async function runSupportTicketAction(
       message:
         result.code === "support_state_conflict"
           ? "تیکت از قبل در همین وضعیت قرار دارد یا این گذار مجاز نیست. صفحه را تازه‌سازی کنید."
-          : result.message ?? "عملیات با وضعیت فعلی تیکت تعارض دارد.",
+          : (result.message ?? "عملیات با وضعیت فعلی تیکت تعارض دارد."),
     };
   }
   if (result.kind === "invalid") {

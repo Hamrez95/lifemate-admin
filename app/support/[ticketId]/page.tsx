@@ -17,8 +17,7 @@ import {
 import { TicketOperations } from "./TicketOperations";
 import styles from "./ticket-detail.module.css";
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const EVENT_PAGE_SIZE = 20;
 
 const statusLabels: Record<string, string> = {
@@ -105,9 +104,7 @@ function Hero({
         </Link>
         <span className={styles.eyebrow}>LifeMate Support Detail</span>
         <div className={styles.titleRow}>
-          <h2>
-            تیکت #{ticket.ticketNumber.toLocaleString("fa-IR", { useGrouping: false })}
-          </h2>
+          <h2>تیکت #{ticket.ticketNumber.toLocaleString("fa-IR", { useGrouping: false })}</h2>
           <span className={styles.productBadge}>{ticket.productCode || "LifeMate"}</span>
         </div>
         <p>
@@ -183,7 +180,9 @@ function EventCard({ event }: { event: SupportTicketEvent }) {
         <header>
           <div>
             <span>{eventLabels[event.eventType] ?? event.eventType}</span>
-            <strong>{event.actorDisplayName || (event.actorAccountId ? "Admin LifeMate" : "System")}</strong>
+            <strong>
+              {event.actorDisplayName || (event.actorAccountId ? "Admin LifeMate" : "System")}
+            </strong>
           </div>
           <time dateTime={event.occurredAtUtc}>{formatDateTime(event.occurredAtUtc)}</time>
         </header>
@@ -231,9 +230,7 @@ async function Timeline({ ticketId, page }: { ticketId: string; page: number }) 
   }
   const previousHref = data.page > 1 ? eventPageHref(ticketId, data.page - 1) : undefined;
   const nextHref =
-    data.page * data.pageSize < data.total
-      ? eventPageHref(ticketId, data.page + 1)
-      : undefined;
+    data.page * data.pageSize < data.total ? eventPageHref(ticketId, data.page + 1) : undefined;
 
   return (
     <section className={styles.timelineSection} aria-labelledby="support-timeline-title">
@@ -281,7 +278,8 @@ async function TicketDetailContent({
   if (detailResult.kind === "unauthenticated") redirect("/login");
   if (detailResult.kind === "not_found") notFound();
   if (detailResult.kind === "forbidden") return <AdminPageState state="forbidden" />;
-  if (detailResult.kind === "invalid") return <AdminPageState state="error" title="شناسه تیکت معتبر نیست" />;
+  if (detailResult.kind === "invalid")
+    return <AdminPageState state="error" title="شناسه تیکت معتبر نیست" />;
   if (detailResult.kind === "unavailable") {
     return (
       <AdminPageState

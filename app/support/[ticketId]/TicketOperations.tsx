@@ -4,10 +4,7 @@ import { useActionState, useMemo, useState } from "react";
 
 import type { SupportAssignee } from "@/src/lib/admin-api/support-ticket";
 
-import {
-  initialSupportActionFormState,
-  runSupportTicketAction,
-} from "./actions";
+import { initialSupportActionFormState, runSupportTicketAction } from "./actions";
 import styles from "./ticket-detail.module.css";
 
 type TicketOperationsProps = {
@@ -19,8 +16,6 @@ type TicketOperationsProps = {
   assignees: SupportAssignee[];
   requestSeed: string;
 };
-
-type ActionKind = "add_note" | "set_status" | "set_priority" | "set_assignee";
 
 function useIdempotencyKey(seed: string) {
   const [key, setKey] = useState(seed);
@@ -73,7 +68,8 @@ function NoteForm({ ticketId, seed }: { ticketId: string; seed: string }) {
           onChange={request.rotate}
         />
         <small>
-          متن یادداشت در Audit metadata کپی نمی‌شود؛ با این حال فقط اطلاعات حداقلی و غیرپزشکی ثبت کنید.
+          متن یادداشت در Audit metadata کپی نمی‌شود؛ با این حال فقط اطلاعات حداقلی و غیرپزشکی ثبت
+          کنید.
         </small>
       </label>
       <Feedback state={state} />
@@ -84,7 +80,15 @@ function NoteForm({ ticketId, seed }: { ticketId: string; seed: string }) {
   );
 }
 
-function StatusForm({ ticketId, current, seed }: { ticketId: string; current: string; seed: string }) {
+function StatusForm({
+  ticketId,
+  current,
+  seed,
+}: {
+  ticketId: string;
+  current: string;
+  seed: string;
+}) {
   const [state, action, pending] = useActionState(
     runSupportTicketAction,
     initialSupportActionFormState,
