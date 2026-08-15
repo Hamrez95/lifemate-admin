@@ -1,6 +1,16 @@
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
+type BoundedCollection<T> = {
+  items: T[];
+  total: number;
+};
+
+type InstrumentationState = {
+  instrumented: boolean;
+  reason: string;
+};
+
 export type CommercePlanDetail = {
   plan: {
     id: string;
@@ -15,19 +25,19 @@ export type CommercePlanDetail = {
     name: string;
     status: string;
   };
-  featureRules: Array<{
+  featureRules: BoundedCollection<{
     featureId: string;
     featureCode: string;
     description: string;
     minimumPlanCode: string | null;
   }>;
-  prices: Array<{
+  prices: BoundedCollection<{
     priceId: string;
     countryCode: string | null;
     currency: string;
     storeProvider: string;
     billingPeriodMonths: number;
-    amountMinor: number;
+    amountMinor: string;
     status: string;
     effectiveFromUtc: string;
     effectiveToUtc: string | null;
@@ -41,22 +51,17 @@ export type CommercePlanDetail = {
     expired: number;
     refunded: number;
   };
-  subscriptions: {
-    items: Array<{
-      subscriptionId: string;
-      status: string;
-      startsAtUtc: string;
-      currentPeriodEndUtc: string | null;
-      cancelledAtUtc: string | null;
-      createdAtUtc: string;
-      updatedAtUtc: string;
-    }>;
-    total: number;
-  };
-  changeHistory: {
-    instrumented: boolean;
-    reason: string;
-  };
+  subscriptions: BoundedCollection<{
+    subscriptionId: string;
+    status: string;
+    startsAtUtc: string;
+    currentPeriodEndUtc: string | null;
+    cancelledAtUtc: string | null;
+    createdAtUtc: string;
+    updatedAtUtc: string;
+  }>;
+  changeHistory: InstrumentationState;
+  transactionLinkage: InstrumentationState;
   page: number;
   pageSize: number;
   freshness: { status: "fresh" | "stale"; asOfUtc: string };
@@ -69,7 +74,7 @@ export type CommerceEntitlementDetail = {
     description: string;
     createdAtUtc: string;
   };
-  productRules: Array<{
+  productRules: BoundedCollection<{
     productId: string;
     productCode: string;
     productName: string;
@@ -83,29 +88,23 @@ export type CommerceEntitlementDetail = {
     revoked: number;
     scheduled: number;
   };
-  entitlements: {
-    items: Array<{
-      entitlementId: string;
-      source: string;
-      status: string;
-      targetKind: string;
-      startsAtUtc: string;
-      expiresAtUtc: string | null;
-      createdAtUtc: string;
-      updatedAtUtc: string;
-    }>;
-    total: number;
-  };
-  eventHistory: {
-    total: number;
-    items: Array<{
-      eventId: string;
-      entitlementId: string;
-      eventType: string;
-      occurredAtUtc: string;
-      recordedAtUtc: string;
-    }>;
-  };
+  entitlements: BoundedCollection<{
+    entitlementId: string;
+    source: string;
+    status: string;
+    targetKind: string;
+    startsAtUtc: string;
+    expiresAtUtc: string | null;
+    createdAtUtc: string;
+    updatedAtUtc: string;
+  }>;
+  eventHistory: BoundedCollection<{
+    eventId: string;
+    entitlementId: string;
+    eventType: string;
+    occurredAtUtc: string;
+    recordedAtUtc: string;
+  }>;
   page: number;
   pageSize: number;
   freshness: { status: "fresh" | "stale"; asOfUtc: string };
@@ -121,6 +120,7 @@ export type CommerceDetailResult<T> =
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const NON_NEGATIVE_INTEGER_STRING = /^\d+$/;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
@@ -143,7 +143,21 @@ function validFreshness(value: unknown): value is CommercePlanDetail["freshness"
 }
 
 function validPage(body: Record<string, unknown>): boolean {
-  return Number.isInteger(body.page) && Number.isInteger(body.pageSize) && validFreshness(body.freshness);
+  return (
+    Number.isInteger(body.page) && Number.isInteger(body.pageSize) && validFreshness(body.freshness)
+  );
+}
+
+function validInstrumentationState(value: unknown): value is InstrumentationState {
+  return (
+    isRecord(value) &&
+    typeof value.instrumented === "boolean" &&
+    typeof value.reason === "string"
+  );
+}
+
+function validCollection(value: unknown): value is BoundedCollection<unknown> {
+  return isRecord(value) && Array.isArray(value.items) && nonNegativeInteger(value.total);
 }
 
 function validPlanDetail(value: unknown): value is CommercePlanDetail {
@@ -159,20 +173,15 @@ function validPlanDetail(value: unknown): value is CommercePlanDetail {
   for (const key of ["code", "name", "status"]) {
     if (typeof product[key] !== "string") return false;
   }
-  if (!Array.isArray(value.featureRules) || !Array.isArray(value.prices)) return false;
-  if (!isRecord(value.subscriptionSummary) || !isRecord(value.subscriptions)) return false;
-  if (!isRecord(value.changeHistory)) return false;
-  if (
-    typeof value.changeHistory.instrumented !== "boolean" ||
-    typeof value.changeHistory.reason !== "string"
-  ) {
-    return false;
-  }
+  if (!validCollection(value.featureRules) || !validCollection(value.prices)) return false;
+  if (!isRecord(value.subscriptionSummary) || !validCollection(value.subscriptions)) return false;
+  if (!validInstrumentationState(value.changeHistory)) return false;
+  if (!validInstrumentationState(value.transactionLinkage)) return false;
   for (const key of ["total", "trial", "active", "pastDue", "cancelled", "expired", "refunded"]) {
     if (!nonNegativeInteger(value.subscriptionSummary[key])) return false;
   }
 
-  for (const raw of value.featureRules) {
+  for (const raw of value.featureRules.items) {
     if (!isRecord(raw)) return false;
     if (typeof raw.featureId !== "string" || !UUID_PATTERN.test(raw.featureId)) return false;
     if (
@@ -184,19 +193,22 @@ function validPlanDetail(value: unknown): value is CommercePlanDetail {
     }
   }
 
-  for (const raw of value.prices) {
+  for (const raw of value.prices.items) {
     if (!isRecord(raw)) return false;
     if (typeof raw.priceId !== "string" || !UUID_PATTERN.test(raw.priceId)) return false;
     if (!nullableString(raw.countryCode) || !nullableString(raw.effectiveToUtc)) return false;
     for (const key of ["currency", "storeProvider", "status", "effectiveFromUtc"]) {
       if (typeof raw[key] !== "string") return false;
     }
-    if (!Number.isInteger(raw.billingPeriodMonths) || !nonNegativeInteger(raw.amountMinor)) return false;
+    if (!Number.isInteger(raw.billingPeriodMonths)) return false;
+    if (
+      typeof raw.amountMinor !== "string" ||
+      !NON_NEGATIVE_INTEGER_STRING.test(raw.amountMinor)
+    ) {
+      return false;
+    }
   }
 
-  if (!Array.isArray(value.subscriptions.items) || !nonNegativeInteger(value.subscriptions.total)) {
-    return false;
-  }
   for (const raw of value.subscriptions.items) {
     if (!isRecord(raw)) return false;
     if (typeof raw.subscriptionId !== "string" || !UUID_PATTERN.test(raw.subscriptionId)) return false;
@@ -215,11 +227,11 @@ function validEntitlementDetail(value: unknown): value is CommerceEntitlementDet
   for (const key of ["code", "description", "createdAtUtc"]) {
     if (typeof feature[key] !== "string") return false;
   }
-  if (!Array.isArray(value.productRules) || !isRecord(value.summary)) return false;
+  if (!validCollection(value.productRules) || !isRecord(value.summary)) return false;
   for (const key of ["total", "active", "expired", "revoked", "scheduled"]) {
     if (!nonNegativeInteger(value.summary[key])) return false;
   }
-  for (const raw of value.productRules) {
+  for (const raw of value.productRules.items) {
     if (!isRecord(raw)) return false;
     if (typeof raw.productId !== "string" || !UUID_PATTERN.test(raw.productId)) return false;
     for (const key of ["productCode", "productName", "productStatus"]) {
@@ -228,19 +240,24 @@ function validEntitlementDetail(value: unknown): value is CommerceEntitlementDet
     if (!nullableString(raw.minimumPlanCode)) return false;
   }
 
-  if (!isRecord(value.entitlements) || !Array.isArray(value.entitlements.items)) return false;
-  if (!nonNegativeInteger(value.entitlements.total)) return false;
+  if (!validCollection(value.entitlements)) return false;
   for (const raw of value.entitlements.items) {
     if (!isRecord(raw)) return false;
     if (typeof raw.entitlementId !== "string" || !UUID_PATTERN.test(raw.entitlementId)) return false;
-    for (const key of ["source", "status", "targetKind", "startsAtUtc", "createdAtUtc", "updatedAtUtc"]) {
+    for (const key of [
+      "source",
+      "status",
+      "targetKind",
+      "startsAtUtc",
+      "createdAtUtc",
+      "updatedAtUtc",
+    ]) {
       if (typeof raw[key] !== "string") return false;
     }
     if (!nullableString(raw.expiresAtUtc)) return false;
   }
 
-  if (!isRecord(value.eventHistory) || !Array.isArray(value.eventHistory.items)) return false;
-  if (!nonNegativeInteger(value.eventHistory.total)) return false;
+  if (!validCollection(value.eventHistory)) return false;
   for (const raw of value.eventHistory.items) {
     if (!isRecord(raw)) return false;
     if (typeof raw.eventId !== "string" || !UUID_PATTERN.test(raw.eventId)) return false;
