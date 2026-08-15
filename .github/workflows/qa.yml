@@ -3,29 +3,29 @@ name: admin-qa
 on:
   pull_request:
     paths:
-      - 'app/**'
-      - 'src/**'
-      - 'e2e/**'
-      - 'tests/**'
-      - 'scripts/qa/**'
-      - 'playwright.config.ts'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'docs/qa/**'
-      - '.github/workflows/qa.yml'
+      - "app/**"
+      - "src/**"
+      - "e2e/**"
+      - "tests/**"
+      - "scripts/qa/**"
+      - "playwright.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - "docs/qa/**"
+      - ".github/workflows/qa.yml"
   push:
     branches: [main]
     paths:
-      - 'app/**'
-      - 'src/**'
-      - 'e2e/**'
-      - 'tests/**'
-      - 'scripts/qa/**'
-      - 'playwright.config.ts'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'docs/qa/**'
-      - '.github/workflows/qa.yml'
+      - "app/**"
+      - "src/**"
+      - "e2e/**"
+      - "tests/**"
+      - "scripts/qa/**"
+      - "playwright.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - "docs/qa/**"
+      - ".github/workflows/qa.yml"
 
 permissions:
   contents: read
