@@ -208,19 +208,19 @@ export function GlobalCommandPalette() {
 
   useEffect(() => {
     if (!open) return;
-    try {
-      const raw = window.localStorage.getItem(RECENTS_KEY);
-      setRecents(safeRecent(raw ? JSON.parse(raw) : [], commands));
-    } catch {
-      setRecents([]);
-    }
+    const frame = requestAnimationFrame(() => {
+      try {
+        const raw = window.localStorage.getItem(RECENTS_KEY);
+        setRecents(safeRecent(raw ? JSON.parse(raw) : [], commands));
+      } catch {
+        setRecents([]);
+      }
+    });
+    return () => cancelAnimationFrame(frame);
   }, [commands, open]);
 
   useEffect(() => {
-    if (!open || query.trim().length < 3 || !searchable) {
-      setState({ kind: "idle" });
-      return;
-    }
+    if (!open || query.trim().length < 3 || !searchable) return;
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
       setState({ kind: "loading" });
