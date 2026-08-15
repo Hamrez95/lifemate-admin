@@ -4,7 +4,128 @@ This file is generated only when the temporary bootstrap workflow fails and must
 
 ## update-snapshots output
 ```text
-label=\"خروج از نشست Command Center\">خروج</button>",
+
+> lifemate-admin@0.2.0 test:e2e:update
+> playwright test --update-snapshots
+
+
+Running 8 tests using 1 worker
+
+[1/8] [desktop-chromium] › e2e/auth-accessibility-visual.spec.ts:12:5 › protected Command Center redirects an unauthenticated browser to secure login
+[2/8] [desktop-chromium] › e2e/auth-accessibility-visual.spec.ts:21:5 › login is Persian RTL, keyboard reachable, validates locally and remains accessible
+[desktop-chromium] › e2e/auth-accessibility-visual.spec.ts:21:5 › login is Persian RTL, keyboard reachable, validates locally and remains accessible
+A snapshot doesn't exist at /home/runner/work/lifemate-admin/lifemate-admin/e2e/auth-accessibility-visual.spec.ts-snapshots/secure-login-desktop-chromium-linux.png, writing actual.
+
+[3/8] [desktop-chromium] › e2e/auth-accessibility-visual.spec.ts:40:5 › forbidden state explains server-side authorization without leaking backend details
+[desktop-chromium] › e2e/auth-accessibility-visual.spec.ts:40:5 › forbidden state explains server-side authorization without leaking backend details
+A snapshot doesn't exist at /home/runner/work/lifemate-admin/lifemate-admin/e2e/auth-accessibility-visual.spec.ts-snapshots/forbidden-state-desktop-chromium-linux.png, writing actual.
+
+[4/8] [desktop-chromium] › e2e/mfa-workspace.spec.ts:10:5 › existing account completes OTP then TOTP MFA before an authorized workspace is rendered
+  1) [desktop-chromium] › e2e/mfa-workspace.spec.ts:10:5 › existing account completes OTP then TOTP MFA before an authorized workspace is rendered 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -   1
+    + Received  + 128
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    +     "help": "Elements must meet minimum color contrast ratio thresholds",
+    +     "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=playwright",
+    +     "id": "color-contrast",
+    +     "impact": "serious",
+    +     "nodes": Array [
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": Object {
+    +               "bgColor": "#eaf8f0",
+    +               "contrastRatio": 4.36,
+    +               "expectedContrastRatio": "4.5:1",
+    +               "fgColor": "#697386",
+    +               "fontSize": "7.5pt (10px)",
+    +               "fontWeight": "normal",
+    +               "messageKey": null,
+    +             },
+    +             "id": "color-contrast",
+    +             "impact": "serious",
+    +             "message": "Element has insufficient color contrast of 4.36 (foreground color: #697386, background color: #eaf8f0, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1",
+    +             "relatedNodes": Array [
+    +               Object {
+    +                 "html": "<div class=\"sidebar__status\" role=\"status\" aria-label=\"وضعیت امنیت نشست مدیریت\"><span class=\"status-dot\" aria-hidden=\"true\"></span><div><strong>نشست AAL2 فعال</strong><span>مجوزها از Admin API دریافت شده‌اند.</span></div></div>",
+    +                 "target": Array [
+    +                   ".sidebar__status",
+    +                 ],
+    +               },
+    +             ],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Element has insufficient color contrast of 4.36 (foreground color: #697386, background color: #eaf8f0, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1",
+    +         "html": "<span>مجوزها از Admin API دریافت شده‌اند.</span>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           ".sidebar__status > div > span",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": Object {
+    +               "bgColor": "#f4f2ed",
+    +               "contrastRatio": 4.26,
+    +               "expectedContrastRatio": "4.5:1",
+    +               "fgColor": "#697386",
+    +               "fontSize": "8.6pt (11.52px)",
+    +               "fontWeight": "normal",
+    +               "messageKey": null,
+    +             },
+    +             "id": "color-contrast",
+    +             "impact": "serious",
+    +             "message": "Element has insufficient color contrast of 4.26 (foreground color: #697386, background color: #f4f2ed, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1",
+    +             "relatedNodes": Array [
+    +               Object {
+    +                 "html": "<kbd>⌘/Ctrl K</kbd>",
+    +                 "target": Array [
+    +                   "kbd",
+    +                 ],
+    +               },
+    +             ],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Element has insufficient color contrast of 4.26 (foreground color: #697386, background color: #f4f2ed, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1",
+    +         "html": "<kbd>⌘/Ctrl K</kbd>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "kbd",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": Object {
+    +               "bgColor": "#f4f2ed",
+    +               "contrastRatio": 4.26,
+    +               "expectedContrastRatio": "4.5:1",
+    +               "fgColor": "#697386",
+    +               "fontSize": "6.8pt (9px)",
+    +               "fontWeight": "bold",
+    +               "messageKey": null,
+    +             },
+    +             "id": "color-contrast",
+    +             "impact": "serious",
+    +             "message": "Element has insufficient color contrast of 4.26 (foreground color: #697386, background color: #f4f2ed, font size: 6.8pt (9px), font weight: bold). Expected contrast ratio of 4.5:1",
+    +             "relatedNodes": Array [
+    +               Object {
+    +                 "html": "<button type=\"button\" class=\"operator-chip__logout\" aria-label=\"خروج از نشست Command Center\">خروج</button>",
     +                 "target": Array [
     +                   ".operator-chip__logout",
     +                 ],
@@ -63,287 +184,15 @@ label=\"خروج از نشست Command Center\">خروج</button>",
 
 [5/8] [mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:12:5 › protected Command Center redirects an unauthenticated browser to secure login
 [6/8] [mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:21:5 › login is Persian RTL, keyboard reachable, validates locally and remains accessible
-  3) [mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:21:5 › login is Persian RTL, keyboard reachable, validates locally and remains accessible 
-
-    Error: [
-      {
-        "id": "aria-prohibited-attr",
-        "impact": "serious",
-        "tags": [
-          "cat.aria",
-          "wcag2a",
-          "wcag412",
-          "EN-301-549",
-          "EN-9.4.1.2",
-          "RGAAv4",
-          "RGAA-7.1.1"
-        ],
-        "description": "Ensure ARIA attributes are not prohibited for an element's role",
-        "help": "Elements must only use permitted ARIA attributes",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/aria-prohibited-attr?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [],
-            "none": [
-              {
-                "id": "aria-prohibited-attr",
-                "data": {
-                  "role": null,
-                  "nodeName": "div",
-                  "messageKey": "noRoleSingular",
-                  "prohibited": [
-                    "aria-label"
-                  ]
-                },
-                "relatedNodes": [],
-                "impact": "serious",
-                "message": "aria-label attribute cannot be used on a div with no valid role attribute."
-              }
-            ],
-            "impact": "serious",
-            "html": "<div class=\"brand\" aria-label=\"LifeMate\">",
-            "target": [
-              ".brand"
-            ],
-            "failureSummary": "Fix all of the following:\n  aria-label attribute cannot be used on a div with no valid role attribute."
-          }
-        ]
-      }
-    ]
-
-    expect(received).toEqual(expected) // deep equality
-
-    - Expected  -  1
-    + Received  + 47
-
-    - Array []
-    + Array [
-    +   Object {
-    +     "description": "Ensure ARIA attributes are not prohibited for an element's role",
-    +     "help": "Elements must only use permitted ARIA attributes",
-    +     "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/aria-prohibited-attr?application=playwright",
-    +     "id": "aria-prohibited-attr",
-    +     "impact": "serious",
-    +     "nodes": Array [
-    +       Object {
-    +         "all": Array [],
-    +         "any": Array [],
-    +         "failureSummary": "Fix all of the following:
-    +   aria-label attribute cannot be used on a div with no valid role attribute.",
-    +         "html": "<div class=\"brand\" aria-label=\"LifeMate\">",
-    +         "impact": "serious",
-    +         "none": Array [
-    +           Object {
-    +             "data": Object {
-    +               "messageKey": "noRoleSingular",
-    +               "nodeName": "div",
-    +               "prohibited": Array [
-    +                 "aria-label",
-    +               ],
-    +               "role": null,
-    +             },
-    +             "id": "aria-prohibited-attr",
-    +             "impact": "serious",
-    +             "message": "aria-label attribute cannot be used on a div with no valid role attribute.",
-    +             "relatedNodes": Array [],
-    +           },
-    +         ],
-    +         "target": Array [
-    +           ".brand",
-    +         ],
-    +       },
-    +     ],
-    +     "tags": Array [
-    +       "cat.aria",
-    +       "wcag2a",
-    +       "wcag412",
-    +       "EN-301-549",
-    +       "EN-9.4.1.2",
-    +       "RGAAv4",
-    +       "RGAA-7.1.1",
-    +     ],
-    +   },
-    + ]
-
-       7 |     (violation) => violation.impact === "critical" || violation.impact === "serious",
-       8 |   );
-    >  9 |   expect(blocking, JSON.stringify(blocking, null, 2)).toEqual([]);
-         |                                                       ^
-      10 | }
-      11 |
-      12 | test("protected Command Center redirects an unauthenticated browser to secure login", async ({
-        at expectNoSeriousA11yViolations (/home/runner/work/lifemate-admin/lifemate-admin/e2e/auth-accessibility-visual.spec.ts:9:55)
-        at /home/runner/work/lifemate-admin/lifemate-admin/e2e/auth-accessibility-visual.spec.ts:36:3
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/playwright/auth-accessibility-visual--0579e-ally-and-remains-accessible-mobile-chromium/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/playwright/auth-accessibility-visual--0579e-ally-and-remains-accessible-mobile-chromium/error-context.md
-
-    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
-    test-results/playwright/auth-accessibility-visual--0579e-ally-and-remains-accessible-mobile-chromium/trace.zip
-    Usage:
-
-        npx playwright show-trace test-results/playwright/auth-accessibility-visual--0579e-ally-and-remains-accessible-mobile-chromium/trace.zip
-
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
+[mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:21:5 › login is Persian RTL, keyboard reachable, validates locally and remains accessible
+A snapshot doesn't exist at /home/runner/work/lifemate-admin/lifemate-admin/e2e/auth-accessibility-visual.spec.ts-snapshots/secure-login-mobile-chromium-linux.png, writing actual.
 
 [7/8] [mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:40:5 › forbidden state explains server-side authorization without leaking backend details
-  4) [mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:40:5 › forbidden state explains server-side authorization without leaking backend details 
-
-    Error: [
-      {
-        "id": "color-contrast",
-        "impact": "serious",
-        "tags": [
-          "cat.color",
-          "wcag2aa",
-          "wcag143",
-          "TTv5",
-          "TT13.c",
-          "EN-301-549",
-          "EN-9.1.4.3",
-          "ACT",
-          "RGAAv4",
-          "RGAA-3.2.1"
-        ],
-        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-        "help": "Elements must meet minimum color contrast ratio thresholds",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "color-contrast",
-                "data": {
-                  "fgColor": "#17ad68",
-                  "bgColor": "#fffdf9",
-                  "contrastRatio": 2.86,
-                  "fontSize": "27.0pt (36px)",
-                  "fontWeight": "bold",
-                  "messageKey": null,
-                  "expectedContrastRatio": "3:1"
-                },
-                "relatedNodes": [
-                  {
-                    "html": "<div class=\"standalone-state__card\"><span aria-hidden=\"true\">403</span><h1>این حساب برای این بخش مجوز ندارد.</h1><p>عضویت و permissionهای Command Center در سمت سرور بررسی می‌شوند. پنهان یا نمایش داده شدن منو کنترل امنیتی محسوب نمی‌شود.</p><a href=\"/\">بازگشت به مرکز فرماندهی</a></div>",
-                    "target": [
-                      ".standalone-state__card"
-                    ]
-                  }
-                ],
-                "impact": "serious",
-                "message": "Element has insufficient color contrast of 2.86 (foreground color: #17ad68, background color: #fffdf9, font size: 27.0pt (36px), font weight: bold). Expected contrast ratio of 3:1"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "serious",
-            "html": "<span aria-hidden=\"true\">403</span>",
-            "target": [
-              "span"
-            ],
-            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.86 (foreground color: #17ad68, background color: #fffdf9, font size: 27.0pt (36px), font weight: bold). Expected contrast ratio of 3:1"
-          }
-        ]
-      }
-    ]
-
-    expect(received).toEqual(expected) // deep equality
-
-    - Expected  -  1
-    + Received  + 58
-
-    - Array []
-    + Array [
-    +   Object {
-    +     "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-    +     "help": "Elements must meet minimum color contrast ratio thresholds",
-    +     "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=playwright",
-    +     "id": "color-contrast",
-    +     "impact": "serious",
-    +     "nodes": Array [
-    +       Object {
-    +         "all": Array [],
-    +         "any": Array [
-    +           Object {
-    +             "data": Object {
-    +               "bgColor": "#fffdf9",
-    +               "contrastRatio": 2.86,
-    +               "expectedContrastRatio": "3:1",
-    +               "fgColor": "#17ad68",
-    +               "fontSize": "27.0pt (36px)",
-    +               "fontWeight": "bold",
-    +               "messageKey": null,
-    +             },
-    +             "id": "color-contrast",
-    +             "impact": "serious",
-    +             "message": "Element has insufficient color contrast of 2.86 (foreground color: #17ad68, background color: #fffdf9, font size: 27.0pt (36px), font weight: bold). Expected contrast ratio of 3:1",
-    +             "relatedNodes": Array [
-    +               Object {
-    +                 "html": "<div class=\"standalone-state__card\"><span aria-hidden=\"true\">403</span><h1>این حساب برای این بخش مجوز ندارد.</h1><p>عضویت و permissionهای Command Center در سمت سرور بررسی می‌شوند. پنهان یا نمایش داده شدن منو کنترل امنیتی محسوب نمی‌شود.</p><a href=\"/\">بازگشت به مرکز فرماندهی</a></div>",
-    +                 "target": Array [
-    +                   ".standalone-state__card",
-    +                 ],
-    +               },
-    +             ],
-    +           },
-    +         ],
-    +         "failureSummary": "Fix any of the following:
-    +   Element has insufficient color contrast of 2.86 (foreground color: #17ad68, background color: #fffdf9, font size: 27.0pt (36px), font weight: bold). Expected contrast ratio of 3:1",
-    +         "html": "<span aria-hidden=\"true\">403</span>",
-    +         "impact": "serious",
-    +         "none": Array [],
-    +         "target": Array [
-    +           "span",
-    +         ],
-    +       },
-    +     ],
-    +     "tags": Array [
-    +       "cat.color",
-    +       "wcag2aa",
-    +       "wcag143",
-    +       "TTv5",
-    +       "TT13.c",
-    +       "EN-301-549",
-    +       "EN-9.1.4.3",
-    +       "ACT",
-    +       "RGAAv4",
-    +       "RGAA-3.2.1",
-    +     ],
-    +   },
-    + ]
-
-       7 |     (violation) => violation.impact === "critical" || violation.impact === "serious",
-       8 |   );
-    >  9 |   expect(blocking, JSON.stringify(blocking, null, 2)).toEqual([]);
-         |                                                       ^
-      10 | }
-      11 |
-      12 | test("protected Command Center redirects an unauthenticated browser to secure login", async ({
-        at expectNoSeriousA11yViolations (/home/runner/work/lifemate-admin/lifemate-admin/e2e/auth-accessibility-visual.spec.ts:9:55)
-        at /home/runner/work/lifemate-admin/lifemate-admin/e2e/auth-accessibility-visual.spec.ts:52:3
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/playwright/auth-accessibility-visual--74522-out-leaking-backend-details-mobile-chromium/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/playwright/auth-accessibility-visual--74522-out-leaking-backend-details-mobile-chromium/error-context.md
-
-    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
-    test-results/playwright/auth-accessibility-visual--74522-out-leaking-backend-details-mobile-chromium/trace.zip
-    Usage:
-
-        npx playwright show-trace test-results/playwright/auth-accessibility-visual--74522-out-leaking-backend-details-mobile-chromium/trace.zip
-
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
+[mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:40:5 › forbidden state explains server-side authorization without leaking backend details
+A snapshot doesn't exist at /home/runner/work/lifemate-admin/lifemate-admin/e2e/auth-accessibility-visual.spec.ts-snapshots/forbidden-state-mobile-chromium-linux.png, writing actual.
 
 [8/8] [mobile-chromium] › e2e/mfa-workspace.spec.ts:10:5 › existing account completes OTP then TOTP MFA before an authorized workspace is rendered
-  5) [mobile-chromium] › e2e/mfa-workspace.spec.ts:10:5 › existing account completes OTP then TOTP MFA before an authorized workspace is rendered 
+  2) [mobile-chromium] › e2e/mfa-workspace.spec.ts:10:5 › existing account completes OTP then TOTP MFA before an authorized workspace is rendered 
 
     Error: expect(received).toEqual(expected) // deep equality
 
@@ -471,13 +320,10 @@ label=\"خروج از نشست Command Center\">خروج</button>",
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
 
-  5 failed
-    [desktop-chromium] › e2e/auth-accessibility-visual.spec.ts:40:5 › forbidden state explains server-side authorization without leaking backend details 
+  2 failed
     [desktop-chromium] › e2e/mfa-workspace.spec.ts:10:5 › existing account completes OTP then TOTP MFA before an authorized workspace is rendered 
-    [mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:21:5 › login is Persian RTL, keyboard reachable, validates locally and remains accessible 
-    [mobile-chromium] › e2e/auth-accessibility-visual.spec.ts:40:5 › forbidden state explains server-side authorization without leaking backend details 
     [mobile-chromium] › e2e/mfa-workspace.spec.ts:10:5 › existing account completes OTP then TOTP MFA before an authorized workspace is rendered 
-  3 passed (26.1s)
+  6 passed (23.7s)
 
 ```
 
