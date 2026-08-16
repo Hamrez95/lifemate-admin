@@ -1,0 +1,507 @@
+.page {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.62fr);
+  gap: 1rem;
+  padding: 1.45rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 28px;
+  background:
+    radial-gradient(
+      circle at 5% 0%,
+      color-mix(in srgb, var(--accent-sky) 22%, transparent),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 96% 100%,
+      color-mix(in srgb, var(--accent-mint) 20%, transparent),
+      transparent 36%
+    ),
+    linear-gradient(145deg, var(--surface-raised), var(--surface-soft));
+  box-shadow: var(--shadow-card);
+}
+
+.hero h2 {
+  max-width: 23ch;
+  margin: 0.3rem 0 0.6rem;
+  font-size: clamp(1.7rem, 3vw, 2.6rem);
+  line-height: 1.35;
+}
+
+.hero p,
+.sectionHead p,
+.queueCard p,
+.executionCard p,
+.safetyCard p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.eyebrow {
+  color: var(--accent-strong);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.safetyCard {
+  display: grid;
+  align-content: center;
+  gap: 0.55rem;
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--accent-mint) 32%, var(--border-subtle));
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--surface-raised) 88%, var(--accent-mint));
+}
+
+.safetyCard strong {
+  font-size: 1rem;
+}
+
+.safetyList {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.safetyList li::before {
+  content: "✓";
+  margin-inline-end: 0.45rem;
+  color: var(--success);
+  font-weight: 900;
+}
+
+.notice,
+.filterCard,
+.queueSection,
+.timelineSection {
+  padding: 1.1rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.notice {
+  border-radius: 16px;
+  font-weight: 800;
+}
+
+.notice[data-kind="success"] {
+  border-color: color-mix(in srgb, var(--success) 42%, var(--border-subtle));
+}
+
+.notice[data-kind="error"] {
+  border-color: color-mix(in srgb, var(--danger, #c64d58) 44%, var(--border-subtle));
+}
+
+.sectionHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.sectionHead h3 {
+  margin: 0.18rem 0 0.2rem;
+}
+
+.filterForm {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  gap: 0.65rem;
+  align-items: end;
+}
+
+.filterForm label,
+.scheduleForm label,
+.actionForm label {
+  display: grid;
+  gap: 0.32rem;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.filterForm input,
+.filterForm select,
+.scheduleForm input,
+.scheduleForm select,
+.actionForm input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 0.62rem 0.7rem;
+  background: var(--surface-soft);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.filterForm button,
+.primaryButton,
+.secondaryButton,
+.dangerButton,
+.retryButton,
+.viewToggle a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 0.58rem 0.82rem;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.filterForm button,
+.primaryButton {
+  background: var(--accent-strong);
+  color: #fff;
+}
+
+.secondaryButton,
+.viewToggle a {
+  border-color: var(--border-subtle);
+  background: var(--surface-soft);
+  color: var(--text-primary);
+}
+
+.dangerButton {
+  border-color: color-mix(in srgb, var(--danger, #c64d58) 38%, var(--border-subtle));
+  background: color-mix(in srgb, var(--surface-soft) 90%, var(--danger, #c64d58));
+  color: var(--text-primary);
+}
+
+.retryButton {
+  border-color: color-mix(in srgb, var(--warning) 40%, var(--border-subtle));
+  background: color-mix(in srgb, var(--surface-soft) 90%, var(--warning));
+  color: var(--text-primary);
+}
+
+.filterForm input:focus-visible,
+.filterForm select:focus-visible,
+.scheduleForm input:focus-visible,
+.scheduleForm select:focus-visible,
+.actionForm input:focus-visible,
+.filterForm button:focus-visible,
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible,
+.dangerButton:focus-visible,
+.retryButton:focus-visible,
+.viewToggle a:focus-visible,
+.campaignLink:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent-strong) 35%, transparent);
+  outline-offset: 2px;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.summaryCard {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.9rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  background: var(--surface-raised);
+}
+
+.summaryCard span {
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.summaryCard strong {
+  font-size: 1.45rem;
+}
+
+.summaryCard small {
+  color: var(--text-secondary);
+}
+
+.viewToggle {
+  display: inline-flex;
+  gap: 0.35rem;
+  padding: 0.25rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  background: var(--surface-soft);
+}
+
+.viewToggle a[data-active="true"] {
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-soft);
+}
+
+.queueGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.queueCard {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.9rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  background: var(--surface-soft);
+}
+
+.queueCard[data-approval="Pending"] {
+  border-color: color-mix(in srgb, var(--warning) 42%, var(--border-subtle));
+}
+
+.queueCard[data-approval="Approved"] {
+  border-color: color-mix(in srgb, var(--success) 34%, var(--border-subtle));
+}
+
+.cardTop,
+.executionTop,
+.dayHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.cardTop h4,
+.executionTop h4,
+.dayHead h4 {
+  margin: 0.12rem 0 0;
+}
+
+.badges,
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.badge {
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  padding: 0.25rem 0.5rem;
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font-size: 0.66rem;
+  font-weight: 900;
+}
+
+.badge[data-state="Approved"],
+.badge[data-state="Published"] {
+  border-color: color-mix(in srgb, var(--success) 38%, var(--border-subtle));
+  color: var(--success);
+}
+
+.badge[data-state="Pending"],
+.badge[data-state="Scheduled"],
+.badge[data-state="Failed"] {
+  border-color: color-mix(in srgb, var(--warning) 42%, var(--border-subtle));
+}
+
+.badge[data-state="OutcomeUnknown"] {
+  border-color: color-mix(in srgb, var(--danger, #c64d58) 45%, var(--border-subtle));
+}
+
+.preview {
+  min-height: 3.6rem;
+  padding: 0.65rem;
+  border-radius: 12px;
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  line-height: 1.75;
+}
+
+.campaignLink {
+  color: var(--accent-strong);
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.scheduleForm,
+.actionForm {
+  display: grid;
+  gap: 0.55rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.scheduleGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(130px, 0.75fr);
+  gap: 0.55rem;
+}
+
+.formHint,
+.guardrailText {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  line-height: 1.65;
+}
+
+.days {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.day {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.85rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  background: var(--surface-soft);
+}
+
+.dayHead span {
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+}
+
+.executionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.executionCard {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: 0.8rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 15px;
+  background: var(--surface-raised);
+}
+
+.executionCard[data-status="OutcomeUnknown"] {
+  border-color: color-mix(in srgb, var(--danger, #c64d58) 45%, var(--border-subtle));
+}
+
+.executionCard[data-status="Scheduled"] {
+  border-color: color-mix(in srgb, var(--accent-sky) 42%, var(--border-subtle));
+}
+
+.executionTime {
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.listWrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+}
+
+.table {
+  width: 100%;
+  min-width: 880px;
+  border-collapse: collapse;
+  background: var(--surface-raised);
+}
+
+.table th,
+.table td {
+  padding: 0.72rem;
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: start;
+  vertical-align: top;
+  font-size: 0.74rem;
+}
+
+.table th {
+  color: var(--text-secondary);
+  background: var(--surface-soft);
+  font-weight: 900;
+}
+
+.emptyBox,
+.outcomeBox {
+  padding: 0.9rem;
+  border: 1px dashed var(--border-subtle);
+  border-radius: 15px;
+  background: var(--surface-soft);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  line-height: 1.75;
+}
+
+.outcomeBox {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--danger, #c64d58) 45%, var(--border-subtle));
+}
+
+@media (max-width: 1080px) {
+  .hero,
+  .queueGrid,
+  .executionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filterForm {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .hero,
+  .filterCard,
+  .queueSection,
+  .timelineSection {
+    padding: 0.95rem;
+  }
+
+  .filterForm,
+  .summaryGrid,
+  .scheduleGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sectionHead,
+  .cardTop,
+  .executionTop,
+  .dayHead {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .filterForm button,
+  .primaryButton,
+  .secondaryButton,
+  .dangerButton,
+  .retryButton {
+    width: 100%;
+  }
+}
