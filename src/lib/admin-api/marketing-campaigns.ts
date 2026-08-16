@@ -217,14 +217,6 @@ async function bearer(): Promise<string | null> {
   return session?.access_token ?? null;
 }
 
-async function problem(response: Response): Promise<Problem> {
-  try {
-    return ((await response.json()) as Problem) ?? {};
-  } catch {
-    return {};
-  }
-}
-
 function failed<T>(response: Response, body: Problem): MarketingCampaignResult<T> {
   const message = typeof body.title === "string" ? body.title : undefined;
   const code = typeof body.code === "string" ? body.code : undefined;
