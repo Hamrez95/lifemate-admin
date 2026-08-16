@@ -105,15 +105,13 @@ function instant(value: unknown): value is string {
 
 function goal(value: unknown): value is MarketingAiContentGoal {
   return (
-    typeof value === "string" &&
-    marketingAiContentGoals.includes(value as MarketingAiContentGoal)
+    typeof value === "string" && marketingAiContentGoals.includes(value as MarketingAiContentGoal)
   );
 }
 
 function tone(value: unknown): value is MarketingAiContentTone {
   return (
-    typeof value === "string" &&
-    marketingAiContentTones.includes(value as MarketingAiContentTone)
+    typeof value === "string" && marketingAiContentTones.includes(value as MarketingAiContentTone)
   );
 }
 
@@ -321,9 +319,7 @@ export async function getMarketingAiContentGenerations(
   campaignId: string,
 ): Promise<MarketingCampaignResult<MarketingAiContentList>> {
   if (!UUID_PATTERN.test(campaignId)) return { kind: "invalid" };
-  const result = await request(
-    `/api/v1/marketing/campaigns/${campaignId}/ai-content/generations`,
-  );
+  const result = await request(`/api/v1/marketing/campaigns/${campaignId}/ai-content/generations`);
   if (!result) return { kind: "unauthenticated" };
   if (result.response.ok) {
     const parsed = parseList(result.body);
@@ -344,17 +340,14 @@ export async function generateMarketingAiContent(
   ) {
     return { kind: "invalid" };
   }
-  const result = await request(
-    `/api/v1/marketing/campaigns/${campaignId}/ai-content/generations`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Idempotency-Key": idempotencyKey,
-      },
-      body: JSON.stringify(payload),
+  const result = await request(`/api/v1/marketing/campaigns/${campaignId}/ai-content/generations`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Idempotency-Key": idempotencyKey,
     },
-  );
+    body: JSON.stringify(payload),
+  });
   if (!result) return { kind: "unauthenticated" };
   if (result.response.ok) {
     const parsed = parseGenerate(result.body);
