@@ -25,10 +25,12 @@ export async function setChannelStatusAction(formData: FormData): Promise<void> 
   const idempotencyKey = text(formData, "idempotencyKey");
 
   if (!PROVIDER_PATTERN.test(providerCode)) destination("error", "شناسه کانال معتبر نیست.");
-  if (enabledRaw !== "true" && enabledRaw !== "false") destination("error", "وضعیت کانال معتبر نیست.");
+  if (enabledRaw !== "true" && enabledRaw !== "false")
+    destination("error", "وضعیت کانال معتبر نیست.");
   if (reason.length < 10 || reason.length > 1000)
     destination("error", "دلیل تغییر وضعیت باید بین ۱۰ تا ۱۰۰۰ نویسه باشد.");
-  if (!IDEMPOTENCY_PATTERN.test(idempotencyKey)) destination("error", "شناسه امن درخواست معتبر نیست.");
+  if (!IDEMPOTENCY_PATTERN.test(idempotencyKey))
+    destination("error", "شناسه امن درخواست معتبر نیست.");
 
   const result = await setMarketingChannelStatus(
     providerCode,
