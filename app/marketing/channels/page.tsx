@@ -91,7 +91,9 @@ function ChannelCard({ channel, canControl }: { channel: MarketingChannel; canCo
               name="reason"
               minLength={10}
               maxLength={1000}
-              placeholder={nextEnabled ? "دلیل فعال‌سازی مجدد کانال" : "دلیل توقف انتشار از این کانال"}
+              placeholder={
+                nextEnabled ? "دلیل فعال‌سازی مجدد کانال" : "دلیل توقف انتشار از این کانال"
+              }
               required
             />
           </label>
