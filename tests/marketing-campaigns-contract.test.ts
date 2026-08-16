@@ -18,8 +18,9 @@ describe("ADM-MKT-002 campaign boundaries", () => {
   it("requires idempotency for create, update and status mutations", () => {
     expect(client.match(/Idempotency-Key/g)?.length).toBeGreaterThanOrEqual(3);
     expect(client).toContain("IDEMPOTENCY_PATTERN");
-    expect(actions).toContain("campaign-create-");
-    expect(actions).toContain("campaign-status-");
+    expect(actions).toContain('text(formData, "idempotencyKey")');
+    expect(page).toContain("campaign-create-");
+    expect(page).toContain("campaign-status-");
   });
 
   it("keeps provider publication outside the campaign workflow", () => {
