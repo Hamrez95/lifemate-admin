@@ -124,7 +124,13 @@ function parseFinding(value: unknown): AdvisorFinding | null {
 function parseInsight(value: unknown): AdvisorInsight | null {
   const body = object(value);
   const model = object(body?.model);
-  if (!body || !model || !Array.isArray(body.findings) || !Array.isArray(body.evidence) || !Array.isArray(body.caveats)) {
+  if (
+    !body ||
+    !model ||
+    !Array.isArray(body.findings) ||
+    !Array.isArray(body.evidence) ||
+    !Array.isArray(body.caveats)
+  ) {
     return null;
   }
   const findings = body.findings.map(parseFinding);
@@ -173,7 +179,10 @@ export async function getAdvisorInsight(
   topic: AdvisorTopic,
   question: string | null,
 ): Promise<AdvisorResult> {
-  if (!advisorTopics.includes(topic) || (question && (question.length < 2 || question.length > 500))) {
+  if (
+    !advisorTopics.includes(topic) ||
+    (question && (question.length < 2 || question.length > 500))
+  ) {
     return { kind: "invalid" };
   }
   const token = await bearer();
@@ -208,8 +217,7 @@ export async function getAdvisorInsight(
     if (response.status === 400) return { kind: "invalid", code, message };
     return {
       kind: "unavailable",
-      correlationId:
-        typeof problem?.correlationId === "string" ? problem.correlationId : undefined,
+      correlationId: typeof problem?.correlationId === "string" ? problem.correlationId : undefined,
     };
   } catch {
     return { kind: "unavailable" };
