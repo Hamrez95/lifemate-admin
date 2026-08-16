@@ -19,7 +19,7 @@ describe("ADM-MKT-001 Marketing workspace routing and privacy", () => {
     const workspaces = source("src/config/workspaces.ts");
     expect(workspaces).toContain('slug: "marketing"');
     expect(workspaces).toContain('requiredPermissions: ["marketing.read"]');
-    expect(workspaces).toContain("return workspace.slug ? `/${workspace.slug}` : \"/\"");
+    expect(workspaces).toContain('return workspace.slug ? `/${workspace.slug}` : "/"');
   });
 
   it("does not add direct browser database access or fake attribution fields", () => {
