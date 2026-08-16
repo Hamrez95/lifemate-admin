@@ -7,7 +7,13 @@ import type { MarketingCampaign, MarketingCampaignResult } from "./marketing-cam
 
 export type CampaignApprovalState = "Pending" | "Approved" | "Revoked";
 export type CampaignPublishStatus =
-  "Queued" | "Processing" | "Published" | "Failed" | "OutcomeUnknown";
+  | "Scheduled"
+  | "Queued"
+  | "Processing"
+  | "Published"
+  | "Failed"
+  | "OutcomeUnknown"
+  | "Cancelled";
 
 export type MarketingCampaignContent = {
   brief: string | null;
@@ -88,11 +94,13 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3
 const CODE_PATTERN = /^[a-z0-9][a-z0-9_.:-]{0,63}$/;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
 const PUBLISH_STATUSES = new Set<CampaignPublishStatus>([
+  "Scheduled",
   "Queued",
   "Processing",
   "Published",
   "Failed",
   "OutcomeUnknown",
+  "Cancelled",
 ]);
 const APPROVAL_STATES = new Set<CampaignApprovalState>(["Pending", "Approved", "Revoked"]);
 
