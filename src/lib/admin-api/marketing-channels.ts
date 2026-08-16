@@ -1,10 +1,7 @@
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
-export type MarketingChannelSetupStatus =
-  | "SetupRequired"
-  | "CredentialAvailable"
-  | "Disabled";
+export type MarketingChannelSetupStatus = "SetupRequired" | "CredentialAvailable" | "Disabled";
 export type MarketingChannelOperatorStatus = "Enabled" | "Disabled";
 
 export type MarketingChannel = {
@@ -142,8 +139,7 @@ function failed<T>(response: Response, body: Problem): MarketingChannelResult<T>
   if (response.status === 400) return { kind: "invalid", code, message };
   return {
     kind: "unavailable",
-    correlationId:
-      typeof body.correlationId === "string" ? body.correlationId : undefined,
+    correlationId: typeof body.correlationId === "string" ? body.correlationId : undefined,
   };
 }
 
@@ -165,23 +161,17 @@ export async function setMarketingChannelStatus(
   reason: string,
   idempotencyKey: string,
 ): Promise<MarketingChannelResult<Record<string, unknown>>> {
-  if (
-    !PROVIDER_PATTERN.test(providerCode) ||
-    !IDEMPOTENCY_PATTERN.test(idempotencyKey)
-  ) {
+  if (!PROVIDER_PATTERN.test(providerCode) || !IDEMPOTENCY_PATTERN.test(idempotencyKey)) {
     return { kind: "invalid" };
   }
-  const result = await request(
-    `/api/v1/marketing/channels/${providerCode}/actions/status`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Idempotency-Key": idempotencyKey,
-      },
-      body: JSON.stringify({ enabled, reason }),
+  const result = await request(`/api/v1/marketing/channels/${providerCode}/actions/status`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Idempotency-Key": idempotencyKey,
     },
-  );
+    body: JSON.stringify({ enabled, reason }),
+  });
   if (!result) return { kind: "unauthenticated" };
   if (result.response.ok && record(result.body)) {
     return { kind: "ok", data: result.body as Record<string, unknown> };
