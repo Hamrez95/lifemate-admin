@@ -249,8 +249,7 @@ function ApprovalPanel({
         </div>
       </div>
       <p className={styles.panelText}>
-        AI، lifecycle کمپین و وجود Credential هیچ‌کدام جای تأیید انسانی revision فعلی را
-        نمی‌گیرند.
+        AI، lifecycle کمپین و وجود Credential هیچ‌کدام جای تأیید انسانی revision فعلی را نمی‌گیرند.
       </p>
       {canWrite ? (
         <form action={setCampaignApprovalAction} className={styles.approvalForm}>
@@ -388,8 +387,8 @@ function PublishPanel({
       <div className={styles.truthBox}>
         <strong>Credential موجود ≠ Connected</strong>
         <p>
-          connectivity عمداً «بررسی‌نشده» باقی می‌ماند. فقط پاسخ واقعی provider می‌تواند execution را
-          Published کند؛ خطای مبهم یا crash بعد از side effect به `OutcomeUnknown` می‌رود تا انتشار
+          connectivity عمداً «بررسی‌نشده» باقی می‌ماند. فقط پاسخ واقعی provider می‌تواند execution
+          را Published کند؛ خطای مبهم یا crash بعد از side effect به `OutcomeUnknown` می‌رود تا انتشار
           تکراری خودکار رخ ندهد.
         </p>
       </div>
@@ -397,8 +396,7 @@ function PublishPanel({
       {channel ? (
         <p className={styles.channelLine}>
           کانال: <strong>{channel.displayName}</strong> · operational:{" "}
-          {channel.operatorStatus === "Enabled" ? "فعال" : "غیرفعال"} · setup:{" "}
-          {channel.setupStatus}
+          {channel.operatorStatus === "Enabled" ? "فعال" : "غیرفعال"} · setup: {channel.setupStatus}
         </p>
       ) : (
         <p className={styles.inlineWarning}>برای این کمپین کانال امنی قابل resolve نیست.</p>
@@ -560,9 +558,7 @@ export default async function CampaignDetailPage({
           ) : result?.kind === "unavailable" ? (
             <AdminPageState
               state="unavailable"
-              description={
-                result.correlationId ? `کد پیگیری: ${result.correlationId}` : undefined
-              }
+              description={result.correlationId ? `کد پیگیری: ${result.correlationId}` : undefined}
             />
           ) : result?.kind === "ok" ? (
             <>
