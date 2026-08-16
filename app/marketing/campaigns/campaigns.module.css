@@ -1,0 +1,255 @@
+.page {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  background:
+    radial-gradient(
+      circle at 12% 18%,
+      color-mix(in srgb, var(--accent-mint) 22%, transparent),
+      transparent 36%
+    ),
+    radial-gradient(
+      circle at 88% 20%,
+      color-mix(in srgb, var(--accent-sky) 18%, transparent),
+      transparent 34%
+    ),
+    var(--surface-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.hero h2 {
+  margin: 0.3rem 0 0.55rem;
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+}
+
+.hero p {
+  max-width: 74ch;
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.9;
+}
+
+.eyebrow {
+  color: var(--accent-strong) !important;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.backLink {
+  flex: none;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  padding: 0.65rem 0.9rem;
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.notice {
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 0.8rem 1rem;
+  background: var(--surface-soft);
+}
+
+.notice[data-kind="success"] {
+  border-color: color-mix(in srgb, var(--success) 40%, var(--border-subtle));
+}
+
+.notice[data-kind="error"] {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border-subtle));
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.summary article {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+  padding: 0.9rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  background: var(--surface-raised);
+}
+
+.summary span {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.summary strong {
+  font-size: 1.45rem;
+}
+
+.createCard {
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  background: var(--surface-raised);
+  overflow: clip;
+}
+
+.createCard summary {
+  cursor: pointer;
+  padding: 1rem 1.1rem;
+  font-weight: 800;
+}
+
+.createForm {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+  padding: 0 1.1rem 1.1rem;
+}
+
+.createForm label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.createForm input,
+.createForm textarea,
+.createForm select,
+.filters input,
+.filters select,
+.statusForm input,
+.statusForm select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 0.6rem 0.75rem;
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.createForm textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.createForm button,
+.filters button,
+.statusForm button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 12px;
+  padding: 0.6rem 0.9rem;
+  background: var(--accent-strong);
+  color: white;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.5fr) repeat(6, minmax(120px, 1fr)) auto;
+  gap: 0.55rem;
+  align-items: end;
+}
+
+.nameCell {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 170px;
+}
+
+.nameCell span {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.statusBadge {
+  display: inline-flex;
+  width: max-content;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  padding: 0.28rem 0.55rem;
+  background: var(--surface-soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.statusBadge[data-status="Active"],
+.statusBadge[data-status="Ready"] {
+  background: color-mix(in srgb, var(--success) 12%, var(--surface-raised));
+}
+
+.statusBadge[data-status="Cancelled"] {
+  background: color-mix(in srgb, var(--danger) 10%, var(--surface-raised));
+}
+
+.statusForm {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.8fr) minmax(170px, 1.6fr) auto;
+  gap: 0.4rem;
+  min-width: 390px;
+}
+
+.terminal {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 1180px) {
+  .summary {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .filters {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .createForm {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .hero {
+    flex-direction: column;
+    padding: 1.1rem;
+  }
+
+  .summary,
+  .filters,
+  .createForm {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .statusForm {
+    grid-template-columns: 1fr;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .summary,
+  .filters,
+  .createForm {
+    grid-template-columns: 1fr;
+  }
+}

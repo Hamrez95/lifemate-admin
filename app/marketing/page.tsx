@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AdminPageState } from "@/src/components/admin-data-table";
@@ -48,7 +49,8 @@ function formatAsOf(value: string | null): string {
 }
 
 function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
-  const acquisitionValue = report.acquisition.total === null ? "—" : numberFormat.format(report.acquisition.total);
+  const acquisitionValue =
+    report.acquisition.total === null ? "—" : numberFormat.format(report.acquisition.total);
   const maximum = Math.max(...report.acquisition.series.map((point) => point.value), 1);
 
   return (
@@ -56,10 +58,13 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
       <section className={styles.hero} aria-labelledby="marketing-hero-title">
         <div>
           <p className={styles.eyebrow}>Marketing intelligence</p>
-          <h2 id="marketing-hero-title">جذب را از داده واقعی می‌خوانیم؛ attribution را حدس نمی‌زنیم.</h2>
+          <h2 id="marketing-hero-title">
+            جذب را از داده واقعی می‌خوانیم؛ attribution را حدس نمی‌زنیم.
+          </h2>
           <p>
-            تعداد حساب‌های ایجادشده فقط از KPI canonical خوانده می‌شود. تا زمانی که UTM/referral/channel و
-            lifecycle کمپین instrument نشوند، سهم کانال و conversion با «—» نمایش داده می‌شود.
+            تعداد حساب‌های ایجادشده فقط از KPI canonical خوانده می‌شود. تا زمانی که
+            UTM/referral/channel و lifecycle کمپین instrument نشوند، سهم کانال و conversion با «—»
+            نمایش داده می‌شود.
           </p>
         </div>
         <div className={styles.heroMeta}>
@@ -72,6 +77,9 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
           </span>
           <strong>آخرین منبع Acquisition</strong>
           <span>{formatAsOf(report.acquisition.asOfUtc)}</span>
+          <Link href="/marketing/campaigns" className={styles.campaignLink}>
+            مدیریت کمپین‌ها
+          </Link>
         </div>
       </section>
 
@@ -141,7 +149,11 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
             description="منبع واقعی برای این دسترسی/فیلتر در دسترس نیست؛ نمودار نمایشی ساخته نمی‌شود."
           />
         ) : (
-          <div className={styles.bars} role="img" aria-label={`روند روزانه ایجاد حساب؛ مجموع ${acquisitionValue}`}>
+          <div
+            className={styles.bars}
+            role="img"
+            aria-label={`روند روزانه ایجاد حساب؛ مجموع ${acquisitionValue}`}
+          >
             {report.acquisition.series.map((point) => (
               <div className={styles.barColumn} key={point.date}>
                 <div className={styles.barTrack}>
@@ -165,7 +177,9 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
               <p className={styles.eyebrow}>Attribution readiness</p>
               <h3 id="channels-title">سهم کانال‌های جذب</h3>
             </div>
-            <span className={styles.stateBadge} data-state="not_instrumented">Not instrumented</span>
+            <span className={styles.stateBadge} data-state="not_instrumented">
+              Not instrumented
+            </span>
           </div>
           <div className={styles.unavailableBox}>
             <strong>—</strong>
@@ -179,7 +193,9 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
               <p className={styles.eyebrow}>Campaign readiness</p>
               <h3 id="campaign-title">کمپین‌ها و conversion</h3>
             </div>
-            <span className={styles.stateBadge} data-state="not_instrumented">Not instrumented</span>
+            <span className={styles.stateBadge} data-state="not_instrumented">
+              Not instrumented
+            </span>
           </div>
           <div className={styles.unavailableBox}>
             <strong>—</strong>
@@ -198,7 +214,9 @@ export default async function MarketingPage({ searchParams }: MarketingPageProps
     ? await getMarketingOverview(filters(await searchParams), admin.permissions)
     : null;
 
-  if (result?.kind === "unavailable" && result.correlationId === "unauthenticated") redirect("/login");
+  if (result?.kind === "unavailable" && result.correlationId === "unauthenticated") {
+    redirect("/login");
+  }
 
   return (
     <AdminSessionProvider admin={admin}>
@@ -210,7 +228,11 @@ export default async function MarketingPage({ searchParams }: MarketingPageProps
         {!canReadMarketing ? (
           <AdminPageState state="forbidden" />
         ) : result?.kind === "invalid" ? (
-          <AdminPageState state="error" title="فیلتر بازاریابی معتبر نیست" description={result.message} />
+          <AdminPageState
+            state="error"
+            title="فیلتر بازاریابی معتبر نیست"
+            description={result.message}
+          />
         ) : result?.kind === "unavailable" ? (
           <AdminPageState
             state="unavailable"
