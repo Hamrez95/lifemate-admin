@@ -34,13 +34,7 @@ function one(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
 }
 
-function ChannelCard({
-  channel,
-  canControl,
-}: {
-  channel: MarketingChannel;
-  canControl: boolean;
-}) {
+function ChannelCard({ channel, canControl }: { channel: MarketingChannel; canControl: boolean }) {
   const nextEnabled = channel.operatorStatus === "Disabled";
   return (
     <article className={styles.channelCard} data-state={channel.setupStatus}>
@@ -97,11 +91,7 @@ function ChannelCard({
               name="reason"
               minLength={10}
               maxLength={1000}
-              placeholder={
-                nextEnabled
-                  ? "دلیل فعال‌سازی مجدد کانال"
-                  : "دلیل توقف انتشار از این کانال"
-              }
+              placeholder={nextEnabled ? "دلیل فعال‌سازی مجدد کانال" : "دلیل توقف انتشار از این کانال"}
               required
             />
           </label>
