@@ -134,7 +134,9 @@ function columns(canWrite: boolean): AdminTableColumn<MarketingCampaign>[] {
       header: "کمپین",
       render: (row) => (
         <div className={styles.nameCell}>
-          <strong>{row.name}</strong>
+          <Link href={`/marketing/campaigns/${row.id}`}>
+            <strong>{row.name}</strong>
+          </Link>
           <span>{row.objective ?? "بدون توضیح"}</span>
         </div>
       ),
