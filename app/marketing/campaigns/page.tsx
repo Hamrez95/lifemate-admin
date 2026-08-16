@@ -80,10 +80,7 @@ function query(input: Record<string, string | string[] | undefined>): URLSearchP
   return params;
 }
 
-function hrefForPage(
-  input: Record<string, string | string[] | undefined>,
-  page: number,
-): string {
+function hrefForPage(input: Record<string, string | string[] | undefined>, page: number): string {
   const params = new URLSearchParams();
   params.set("page", String(page));
   const pageSize = one(input.pageSize).trim();
@@ -202,7 +199,11 @@ function CreateCampaign() {
     <details className={styles.createCard}>
       <summary>+ ساخت کمپین جدید</summary>
       <form action={createCampaignAction} className={styles.createForm}>
-        <input type="hidden" name="idempotencyKey" value={`campaign-create-${crypto.randomUUID()}`} />
+        <input
+          type="hidden"
+          name="idempotencyKey"
+          value={`campaign-create-${crypto.randomUUID()}`}
+        />
         <label>
           <span>نام کمپین</span>
           <input name="name" minLength={2} maxLength={160} required />
@@ -265,15 +266,22 @@ export default async function CampaignsPage({ searchParams }: CampaignPageProps)
               <p className={styles.eyebrow}>Campaign operations</p>
               <h2>از ایده تا اجرای کنترل‌شده، بدون auto-publish.</h2>
               <p>
-                وضعیت کمپین با وضعیت انتشار شبکه اجتماعی یکی نیست. این صفحه lifecycle عملیاتی را مدیریت می‌کند؛
-                اتصال واقعی کانال و credential فقط در مرز جداگانه Channel Connections انجام می‌شود.
+                وضعیت کمپین با وضعیت انتشار شبکه اجتماعی یکی نیست. این صفحه lifecycle عملیاتی را
+                مدیریت می‌کند؛ اتصال واقعی کانال و credential فقط در مرز جداگانه Channel Connections
+                انجام می‌شود.
               </p>
             </div>
-            <Link href="/marketing" className={styles.backLink}>بازگشت به Marketing Overview</Link>
+            <Link href="/marketing" className={styles.backLink}>
+              بازگشت به Marketing Overview
+            </Link>
           </header>
 
           {notice && message ? (
-            <div className={styles.notice} data-kind={notice} role={notice === "error" ? "alert" : "status"}>
+            <div
+              className={styles.notice}
+              data-kind={notice}
+              role={notice === "error" ? "alert" : "status"}
+            >
               {message}
             </div>
           ) : null}
@@ -281,7 +289,11 @@ export default async function CampaignsPage({ searchParams }: CampaignPageProps)
           {!canRead ? (
             <AdminPageState state="forbidden" />
           ) : result?.kind === "invalid" ? (
-            <AdminPageState state="error" title="فیلتر کمپین معتبر نیست" description={result.message} />
+            <AdminPageState
+              state="error"
+              title="فیلتر کمپین معتبر نیست"
+              description={result.message}
+            />
           ) : result?.kind === "forbidden" ? (
             <AdminPageState state="forbidden" />
           ) : result?.kind === "unavailable" ? (
@@ -312,12 +324,24 @@ export default async function CampaignsPage({ searchParams }: CampaignPageProps)
                     <select name="status" defaultValue={one(raw.status)}>
                       <option value="">همه وضعیت‌ها</option>
                       {marketingCampaignStatuses.map((item) => (
-                        <option value={item} key={item}>{statusLabels[item]}</option>
+                        <option value={item} key={item}>
+                          {statusLabels[item]}
+                        </option>
                       ))}
                     </select>
                     <input name="owner" defaultValue={one(raw.owner)} placeholder="Owner UUID" />
-                    <input type="date" name="from" defaultValue={one(raw.from)} aria-label="از تاریخ شروع" />
-                    <input type="date" name="to" defaultValue={one(raw.to)} aria-label="تا تاریخ شروع" />
+                    <input
+                      type="date"
+                      name="from"
+                      defaultValue={one(raw.from)}
+                      aria-label="از تاریخ شروع"
+                    />
+                    <input
+                      type="date"
+                      name="to"
+                      defaultValue={one(raw.to)}
+                      aria-label="تا تاریخ شروع"
+                    />
                     <button type="submit">اعمال فیلتر</button>
                   </form>
                 }
@@ -326,11 +350,10 @@ export default async function CampaignsPage({ searchParams }: CampaignPageProps)
                   pageSize: result.data.pageSize,
                   total: result.data.total,
                   previousHref:
-                    result.data.page > 1
-                      ? hrefForPage(raw, result.data.page - 1)
-                      : undefined,
+                    result.data.page > 1 ? hrefForPage(raw, result.data.page - 1) : undefined,
                   nextHref:
-                    result.data.page * result.data.pageSize < result.data.total && result.data.page < 100
+                    result.data.page * result.data.pageSize < result.data.total &&
+                    result.data.page < 100
                       ? hrefForPage(raw, result.data.page + 1)
                       : undefined,
                 }}
