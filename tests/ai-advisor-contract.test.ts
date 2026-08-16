@@ -15,8 +15,12 @@ describe("ADM-AI-001 read-only advisor contract", () => {
   });
 
   it("never exposes model/provider/database secrets to browser code", () => {
-    expect(page).not.toMatch(/OPENAI_API_KEY|ANTHROPIC_API_KEY|DATABASE_URL|SUPABASE_SERVICE_ROLE/i);
-    expect(client).not.toMatch(/OPENAI_API_KEY|ANTHROPIC_API_KEY|DATABASE_URL|SUPABASE_SERVICE_ROLE/i);
+    expect(page).not.toMatch(
+      /OPENAI_API_KEY|ANTHROPIC_API_KEY|DATABASE_URL|SUPABASE_SERVICE_ROLE/i,
+    );
+    expect(client).not.toMatch(
+      /OPENAI_API_KEY|ANTHROPIC_API_KEY|DATABASE_URL|SUPABASE_SERVICE_ROLE/i,
+    );
     expect(page).toContain("Approved read models only");
     expect(page).toContain("Raw Health / Women Health: blocked");
   });
