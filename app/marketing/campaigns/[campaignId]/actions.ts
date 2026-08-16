@@ -10,8 +10,7 @@ import {
 } from "@/src/lib/admin-api/marketing-campaign-detail";
 import type { MarketingCampaignResult } from "@/src/lib/admin-api/marketing-campaigns";
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
 
 function text(formData: FormData, key: string): string {
@@ -19,18 +18,12 @@ function text(formData: FormData, key: string): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function destination(
-  campaignId: string,
-  kind: "success" | "error",
-  message: string,
-): never {
+function destination(campaignId: string, kind: "success" | "error", message: string): never {
   const params = new URLSearchParams({ notice: kind, message });
   redirect(`/marketing/campaigns/${campaignId}?${params.toString()}`);
 }
 
-function mutationMessage(
-  result: MarketingCampaignResult<Record<string, unknown>>,
-): string {
+function mutationMessage(result: MarketingCampaignResult<Record<string, unknown>>): string {
   if (result.kind === "ok") return "عملیات کمپین انجام شد.";
   if (result.kind === "forbidden") {
     return "مجوز لازم برای این عملیات Marketing به حساب شما داده نشده است.";
@@ -67,17 +60,9 @@ function validateBase(formData: FormData): {
   return { campaignId, idempotencyKey };
 }
 
-function validReason(
-  campaignId: string,
-  value: string,
-  label: string,
-): string {
+function validReason(campaignId: string, value: string, label: string): string {
   if (value.length < 10 || value.length > 1000) {
-    destination(
-      campaignId,
-      "error",
-      `${label} باید بین ۱۰ تا ۱۰۰۰ نویسه باشد.`,
-    );
+    destination(campaignId, "error", `${label} باید بین ۱۰ تا ۱۰۰۰ نویسه باشد.`);
   }
   return value;
 }
@@ -88,18 +73,12 @@ function revalidateCampaign(campaignId: string): void {
   revalidatePath(`/marketing/campaigns/${campaignId}`);
 }
 
-export async function updateCampaignContentAction(
-  formData: FormData,
-): Promise<void> {
+export async function updateCampaignContentAction(formData: FormData): Promise<void> {
   const { campaignId, idempotencyKey } = validateBase(formData);
   const brief = text(formData, "brief");
   const audienceSummary = text(formData, "audienceSummary");
   const publishText = text(formData, "publishText");
-  const reason = validReason(
-    campaignId,
-    text(formData, "reason"),
-    "دلیل ویرایش",
-  );
+  const reason = validReason(campaignId, text(formData, "reason"), "دلیل ویرایش");
   const assetRefs = text(formData, "assetRefs")
     .split(/\r?\n/)
     .map((value) => value.trim())
@@ -115,11 +94,7 @@ export async function updateCampaignContentAction(
     destination(campaignId, "error", "متن انتشار بیش از ۴۰۹۶ نویسه است.");
   }
   if (assetRefs.length > 20 || assetRefs.some((value) => value.length > 500)) {
-    destination(
-      campaignId,
-      "error",
-      "حداکثر ۲۰ مرجع asset با طول حداکثر ۵۰۰ نویسه مجاز است.",
-    );
+    destination(campaignId, "error", "حداکثر ۲۰ مرجع asset با طول حداکثر ۵۰۰ نویسه مجاز است.");
   }
 
   const result = await updateMarketingCampaignContent(
@@ -144,9 +119,7 @@ export async function updateCampaignContentAction(
   );
 }
 
-export async function setCampaignApprovalAction(
-  formData: FormData,
-): Promise<void> {
+export async function setCampaignApprovalAction(formData: FormData): Promise<void> {
   const { campaignId, idempotencyKey } = validateBase(formData);
   const approvedValue = text(formData, "approved");
   if (approvedValue !== "true" && approvedValue !== "false") {
@@ -158,12 +131,7 @@ export async function setCampaignApprovalAction(
     text(formData, "reason"),
     approved ? "دلیل تأیید" : "دلیل لغو تأیید",
   );
-  const result = await setMarketingCampaignApproval(
-    campaignId,
-    approved,
-    reason,
-    idempotencyKey,
-  );
+  const result = await setMarketingCampaignApproval(campaignId, approved, reason, idempotencyKey);
   if (result.kind !== "ok") {
     destination(campaignId, "error", mutationMessage(result));
   }
@@ -177,20 +145,10 @@ export async function setCampaignApprovalAction(
   );
 }
 
-export async function requestCampaignPublishAction(
-  formData: FormData,
-): Promise<void> {
+export async function requestCampaignPublishAction(formData: FormData): Promise<void> {
   const { campaignId, idempotencyKey } = validateBase(formData);
-  const reason = validReason(
-    campaignId,
-    text(formData, "reason"),
-    "دلیل انتشار",
-  );
-  const result = await requestMarketingCampaignPublish(
-    campaignId,
-    reason,
-    idempotencyKey,
-  );
+  const reason = validReason(campaignId, text(formData, "reason"), "دلیل انتشار");
+  const result = await requestMarketingCampaignPublish(campaignId, reason, idempotencyKey);
   if (result.kind !== "ok") {
     destination(campaignId, "error", mutationMessage(result));
   }
