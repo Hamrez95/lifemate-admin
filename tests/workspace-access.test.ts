@@ -24,7 +24,8 @@ describe("workspace visibility policy", () => {
     expect(canAccessWorkspace(workspace("finance"), ["finance.read"])).toBe(true);
   });
 
-  it("allows either approved AI permission into the AI workspace", () => {
+  it("allows approved AI permissions into the AI workspace", () => {
+    expect(canAccessWorkspace(workspace("ai"), ["ai.advisor.read"])).toBe(true);
     expect(canAccessWorkspace(workspace("ai"), ["ai.marketing.use"])).toBe(true);
   });
 });

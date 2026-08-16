@@ -108,7 +108,7 @@ export const workspaces: readonly Workspace[] = [
     description: "تحلیل read-only با ابزارهای کنترل‌شده کسب‌وکار",
     symbol: "✦",
     tone: "violet",
-    requiredPermissions: ["ai.business.read", "ai.marketing.use"],
+    requiredPermissions: ["ai.advisor.read", "ai.business.read", "ai.marketing.use"],
   },
   {
     slug: "settings",
