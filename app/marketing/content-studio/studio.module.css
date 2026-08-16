@@ -308,12 +308,11 @@
   padding: 1rem;
   border: 1px solid var(--border-subtle);
   border-radius: 20px;
-  background:
-    linear-gradient(
-      155deg,
-      color-mix(in srgb, var(--surface-soft) 92%, var(--accent-strong)),
-      var(--surface-raised)
-    );
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, var(--surface-soft) 92%, var(--accent-strong)),
+    var(--surface-raised)
+  );
 }
 
 .variantCard h4 {
