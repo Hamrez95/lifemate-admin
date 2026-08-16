@@ -3,10 +3,7 @@ import "server-only";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
-import type {
-  MarketingCampaign,
-  MarketingCampaignResult,
-} from "./marketing-campaigns";
+import type { MarketingCampaign, MarketingCampaignResult } from "./marketing-campaigns";
 
 export type CampaignApprovalState = "Pending" | "Approved" | "Revoked";
 export type CampaignPublishStatus =
@@ -91,8 +88,7 @@ type Problem = {
   correlationId?: unknown;
 };
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CODE_PATTERN = /^[a-z0-9][a-z0-9_.:-]{0,63}$/;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
 const PUBLISH_STATUSES = new Set<CampaignPublishStatus>([
@@ -102,11 +98,7 @@ const PUBLISH_STATUSES = new Set<CampaignPublishStatus>([
   "Failed",
   "OutcomeUnknown",
 ]);
-const APPROVAL_STATES = new Set<CampaignApprovalState>([
-  "Pending",
-  "Approved",
-  "Revoked",
-]);
+const APPROVAL_STATES = new Set<CampaignApprovalState>(["Pending", "Approved", "Revoked"]);
 
 function record(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" && !Array.isArray(value)
@@ -133,14 +125,9 @@ function nonNegativeInteger(value: unknown): value is number {
 function parseCampaign(value: unknown): MarketingCampaign | null {
   const item = record(value);
   if (!item) return null;
-  const validStatus = [
-    "Draft",
-    "Ready",
-    "Active",
-    "Paused",
-    "Completed",
-    "Cancelled",
-  ].includes(String(item.status));
+  const validStatus = ["Draft", "Ready", "Active", "Paused", "Completed", "Cancelled"].includes(
+    String(item.status),
+  );
   if (
     typeof item.id !== "string" ||
     !UUID_PATTERN.test(item.id) ||
@@ -159,9 +146,7 @@ function parseCampaign(value: unknown): MarketingCampaign | null {
   }
   if (item.productCode && !CODE_PATTERN.test(item.productCode)) return null;
   if (item.channelCode && !CODE_PATTERN.test(item.channelCode)) return null;
-  if (item.ownerAdminAccountId && !UUID_PATTERN.test(item.ownerAdminAccountId)) {
-    return null;
-  }
+  if (item.ownerAdminAccountId && !UUID_PATTERN.test(item.ownerAdminAccountId)) return null;
   return item as MarketingCampaign;
 }
 
@@ -182,10 +167,7 @@ function parseContent(value: unknown): MarketingCampaignContent | null {
   ) {
     return null;
   }
-  if (
-    item.approvedByAdminAccountId &&
-    !UUID_PATTERN.test(item.approvedByAdminAccountId)
-  ) {
+  if (item.approvedByAdminAccountId && !UUID_PATTERN.test(item.approvedByAdminAccountId)) {
     return null;
   }
   return item as MarketingCampaignContent;
@@ -232,9 +214,7 @@ function parseChannel(value: unknown): MarketingCampaignChannel | null {
     !CODE_PATTERN.test(item.providerCode) ||
     typeof item.displayName !== "string" ||
     (item.operatorStatus !== "Enabled" && item.operatorStatus !== "Disabled") ||
-    !["SetupRequired", "CredentialAvailable", "Disabled"].includes(
-      String(item.setupStatus),
-    ) ||
+    !["SetupRequired", "CredentialAvailable", "Disabled"].includes(String(item.setupStatus)) ||
     typeof item.credentialAvailable !== "boolean" ||
     item.providerConnectivity !== "NotVerified" ||
     !instant(item.updatedAtUtc)
@@ -342,10 +322,7 @@ async function request(
   }
 }
 
-function failed<T>(
-  response: Response,
-  body: Problem,
-): MarketingCampaignResult<T> {
+function failed<T>(response: Response, body: Problem): MarketingCampaignResult<T> {
   const message = typeof body.title === "string" ? body.title : undefined;
   const code = typeof body.code === "string" ? body.code : undefined;
   if (response.status === 401) return { kind: "unauthenticated" };
@@ -355,8 +332,7 @@ function failed<T>(
   if (response.status === 400) return { kind: "invalid", code, message };
   return {
     kind: "unavailable",
-    correlationId:
-      typeof body.correlationId === "string" ? body.correlationId : undefined,
+    correlationId: typeof body.correlationId === "string" ? body.correlationId : undefined,
   };
 }
 
@@ -405,17 +381,14 @@ export async function setMarketingCampaignApproval(
   idempotencyKey: string,
 ): Promise<MarketingCampaignResult<Record<string, unknown>>> {
   if (!validMutationTarget(campaignId, idempotencyKey)) return { kind: "invalid" };
-  const result = await request(
-    `/api/v1/marketing/campaigns/${campaignId}/actions/approval`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Idempotency-Key": idempotencyKey,
-      },
-      body: JSON.stringify({ approved, reason }),
+  const result = await request(`/api/v1/marketing/campaigns/${campaignId}/actions/approval`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Idempotency-Key": idempotencyKey,
     },
-  );
+    body: JSON.stringify({ approved, reason }),
+  });
   if (!result) return { kind: "unauthenticated" };
   if (result.response.ok && record(result.body)) {
     return { kind: "ok", data: result.body as Record<string, unknown> };
@@ -429,17 +402,14 @@ export async function requestMarketingCampaignPublish(
   idempotencyKey: string,
 ): Promise<MarketingCampaignResult<Record<string, unknown>>> {
   if (!validMutationTarget(campaignId, idempotencyKey)) return { kind: "invalid" };
-  const result = await request(
-    `/api/v1/marketing/campaigns/${campaignId}/actions/publish`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Idempotency-Key": idempotencyKey,
-      },
-      body: JSON.stringify({ reason }),
+  const result = await request(`/api/v1/marketing/campaigns/${campaignId}/actions/publish`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Idempotency-Key": idempotencyKey,
     },
-  );
+    body: JSON.stringify({ reason }),
+  });
   if (!result) return { kind: "unauthenticated" };
   if (result.response.ok && record(result.body)) {
     return { kind: "ok", data: result.body as Record<string, unknown> };
