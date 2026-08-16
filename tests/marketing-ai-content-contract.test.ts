@@ -48,9 +48,7 @@ describe("ADM-MKT-004 AI Content Studio security contract", () => {
     expect(page).toContain("not_configured");
     expect(page).toContain("deterministic_fallback");
     expect(page).toContain("Provider credential در browser صفر");
-    expect(page).not.toMatch(
-      /name=["'](?:accessToken|refreshToken|secret|credential|apiKey)["']/i,
-    );
+    expect(page).not.toMatch(/name=["'](?:accessToken|refreshToken|secret|credential|apiKey)["']/i);
     expect(actions).not.toMatch(/accessToken|refreshToken|secretValue|apiKey/);
   });
 
