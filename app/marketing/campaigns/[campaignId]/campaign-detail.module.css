@@ -149,22 +149,20 @@
   padding: 1.05rem 1.15rem;
   border: 1px solid color-mix(in srgb, var(--warning) 34%, var(--border-subtle));
   border-radius: 20px;
-  background:
-    linear-gradient(
-      110deg,
-      color-mix(in srgb, var(--warning) 9%, var(--surface-raised)),
-      var(--surface-raised)
-    );
+  background: linear-gradient(
+    110deg,
+    color-mix(in srgb, var(--warning) 9%, var(--surface-raised)),
+    var(--surface-raised)
+  );
 }
 
 .approvalBanner[data-state="approved"] {
   border-color: color-mix(in srgb, var(--success) 38%, var(--border-subtle));
-  background:
-    linear-gradient(
-      110deg,
-      color-mix(in srgb, var(--success) 8%, var(--surface-raised)),
-      var(--surface-raised)
-    );
+  background: linear-gradient(
+    110deg,
+    color-mix(in srgb, var(--success) 8%, var(--surface-raised)),
+    var(--surface-raised)
+  );
 }
 
 .approvalBanner h3 {
