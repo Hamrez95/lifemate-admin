@@ -18,7 +18,7 @@ describe("ADM-MKT-002 campaign workspace", () => {
     expect(page).toContain('Draft: ["Ready", "Cancelled"]');
     expect(page).toContain('Ready: ["Draft", "Active", "Cancelled"]');
     expect(page).toContain('Active: ["Paused", "Completed", "Cancelled"]');
-    expect(page).not.toContain('Published:');
+    expect(page).not.toContain("Published:");
     expect(actions).toContain("setMarketingCampaignStatus");
   });
 

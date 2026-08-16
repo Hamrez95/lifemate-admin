@@ -145,7 +145,11 @@ function parseList(value: unknown): MarketingCampaignList | null {
   if (!body || !Array.isArray(body.items)) return null;
   const items = body.items.map(parseCampaign);
   if (items.some((item) => !item)) return null;
-  if (!nonNegativeInteger(body.total) || !Number.isInteger(body.page) || !Number.isInteger(body.pageSize)) {
+  if (
+    !nonNegativeInteger(body.total) ||
+    !Number.isInteger(body.page) ||
+    !Number.isInteger(body.pageSize)
+  ) {
     return null;
   }
   const summary = record(body.summary);
@@ -280,14 +284,16 @@ export async function createMarketingCampaign(
   payload: MarketingCampaignWritePayload,
   idempotencyKey: string,
 ): Promise<MarketingCampaignResult<Record<string, unknown>>> {
-  if (!IDEMPOTENCY_PATTERN.test(idempotencyKey)) return { kind: "invalid", code: "idempotency_invalid" };
+  if (!IDEMPOTENCY_PATTERN.test(idempotencyKey))
+    return { kind: "invalid", code: "idempotency_invalid" };
   const result = await request("/api/v1/marketing/campaigns", {
     method: "POST",
     headers: { "Content-Type": "application/json", "Idempotency-Key": idempotencyKey },
     body: JSON.stringify(payload),
   });
   if (!result) return { kind: "unauthenticated" };
-  if (result.response.ok && record(result.body)) return { kind: "ok", data: result.body as Record<string, unknown> };
+  if (result.response.ok && record(result.body))
+    return { kind: "ok", data: result.body as Record<string, unknown> };
   return failed(result.response, record(result.body) ?? {});
 }
 
@@ -296,14 +302,16 @@ export async function updateMarketingCampaign(
   payload: MarketingCampaignWritePayload,
   idempotencyKey: string,
 ): Promise<MarketingCampaignResult<Record<string, unknown>>> {
-  if (!UUID_PATTERN.test(campaignId) || !IDEMPOTENCY_PATTERN.test(idempotencyKey)) return { kind: "invalid" };
+  if (!UUID_PATTERN.test(campaignId) || !IDEMPOTENCY_PATTERN.test(idempotencyKey))
+    return { kind: "invalid" };
   const result = await request(`/api/v1/marketing/campaigns/${campaignId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json", "Idempotency-Key": idempotencyKey },
     body: JSON.stringify(payload),
   });
   if (!result) return { kind: "unauthenticated" };
-  if (result.response.ok && record(result.body)) return { kind: "ok", data: result.body as Record<string, unknown> };
+  if (result.response.ok && record(result.body))
+    return { kind: "ok", data: result.body as Record<string, unknown> };
   return failed(result.response, record(result.body) ?? {});
 }
 
@@ -326,6 +334,7 @@ export async function setMarketingCampaignStatus(
     body: JSON.stringify({ status: targetStatus, reason }),
   });
   if (!result) return { kind: "unauthenticated" };
-  if (result.response.ok && record(result.body)) return { kind: "ok", data: result.body as Record<string, unknown> };
+  if (result.response.ok && record(result.body))
+    return { kind: "ok", data: result.body as Record<string, unknown> };
   return failed(result.response, record(result.body) ?? {});
 }

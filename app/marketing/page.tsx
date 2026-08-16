@@ -58,10 +58,13 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
       <section className={styles.hero} aria-labelledby="marketing-hero-title">
         <div>
           <p className={styles.eyebrow}>Marketing intelligence</p>
-          <h2 id="marketing-hero-title">جذب را از داده واقعی می‌خوانیم؛ attribution را حدس نمی‌زنیم.</h2>
+          <h2 id="marketing-hero-title">
+            جذب را از داده واقعی می‌خوانیم؛ attribution را حدس نمی‌زنیم.
+          </h2>
           <p>
-            تعداد حساب‌های ایجادشده فقط از KPI canonical خوانده می‌شود. تا زمانی که UTM/referral/channel و
-            lifecycle کمپین instrument نشوند، سهم کانال و conversion با «—» نمایش داده می‌شود.
+            تعداد حساب‌های ایجادشده فقط از KPI canonical خوانده می‌شود. تا زمانی که
+            UTM/referral/channel و lifecycle کمپین instrument نشوند، سهم کانال و conversion با «—»
+            نمایش داده می‌شود.
           </p>
         </div>
         <div className={styles.heroMeta}>
@@ -225,7 +228,11 @@ export default async function MarketingPage({ searchParams }: MarketingPageProps
         {!canReadMarketing ? (
           <AdminPageState state="forbidden" />
         ) : result?.kind === "invalid" ? (
-          <AdminPageState state="error" title="فیلتر بازاریابی معتبر نیست" description={result.message} />
+          <AdminPageState
+            state="error"
+            title="فیلتر بازاریابی معتبر نیست"
+            description={result.message}
+          />
         ) : result?.kind === "unavailable" ? (
           <AdminPageState
             state="unavailable"

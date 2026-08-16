@@ -68,7 +68,8 @@ export function parseMarketingOverviewQuery(
   const rawProduct = params.get("product")?.trim().toLowerCase() || "";
 
   if (!validDate(from) || !validDate(to)) throw new Error("Marketing date filter is invalid.");
-  if (rawProduct && !PRODUCT_SET.has(rawProduct)) throw new Error("Marketing product filter is invalid.");
+  if (rawProduct && !PRODUCT_SET.has(rawProduct))
+    throw new Error("Marketing product filter is invalid.");
 
   const fromMs = Date.parse(`${from}T00:00:00.000Z`);
   const toMs = Date.parse(`${to}T00:00:00.000Z`);
@@ -93,7 +94,10 @@ export async function getMarketingOverview(
   try {
     query = parseMarketingOverviewQuery(params, now);
   } catch (error) {
-    return { kind: "invalid", message: error instanceof Error ? error.message : "Invalid marketing filter." };
+    return {
+      kind: "invalid",
+      message: error instanceof Error ? error.message : "Invalid marketing filter.",
+    };
   }
 
   const generatedAtUtc = now.toISOString();
@@ -116,7 +120,12 @@ export async function getMarketingOverview(
       const value = accountsCreated(result.data.values);
       acquisition = value
         ? {
-            state: value.state === "ready" ? "ready" : value.state === "partial" ? "partial" : "unavailable",
+            state:
+              value.state === "ready"
+                ? "ready"
+                : value.state === "partial"
+                  ? "partial"
+                  : "unavailable",
             total: value.state === "unavailable" ? null : value.value,
             series: value.state === "unavailable" ? [] : (value.series ?? []),
             source: value.source,

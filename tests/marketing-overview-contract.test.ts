@@ -26,7 +26,11 @@ describe("ADM-MKT-001 Marketing Overview contract", () => {
     expect(mocks.getKpiValues).not.toHaveBeenCalled();
     expect(result.kind).toBe("ok");
     if (result.kind !== "ok") return;
-    expect(result.data.acquisition).toMatchObject({ state: "unavailable", total: null, series: [] });
+    expect(result.data.acquisition).toMatchObject({
+      state: "unavailable",
+      total: null,
+      series: [],
+    });
     expect(result.data.channels).toMatchObject({ state: "not_instrumented", items: [] });
     expect(result.data.campaigns).toMatchObject({
       state: "not_instrumented",
