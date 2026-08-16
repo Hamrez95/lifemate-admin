@@ -57,7 +57,11 @@ function safeNotice(value: string): "success" | "error" | null {
   return value === "success" || value === "error" ? value : null;
 }
 
-function Variants({ generation, campaignId, canWrite }: {
+function Variants({
+  generation,
+  campaignId,
+  canWrite,
+}: {
   generation: MarketingAiContentGeneration;
   campaignId: string;
   canWrite: boolean;
@@ -120,9 +124,8 @@ export default async function ContentStudioPage({ searchParams }: ContentStudioP
   const noticeMessage = one(raw.message).slice(0, 500);
 
   const campaignParams = new URLSearchParams({ page: "1", pageSize: "50" });
-  const campaignResult = canReadMarketing && canUseStudio
-    ? await getMarketingCampaigns(campaignParams)
-    : null;
+  const campaignResult =
+    canReadMarketing && canUseStudio ? await getMarketingCampaigns(campaignParams) : null;
   if (campaignResult?.kind === "unauthenticated") redirect("/login");
 
   const requestedCampaign = one(raw.campaign).trim();
@@ -176,7 +179,11 @@ export default async function ContentStudioPage({ searchParams }: ContentStudioP
           </header>
 
           {notice && noticeMessage ? (
-            <div className={styles.notice} data-kind={notice} role={notice === "error" ? "alert" : "status"}>
+            <div
+              className={styles.notice}
+              data-kind={notice}
+              role={notice === "error" ? "alert" : "status"}
+            >
               {noticeMessage}
             </div>
           ) : null}
@@ -192,7 +199,11 @@ export default async function ContentStudioPage({ searchParams }: ContentStudioP
           ) : campaignResult?.kind === "unavailable" ? (
             <AdminPageState
               state="unavailable"
-              description={campaignResult.correlationId ? `کد پیگیری: ${campaignResult.correlationId}` : undefined}
+              description={
+                campaignResult.correlationId
+                  ? `کد پیگیری: ${campaignResult.correlationId}`
+                  : undefined
+              }
             />
           ) : campaignResult?.kind !== "ok" ? (
             <AdminPageState state="error" title="فهرست کمپین‌ها قابل خواندن نیست" />
@@ -209,12 +220,20 @@ export default async function ContentStudioPage({ searchParams }: ContentStudioP
                   <div>
                     <span className={styles.eyebrow}>Campaign context</span>
                     <h3 id="studio-campaign-title">کمپین مبنا را انتخاب کن</h3>
-                    <p>Studio فقط context همان کمپین را می‌بیند و از داده خام کاربران تغذیه نمی‌شود.</p>
+                    <p>
+                      Studio فقط context همان کمپین را می‌بیند و از داده خام کاربران تغذیه نمی‌شود.
+                    </p>
                   </div>
-                  <span className={styles.statusBadge}>{campaignResult.data.total.toLocaleString("fa-IR")} کمپین</span>
+                  <span className={styles.statusBadge}>
+                    {campaignResult.data.total.toLocaleString("fa-IR")} کمپین
+                  </span>
                 </div>
                 <form method="get" className={styles.selectorForm}>
-                  <select name="campaign" defaultValue={selectedCampaignId} aria-label="انتخاب کمپین">
+                  <select
+                    name="campaign"
+                    defaultValue={selectedCampaignId}
+                    aria-label="انتخاب کمپین"
+                  >
                     {campaignResult.data.items.map((campaign) => (
                       <option value={campaign.id} key={campaign.id}>
                         {campaign.name} · {campaign.status}
@@ -254,7 +273,9 @@ export default async function ContentStudioPage({ searchParams }: ContentStudioP
                       <section className={styles.contextCard} aria-labelledby="context-title">
                         <span className={styles.eyebrow}>Approved source context</span>
                         <h3 id="context-title">{detail.campaign.name}</h3>
-                        <p>{detail.campaign.objective ?? "Objective برای این کمپین ثبت نشده است."}</p>
+                        <p>
+                          {detail.campaign.objective ?? "Objective برای این کمپین ثبت نشده است."}
+                        </p>
                         <div className={styles.contextGrid}>
                           <div>
                             <span>محصول</span>
@@ -274,7 +295,9 @@ export default async function ContentStudioPage({ searchParams }: ContentStudioP
                           </div>
                           <div>
                             <span>Content revision</span>
-                            <strong>{detail.content.contentRevision.toLocaleString("fa-IR")}</strong>
+                            <strong>
+                              {detail.content.contentRevision.toLocaleString("fa-IR")}
+                            </strong>
                           </div>
                           <div>
                             <span>Brief</span>
@@ -287,8 +310,8 @@ export default async function ContentStudioPage({ searchParams }: ContentStudioP
                         <span className={styles.eyebrow}>Security boundary</span>
                         <h3 id="boundary-title">وضعیت واقعی مدل و دسترسی</h3>
                         <p>
-                          فاز فعلی عمداً deterministic fallback است. «AI متصل» یا «Provider Connected»
-                          جعل نمی‌شود.
+                          فاز فعلی عمداً deterministic fallback است. «AI متصل» یا «Provider
+                          Connected» جعل نمی‌شود.
                         </p>
                         <div className={styles.boundaryGrid}>
                           <div data-safe="true">
@@ -317,13 +340,17 @@ export default async function ContentStudioPage({ searchParams }: ContentStudioP
                           <span className={styles.eyebrow}>Bounded generation</span>
                           <h3 id="generator-title">یک بسته Draft جدید بساز</h3>
                           <p>
-                            Prompt آزاد وجود ندارد؛ فقط goal، tone، language، پیام کلیدی و CTA کنترل‌شده.
+                            Prompt آزاد وجود ندارد؛ فقط goal، tone، language، پیام کلیدی و CTA
+                            کنترل‌شده.
                           </p>
                         </div>
                         <span className={styles.modelBadge}>Model: not_configured</span>
                       </div>
 
-                      <form action={generateMarketingContentAction} className={styles.generatorForm}>
+                      <form
+                        action={generateMarketingContentAction}
+                        className={styles.generatorForm}
+                      >
                         <input type="hidden" name="campaignId" value={detail.campaign.id} />
                         <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
                         <div className={styles.controlGrid}>
@@ -331,7 +358,9 @@ export default async function ContentStudioPage({ searchParams }: ContentStudioP
                             <span>هدف محتوا</span>
                             <select name="goal" defaultValue="awareness">
                               {marketingAiContentGoals.map((value) => (
-                                <option key={value} value={value}>{goalLabels[value]}</option>
+                                <option key={value} value={value}>
+                                  {goalLabels[value]}
+                                </option>
                               ))}
                             </select>
                           </label>
@@ -339,7 +368,9 @@ export default async function ContentStudioPage({ searchParams }: ContentStudioP
                             <span>لحن</span>
                             <select name="tone" defaultValue="warm">
                               {marketingAiContentTones.map((value) => (
-                                <option key={value} value={value}>{toneLabels[value]}</option>
+                                <option key={value} value={value}>
+                                  {toneLabels[value]}
+                                </option>
                               ))}
                             </select>
                           </label>
@@ -347,7 +378,9 @@ export default async function ContentStudioPage({ searchParams }: ContentStudioP
                             <span>زبان</span>
                             <select name="language" defaultValue="fa">
                               {marketingAiContentLanguages.map((value) => (
-                                <option key={value} value={value}>{languageLabels[value]}</option>
+                                <option key={value} value={value}>
+                                  {languageLabels[value]}
+                                </option>
                               ))}
                             </select>
                           </label>
@@ -359,19 +392,29 @@ export default async function ContentStudioPage({ searchParams }: ContentStudioP
                             maxLength={500}
                             placeholder="مثلاً: مدیریت سلامت روزمره باید ساده، انسانی و قابل اعتماد باشد."
                           />
-                          <small>حداکثر ۵۰۰ نویسه؛ متن به‌عنوان data دیده می‌شود، نه دستور اجرای ابزار.</small>
+                          <small>
+                            حداکثر ۵۰۰ نویسه؛ متن به‌عنوان data دیده می‌شود، نه دستور اجرای ابزار.
+                          </small>
                         </label>
                         <label>
                           <span>CTA اختیاری</span>
-                          <input name="callToAction" maxLength={240} placeholder="مثلاً: LifeMate را بیشتر بشناس" />
-                          <small>اگر خالی باشد، fallback کنترل‌شده بر اساس goal انتخاب می‌شود.</small>
+                          <input
+                            name="callToAction"
+                            maxLength={240}
+                            placeholder="مثلاً: LifeMate را بیشتر بشناس"
+                          />
+                          <small>
+                            اگر خالی باشد، fallback کنترل‌شده بر اساس goal انتخاب می‌شود.
+                          </small>
                         </label>
                         <div className={styles.formFooter}>
                           <p>
-                            Generate فقط draft ledger می‌سازد. هیچ approval، publish job یا provider call در
-                            این action وجود ندارد.
+                            Generate فقط draft ledger می‌سازد. هیچ approval، publish job یا provider
+                            call در این action وجود ندارد.
                           </p>
-                          <button type="submit" className={styles.primaryButton}>ساخت ۳ Draft</button>
+                          <button type="submit" className={styles.primaryButton}>
+                            ساخت ۳ Draft
+                          </button>
                         </div>
                       </form>
                     </section>
@@ -385,31 +428,43 @@ export default async function ContentStudioPage({ searchParams }: ContentStudioP
                     />
                   ) : (
                     <div className={styles.emptyBox}>
-                      هنوز Draftی برای این کمپین ساخته نشده است. فرم بالا اولین generation را به ledger امن
-                      اضافه می‌کند؛ داده نمونه یا variant جعلی نمایش داده نمی‌شود.
+                      هنوز Draftی برای این کمپین ساخته نشده است. فرم بالا اولین generation را به
+                      ledger امن اضافه می‌کند؛ داده نمونه یا variant جعلی نمایش داده نمی‌شود.
                     </div>
                   )}
 
                   {generationList && generationList.items.length > 0 ? (
-                    <section className={styles.historySection} aria-labelledby="studio-history-title">
+                    <section
+                      className={styles.historySection}
+                      aria-labelledby="studio-history-title"
+                    >
                       <div className={styles.sectionHead}>
                         <div>
                           <span className={styles.eyebrow}>Draft history</span>
                           <h3 id="studio-history-title">تاریخچه generationهای این کمپین</h3>
-                          <p>این تاریخچه evidence تولید است؛ approval و publish history در صفحه کمپین جداست.</p>
+                          <p>
+                            این تاریخچه evidence تولید است؛ approval و publish history در صفحه کمپین
+                            جداست.
+                          </p>
                         </div>
-                        <span className={styles.statusBadge}>{generationList.items.length.toLocaleString("fa-IR")} مورد</span>
+                        <span className={styles.statusBadge}>
+                          {generationList.items.length.toLocaleString("fa-IR")} مورد
+                        </span>
                       </div>
                       <div className={styles.historyList}>
                         {generationList.items.map((generation) => (
                           <article className={styles.historyItem} key={generation.id}>
                             <div>
-                              <strong>{goalLabels[generation.goal]} · {toneLabels[generation.tone]}</strong>
+                              <strong>
+                                {goalLabels[generation.goal]} · {toneLabels[generation.tone]}
+                              </strong>
                               <p>{generation.keyMessage ?? "بدون پیام کلیدی دستی"}</p>
                               <div className={styles.historyMeta}>
                                 <span>{formatDate(generation.createdAtUtc)}</span>
                                 <span>{languageLabels[generation.language]}</span>
-                                <span>{generation.variants.length.toLocaleString("fa-IR")} variant</span>
+                                <span>
+                                  {generation.variants.length.toLocaleString("fa-IR")} variant
+                                </span>
                               </div>
                             </div>
                             <span className={styles.draftBadge}>{generation.modelStatus}</span>
