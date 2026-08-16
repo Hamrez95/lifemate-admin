@@ -26,11 +26,13 @@ function destination(kind: string, message: string): never {
 }
 
 function mutationMessage(result: Awaited<ReturnType<typeof createMarketingCampaign>>): string {
+  if (result.kind === "ok") return "عملیات کمپین انجام شد.";
   if (result.kind === "forbidden") return "مجوز marketing.campaign.write برای این تغییر لازم است.";
   if (result.kind === "conflict")
     return result.message ?? "وضعیت کمپین یا شناسه درخواست با تغییر جدید تعارض دارد.";
   if (result.kind === "invalid") return result.message ?? "اطلاعات کمپین معتبر نیست.";
   if (result.kind === "unauthenticated") return "نشست مدیریتی معتبر نیست؛ دوباره وارد شوید.";
+  if (result.kind === "not_found") return result.message ?? "کمپین موردنظر پیدا نشد.";
   return result.correlationId
     ? `سرویس کمپین در دسترس نیست. کد پیگیری: ${result.correlationId}`
     : "سرویس کمپین فعلاً در دسترس نیست.";
