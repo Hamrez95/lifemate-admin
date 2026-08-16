@@ -155,12 +155,11 @@
 
 .topicGrid label[data-selected="true"] {
   border-color: color-mix(in srgb, var(--accent-strong) 46%, var(--border-subtle));
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--accent-sky) 10%, var(--surface-soft)),
-      var(--surface-soft)
-    );
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent-sky) 10%, var(--surface-soft)),
+    var(--surface-soft)
+  );
 }
 
 .topicGrid input {
