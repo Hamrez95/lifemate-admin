@@ -16,6 +16,7 @@ import {
   type MarketingCampaignStatus,
 } from "@/src/lib/admin-api/marketing-campaigns";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
+import { tehranDayBoundaryToUtc } from "@/src/lib/time-zone";
 
 import { createCampaignAction, setCampaignStatusAction } from "./actions";
 import styles from "./campaigns.module.css";
@@ -67,20 +68,30 @@ function query(input: Record<string, string | string[] | undefined>): URLSearchP
     const value = one(input[key]).trim();
     if (value) params.set(key, value);
   }
+
   const from = one(input.from).trim();
   const to = one(input.to).trim();
-  if (from) params.set("from", `${from}T00:00:00+03:30`);
-  if (to) params.set("to", `${to}T23:59:59+03:30`);
+  try {
+    if (from) params.set("from", tehranDayBoundaryToUtc(from, "start"));
+    if (to) params.set("to", tehranDayBoundaryToUtc(to, "end"));
+  } catch {
+    params.set("page", "101");
+  }
   return params;
 }
 
-function hrefForPage(input: URLSearchParams, page: number): string {
-  const params = new URLSearchParams(input);
+function hrefForPage(
+  input: Record<string, string | string[] | undefined>,
+  page: number,
+): string {
+  const params = new URLSearchParams();
   params.set("page", String(page));
-  const from = params.get("from");
-  const to = params.get("to");
-  if (from?.includes("T")) params.set("from", from.slice(0, 10));
-  if (to?.includes("T")) params.set("to", to.slice(0, 10));
+  const pageSize = one(input.pageSize).trim();
+  if (pageSize) params.set("pageSize", pageSize);
+  for (const key of ["q", "product", "channel", "status", "owner", "from", "to"] as const) {
+    const value = one(input[key]).trim();
+    if (value) params.set(key, value);
+  }
   return `/marketing/campaigns?${params.toString()}`;
 }
 
@@ -93,6 +104,7 @@ function displayDate(value: string | null): string {
 function CampaignStatusControl({ campaign }: { campaign: MarketingCampaign }) {
   const next = transitions[campaign.status];
   if (next.length === 0) return <span className={styles.terminal}>پایان workflow</span>;
+
   return (
     <form action={setCampaignStatusAction} className={styles.statusForm}>
       <input type="hidden" name="campaignId" value={campaign.id} />
@@ -204,7 +216,7 @@ function CreateCampaign() {
           <input name="productCode" placeholder="wellmate" pattern="[A-Za-z0-9_.:-]+" />
         </label>
         <label>
-          <span>کانال</span>
+          <span>کانال برنامه‌ریزی</span>
           <input name="channelCode" placeholder="instagram" pattern="[A-Za-z0-9_.:-]+" />
         </label>
         <label>
@@ -253,8 +265,8 @@ export default async function CampaignsPage({ searchParams }: CampaignPageProps)
               <p className={styles.eyebrow}>Campaign operations</p>
               <h2>از ایده تا اجرای کنترل‌شده، بدون auto-publish.</h2>
               <p>
-                وضعیت کمپین با وضعیت انتشار شبکه اجتماعی یکی نیست. این صفحه فقط lifecycle عملیاتی را مدیریت می‌کند؛
-                credential یا provider payload وارد مرورگر نمی‌شود.
+                وضعیت کمپین با وضعیت انتشار شبکه اجتماعی یکی نیست. این صفحه lifecycle عملیاتی را مدیریت می‌کند؛
+                اتصال واقعی کانال و credential فقط در مرز جداگانه Channel Connections انجام می‌شود.
               </p>
             </div>
             <Link href="/marketing" className={styles.backLink}>بازگشت به Marketing Overview</Link>
@@ -313,10 +325,13 @@ export default async function CampaignsPage({ searchParams }: CampaignPageProps)
                   page: result.data.page,
                   pageSize: result.data.pageSize,
                   total: result.data.total,
-                  previousHref: result.data.page > 1 ? hrefForPage(params, result.data.page - 1) : undefined,
+                  previousHref:
+                    result.data.page > 1
+                      ? hrefForPage(raw, result.data.page - 1)
+                      : undefined,
                   nextHref:
                     result.data.page * result.data.pageSize < result.data.total && result.data.page < 100
-                      ? hrefForPage(params, result.data.page + 1)
+                      ? hrefForPage(raw, result.data.page + 1)
                       : undefined,
                 }}
               />
