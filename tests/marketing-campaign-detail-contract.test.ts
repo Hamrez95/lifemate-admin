@@ -1,18 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const client = readFileSync(
-  "src/lib/admin-api/marketing-campaign-detail.ts",
-  "utf8",
-);
-const page = readFileSync(
-  "app/marketing/campaigns/[campaignId]/page.tsx",
-  "utf8",
-);
-const actions = readFileSync(
-  "app/marketing/campaigns/[campaignId]/actions.ts",
-  "utf8",
-);
+const client = readFileSync("src/lib/admin-api/marketing-campaign-detail.ts", "utf8");
+const page = readFileSync("app/marketing/campaigns/[campaignId]/page.tsx", "utf8");
+const actions = readFileSync("app/marketing/campaigns/[campaignId]/actions.ts", "utf8");
 
 describe("ADM-MKT-003 campaign detail security contract", () => {
   it("uses only the server Admin API with bounded no-store requests", () => {
@@ -27,9 +18,7 @@ describe("ADM-MKT-003 campaign detail security contract", () => {
   it("never accepts or renders raw provider credentials", () => {
     expect(page).toContain("Credential موجود ≠ Connected");
     expect(page).toContain("NotVerified");
-    expect(page).not.toMatch(
-      /name=["'](?:accessToken|refreshToken|secret|credential|apiKey)["']/i,
-    );
+    expect(page).not.toMatch(/name=["'](?:accessToken|refreshToken|secret|credential|apiKey)["']/i);
     expect(client).not.toMatch(
       /accessToken|refreshToken|decrypted_secret|credentialSecretName|secretValue/,
     );
