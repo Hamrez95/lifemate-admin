@@ -1,0 +1,251 @@
+.page {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--accent-sky) 20%, transparent), transparent 34%),
+    radial-gradient(circle at 85% 12%, color-mix(in srgb, var(--accent-mint) 18%, transparent), transparent 34%),
+    var(--surface-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.hero h2 {
+  margin: 0.35rem 0 0.55rem;
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+}
+
+.hero p {
+  max-width: 72ch;
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.9;
+}
+
+.eyebrow {
+  color: var(--accent-strong) !important;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex: none;
+}
+
+.heroActions a {
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  padding: 0.62rem 0.85rem;
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.notice,
+.legend {
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 0.8rem 1rem;
+  background: var(--surface-soft);
+}
+
+.notice[data-kind="error"] {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border-subtle));
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.2rem;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.channelCard {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  padding: 1.1rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 22px;
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.channelCard[data-state="CredentialAvailable"] {
+  border-color: color-mix(in srgb, var(--success) 32%, var(--border-subtle));
+}
+
+.channelCard[data-state="SetupRequired"] {
+  border-color: color-mix(in srgb, var(--warning) 38%, var(--border-subtle));
+}
+
+.channelHead {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.providerMark {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: var(--surface-soft);
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.channelHead h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.channelHead code {
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+}
+
+.stateBadge {
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  padding: 0.34rem 0.58rem;
+  background: var(--surface-soft);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin: 0;
+}
+
+.meta div {
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.75rem;
+  border-radius: 14px;
+  background: var(--surface-soft);
+}
+
+.meta dt {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.meta dd {
+  margin: 0;
+  font-weight: 800;
+}
+
+.truthBox {
+  padding: 0.8rem;
+  border-inline-start: 3px solid var(--accent-strong);
+  border-radius: 12px;
+  background: var(--surface-soft);
+  color: var(--text-secondary);
+  line-height: 1.8;
+  font-size: 0.84rem;
+}
+
+.controlForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.65rem;
+  align-items: end;
+}
+
+.controlForm label {
+  display: grid;
+  gap: 0.32rem;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.controlForm input {
+  min-height: 42px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 0.58rem 0.72rem;
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.controlForm button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 12px;
+  padding: 0.62rem 0.85rem;
+  background: var(--accent-strong);
+  color: white;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.controlForm button[data-action="disable"] {
+  background: var(--danger);
+}
+
+.readOnlyNote,
+.freshness {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+.freshness {
+  text-align: end;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .hero {
+    flex-direction: column;
+    padding: 1.1rem;
+  }
+
+  .meta,
+  .controlForm {
+    grid-template-columns: 1fr;
+  }
+
+  .channelHead {
+    grid-template-columns: auto 1fr;
+  }
+
+  .stateBadge {
+    grid-column: 1 / -1;
+    width: max-content;
+  }
+}
