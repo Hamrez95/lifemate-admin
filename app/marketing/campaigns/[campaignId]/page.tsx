@@ -388,8 +388,8 @@ function PublishPanel({
         <strong>Credential موجود ≠ Connected</strong>
         <p>
           connectivity عمداً «بررسی‌نشده» باقی می‌ماند. فقط پاسخ واقعی provider می‌تواند execution
-          را Published کند؛ خطای مبهم یا crash بعد از side effect به `OutcomeUnknown` می‌رود تا انتشار
-          تکراری خودکار رخ ندهد.
+          را Published کند؛ خطای مبهم یا crash بعد از side effect به `OutcomeUnknown` می‌رود تا
+          انتشار تکراری خودکار رخ ندهد.
         </p>
       </div>
 
