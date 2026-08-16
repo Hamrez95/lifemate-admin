@@ -1,25 +1,15 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const page = readFileSync(
-  "app/marketing/campaigns/[campaignId]/page.tsx",
-  "utf8",
-);
-const actions = readFileSync(
-  "app/marketing/campaigns/[campaignId]/actions.ts",
-  "utf8",
-);
+const page = readFileSync("app/marketing/campaigns/[campaignId]/page.tsx", "utf8");
+const actions = readFileSync("app/marketing/campaigns/[campaignId]/actions.ts", "utf8");
 const listPage = readFileSync("app/marketing/campaigns/page.tsx", "utf8");
 
 describe("ADM-MKT-003 campaign detail workspace", () => {
   it("splits read, edit and high-risk publish permissions", () => {
     expect(page).toContain('admin.permissions.includes("marketing.read")');
-    expect(page).toContain(
-      'admin.permissions.includes("marketing.campaign.write")',
-    );
-    expect(page).toContain(
-      'admin.permissions.includes("marketing.social.publish")',
-    );
+    expect(page).toContain('admin.permissions.includes("marketing.campaign.write")');
+    expect(page).toContain('admin.permissions.includes("marketing.social.publish")');
     expect(page).toContain("AdminPageState");
   });
 
@@ -47,6 +37,6 @@ describe("ADM-MKT-003 campaign detail workspace", () => {
   });
 
   it("makes campaign detail discoverable from the list", () => {
-    expect(listPage).toContain('href={`/marketing/campaigns/${row.id}`}');
+    expect(listPage).toContain("href={`/marketing/campaigns/${row.id}`}");
   });
 });
