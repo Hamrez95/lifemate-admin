@@ -25,10 +25,7 @@ const dateTimeFormat = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
 });
 const numberFormat = new Intl.NumberFormat("fa-IR");
 
-const topicLabels: Record<
-  AdvisorTopic,
-  { title: string; description: string; icon: string }
-> = {
+const topicLabels: Record<AdvisorTopic, { title: string; description: string; icon: string }> = {
   product_overview: {
     title: "نمای کلی محصول",
     description: "ترکیب شاخص‌های جذب و فعالیت برای یک نگاه مدیریتی کوتاه.",
@@ -157,9 +154,7 @@ function InsightResult({ insight }: { insight: AdvisorInsight }) {
         </ul>
       </details>
 
-      <p className={styles.generatedAt}>
-        تولید پاسخ: {displayDate(insight.generatedAtUtc)}
-      </p>
+      <p className={styles.generatedAt}>تولید پاسخ: {displayDate(insight.generatedAtUtc)}</p>
     </section>
   );
 }
@@ -192,8 +187,8 @@ export default async function AiPage({ searchParams }: AiPageProps) {
               <h2>پاسخ کوتاه مدیریتی، با مدرک کنار هر نتیجه.</h2>
               <p>
                 این بخش chatbot عمومی نیست. سؤال شما فقط موضوع بررسی را توضیح می‌دهد؛ منبع داده،
-                permission و KPIها از allowlist ثابت انتخاب می‌شوند و هیچ SQL آزاد، health data خام یا
-                mutation در دسترس Advisor نیست.
+                permission و KPIها از allowlist ثابت انتخاب می‌شوند و هیچ SQL آزاد، health data خام
+                یا mutation در دسترس Advisor نیست.
               </p>
             </div>
             <div className={styles.securityStamp}>
@@ -256,7 +251,8 @@ export default async function AiPage({ searchParams }: AiPageProps) {
                       placeholder="مثلاً: الان از نظر جذب و فعالیت کاربران چه چیزی نیازمند توجه است؟"
                     />
                     <small>
-                      متن سؤال به SQL، connector یا مدل خارجی تبدیل نمی‌شود؛ فقط untrusted context است.
+                      متن سؤال به SQL، connector یا مدل خارجی تبدیل نمی‌شود؛ فقط untrusted context
+                      است.
                     </small>
                   </label>
                   <button type="submit" className={styles.runButton}>
@@ -304,7 +300,9 @@ export default async function AiPage({ searchParams }: AiPageProps) {
                   <span>02</span>
                   <div>
                     <strong>نتیجه را به‌عنوان insight مدیریتی بخوان، نه حقیقت بدون زمینه.</strong>
-                    <p>Unavailable و partial عمداً برجسته می‌شوند تا داده ناقص با صفر اشتباه نشود.</p>
+                    <p>
+                      Unavailable و partial عمداً برجسته می‌شوند تا داده ناقص با صفر اشتباه نشود.
+                    </p>
                   </div>
                 </section>
               )}
