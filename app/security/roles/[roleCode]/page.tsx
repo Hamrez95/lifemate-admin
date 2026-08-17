@@ -73,7 +73,8 @@ export default async function RoleDetailPage({ params }: RoleDetailPageProps) {
         permission.riskLevel === "HIGH_RISK" ||
         permission.riskLevel === "ELEVATED",
     ) ?? [];
-  const elevatedPermissions = report?.permissions.filter((permission) => !permission.roleAssignable) ?? [];
+  const elevatedPermissions =
+    report?.permissions.filter((permission) => !permission.roleAssignable) ?? [];
   const activeMemberships = report?.memberships.filter((membership) => membership.effective) ?? [];
   const permissionGroups = report ? groupPermissions(report.permissions) : [];
 
@@ -111,8 +112,8 @@ export default async function RoleDetailPage({ params }: RoleDetailPageProps) {
             <section className={styles.stateBanner} role="status" aria-live="polite">
               <strong>جزئیات نقش در دسترس نیست.</strong>
               <p>
-                Admin API پاسخ معتبر نداده است؛ اطلاعات نقش یا membership حدس زده و cache قدیمی نمایش
-                داده نمی‌شود.
+                Admin API پاسخ معتبر نداده است؛ اطلاعات نقش یا membership حدس زده و cache قدیمی
+                نمایش داده نمی‌شود.
               </p>
             </section>
           ) : (
@@ -131,12 +132,16 @@ export default async function RoleDetailPage({ params }: RoleDetailPageProps) {
                 <article className={styles.metricCard}>
                   <span>Permission مستقیم</span>
                   <strong>{report.permissions.length.toLocaleString("fa-IR")}</strong>
-                  <small>{sensitivePermissions.length.toLocaleString("fa-IR")} مورد حساس/پرریسک</small>
+                  <small>
+                    {sensitivePermissions.length.toLocaleString("fa-IR")} مورد حساس/پرریسک
+                  </small>
                 </article>
                 <article className={styles.metricCard}>
                   <span>Membership مؤثر</span>
                   <strong>{activeMemberships.length.toLocaleString("fa-IR")}</strong>
-                  <small>از {report.memberships.length.toLocaleString("fa-IR")} رکورد lifecycle</small>
+                  <small>
+                    از {report.memberships.length.toLocaleString("fa-IR")} رکورد lifecycle
+                  </small>
                 </article>
               </section>
 
@@ -169,21 +174,32 @@ export default async function RoleDetailPage({ params }: RoleDetailPageProps) {
                 ) : (
                   <div className={styles.permissionGroups}>
                     {permissionGroups.map(([domain, permissions]) => (
-                      <section key={domain} className={styles.permissionGroup} aria-label={`دامنه ${domain}`}>
+                      <section
+                        key={domain}
+                        className={styles.permissionGroup}
+                        aria-label={`دامنه ${domain}`}
+                      >
                         <header>
                           <strong>{domain}</strong>
                           <span>{permissions.length.toLocaleString("fa-IR")} permission</span>
                         </header>
                         <ul>
                           {permissions.map((permission) => (
-                            <li key={permission.code} data-blocked={!permission.effectiveForActiveMember}>
+                            <li
+                              key={permission.code}
+                              data-blocked={!permission.effectiveForActiveMember}
+                            >
                               <div>
                                 <strong className={styles.code}>{permission.code}</strong>
                                 <p>{permission.description}</p>
                               </div>
                               <div className={styles.permissionMeta}>
-                                <span data-risk={permission.riskLevel}>{riskLabel(permission.riskLevel)}</span>
-                                <span>{permission.source === "direct" ? "مستقیم" : permission.source}</span>
+                                <span data-risk={permission.riskLevel}>
+                                  {riskLabel(permission.riskLevel)}
+                                </span>
+                                <span>
+                                  {permission.source === "direct" ? "مستقیم" : permission.source}
+                                </span>
                                 {!permission.effectiveForActiveMember ? (
                                   <em>
                                     {permission.blockedReason === "permission_not_role_assignable"
@@ -210,8 +226,8 @@ export default async function RoleDetailPage({ params }: RoleDetailPageProps) {
                   <span className={styles.readOnlyPill}>UUID only</span>
                 </header>
                 <p className={styles.identityNote}>
-                  منبع canonical این control plane نام یا ایمیل عضو را ارائه نمی‌کند؛ برای جلوگیری از
-                  نسبت‌دادن PII نادرست، فقط Account UUID و وضعیت lifecycle نمایش داده می‌شود.
+                  منبع canonical این control plane نام یا ایمیل عضو را ارائه نمی‌کند؛ برای جلوگیری
+                  از نسبت‌دادن PII نادرست، فقط Account UUID و وضعیت lifecycle نمایش داده می‌شود.
                 </p>
 
                 {report.memberships.length === 0 ? (
@@ -259,13 +275,16 @@ export default async function RoleDetailPage({ params }: RoleDetailPageProps) {
                               <td>
                                 <details>
                                   <summary>
-                                    {membership.effectivePermissions.length.toLocaleString("fa-IR")} مورد
+                                    {membership.effectivePermissions.length.toLocaleString("fa-IR")} {" "}
+                                    مورد
                                   </summary>
                                   <ul className={styles.provenanceList}>
                                     {membership.effectivePermissions.map((permission) => (
                                       <li key={permission.code}>
                                         <code>{permission.code}</code>
-                                        <small>از نقش: {permission.sourceRoleCodes.join("، ")}</small>
+                                        <small>
+                                          از نقش: {permission.sourceRoleCodes.join("، ")}
+                                        </small>
                                       </li>
                                     ))}
                                   </ul>
@@ -301,7 +320,9 @@ export default async function RoleDetailPage({ params }: RoleDetailPageProps) {
                             </div>
                             <div>
                               <dt>Permission مؤثر</dt>
-                              <dd>{membership.effectivePermissions.length.toLocaleString("fa-IR")}</dd>
+                              <dd>
+                                {membership.effectivePermissions.length.toLocaleString("fa-IR")}
+                              </dd>
                             </div>
                           </dl>
                         </article>
