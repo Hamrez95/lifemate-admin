@@ -63,7 +63,8 @@ const readyResponse = {
     reason: "The current Command Center RBAC model has direct role-to-permission assignments.",
   },
   elevatedBoundary: {
-    enforcement: "Permissions with roleAssignable=false are never effective through ordinary roles.",
+    enforcement:
+      "Permissions with roleAssignable=false are never effective through ordinary roles.",
   },
   source: {
     kind: "canonical",
@@ -77,8 +78,9 @@ describe("ADM-SEC-001 RBAC response contract", () => {
   it("accepts canonical direct assignments and blocked elevated boundaries", () => {
     const parsed = parseSecurityRbacResponse(readyResponse);
     expect(parsed?.state).toBe("ready");
-    expect(parsed?.assignments.find((item) => item.permissionCode === "health.read.elevated")?.effective)
-      .toBe(false);
+    expect(
+      parsed?.assignments.find((item) => item.permissionCode === "health.read.elevated")?.effective,
+    ).toBe(false);
   });
 
   it("rejects an elevated permission falsely reported as effective", () => {
