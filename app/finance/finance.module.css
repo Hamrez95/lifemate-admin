@@ -6,7 +6,8 @@
 .hero,
 .panel,
 .metricCard,
-.stateBanner {
+.stateBanner,
+.filters {
   border: 1px solid var(--line, #e8e2d8);
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.92);
@@ -53,6 +54,76 @@
 .period small {
   color: #77716a;
   font-size: 0.78rem;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr)) auto;
+  gap: 0.8rem;
+  align-items: end;
+  padding: 0.9rem 1rem;
+}
+
+.filterField {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.filterField label {
+  color: #625d57;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.filterField input {
+  min-height: 42px;
+  width: 100%;
+  border: 1px solid #ddd5ca;
+  border-radius: 12px;
+  background: #fff;
+  color: #332f2a;
+  padding: 0.45rem 0.7rem;
+  font: inherit;
+}
+
+.filterActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 42px;
+}
+
+.filterActions button,
+.filterActions a {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  padding: 0.45rem 0.85rem;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.filterActions button {
+  border: 1px solid #247153;
+  background: #2f8b68;
+  color: #fff;
+}
+
+.filterActions a {
+  border: 1px solid #ded6cb;
+  background: #faf7f1;
+  color: #514b44;
+}
+
+.filterField input:focus-visible,
+.filterActions button:focus-visible,
+.filterActions a:focus-visible {
+  outline: 3px solid rgba(90, 104, 214, 0.28);
+  outline-offset: 2px;
 }
 
 .stateBanner {
@@ -243,6 +314,7 @@
   padding: 0.8rem 0.7rem;
   text-align: start;
   border-bottom: 1px solid #eee9e2;
+  vertical-align: top;
 }
 
 .tableWrap thead th {
@@ -254,6 +326,8 @@
 .unavailable {
   background: #f7f4ef;
   color: #6e6861;
+  white-space: normal;
+  line-height: 1.5;
 }
 
 .footnote {
@@ -271,6 +345,12 @@
 }
 
 @media (max-width: 800px) {
+  .filters {
+    grid-template-columns: 1fr 1fr;
+  }
+  .filterActions {
+    grid-column: 1 / -1;
+  }
   .seriesRow {
     grid-template-columns: 1fr 1fr;
   }
@@ -284,13 +364,21 @@
   .period {
     min-width: 0;
   }
+  .filters {
+    grid-template-columns: 1fr;
+  }
+  .filterActions {
+    grid-column: auto;
+    flex-wrap: wrap;
+  }
   .cardGrid {
     grid-template-columns: 1fr;
   }
   .panel,
   .hero,
   .metricCard,
-  .stateBanner {
+  .stateBanner,
+  .filters {
     border-radius: 16px;
   }
   .metricHeader,
