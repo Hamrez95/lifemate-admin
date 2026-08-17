@@ -275,7 +275,7 @@ export default async function RoleDetailPage({ params }: RoleDetailPageProps) {
                               <td>
                                 <details>
                                   <summary>
-                                    {membership.effectivePermissions.length.toLocaleString("fa-IR")} {" "}
+                                    {membership.effectivePermissions.length.toLocaleString("fa-IR")}{" "}
                                     مورد
                                   </summary>
                                   <ul className={styles.provenanceList}>
