@@ -458,7 +458,8 @@ export function parseFinanceCashResponse(value: unknown): FinanceCashResponse | 
   if (!body.actual || !body.cash || !body.runway || !body.forecast) return null;
   if (!parseActual(body.actual, expectedActualMonths) || !parseCash(body.cash)) return null;
   if (!parseRunway(body.runway)) return null;
-  if (!parseForecast(body.forecast, Number(query.horizonMonths), expectedForecastStart)) return null;
+  if (!parseForecast(body.forecast, Number(query.horizonMonths), expectedForecastStart))
+    return null;
 
   if (body.state === "ready" || body.state === "partial") {
     if (
