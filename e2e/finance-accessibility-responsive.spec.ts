@@ -108,7 +108,6 @@ test("finance cash planning separates Actual and Forecast with accessible scenar
   await expectNoViewportOverflow(page);
   await expectNoSeriousAccessibilityViolations(page);
 
-  const filters = page.getByRole("form", { name: "فیلتر برنامه‌ریزی نقدینگی" });
   await page.getByLabel("از ماه Actual").fill("2026-07");
   await page.getByLabel("تا ماه Actual").fill("2026-07");
   await page.getByLabel("افق Forecast (ماه)").fill("6");
