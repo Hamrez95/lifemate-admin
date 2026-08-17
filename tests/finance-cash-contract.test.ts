@@ -160,6 +160,18 @@ describe("ADM-FIN-003 cash planning response contract", () => {
     expect(parseFinanceCashResponse(invalid)).toBeNull();
   });
 
+  it("rejects ready Actual burn that does not cover every requested completed month", () => {
+    const invalid = structuredClone(readyResponse);
+    invalid.query.from = "2026-06-01";
+    expect(parseFinanceCashResponse(invalid)).toBeNull();
+  });
+
+  it("rejects forecast months that do not begin immediately after the Actual boundary", () => {
+    const invalid = structuredClone(readyResponse);
+    invalid.forecast.plan.forecastStartMonth = "2026-09-01";
+    expect(parseFinanceCashResponse(invalid)).toBeNull();
+  });
+
   it("accepts truthful unavailable data for an explicitly requested currency with no source", () => {
     const unavailable = {
       state: "unavailable",
