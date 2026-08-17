@@ -72,9 +72,7 @@ for (const pattern of forbiddenWorkflowPatterns) {
 const workflowEnvNames = [...workflow.matchAll(/^\s+(NEXT_PUBLIC_[A-Z0-9_]+):/gmu)].map(
   (match) => match[1],
 );
-const unexpectedWorkflowEnv = workflowEnvNames.filter(
-  (name) => !allowedPublicEnv.has(name),
-);
+const unexpectedWorkflowEnv = workflowEnvNames.filter((name) => !allowedPublicEnv.has(name));
 if (unexpectedWorkflowEnv.length > 0) {
   fail(`workflow exposes unexpected public env names: ${unexpectedWorkflowEnv.join(", ")}`);
 }
