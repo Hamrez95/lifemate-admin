@@ -115,10 +115,7 @@ export function parseFinanceProfitLossResponse(value: unknown): FinanceProfitLos
   ) {
     return null;
   }
-  if (
-    !stringOrNull(body.currency) ||
-    (body.currency !== null && !CURRENCY.test(body.currency))
-  ) {
+  if (!stringOrNull(body.currency) || (body.currency !== null && !CURRENCY.test(body.currency))) {
     return null;
   }
   if (!minorUnitExponent(body.minorUnitExponent)) return null;
