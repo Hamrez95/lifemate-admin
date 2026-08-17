@@ -165,7 +165,12 @@ export default async function FinancePage({ searchParams }: FinancePageProps) {
             </div>
           </section>
 
-          <form className={styles.filters} action="/finance" method="get" aria-label="فیلتر بازه گزارش">
+          <form
+            className={styles.filters}
+            action="/finance"
+            method="get"
+            aria-label="فیلتر بازه گزارش"
+          >
             <div className={styles.filterField}>
               <label htmlFor="finance-from">از تاریخ</label>
               <input id="finance-from" name="from" type="date" defaultValue={filterFrom} />
