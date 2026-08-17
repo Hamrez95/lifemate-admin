@@ -1,9 +1,6 @@
 import { getPublicRuntimeConfig } from "../runtime-config";
 import { createServerSupabaseClient } from "../supabase/server";
-import {
-  parseFinanceBudgetResponse,
-  type FinanceBudgetResponse,
-} from "./finance-budget-contract";
+import { parseFinanceBudgetResponse, type FinanceBudgetResponse } from "./finance-budget-contract";
 
 export type {
   FinanceActualSource,
