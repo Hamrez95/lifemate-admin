@@ -109,13 +109,13 @@ test("finance cash planning separates Actual and Forecast with accessible scenar
   await expectNoSeriousAccessibilityViolations(page);
 
   const filters = page.getByRole("form", { name: "فیلتر برنامه‌ریزی نقدینگی" });
-  await page.getByLabel("از ماه Actual").fill("2026-06");
+  await page.getByLabel("از ماه Actual").fill("2026-07");
   await page.getByLabel("تا ماه Actual").fill("2026-07");
   await page.getByLabel("افق Forecast (ماه)").fill("6");
   await page.getByRole("button", { name: "اعمال" }).click();
   await expect(page).toHaveURL(/\/finance\/cash\?/);
   const filteredUrl = new URL(page.url());
-  expect(filteredUrl.searchParams.get("fromMonth")).toBe("2026-06");
+  expect(filteredUrl.searchParams.get("fromMonth")).toBe("2026-07");
   expect(filteredUrl.searchParams.get("toMonth")).toBe("2026-07");
   expect(filteredUrl.searchParams.get("horizonMonths")).toBe("6");
   await expectNoViewportOverflow(page);
