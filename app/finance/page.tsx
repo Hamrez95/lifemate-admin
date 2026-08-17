@@ -15,12 +15,25 @@ type FinancePageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
+const PERSIAN_DIGITS: Record<string, string> = {
+  "0": "۰",
+  "1": "۱",
+  "2": "۲",
+  "3": "۳",
+  "4": "۴",
+  "5": "۵",
+  "6": "۶",
+  "7": "۷",
+  "8": "۸",
+  "9": "۹",
+};
+
 function single(value: string | string[] | undefined): string | null {
   return typeof value === "string" ? value : null;
 }
 
 function toPersianDigits(value: string): string {
-  return value.replace(/\d/g, (digit) => "۰۱۲۳۴۵۶۷۸۹"[Number(digit)]);
+  return value.replace(/\d/g, (digit) => PERSIAN_DIGITS[digit] ?? digit);
 }
 
 export function formatMinorAmount(amountMinor: string, currency: string, exponent: number): string {
