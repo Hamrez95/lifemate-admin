@@ -21,11 +21,7 @@ export type FinanceActualCashPlanning = {
     averageNetBurnMinor: string;
     series: FinanceBurnSeriesPoint[];
   };
-  source: null | {
-    kind: "canonical";
-    label: string;
-    definitionVersion: number;
-  };
+  source: null | { kind: "canonical"; label: string; definitionVersion: number };
   freshness: { status: "fresh" | "unavailable"; asOfUtc: string | null };
   reason: string | null;
 };
@@ -110,8 +106,7 @@ const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const MONTH = /^\d{4}-\d{2}$/;
 const CURRENCY = /^[A-Z]{3}$/;
 const INTEGER = /^-?\d+$/;
-const TIMESTAMP = (value: unknown): value is string =>
-  typeof value === "string" && !Number.isNaN(Date.parse(value));
+const SCENARIOS = new Set<FinanceScenario>(["Base", "Upside", "Downside"]);
 
 function object(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" ? (value as Record<string, unknown>) : null;
@@ -125,8 +120,16 @@ function nullableInteger(value: unknown): value is string | null {
   return value === null || integer(value);
 }
 
+function timestamp(value: unknown): value is string {
+  return typeof value === "string" && !Number.isNaN(Date.parse(value));
+}
+
 function timestampOrNull(value: unknown): value is string | null {
-  return value === null || TIMESTAMP(value);
+  return value === null || timestamp(value);
+}
+
+function reason(value: unknown): value is string | null {
+  return value === null || typeof value === "string";
 }
 
 function validExponent(value: unknown): value is number | null {
@@ -135,26 +138,26 @@ function validExponent(value: unknown): value is number | null {
 
 function parseActual(value: unknown): FinanceActualCashPlanning | null {
   const row = object(value);
-  if (!row || (row.state !== "ready" && row.state !== "unavailable")) return null;
-  const freshness = object(row.freshness);
+  const freshness = object(row?.freshness);
   if (
+    !row ||
+    (row.state !== "ready" && row.state !== "unavailable") ||
     !freshness ||
     (freshness.status !== "fresh" && freshness.status !== "unavailable") ||
-    !timestampOrNull(freshness.asOfUtc)
+    !timestampOrNull(freshness.asOfUtc) ||
+    !reason(row.reason)
   ) {
     return null;
   }
-  if (row.reason !== null && typeof row.reason !== "string") return null;
-
   if (row.state === "unavailable") {
-    if (row.burn !== null) return null;
-    return row as unknown as FinanceActualCashPlanning;
+    return row.burn === null ? (row as unknown as FinanceActualCashPlanning) : null;
   }
 
   const burn = object(row.burn);
   const source = object(row.source);
   if (
     !burn ||
+    !source ||
     !Number.isInteger(burn.monthCount) ||
     Number(burn.monthCount) < 1 ||
     !integer(burn.revenueMinor) ||
@@ -163,7 +166,7 @@ function parseActual(value: unknown): FinanceActualCashPlanning | null {
     !integer(burn.averageGrossBurnMinor) ||
     !integer(burn.averageNetBurnMinor) ||
     !Array.isArray(burn.series) ||
-    !source ||
+    burn.series.length !== Number(burn.monthCount) ||
     source.kind !== "canonical" ||
     typeof source.label !== "string" ||
     !Number.isInteger(source.definitionVersion) ||
@@ -172,7 +175,16 @@ function parseActual(value: unknown): FinanceActualCashPlanning | null {
   ) {
     return null;
   }
-  if (burn.series.length !== Number(burn.monthCount)) return null;
+  if (BigInt(burn.netBurnMinor) !== BigInt(burn.grossBurnMinor) - BigInt(burn.revenueMinor)) {
+    return null;
+  }
+  const divisor = BigInt(Number(burn.monthCount));
+  if (
+    BigInt(burn.averageGrossBurnMinor) !== BigInt(burn.grossBurnMinor) / divisor ||
+    BigInt(burn.averageNetBurnMinor) !== BigInt(burn.netBurnMinor) / divisor
+  ) {
+    return null;
+  }
   for (const item of burn.series) {
     const point = object(item);
     if (
@@ -192,19 +204,21 @@ function parseActual(value: unknown): FinanceActualCashPlanning | null {
 
 function parseCash(value: unknown): FinanceCashBalance | null {
   const row = object(value);
-  if (!row || (row.state !== "ready" && row.state !== "unavailable")) return null;
-  const freshness = object(row.freshness);
+  const freshness = object(row?.freshness);
   if (
+    !row ||
+    (row.state !== "ready" && row.state !== "unavailable") ||
     !freshness ||
     !["fresh", "stale", "unavailable"].includes(String(freshness.status)) ||
     !timestampOrNull(freshness.asOfUtc) ||
-    (row.reason !== null && typeof row.reason !== "string")
+    !reason(row.reason)
   ) {
     return null;
   }
   if (row.state === "unavailable") {
-    if (row.balanceMinor !== null || row.asOfDate !== null || row.source !== null) return null;
-    return row as unknown as FinanceCashBalance;
+    return row.balanceMinor === null && row.asOfDate === null && row.source === null
+      ? (row as unknown as FinanceCashBalance)
+      : null;
   }
   const source = object(row.source);
   if (
@@ -216,7 +230,7 @@ function parseCash(value: unknown): FinanceCashBalance | null {
     source.kind !== "canonical" ||
     typeof source.label !== "string" ||
     typeof source.sourceKind !== "string" ||
-    !TIMESTAMP(source.observedAtUtc)
+    !timestamp(source.observedAtUtc)
   ) {
     return null;
   }
@@ -225,9 +239,15 @@ function parseCash(value: unknown): FinanceCashBalance | null {
 
 function parseRunway(value: unknown): FinanceRunway | null {
   const row = object(value);
-  if (!row || !["ready", "unavailable", "not_burning"].includes(String(row.state))) return null;
-  if (!nullableInteger(row.trailingMonthsBasisPoints) || typeof row.formula !== "string") return null;
-  if (row.reason !== null && typeof row.reason !== "string") return null;
+  if (
+    !row ||
+    !["ready", "unavailable", "not_burning"].includes(String(row.state)) ||
+    !nullableInteger(row.trailingMonthsBasisPoints) ||
+    typeof row.formula !== "string" ||
+    !reason(row.reason)
+  ) {
+    return null;
+  }
   if (row.state === "ready" && row.trailingMonthsBasisPoints === null) return null;
   if (row.state !== "ready" && row.trailingMonthsBasisPoints !== null) return null;
   return row as unknown as FinanceRunway;
@@ -235,16 +255,21 @@ function parseRunway(value: unknown): FinanceRunway | null {
 
 function parseForecast(value: unknown, horizonMonths: number): FinanceCashForecast | null {
   const row = object(value);
-  if (!row || (row.state !== "ready" && row.state !== "unavailable")) return null;
-  if (!Array.isArray(row.assumptions) || !Array.isArray(row.scenarios)) return null;
-  if (row.reason !== null && typeof row.reason !== "string") return null;
+  if (
+    !row ||
+    (row.state !== "ready" && row.state !== "unavailable") ||
+    !Array.isArray(row.assumptions) ||
+    !Array.isArray(row.scenarios) ||
+    !reason(row.reason)
+  ) {
+    return null;
+  }
 
-  const scenarios = new Set<FinanceScenario>();
   for (const item of row.assumptions) {
     const assumption = object(item);
     if (
       !assumption ||
-      !["Base", "Upside", "Downside"].includes(String(assumption.scenario)) ||
+      !SCENARIOS.has(assumption.scenario as FinanceScenario) ||
       typeof assumption.code !== "string" ||
       typeof assumption.label !== "string" ||
       typeof assumption.value !== "string"
@@ -252,12 +277,14 @@ function parseForecast(value: unknown, horizonMonths: number): FinanceCashForeca
       return null;
     }
   }
+
+  const seen = new Set<FinanceScenario>();
   for (const item of row.scenarios) {
     const scenario = object(item);
     const projectedCash = object(scenario?.projectedCash);
     if (
       !scenario ||
-      !["Base", "Upside", "Downside"].includes(String(scenario.scenario)) ||
+      !SCENARIOS.has(scenario.scenario as FinanceScenario) ||
       !Array.isArray(scenario.months) ||
       scenario.months.length !== horizonMonths ||
       !projectedCash ||
@@ -273,8 +300,8 @@ function parseForecast(value: unknown, horizonMonths: number): FinanceCashForeca
       return null;
     }
     const name = scenario.scenario as FinanceScenario;
-    if (scenarios.has(name)) return null;
-    scenarios.add(name);
+    if (seen.has(name)) return null;
+    seen.add(name);
     for (const month of scenario.months) {
       const point = object(month);
       if (
@@ -289,44 +316,65 @@ function parseForecast(value: unknown, horizonMonths: number): FinanceCashForeca
         return null;
       }
     }
+    const opening = projectedCash.openingCashMinor;
+    const ending = projectedCash.endingCashMinor;
+    if (opening === null || ending === null) {
+      if (projectedCash.runwayState !== "unavailable" || projectedCash.series.length !== 0) return null;
+    } else {
+      if (projectedCash.series.length !== horizonMonths) return null;
+      let projected = BigInt(opening);
+      for (let index = 0; index < scenario.months.length; index += 1) {
+        const month = scenario.months[index] as Record<string, unknown>;
+        const cashPoint = object(projectedCash.series[index]);
+        projected -= BigInt(month.netBurnMinor as string);
+        if (
+          !cashPoint ||
+          cashPoint.month !== month.month ||
+          !integer(cashPoint.projectedEndingCashMinor) ||
+          BigInt(cashPoint.projectedEndingCashMinor) !== projected
+        ) {
+          return null;
+        }
+      }
+      if (BigInt(ending) !== projected) return null;
+    }
   }
 
-  if (row.state === "ready") {
-    const plan = object(row.plan);
-    if (
-      scenarios.size !== 3 ||
-      !plan ||
-      typeof plan.code !== "string" ||
-      !Number.isInteger(plan.version) ||
-      Number(plan.version) < 1 ||
-      typeof plan.label !== "string" ||
-      typeof plan.forecastStartMonth !== "string" ||
-      !DATE.test(plan.forecastStartMonth) ||
-      !Number.isInteger(plan.declaredHorizonMonths) ||
-      Number(plan.declaredHorizonMonths) < horizonMonths ||
-      !TIMESTAMP(plan.approvedAtUtc) ||
-      typeof plan.sourceKind !== "string"
-    ) {
-      return null;
-    }
-    const assumptions = row.assumptions as Array<Record<string, unknown>>;
-    for (const scenario of ["Base", "Upside", "Downside"] as const) {
-      if (!assumptions.some((item) => item.scenario === scenario)) return null;
-    }
-  } else if (row.scenarios.length > 0) {
+  if (row.state === "unavailable") {
+    return row.scenarios.length === 0 ? (row as unknown as FinanceCashForecast) : null;
+  }
+
+  const plan = object(row.plan);
+  if (
+    seen.size !== 3 ||
+    !plan ||
+    typeof plan.code !== "string" ||
+    !Number.isInteger(plan.version) ||
+    Number(plan.version) < 1 ||
+    typeof plan.label !== "string" ||
+    typeof plan.forecastStartMonth !== "string" ||
+    !DATE.test(plan.forecastStartMonth) ||
+    !Number.isInteger(plan.declaredHorizonMonths) ||
+    Number(plan.declaredHorizonMonths) < horizonMonths ||
+    !timestamp(plan.approvedAtUtc) ||
+    typeof plan.sourceKind !== "string"
+  ) {
     return null;
+  }
+  const assumptions = row.assumptions as Array<Record<string, unknown>>;
+  for (const scenario of SCENARIOS) {
+    if (!assumptions.some((item) => item.scenario === scenario)) return null;
   }
   return row as unknown as FinanceCashForecast;
 }
 
 export function parseFinanceCashResponse(value: unknown): FinanceCashResponse | null {
   const body = object(value);
-  if (!body || !["ready", "partial", "unavailable", "currency_required"].includes(String(body.state))) {
-    return null;
-  }
-  const query = object(body.query);
+  const query = object(body?.query);
   if (
+    !body ||
     !query ||
+    !["ready", "partial", "unavailable", "currency_required"].includes(String(body.state)) ||
     typeof query.from !== "string" ||
     !DATE.test(query.from) ||
     typeof query.to !== "string" ||
@@ -343,8 +391,8 @@ export function parseFinanceCashResponse(value: unknown): FinanceCashResponse | 
     !body.availableCurrencies.every(
       (item) => typeof item === "string" && CURRENCY.test(item),
     ) ||
-    (body.reason !== null && typeof body.reason !== "string") ||
-    !TIMESTAMP(body.generatedAtUtc)
+    !reason(body.reason) ||
+    !timestamp(body.generatedAtUtc)
   ) {
     return null;
   }
@@ -363,14 +411,23 @@ export function parseFinanceCashResponse(value: unknown): FinanceCashResponse | 
     ) {
       return null;
     }
-  } else {
-    if (body.currency === null || !(body.availableCurrencies as string[]).includes(body.currency)) {
+    return body as unknown as FinanceCashResponse;
+  }
+
+  if (!body.actual || !body.cash || !body.runway || !body.forecast) return null;
+  if (!parseActual(body.actual) || !parseCash(body.cash) || !parseRunway(body.runway)) return null;
+  if (!parseForecast(body.forecast, Number(query.horizonMonths))) return null;
+
+  if (body.state === "ready" || body.state === "partial") {
+    if (
+      body.currency === null ||
+      !(body.availableCurrencies as string[]).includes(body.currency) ||
+      (query.currency !== null && query.currency !== body.currency)
+    ) {
       return null;
     }
-    if (query.currency !== null && query.currency !== body.currency) return null;
-    if (!body.actual || !body.cash || !body.runway || !body.forecast) return null;
-    if (!parseActual(body.actual) || !parseCash(body.cash) || !parseRunway(body.runway)) return null;
-    if (!parseForecast(body.forecast, Number(query.horizonMonths))) return null;
+  } else if (body.currency !== null && query.currency !== null && body.currency !== query.currency) {
+    return null;
   }
 
   return body as unknown as FinanceCashResponse;
