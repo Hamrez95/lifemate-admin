@@ -75,6 +75,31 @@
   font-weight: 800;
 }
 
+.currencyChoices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.7rem;
+}
+
+.currencyChoices a {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid #d9c48d;
+  background: #fff;
+  color: #59430f;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.currencyChoices a:focus-visible {
+  outline: 3px solid rgba(90, 104, 214, 0.28);
+  outline-offset: 2px;
+}
+
 .cardGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -149,7 +174,7 @@
 }
 
 .chartPlaceholder {
-  min-height: 260px;
+  min-height: 180px;
   margin-top: 1rem;
   display: grid;
   place-items: center;
@@ -161,6 +186,27 @@
   color: #7a746c;
   text-align: center;
   padding: 1rem;
+}
+
+.seriesList {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.seriesRow {
+  display: grid;
+  grid-template-columns: minmax(80px, 0.7fr) repeat(3, minmax(120px, 1fr));
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.75rem 0.85rem;
+  border-radius: 14px;
+  background: #fbfaf7;
+}
+
+.seriesRow span {
+  color: #625d57;
+  font-size: 0.84rem;
 }
 
 .expenseList {
@@ -224,6 +270,12 @@
   }
 }
 
+@media (max-width: 800px) {
+  .seriesRow {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 @media (max-width: 700px) {
   .hero {
     align-items: stretch;
@@ -244,6 +296,9 @@
   .metricHeader,
   .panelHeader {
     flex-wrap: wrap;
+  }
+  .seriesRow {
+    grid-template-columns: 1fr;
   }
 }
 
