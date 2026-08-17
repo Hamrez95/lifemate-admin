@@ -23,11 +23,7 @@ function toPersianDigits(value: string): string {
   return value.replace(/\d/g, (digit) => "۰۱۲۳۴۵۶۷۸۹"[Number(digit)]);
 }
 
-export function formatMinorAmount(
-  amountMinor: string,
-  currency: string,
-  exponent: number,
-): string {
+export function formatMinorAmount(amountMinor: string, currency: string, exponent: number): string {
   const value = BigInt(amountMinor);
   const negative = value < 0n;
   const absolute = negative ? -value : value;
@@ -35,9 +31,8 @@ export function formatMinorAmount(
   const whole = absolute / divisor;
   const fraction = absolute % divisor;
   const wholeText = new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 0 }).format(whole);
-  const fractionText = exponent > 0
-    ? `٫${toPersianDigits(fraction.toString().padStart(exponent, "0"))}`
-    : "";
+  const fractionText =
+    exponent > 0 ? `٫${toPersianDigits(fraction.toString().padStart(exponent, "0"))}` : "";
   return `${negative ? "−" : ""}${wholeText}${fractionText} ${currency}`;
 }
 
@@ -137,7 +132,9 @@ export default async function FinancePage({ searchParams }: FinancePageProps) {
             <div className={styles.period} aria-label="بازه گزارش">
               <span>بازه گزارش</span>
               <strong>
-                {report ? `${toPersianDigits(report.query.from)} تا ${toPersianDigits(report.query.to)}` : "—"}
+                {report
+                  ? `${toPersianDigits(report.query.from)} تا ${toPersianDigits(report.query.to)}`
+                  : "—"}
               </strong>
               <small>آخرین ثبت: {formatAsOf(report?.freshness.asOfUtc ?? null)}</small>
             </div>
@@ -145,7 +142,9 @@ export default async function FinancePage({ searchParams }: FinancePageProps) {
 
           {report?.state === "currency_required" ? (
             <section className={styles.stateBanner} role="status">
-              <span className={styles.stateIcon} aria-hidden="true">i</span>
+              <span className={styles.stateIcon} aria-hidden="true">
+                i
+              </span>
               <div>
                 <strong>برای این بازه چند ارز ثبت شده است.</strong>
                 <p>تبدیل ارزی خودکار انجام نمی‌شود. ارز گزارش را صریح انتخاب کنید.</p>
@@ -162,7 +161,9 @@ export default async function FinancePage({ searchParams }: FinancePageProps) {
 
           {!actual ? (
             <section className={styles.stateBanner} role="status" aria-live="polite">
-              <span className={styles.stateIcon} aria-hidden="true">i</span>
+              <span className={styles.stateIcon} aria-hidden="true">
+                i
+              </span>
               <div>
                 <strong>Actual معتبر برای این گزارش در دسترس نیست.</strong>
                 <p>
@@ -185,7 +186,7 @@ export default async function FinancePage({ searchParams }: FinancePageProps) {
                 <strong aria-label={`${card.label}: ${card.value}`}>{card.value}</strong>
                 <p>
                   {card.badge === "FORECAST"
-                    ? report?.forecast.reason ?? "منبع forecast تأیید نشده"
+                    ? (report?.forecast.reason ?? "منبع forecast تأیید نشده")
                     : actual
                       ? `منبع: ${report?.source.label}`
                       : "منبع actual در دسترس نیست"}
@@ -202,7 +203,9 @@ export default async function FinancePage({ searchParams }: FinancePageProps) {
                   <h3>روند ماهانه درآمد و هزینه</h3>
                 </div>
                 <span className={styles.sourcePill}>
-                  {report ? `Definition v${report.source.definitionVersion}` : "Source: unavailable"}
+                  {report
+                    ? `Definition v${report.source.definitionVersion}`
+                    : "Source: unavailable"}
                 </span>
               </header>
               {actual?.series.length ? (
@@ -217,7 +220,11 @@ export default async function FinancePage({ searchParams }: FinancePageProps) {
                   ))}
                 </div>
               ) : (
-                <div className={styles.chartPlaceholder} role="img" aria-label="روند ماهانه ناموجود است">
+                <div
+                  className={styles.chartPlaceholder}
+                  role="img"
+                  aria-label="روند ماهانه ناموجود است"
+                >
                   <span>داده ماهانه معتبر برای بازه انتخابی موجود نیست.</span>
                 </div>
               )}
@@ -278,7 +285,11 @@ export default async function FinancePage({ searchParams }: FinancePageProps) {
                       <td>{money(value)}</td>
                       <td>—</td>
                       <td>
-                        {actual ? report?.source.label : <span className={styles.unavailable}>ناموجود</span>}
+                        {actual ? (
+                          report?.source.label
+                        ) : (
+                          <span className={styles.unavailable}>ناموجود</span>
+                        )}
                       </td>
                     </tr>
                   ))}
