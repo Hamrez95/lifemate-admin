@@ -39,7 +39,6 @@ test("role detail keeps memberships traceable, elevated access blocked, accessib
   await expect(page.getByText("مرز دسترسی ویژه حفظ شده است")).toBeVisible();
   await expect(page.getByText("health.read.elevated")).toBeVisible();
   await expect(page.getByText("خارج از نقش عادی", { exact: true })).toBeVisible();
-  await expect(page.getByText("66666666-6666-4666-8666-666666666666")).toBeVisible();
   await expect(page.getByRole("button", { name: /ویرایش|ذخیره|افزودن|دعوت|لغو/ })).toHaveCount(0);
 
   const viewport = page.viewportSize();
@@ -48,14 +47,18 @@ test("role detail keeps memberships traceable, elevated access blocked, accessib
       name: /جدول عضویت‌های نقش؛ برای ستون‌های بیشتر اسکرول افقی کنید/,
     });
     await expect(table).toBeVisible();
+    await expect(table.getByText("66666666-6666-4666-8666-666666666666")).toBeVisible();
     await table.focus();
     await expect(table).toBeFocused();
-    await page.getByText("۳ مورد", { exact: true }).click();
-    await expect(page.getByText("security.audit.read", { exact: true })).toBeVisible();
-    await expect(page.getByText("از نقش: security", { exact: true })).toBeVisible();
+
+    const permissionDetails = table.locator("details").filter({ hasText: "۳ مورد" });
+    await permissionDetails.locator("summary").click();
+    await expect(permissionDetails.getByText("security.audit.read", { exact: true })).toBeVisible();
+    await expect(permissionDetails.getByText("از نقش: security", { exact: true })).toBeVisible();
   } else {
     const mobile = page.getByLabel("خلاصه موبایل عضویت‌های نقش");
     await expect(mobile).toBeVisible();
+    await expect(mobile.getByText("66666666-6666-4666-8666-666666666666")).toBeVisible();
     await expect(mobile).toContainText("فعال");
     await expect(mobile).toContainText("لغوشده");
   }
