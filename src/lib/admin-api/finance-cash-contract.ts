@@ -291,7 +291,8 @@ function parseForecast(value: unknown, horizonMonths: number): FinanceCashForeca
       !nullableInteger(projectedCash.openingCashMinor) ||
       !nullableInteger(projectedCash.endingCashMinor) ||
       (projectedCash.depletionMonth !== null &&
-        (typeof projectedCash.depletionMonth !== "string" || !MONTH.test(projectedCash.depletionMonth))) ||
+        (typeof projectedCash.depletionMonth !== "string" ||
+          !MONTH.test(projectedCash.depletionMonth))) ||
       !["depletes_within_horizon", "beyond_horizon", "unavailable"].includes(
         String(projectedCash.runwayState),
       ) ||
@@ -319,7 +320,8 @@ function parseForecast(value: unknown, horizonMonths: number): FinanceCashForeca
     const opening = projectedCash.openingCashMinor;
     const ending = projectedCash.endingCashMinor;
     if (opening === null || ending === null) {
-      if (projectedCash.runwayState !== "unavailable" || projectedCash.series.length !== 0) return null;
+      if (projectedCash.runwayState !== "unavailable" || projectedCash.series.length !== 0)
+        return null;
     } else {
       if (projectedCash.series.length !== horizonMonths) return null;
       let projected = BigInt(opening);
@@ -388,9 +390,7 @@ export function parseFinanceCashResponse(value: unknown): FinanceCashResponse | 
       (typeof body.currency !== "string" || !CURRENCY.test(body.currency))) ||
     !validExponent(body.minorUnitExponent) ||
     !Array.isArray(body.availableCurrencies) ||
-    !body.availableCurrencies.every(
-      (item) => typeof item === "string" && CURRENCY.test(item),
-    ) ||
+    !body.availableCurrencies.every((item) => typeof item === "string" && CURRENCY.test(item)) ||
     !reason(body.reason) ||
     !timestamp(body.generatedAtUtc)
   ) {
@@ -426,7 +426,11 @@ export function parseFinanceCashResponse(value: unknown): FinanceCashResponse | 
     ) {
       return null;
     }
-  } else if (body.currency !== null && query.currency !== null && body.currency !== query.currency) {
+  } else if (
+    body.currency !== null &&
+    query.currency !== null &&
+    body.currency !== query.currency
+  ) {
     return null;
   }
 
