@@ -1,9 +1,6 @@
 import { getPublicRuntimeConfig } from "../runtime-config";
 import { createServerSupabaseClient } from "../supabase/server";
-import {
-  parseFinanceCashResponse,
-  type FinanceCashResponse,
-} from "./finance-cash-contract";
+import { parseFinanceCashResponse, type FinanceCashResponse } from "./finance-cash-contract";
 
 export type {
   FinanceActualCashPlanning,
@@ -34,9 +31,7 @@ async function correlationId(response: Response): Promise<string | undefined> {
   }
 }
 
-export async function getFinanceCashPlanning(
-  params: URLSearchParams,
-): Promise<FinanceCashResult> {
+export async function getFinanceCashPlanning(params: URLSearchParams): Promise<FinanceCashResult> {
   const supabase = await createServerSupabaseClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   if (claimsError || !claimsData?.claims?.sub) return { kind: "unauthenticated" };
