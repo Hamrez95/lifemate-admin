@@ -41,7 +41,9 @@ function toPersianDigits(value: string): string {
 function monthEnd(month: string): string | null {
   if (!/^\d{4}-\d{2}$/.test(month)) return null;
   const [year, monthNumber] = month.split("-").map(Number);
-  if (!year || monthNumber < 1 || monthNumber > 12) return null;
+  if (year === undefined || monthNumber === undefined || !year || monthNumber < 1 || monthNumber > 12) {
+    return null;
+  }
   const day = new Date(Date.UTC(year, monthNumber, 0)).getUTCDate();
   return `${month}-${String(day).padStart(2, "0")}`;
 }
