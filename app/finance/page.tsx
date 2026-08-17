@@ -93,6 +93,11 @@ export default async function FinancePage({ searchParams }: FinancePageProps) {
       ? formatMinorAmount(value, report.currency, report.minorUnitExponent)
       : "—";
   const expenseCategories = actual?.categories.filter((item) => item.kind === "Expense") ?? [];
+  const filterFrom = report?.query.from ?? single(requested.from) ?? "";
+  const filterTo = report?.query.to ?? single(requested.to) ?? "";
+  const filterCurrency = report?.query.currency ?? single(requested.currency);
+  const grossUnavailableReason =
+    "تعریف canonical برای COGS / هزینه مستقیم هنوز در read model مالی وجود ندارد؛ سود ناخالص محاسبه نمی‌شود.";
 
   const cards = [
     {
@@ -125,6 +130,13 @@ export default async function FinancePage({ searchParams }: FinancePageProps) {
     },
   ] as const;
 
+  const statementRows = [
+    { label: "درآمد", value: actual?.revenueMinor, unavailableReason: null },
+    { label: "هزینه", value: actual?.expenseMinor, unavailableReason: null },
+    { label: "سود ناخالص", value: null, unavailableReason: grossUnavailableReason },
+    { label: "سود / زیان خالص", value: actual?.netResultMinor, unavailableReason: null },
+  ];
+
   return (
     <AdminSessionProvider admin={admin}>
       <AdminShell
@@ -152,6 +164,22 @@ export default async function FinancePage({ searchParams }: FinancePageProps) {
               <small>آخرین ثبت: {formatAsOf(report?.freshness.asOfUtc ?? null)}</small>
             </div>
           </section>
+
+          <form className={styles.filters} action="/finance" method="get" aria-label="فیلتر بازه گزارش">
+            <div className={styles.filterField}>
+              <label htmlFor="finance-from">از تاریخ</label>
+              <input id="finance-from" name="from" type="date" defaultValue={filterFrom} />
+            </div>
+            <div className={styles.filterField}>
+              <label htmlFor="finance-to">تا تاریخ</label>
+              <input id="finance-to" name="to" type="date" defaultValue={filterTo} />
+            </div>
+            {filterCurrency ? <input type="hidden" name="currency" value={filterCurrency} /> : null}
+            <div className={styles.filterActions}>
+              <button type="submit">اعمال بازه</button>
+              <Link href="/finance">۳۰ روز اخیر</Link>
+            </div>
+          </form>
 
           {report?.state === "currency_required" ? (
             <section className={styles.stateBanner} role="status">
@@ -288,17 +316,15 @@ export default async function FinancePage({ searchParams }: FinancePageProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    ["درآمد", actual?.revenueMinor],
-                    ["هزینه", actual?.expenseMinor],
-                    ["سود / زیان خالص", actual?.netResultMinor],
-                  ].map(([label, value]) => (
-                    <tr key={label}>
-                      <th scope="row">{label}</th>
-                      <td>{money(value)}</td>
+                  {statementRows.map((row) => (
+                    <tr key={row.label}>
+                      <th scope="row">{row.label}</th>
+                      <td>{row.unavailableReason ? "—" : money(row.value)}</td>
                       <td>—</td>
                       <td>
-                        {actual ? (
+                        {row.unavailableReason ? (
+                          <span className={styles.unavailable}>{row.unavailableReason}</span>
+                        ) : actual ? (
                           report?.source.label
                         ) : (
                           <span className={styles.unavailable}>ناموجود</span>
@@ -310,8 +336,8 @@ export default async function FinancePage({ searchParams }: FinancePageProps) {
               </table>
             </div>
             <p className={styles.footnote}>
-              Actual و Forecast دو source مستقل هستند. هیچ FX، forecast، budget یا مقدار گمشده‌ای در
-              مرورگر حدس زده نمی‌شود.
+              Actual و Forecast دو source مستقل هستند. هیچ FX، forecast، budget، gross profit یا
+              مقدار گمشده‌ای در مرورگر حدس زده نمی‌شود.
             </p>
           </section>
         </div>
