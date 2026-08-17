@@ -308,6 +308,11 @@
   margin-top: 0.8rem;
 }
 
+.tableWrap:focus-visible {
+  outline: 3px solid rgba(90, 104, 214, 0.35);
+  outline-offset: 2px;
+}
+
 .tableWrap table {
   width: 100%;
   min-width: 720px;
