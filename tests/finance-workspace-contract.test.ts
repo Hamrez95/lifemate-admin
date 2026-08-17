@@ -11,18 +11,17 @@ describe("ADM-FIN-001 finance workspace contract", () => {
     expect(pageSource).toContain('redirect("/forbidden")');
   });
 
-  it("keeps ACTUAL and FORECAST explicitly separate", () => {
+  it("uses the server-only finance read model and keeps ACTUAL and FORECAST separate", () => {
+    expect(pageSource).toContain("getFinanceProfitLoss");
     expect(pageSource).toContain("ACTUAL");
     expect(pageSource).toContain("FORECAST");
-    expect(pageSource).toContain("Actual revenue");
-    expect(pageSource).toContain("Forecast");
+    expect(pageSource).toContain("Forecast از\n                Actual استنباط نمی‌شود");
   });
 
-  it("does not manufacture finance values while the canonical read model is unavailable", () => {
-    expect(pageSource).toContain("—");
-    expect(pageSource).toContain(
-      "مقادیر\n                Actual، Forecast، هزینه و سود خالص عمداً «—» نمایش داده می‌شوند",
-    );
-    expect(pageSource).toContain("UI آن‌ها را حدس نمی‌زند");
+  it("does not invent missing finance, FX, forecast or budget values", () => {
+    expect(pageSource).toContain('value: "—"');
+    expect(pageSource).toContain("تبدیل ارزی خودکار انجام نمی‌شود");
+    expect(pageSource).toContain("مقدار صفر فرض نشده است");
+    expect(pageSource).toContain("هیچ FX، forecast، budget یا مقدار گمشده‌ای");
   });
 });
