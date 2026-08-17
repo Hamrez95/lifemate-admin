@@ -20,7 +20,9 @@ describe("ADM-FIN-001 finance workspace contract", () => {
 
   it("does not manufacture finance values while the canonical read model is unavailable", () => {
     expect(pageSource).toContain("—");
-    expect(pageSource).toContain("مقادیر\n                Actual، Forecast، هزینه و سود خالص عمداً «—» نمایش داده می‌شوند");
+    expect(pageSource).toContain(
+      "مقادیر\n                Actual، Forecast، هزینه و سود خالص عمداً «—» نمایش داده می‌شوند",
+    );
     expect(pageSource).toContain("UI آن‌ها را حدس نمی‌زند");
   });
 });
