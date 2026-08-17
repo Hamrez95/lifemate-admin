@@ -61,11 +61,7 @@ export type FinanceBudgetResponse = {
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const CURRENCY = /^[A-Z]{3}$/;
 const INTEGER = /^-?\d+$/;
-const FAVORABILITY = new Set<FinanceFavorability>([
-  "favorable",
-  "unfavorable",
-  "on_budget",
-]);
+const FAVORABILITY = new Set<FinanceFavorability>(["favorable", "unfavorable", "on_budget"]);
 const STATE = new Set<FinanceBudgetState>(["ready", "unavailable", "currency_required"]);
 
 function integer(value: unknown): value is string {
@@ -134,7 +130,11 @@ function parseCategory(value: unknown): FinanceBudgetCategory | null {
   if (row.favorability !== null && !favorability(row.favorability)) return null;
 
   if (row.budgetMinor === null) {
-    if (row.varianceMinor !== null || row.varianceBasisPoints !== null || row.favorability !== null) {
+    if (
+      row.varianceMinor !== null ||
+      row.varianceBasisPoints !== null ||
+      row.favorability !== null
+    ) {
       return null;
     }
     return row as unknown as FinanceBudgetCategory;
@@ -213,10 +213,16 @@ export function parseFinanceBudgetResponse(value: unknown): FinanceBudgetRespons
   const query = body.query as Record<string, unknown>;
   if (typeof query.from !== "string" || !DATE.test(query.from)) return null;
   if (typeof query.to !== "string" || !DATE.test(query.to)) return null;
-  if (query.currency !== null && (typeof query.currency !== "string" || !CURRENCY.test(query.currency))) {
+  if (
+    query.currency !== null &&
+    (typeof query.currency !== "string" || !CURRENCY.test(query.currency))
+  ) {
     return null;
   }
-  if (body.currency !== null && (typeof body.currency !== "string" || !CURRENCY.test(body.currency))) {
+  if (
+    body.currency !== null &&
+    (typeof body.currency !== "string" || !CURRENCY.test(body.currency))
+  ) {
     return null;
   }
   if (!minorUnitExponent(body.minorUnitExponent)) return null;
@@ -246,7 +252,9 @@ export function parseFinanceBudgetResponse(value: unknown): FinanceBudgetRespons
   }
   if (
     body.state === "currency_required" &&
-    (query.currency !== null || body.currency !== null || body.minorUnitExponent !== null ||
+    (query.currency !== null ||
+      body.currency !== null ||
+      body.minorUnitExponent !== null ||
       (body.availableCurrencies as string[]).length < 2)
   ) {
     return null;
