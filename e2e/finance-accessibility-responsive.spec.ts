@@ -26,6 +26,19 @@ test("finance P&L renders canonical actuals accessibly without viewport overflow
   ).toBeVisible();
   await expect(page.getByText(/No canonical forecast source is configured/)).toBeVisible();
   await expect(page.getByRole("table")).toBeVisible();
+  await expect(page.getByRole("row", { name: /سود ناخالص/ })).toContainText(
+    "تعریف canonical برای COGS",
+  );
+
+  const filters = page.getByRole("form", { name: "فیلتر بازه گزارش" });
+  await expect(filters).toBeVisible();
+  await page.getByLabel("از تاریخ").fill("2026-08-01");
+  await page.getByLabel("تا تاریخ").fill("2026-08-17");
+  await page.getByRole("button", { name: "اعمال بازه" }).click();
+  await expect(page).toHaveURL(/\/finance\?/);
+  const filteredUrl = new URL(page.url());
+  expect(filteredUrl.searchParams.get("from")).toBe("2026-08-01");
+  expect(filteredUrl.searchParams.get("to")).toBe("2026-08-17");
 
   const viewportOverflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
