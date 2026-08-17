@@ -40,6 +40,9 @@ jobs:
       - name: Browser secret boundary
         run: npm run security:check
 
+      - name: Delivery contract
+        run: npm run delivery:check
+
       - name: Lint
         run: npm run lint
 
