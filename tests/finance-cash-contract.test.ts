@@ -22,9 +22,7 @@ const readyResponse = {
       netBurnMinor: "300",
       averageGrossBurnMinor: "900",
       averageNetBurnMinor: "300",
-      series: [
-        { month: "2026-07", revenueMinor: "600", expenseMinor: "900", netBurnMinor: "300" },
-      ],
+      series: [{ month: "2026-07", revenueMinor: "600", expenseMinor: "900", netBurnMinor: "300" }],
     },
     source: {
       kind: "canonical",
@@ -68,7 +66,12 @@ const readyResponse = {
     },
     assumptions: [
       { scenario: "Base", code: "base", label: "Base assumption", value: "Approved base case" },
-      { scenario: "Upside", code: "upside", label: "Upside assumption", value: "Approved upside case" },
+      {
+        scenario: "Upside",
+        code: "upside",
+        label: "Upside assumption",
+        value: "Approved upside case",
+      },
       {
         scenario: "Downside",
         code: "downside",
