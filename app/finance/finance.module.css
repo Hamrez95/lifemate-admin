@@ -109,7 +109,7 @@
 
 .filterActions button {
   border: 1px solid #247153;
-  background: #2f8b68;
+  background: #247153;
   color: #fff;
 }
 
@@ -344,19 +344,7 @@
   }
 }
 
-@media (max-width: 800px) {
-  .filters {
-    grid-template-columns: 1fr 1fr;
-  }
-  .filterActions {
-    grid-column: 1 / -1;
-  }
-  .seriesRow {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .hero {
     align-items: stretch;
     flex-direction: column;
@@ -371,6 +359,22 @@
     grid-column: auto;
     flex-wrap: wrap;
   }
+}
+
+@media (max-width: 800px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+  .filterActions {
+    grid-column: auto;
+    flex-wrap: wrap;
+  }
+  .seriesRow {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 700px) {
   .cardGrid {
     grid-template-columns: 1fr;
   }
