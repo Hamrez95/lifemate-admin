@@ -310,7 +310,12 @@ export default async function FinancePage({ searchParams }: FinancePageProps) {
                 Freshness: {report?.freshness.status ?? "unavailable"}
               </span>
             </header>
-            <div className={styles.tableWrap}>
+            <div
+              className={styles.tableWrap}
+              role="region"
+              aria-labelledby="finance-table-title"
+              tabIndex={0}
+            >
               <table>
                 <thead>
                   <tr>
