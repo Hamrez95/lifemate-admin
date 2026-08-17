@@ -153,6 +153,9 @@ export default async function FinancePage({ searchParams }: FinancePageProps) {
                 فقط actualهای ثبت‌شده در ledger مالی canonical نمایش داده می‌شوند. Forecast از
                 Actual استنباط نمی‌شود و نبود داده با صفر جایگزین نمی‌شود.
               </p>
+              <div className={styles.filterActions}>
+                <Link href="/finance/budget">بودجه در برابر عملکرد</Link>
+              </div>
             </div>
             <div className={styles.period} aria-label="بازه گزارش">
               <span>بازه گزارش</span>
