@@ -133,7 +133,11 @@ export default async function FinanceCashPage({ searchParams }: FinanceCashPageP
   const forecast = report?.forecast?.state === "ready" ? report.forecast : null;
   const canFormat = Boolean(report?.currency && report.minorUnitExponent !== null);
   const money = (value: string | null | undefined) =>
-    canFormat && value !== null && value !== undefined && report?.currency && report.minorUnitExponent !== null
+    canFormat &&
+    value !== null &&
+    value !== undefined &&
+    report?.currency &&
+    report.minorUnitExponent !== null
       ? formatMinorAmount(value, report.currency, report.minorUnitExponent)
       : "—";
   const fromMonth = report?.query.from.slice(0, 7) ?? single(requested.fromMonth) ?? "";
@@ -152,7 +156,9 @@ export default async function FinanceCashPage({ searchParams }: FinanceCashPageP
       label: "Gross burn متوسط",
       helper: "Trailing actual expenses",
       value: money(actual?.averageGrossBurnMinor),
-      detail: actual ? `${toPersianDigits(String(actual.monthCount))} ماه کامل Actual` : "Actual کامل موجود نیست",
+      detail: actual
+        ? `${toPersianDigits(String(actual.monthCount))} ماه کامل Actual`
+        : "Actual کامل موجود نیست",
     },
     {
       label: "Net burn متوسط",
@@ -184,8 +190,8 @@ export default async function FinanceCashPage({ searchParams }: FinanceCashPageP
               <p className="eyebrow">ADM-FIN-003 · Burn Rate / Runway / Cash Planning</p>
               <h2 id="finance-cash-title">برنامه‌ریزی نقدینگی</h2>
               <p>
-                Cash Actual، burn تاریخی و Forecast سناریویی sourceهای مستقل‌اند. هیچ عدد گمشده،
-                FX یا فرض Forecast از روی Actual ساخته نمی‌شود.
+                Cash Actual، burn تاریخی و Forecast سناریویی sourceهای مستقل‌اند. هیچ عدد گمشده، FX
+                یا فرض Forecast از روی Actual ساخته نمی‌شود.
               </p>
               <div className={styles.filterActions}>
                 <Link href="/finance">سود و زیان</Link>
@@ -237,13 +243,17 @@ export default async function FinanceCashPage({ searchParams }: FinanceCashPageP
 
           {report?.state === "currency_required" ? (
             <section className={styles.stateBanner} role="status">
-              <span className={styles.stateIcon} aria-hidden="true">i</span>
+              <span className={styles.stateIcon} aria-hidden="true">
+                i
+              </span>
               <div>
                 <strong>چند ارز در sourceهای Cash Planning وجود دارد.</strong>
                 <p>ارز را صریح انتخاب کنید؛ هیچ تبدیل FX خودکاری انجام نمی‌شود.</p>
                 <div className={styles.currencyChoices} aria-label="انتخاب ارز Cash Planning">
                   {report.availableCurrencies.map((currency) => (
-                    <Link key={currency} href={currencyHref(report, currency)}>{currency}</Link>
+                    <Link key={currency} href={currencyHref(report, currency)}>
+                      {currency}
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -252,7 +262,9 @@ export default async function FinanceCashPage({ searchParams }: FinanceCashPageP
 
           {report?.state !== "ready" ? (
             <section className={styles.stateBanner} role="status" aria-live="polite">
-              <span className={styles.stateIcon} aria-hidden="true">i</span>
+              <span className={styles.stateIcon} aria-hidden="true">
+                i
+              </span>
               <div>
                 <strong>
                   {report?.state === "partial"
@@ -271,7 +283,9 @@ export default async function FinanceCashPage({ searchParams }: FinanceCashPageP
 
           {report?.cash?.freshness.status === "stale" ? (
             <section className={styles.stateBanner} role="status">
-              <span className={styles.stateIcon} aria-hidden="true">!</span>
+              <span className={styles.stateIcon} aria-hidden="true">
+                !
+              </span>
               <div>
                 <strong>Cash snapshot قدیمی است.</strong>
                 <p>{report.cash.reason ?? "تاریخ snapshot با انتهای بازه Actual هم‌تراز نیست."}</p>
@@ -300,7 +314,11 @@ export default async function FinanceCashPage({ searchParams }: FinanceCashPageP
               </div>
               <span className={styles.sourcePill}>{report?.state ?? "unavailable"}</span>
             </header>
-            <div className={styles.seriesList} role="list" aria-label="منابع Cash Actual و Burn Actual">
+            <div
+              className={styles.seriesList}
+              role="list"
+              aria-label="منابع Cash Actual و Burn Actual"
+            >
               <div className={styles.seriesRow} role="listitem">
                 <strong>Cash Actual</strong>
                 <span>{report?.cash?.source?.label ?? "—"}</span>
@@ -327,7 +345,9 @@ export default async function FinanceCashPage({ searchParams }: FinanceCashPageP
                 <h3 id="forecast-title">سناریوهای Cash Forecast</h3>
               </div>
               <span className={styles.sourcePill}>
-                {forecast?.plan ? `${forecast.plan.code} · v${forecast.plan.version}` : "Forecast unavailable"}
+                {forecast?.plan
+                  ? `${forecast.plan.code} · v${forecast.plan.version}`
+                  : "Forecast unavailable"}
               </span>
             </header>
 
@@ -358,7 +378,10 @@ export default async function FinanceCashPage({ searchParams }: FinanceCashPageP
                     </div>
                     <span className={styles.badge}>FORECAST</span>
                   </header>
-                  <div className={styles.assumptionList} aria-label={`فرض‌های ${scenarioTitle(scenario.scenario)}`}>
+                  <div
+                    className={styles.assumptionList}
+                    aria-label={`فرض‌های ${scenarioTitle(scenario.scenario)}`}
+                  >
                     {assumptions.map((assumption) => (
                       <p key={assumption.code}>
                         <strong>{assumption.label}:</strong> {assumption.value}
@@ -368,10 +391,16 @@ export default async function FinanceCashPage({ searchParams }: FinanceCashPageP
                   <div className={styles.forecastChart} role="img" aria-label={chartText}>
                     <span aria-hidden="true">{scenarioTitle(scenario.scenario)}</span>
                     <strong aria-hidden="true">
-                      {scenarioRunwayText(scenario)} · پایان: {money(scenario.projectedCash.endingCashMinor)}
+                      {scenarioRunwayText(scenario)} · پایان:{" "}
+                      {money(scenario.projectedCash.endingCashMinor)}
                     </strong>
                   </div>
-                  <div className={styles.tableWrap} role="region" aria-label={`جدول ${scenarioTitle(scenario.scenario)}`} tabIndex={0}>
+                  <div
+                    className={styles.tableWrap}
+                    role="region"
+                    aria-label={`جدول ${scenarioTitle(scenario.scenario)}`}
+                    tabIndex={0}
+                  >
                     <table>
                       <thead>
                         <tr>
@@ -389,7 +418,11 @@ export default async function FinanceCashPage({ searchParams }: FinanceCashPageP
                             <td>{money(month.revenueMinor)}</td>
                             <td>{money(month.expenseMinor)}</td>
                             <td>{money(month.netBurnMinor)}</td>
-                            <td>{money(scenario.projectedCash.series[index]?.projectedEndingCashMinor)}</td>
+                            <td>
+                              {money(
+                                scenario.projectedCash.series[index]?.projectedEndingCashMinor,
+                              )}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
