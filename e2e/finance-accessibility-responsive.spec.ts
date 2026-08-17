@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
-async function signInWithMfa(page: Parameters<typeof test>[0]["page"]) {
+async function signInWithMfa(page: Page) {
   await page.goto("/login");
   await page.getByLabel("شماره موبایل حساب LifeMate").fill("09121234567");
   await page.getByRole("button", { name: "دریافت کد ورود" }).click();
