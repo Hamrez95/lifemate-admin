@@ -4,12 +4,12 @@ This document defines the source-controlled delivery boundary for `lifemate-admi
 
 ## Environment matrix
 
-| Stage | Trigger | Artifact / action | Credentials | Promotion authority |
-| --- | --- | --- | --- | --- |
-| Local | developer command | local Next.js build/run | developer-local browser-safe config | none |
-| Preview | pull request | short-lived `.next` QA artifact from `admin-preview-staging` | placeholder publishable values only | none; artifact is not deployed |
-| Staging-ready | manual workflow dispatch | `.next` QA artifact built from the selected reviewed ref | placeholder publishable values only | none; artifact is evidence, not a deployment |
-| Production | separate gated rollout | not implemented by this workflow | environment-scoped reviewed runtime config | ADM-OPS-002 (#24) plus repository/environment protection evidence |
+| Stage         | Trigger                  | Artifact / action                                            | Credentials                                | Promotion authority                                               |
+| ------------- | ------------------------ | ------------------------------------------------------------ | ------------------------------------------ | ----------------------------------------------------------------- |
+| Local         | developer command        | local Next.js build/run                                      | developer-local browser-safe config        | none                                                              |
+| Preview       | pull request             | short-lived `.next` QA artifact from `admin-preview-staging` | placeholder publishable values only        | none; artifact is not deployed                                    |
+| Staging-ready | manual workflow dispatch | `.next` QA artifact built from the selected reviewed ref     | placeholder publishable values only        | none; artifact is evidence, not a deployment                      |
+| Production    | separate gated rollout   | not implemented by this workflow                             | environment-scoped reviewed runtime config | ADM-OPS-002 (#24) plus repository/environment protection evidence |
 
 ## Non-negotiable boundary
 
