@@ -23,12 +23,12 @@ const requiredWorkflowFragments = [
 ];
 
 const forbiddenWorkflowPatterns = [
-  /id-token:\s*write/i,
-  /deployments:\s*write/i,
-  /environment:\s*production/i,
-  /\bvercel\s+(?:deploy|--prod)/i,
-  /supabase\s+functions\s+deploy/i,
-  /\bnpm\s+run\s+deploy\b/i,
+  /^\s+[a-z-]+:\s*write\s*$/imu,
+  /^\s*environment\s*:/imu,
+  /\$\{\{\s*secrets\./iu,
+  /\bvercel\s+(?:deploy|--prod)/iu,
+  /supabase\s+functions\s+deploy/iu,
+  /\bnpm\s+run\s+deploy\b/iu,
 ];
 
 function fail(message) {
