@@ -13,7 +13,13 @@ const financeCards = [
   { label: "پیش‌بینی", helper: "Forecast", tone: "lavender" },
 ] as const;
 
-const expenseGroups = ["حقوق و مزایا", "بازاریابی", "زیرساخت و API", "دفتر و عملیات", "حقوقی و پیمانکاران"];
+const expenseGroups = [
+  "حقوق و مزایا",
+  "بازاریابی",
+  "زیرساخت و API",
+  "دفتر و عملیات",
+  "حقوقی و پیمانکاران",
+];
 
 export default async function FinancePage() {
   const admin = await requireAdminAccess();
@@ -44,7 +50,9 @@ export default async function FinancePage() {
           </section>
 
           <section className={styles.stateBanner} role="status" aria-live="polite">
-            <span className={styles.stateIcon} aria-hidden="true">i</span>
+            <span className={styles.stateIcon} aria-hidden="true">
+              i
+            </span>
             <div>
               <strong>داده مالی هنوز برای این گزارش در دسترس نیست.</strong>
               <p>
@@ -59,10 +67,16 @@ export default async function FinancePage() {
               <article key={card.label} className={`${styles.metricCard} ${styles[card.tone]}`}>
                 <div className={styles.metricHeader}>
                   <span>{card.helper}</span>
-                  <span className={styles.badge}>{card.label === "پیش‌بینی" ? "FORECAST" : "ACTUAL"}</span>
+                  <span className={styles.badge}>
+                    {card.label === "پیش‌بینی" ? "FORECAST" : "ACTUAL"}
+                  </span>
                 </div>
                 <strong aria-label={`${card.label} ناموجود`}>—</strong>
-                <p>{card.label === "پیش‌بینی" ? "منبع forecast تأیید نشده" : "منبع actual تأیید نشده"}</p>
+                <p>
+                  {card.label === "پیش‌بینی"
+                    ? "منبع forecast تأیید نشده"
+                    : "منبع actual تأیید نشده"}
+                </p>
               </article>
             ))}
           </section>
@@ -76,7 +90,11 @@ export default async function FinancePage() {
                 </div>
                 <span className={styles.sourcePill}>Source: unavailable</span>
               </header>
-              <div className={styles.chartPlaceholder} role="img" aria-label="نمودار سود و زیان ناموجود است">
+              <div
+                className={styles.chartPlaceholder}
+                role="img"
+                aria-label="نمودار سود و زیان ناموجود است"
+              >
                 <span>نمودار پس از اتصال read model واقعی نمایش داده می‌شود.</span>
               </div>
             </article>
@@ -119,27 +137,25 @@ export default async function FinancePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    "درآمد",
-                    "هزینه عملیاتی",
-                    "CAPEX",
-                    "سود / زیان عملیاتی",
-                    "سود / زیان خالص",
-                  ].map((row) => (
-                    <tr key={row}>
-                      <th scope="row">{row}</th>
-                      <td>—</td>
-                      <td>—</td>
-                      <td>—</td>
-                      <td><span className={styles.unavailable}>ناموجود</span></td>
-                    </tr>
-                  ))}
+                  {["درآمد", "هزینه عملیاتی", "CAPEX", "سود / زیان عملیاتی", "سود / زیان خالص"].map(
+                    (row) => (
+                      <tr key={row}>
+                        <th scope="row">{row}</th>
+                        <td>—</td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td>
+                          <span className={styles.unavailable}>ناموجود</span>
+                        </td>
+                      </tr>
+                    ),
+                  )}
                 </tbody>
               </table>
             </div>
             <p className={styles.footnote}>
-              واحد، currency، period boundary و calculation definition باید از قرارداد versioned سرور بیاید؛
-              UI آن‌ها را حدس نمی‌زند.
+              واحد، currency، period boundary و calculation definition باید از قرارداد versioned
+              سرور بیاید؛ UI آن‌ها را حدس نمی‌زند.
             </p>
           </section>
         </div>
