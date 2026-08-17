@@ -87,17 +87,25 @@ describe("ADM-FIN-002 budget vs actual response contract", () => {
   });
 
   it("rejects a fabricated category variance when budget is unavailable", () => {
-    const invalid = structuredClone(readyResponse);
-    invalid.comparison.categories.push({
-      kind: "Expense",
-      code: "incident",
-      label: "Incident",
-      budgetMinor: null,
-      actualMinor: "50",
-      varianceMinor: "50",
-      varianceBasisPoints: null,
-      favorability: "unfavorable",
-    });
+    const invalid = {
+      ...readyResponse,
+      comparison: {
+        ...readyResponse.comparison,
+        categories: [
+          ...readyResponse.comparison.categories,
+          {
+            kind: "Expense",
+            code: "incident",
+            label: "Incident",
+            budgetMinor: null,
+            actualMinor: "50",
+            varianceMinor: "50",
+            varianceBasisPoints: null,
+            favorability: "unfavorable",
+          },
+        ],
+      },
+    };
     expect(parseFinanceBudgetResponse(invalid)).toBeNull();
   });
 
