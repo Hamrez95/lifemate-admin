@@ -45,6 +45,7 @@ test("finance P&L renders canonical actuals accessibly without viewport overflow
   await expect(page.getByRole("row", { name: /سود ناخالص/ })).toContainText(
     "تعریف canonical برای COGS",
   );
+  await expect(page.getByRole("link", { name: "بودجه در برابر عملکرد" })).toBeVisible();
   await expectNoViewportOverflow(page);
 
   const filters = page.getByRole("form", { name: "فیلتر بازه گزارش" });
@@ -60,9 +61,13 @@ test("finance P&L renders canonical actuals accessibly without viewport overflow
   await expectNoSeriousAccessibilityViolations(page);
 });
 
-test("finance budget comparison is explicit, accessible, and responsive", async ({ page }) => {
+test("finance budget comparison is discoverable, explicit, accessible, and responsive", async ({
+  page,
+}) => {
   await signInWithMfa(page);
-  await page.goto("/finance/budget");
+  await page.goto("/finance");
+  await page.getByRole("link", { name: "بودجه در برابر عملکرد" }).click();
+  await expect(page).toHaveURL(/\/finance\/budget$/);
 
   await expect(page.getByRole("heading", { name: "بودجه در برابر عملکرد واقعی" })).toBeVisible();
   await expect(page.getByText("بودجه عملیاتی مصوب")).toBeVisible();
