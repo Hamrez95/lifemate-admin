@@ -1,0 +1,407 @@
+.page {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted-foreground, #665f58);
+  font-size: 0.88rem;
+}
+
+.breadcrumbs a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.hero,
+.panel,
+.metricCard,
+.warning,
+.stateBanner {
+  border: 1px solid var(--border, #ddd6ce);
+  border-radius: 18px;
+  background: var(--card, #fff);
+}
+
+.hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px;
+}
+
+.hero h2,
+.panelHeader h3 {
+  margin: 4px 0 8px;
+}
+
+.hero p,
+.identityNote,
+.permissionGroup p,
+.stateBanner p,
+.warning p {
+  color: var(--muted-foreground, #665f58);
+  line-height: 1.8;
+}
+
+.sourceCard {
+  display: grid;
+  gap: 5px;
+  min-width: 230px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--muted, #f5f1ec);
+}
+
+.sourceCard span,
+.sourceCard small,
+.metricCard span,
+.metricCard small {
+  color: var(--muted-foreground, #665f58);
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.metricCard {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+}
+
+.metricCard strong {
+  font-size: 1.35rem;
+}
+
+.code,
+.accountCell code,
+.provenanceList code,
+.mobileMembers code {
+  direction: ltr;
+  unicode-bidi: isolate;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.warning,
+.stateBanner {
+  display: flex;
+  gap: 14px;
+  padding: 18px 20px;
+}
+
+.warning {
+  border-color: #c88b33;
+  background: #fff8e9;
+}
+
+.warning > span {
+  font-size: 1.4rem;
+}
+
+.warning p,
+.stateBanner p {
+  margin: 5px 0 0;
+}
+
+.panel {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--border, #ddd6ce);
+}
+
+.readOnlyPill,
+.statePill,
+.permissionMeta span,
+.permissionMeta em {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.readOnlyPill {
+  padding: 6px 10px;
+  background: #f2eee9;
+  color: #514a43;
+}
+
+.permissionGroups {
+  display: grid;
+  gap: 0;
+}
+
+.permissionGroup {
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--border, #ddd6ce);
+}
+
+.permissionGroup:last-child {
+  border-bottom: 0;
+}
+
+.permissionGroup > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.permissionGroup > header span {
+  color: var(--muted-foreground, #665f58);
+  font-size: 0.82rem;
+}
+
+.permissionGroup ul,
+.provenanceList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.permissionGroup li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 0;
+  border-top: 1px dashed #e7e0d8;
+}
+
+.permissionGroup li[data-blocked="true"] {
+  background: linear-gradient(90deg, transparent, #fff9eb 35%, transparent);
+}
+
+.permissionGroup p {
+  margin: 6px 0 0;
+}
+
+.permissionMeta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 190px;
+}
+
+.permissionMeta span,
+.permissionMeta em {
+  padding: 5px 8px;
+  background: #f2eee9;
+  color: #514a43;
+  font-style: normal;
+}
+
+.permissionMeta span[data-risk="SENSITIVE"],
+.permissionMeta span[data-risk="HIGH_RISK"] {
+  background: #fff0e5;
+  color: #7a3b12;
+}
+
+.permissionMeta span[data-risk="ELEVATED"],
+.permissionMeta em {
+  background: #fff3cf;
+  color: #674300;
+}
+
+.identityNote {
+  margin: 0;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border, #ddd6ce);
+  background: #faf8f5;
+}
+
+.tableRegion {
+  max-width: 100%;
+  overflow-x: auto;
+  outline-offset: -3px;
+}
+
+.tableRegion:focus-visible {
+  outline: 3px solid currentColor;
+}
+
+.memberTable {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  text-align: start;
+}
+
+.memberTable th,
+.memberTable td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee8e1;
+  vertical-align: top;
+}
+
+.memberTable thead th {
+  position: sticky;
+  top: 0;
+  background: #faf8f5;
+  z-index: 1;
+}
+
+.accountCell {
+  max-width: 260px;
+}
+
+.accountCell small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted-foreground, #665f58);
+  overflow-wrap: anywhere;
+}
+
+.statePill {
+  padding: 5px 9px;
+  background: #f2eee9;
+  color: #514a43;
+}
+
+.statePill[data-state="active"] {
+  background: #e8f6ed;
+  color: #1f5c35;
+}
+
+.statePill[data-state="scheduled"] {
+  background: #eaf2ff;
+  color: #264e82;
+}
+
+.statePill[data-state="revoked"],
+.statePill[data-state="expired"],
+.statePill[data-state="member_inactive"],
+.statePill[data-state="role_disabled"] {
+  background: #f5e9e7;
+  color: #71352d;
+}
+
+.provenanceList {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.provenanceList li {
+  display: grid;
+  gap: 2px;
+}
+
+.provenanceList small {
+  color: var(--muted-foreground, #665f58);
+}
+
+.emptyState {
+  padding: 26px 22px;
+  color: var(--muted-foreground, #665f58);
+}
+
+.mobileMembers {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  .metricGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .page {
+    gap: 14px;
+  }
+
+  .hero,
+  .panelHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .hero {
+    padding: 18px;
+  }
+
+  .sourceCard {
+    min-width: 0;
+  }
+
+  .metricGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .permissionGroup {
+    padding: 18px;
+  }
+
+  .permissionGroup li {
+    flex-direction: column;
+  }
+
+  .permissionMeta {
+    justify-content: flex-start;
+    min-width: 0;
+  }
+
+  .tableRegion {
+    display: none;
+  }
+
+  .mobileMembers {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .mobileMembers article {
+    padding: 14px;
+    border: 1px solid var(--border, #ddd6ce);
+    border-radius: 14px;
+  }
+
+  .mobileMembers header {
+    display: grid;
+    gap: 10px;
+  }
+
+  .mobileMembers dl {
+    display: grid;
+    gap: 8px;
+    margin: 14px 0 0;
+  }
+
+  .mobileMembers dl > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .mobileMembers dt {
+    color: var(--muted-foreground, #665f58);
+  }
+
+  .mobileMembers dd {
+    margin: 0;
+    text-align: end;
+  }
+}

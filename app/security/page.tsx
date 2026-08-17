@@ -315,7 +315,9 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
                         </th>
                         {report.roles.map((role) => (
                           <th key={role.code} scope="col" className={styles.roleHeader}>
-                            <strong>{role.displayName}</strong>
+                            <strong>
+                              <Link href={`/security/roles/${role.code}`}>{role.displayName}</Link>
+                            </strong>
                             <span style={{ color: "#665f58" }}>{role.code}</span>
                             {role.status !== "Active" ? <em>Disabled</em> : null}
                           </th>
@@ -387,7 +389,9 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
                     <article key={role.code} className={styles.roleCard}>
                       <header>
                         <div>
-                          <strong>{role.displayName}</strong>
+                          <strong>
+                            <Link href={`/security/roles/${role.code}`}>{role.displayName}</Link>
+                          </strong>
                           <span>{role.code}</span>
                         </div>
                         <span data-status={role.status}>{role.status}</span>
