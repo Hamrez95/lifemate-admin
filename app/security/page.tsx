@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
@@ -105,9 +106,7 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
   if (result.kind === "forbidden") redirect("/forbidden");
 
   const report = result.kind === "ok" ? result.data : null;
-  const permissions = report
-    ? report.permissionGroups.flatMap((group) => group.permissions)
-    : [];
+  const permissions = report ? report.permissionGroups.flatMap((group) => group.permissions) : [];
   const assignmentByKey = new Map(
     report?.assignments.map((assignment) => [
       assignmentKey(assignment.roleCode, assignment.permissionCode),
@@ -181,17 +180,26 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
             </article>
             <article className={styles.metricCard}>
               <span>حساس / پرریسک</span>
-              <strong>{sensitiveCount === null ? "—" : sensitiveCount.toLocaleString("fa-IR")}</strong>
+              <strong>
+                {sensitiveCount === null ? "—" : sensitiveCount.toLocaleString("fa-IR")}
+              </strong>
               <small>برای review امنیتی برجسته می‌شوند</small>
             </article>
             <article className={styles.metricCard}>
               <span>خارج از نقش عادی</span>
-              <strong>{elevatedCount === null ? "—" : elevatedCount.toLocaleString("fa-IR")}</strong>
+              <strong>
+                {elevatedCount === null ? "—" : elevatedCount.toLocaleString("fa-IR")}
+              </strong>
               <small>roleAssignable=false</small>
             </article>
           </section>
 
-          <form className={styles.filters} method="get" action="/security" aria-label="فیلتر ماتریس RBAC">
+          <form
+            className={styles.filters}
+            method="get"
+            action="/security"
+            aria-label="فیلتر ماتریس RBAC"
+          >
             <div className={styles.searchField}>
               <label htmlFor="rbac-q">جست‌وجو</label>
               <input
@@ -226,7 +234,7 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
             </div>
             <div className={styles.filterActions}>
               <button type="submit">اعمال فیلتر</button>
-              <a href="/security">پاک‌کردن</a>
+              <Link href="/security">پاک‌کردن</Link>
             </div>
           </form>
 
@@ -256,7 +264,9 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
           {report ? (
             <section className={styles.boundaryBanner} aria-labelledby="elevated-boundary-title">
               <div>
-                <span className={styles.boundaryIcon} aria-hidden="true">◈</span>
+                <span className={styles.boundaryIcon} aria-hidden="true">
+                  ◈
+                </span>
               </div>
               <div>
                 <strong id="elevated-boundary-title">مرز Break-glass حفظ می‌شود</strong>
@@ -295,7 +305,9 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
                   <table className={styles.matrixTable}>
                     <thead>
                       <tr>
-                        <th scope="col" className={styles.permissionHeader}>Permission</th>
+                        <th scope="col" className={styles.permissionHeader}>
+                          Permission
+                        </th>
                         {report.roles.map((role) => (
                           <th key={role.code} scope="col" className={styles.roleHeader}>
                             <strong>{role.displayName}</strong>
@@ -317,7 +329,9 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
                               <span>{permission.description}</span>
                               <div className={styles.permissionMeta}>
                                 <span>{domainLabel(permission.domain)}</span>
-                                <span data-risk={permission.riskLevel}>{riskLabel(permission.riskLevel)}</span>
+                                <span data-risk={permission.riskLevel}>
+                                  {riskLabel(permission.riskLevel)}
+                                </span>
                                 {!permission.roleAssignable ? <em>خارج از نقش عادی</em> : null}
                               </div>
                             </div>
@@ -360,8 +374,9 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
 
               <section className={styles.mobileRoles} aria-label="خلاصه موبایل نقش‌ها">
                 {report.roles.map((role) => {
-                  const effective = filteredPermissions.filter((permission) =>
-                    assignmentByKey.get(assignmentKey(role.code, permission.code))?.effective,
+                  const effective = filteredPermissions.filter(
+                    (permission) =>
+                      assignmentByKey.get(assignmentKey(role.code, permission.code))?.effective,
                   );
                   return (
                     <article key={role.code} className={styles.roleCard}>
@@ -394,7 +409,7 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
 
           {hasFilter ? (
             <p className={styles.filterSummary} role="status">
-              فیلتر فعال است؛ {filteredPermissions.length.toLocaleString("fa-IR")} permission از {" "}
+              فیلتر فعال است؛ {filteredPermissions.length.toLocaleString("fa-IR")} permission از{" "}
               {permissions.length.toLocaleString("fa-IR")} مورد نمایش داده می‌شود.
             </p>
           ) : null}
