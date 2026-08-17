@@ -49,7 +49,7 @@ describe("ADM-MKT-006 Content Calendar security contract", () => {
   });
 
   it("provides an accessible list alternative instead of drag-and-drop-only scheduling", () => {
-    expect(page).toContain('safeView(one(raw.view))');
+    expect(page).toContain("safeView(one(raw.view))");
     expect(page).toContain("ListViewSection");
     expect(page).toContain("Drag & drop عمداً در Phase 1 فعال نیست");
     expect(page).toContain('type="datetime-local"');

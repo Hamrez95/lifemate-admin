@@ -17,8 +17,7 @@ export const marketingCalendarPublishStatuses = [
   "OutcomeUnknown",
   "Cancelled",
 ] as const;
-export type MarketingCalendarPublishStatus =
-  (typeof marketingCalendarPublishStatuses)[number];
+export type MarketingCalendarPublishStatus = (typeof marketingCalendarPublishStatuses)[number];
 
 export type MarketingCalendarItem = {
   executionId: string;
@@ -191,7 +190,13 @@ function parseReport(value: unknown): MarketingContentCalendarReport | null {
   const body = record(value);
   const query = record(body?.query);
   const freshness = record(body?.freshness);
-  if (!body || !query || !freshness || !Array.isArray(body.items) || !Array.isArray(body.approvalQueue)) {
+  if (
+    !body ||
+    !query ||
+    !freshness ||
+    !Array.isArray(body.items) ||
+    !Array.isArray(body.approvalQueue)
+  ) {
     return null;
   }
   const items = body.items.map(parseCalendarItem);
@@ -249,10 +254,7 @@ function parseMutation(value: unknown): MarketingCalendarMutation | null {
   ) {
     return null;
   }
-  if (
-    body.providerConnectivity !== undefined &&
-    body.providerConnectivity !== "NotVerified"
-  ) {
+  if (body.providerConnectivity !== undefined && body.providerConnectivity !== "NotVerified") {
     return null;
   }
   return body as MarketingCalendarMutation;

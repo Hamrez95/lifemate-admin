@@ -28,7 +28,8 @@ function destination(kind: "success" | "error", message: string): never {
 
 function resultMessage<T>(result: MarketingCampaignResult<T>): string {
   if (result.kind === "forbidden") return result.message ?? "مجوز این عملیات داده نشده است.";
-  if (result.kind === "conflict") return result.message ?? "وضعیت فعلی اجازه این عملیات را نمی‌دهد.";
+  if (result.kind === "conflict")
+    return result.message ?? "وضعیت فعلی اجازه این عملیات را نمی‌دهد.";
   if (result.kind === "invalid") return result.message ?? "پارامترهای عملیات معتبر نیستند.";
   if (result.kind === "unauthenticated") return "نشست مدیریتی معتبر نیست؛ دوباره وارد شوید.";
   if (result.kind === "not_found") return result.message ?? "رکورد موردنظر پیدا نشد.";

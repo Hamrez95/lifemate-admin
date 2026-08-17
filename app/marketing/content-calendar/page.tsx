@@ -66,10 +66,7 @@ function filterParams(raw: Record<string, string | string[] | undefined>): URLSe
   return params;
 }
 
-function viewHref(
-  raw: Record<string, string | string[] | undefined>,
-  view: CalendarView,
-): string {
+function viewHref(raw: Record<string, string | string[] | undefined>, view: CalendarView): string {
   const params = filterParams(raw);
   params.set("view", view);
   return `/marketing/content-calendar?${params.toString()}`;
@@ -158,7 +155,9 @@ function QueueCard({
     <article className={styles.queueCard} data-approval={item.approvalState}>
       <div className={styles.cardTop}>
         <div>
-          <span className={styles.eyebrow}>Revision {item.contentRevision.toLocaleString("fa-IR")}</span>
+          <span className={styles.eyebrow}>
+            Revision {item.contentRevision.toLocaleString("fa-IR")}
+          </span>
           <h4>{item.campaignName}</h4>
         </div>
         <div className={styles.badges}>
@@ -185,7 +184,8 @@ function QueueCard({
 
       {item.approvalState !== "Approved" ? (
         <p className={styles.guardrailText}>
-          تا وقتی همین revision توسط انسان Approved نشود، هیچ زمان‌بندی یا publish job ساخته نمی‌شود.
+          تا وقتی همین revision توسط انسان Approved نشود، هیچ زمان‌بندی یا publish job ساخته
+          نمی‌شود.
         </p>
       ) : !ready ? (
         <p className={styles.guardrailText}>
@@ -328,7 +328,9 @@ function ExecutionCard({
         {timeFormatter(timezone).format(instant)} · {item.scheduleTimezone ?? timezone}
       </div>
       <div className={styles.metaRow}>
-        <span className={styles.badge}>Revision {item.contentRevision.toLocaleString("fa-IR")}</span>
+        <span className={styles.badge}>
+          Revision {item.contentRevision.toLocaleString("fa-IR")}
+        </span>
         <span className={styles.badge}>Approval: {item.approvalState ?? "—"}</span>
         <span className={styles.badge}>Connectivity: NotVerified</span>
       </div>
@@ -413,7 +415,10 @@ function ListViewSection({ report }: { report: MarketingContentCalendarReport })
           {report.items.map((item) => (
             <tr key={item.executionId}>
               <td>
-                <Link className={styles.campaignLink} href={`/marketing/campaigns/${item.campaignId}`}>
+                <Link
+                  className={styles.campaignLink}
+                  href={`/marketing/campaigns/${item.campaignId}`}
+                >
                   {item.campaignName}
                 </Link>
               </td>
@@ -450,7 +455,8 @@ export default async function ContentCalendarPage({ searchParams }: ContentCalen
   const report = result?.kind === "ok" ? result.data : null;
   const scheduled = report?.items.filter((item) => item.publishStatus === "Scheduled").length ?? 0;
   const failed = report?.items.filter((item) => item.publishStatus === "Failed").length ?? 0;
-  const unknown = report?.items.filter((item) => item.publishStatus === "OutcomeUnknown").length ?? 0;
+  const unknown =
+    report?.items.filter((item) => item.publishStatus === "OutcomeUnknown").length ?? 0;
   const pendingApproval =
     report?.approvalQueue.filter((item) => item.approvalState === "Pending").length ?? 0;
 
@@ -468,8 +474,8 @@ export default async function ContentCalendarPage({ searchParams }: ContentCalen
               <h2>تقویم محتوا، بدون اینکه زمان‌بندی approval را دور بزند.</h2>
               <p>
                 Schedule فقط برای همان revision تأییدشده ساخته می‌شود. در زمان dispatch، lifecycle،
-                approval و readiness کانال دوباره بررسی می‌شوند و provider failure هیچ‌وقت state کمپین
-                را خراب نمی‌کند.
+                approval و readiness کانال دوباره بررسی می‌شوند و provider failure هیچ‌وقت state
+                کمپین را خراب نمی‌کند.
               </p>
             </div>
             <aside className={styles.safetyCard} aria-label="قواعد ایمنی انتشار زمان‌بندی‌شده">
@@ -592,8 +598,8 @@ export default async function ContentCalendarPage({ searchParams }: ContentCalen
                     <span className={styles.eyebrow}>Approval queue</span>
                     <h3 id="approval-queue-title">محتواهای آماده یا منتظر تصمیم انسانی</h3>
                     <p>
-                      AI Draft یا Campaign state هیچ‌کدام جای approval revision را نمی‌گیرند. Schedule
-                      فقط از کارت Approved و channel-ready فعال می‌شود.
+                      AI Draft یا Campaign state هیچ‌کدام جای approval revision را نمی‌گیرند.
+                      Schedule فقط از کارت Approved و channel-ready فعال می‌شود.
                     </p>
                   </div>
                   <span className={styles.badge}>
@@ -601,7 +607,9 @@ export default async function ContentCalendarPage({ searchParams }: ContentCalen
                   </span>
                 </div>
                 {report.approvalQueue.length === 0 ? (
-                  <div className={styles.emptyBox}>هیچ campaign content واقعی در approval queue نیست.</div>
+                  <div className={styles.emptyBox}>
+                    هیچ campaign content واقعی در approval queue نیست.
+                  </div>
                 ) : (
                   <div className={styles.queueGrid}>
                     {report.approvalQueue.map((item) => (
@@ -617,7 +625,10 @@ export default async function ContentCalendarPage({ searchParams }: ContentCalen
                 )}
               </section>
 
-              <section className={styles.timelineSection} aria-labelledby="publishing-calendar-title">
+              <section
+                className={styles.timelineSection}
+                aria-labelledby="publishing-calendar-title"
+              >
                 <div className={styles.sectionHead}>
                   <div>
                     <span className={styles.eyebrow}>Publish executions</span>
@@ -632,7 +643,11 @@ export default async function ContentCalendarPage({ searchParams }: ContentCalen
                   <span className={styles.badge}>Timezone: {report.query.timezone}</span>
                 </div>
                 {view === "calendar" ? (
-                  <CalendarViewSection report={report} canWrite={canWrite} canPublish={canPublish} />
+                  <CalendarViewSection
+                    report={report}
+                    canWrite={canWrite}
+                    canPublish={canPublish}
+                  />
                 ) : (
                   <ListViewSection report={report} />
                 )}

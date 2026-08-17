@@ -7,13 +7,7 @@ import type { MarketingCampaign, MarketingCampaignResult } from "./marketing-cam
 
 export type CampaignApprovalState = "Pending" | "Approved" | "Revoked";
 export type CampaignPublishStatus =
-  | "Scheduled"
-  | "Queued"
-  | "Processing"
-  | "Published"
-  | "Failed"
-  | "OutcomeUnknown"
-  | "Cancelled";
+  "Scheduled" | "Queued" | "Processing" | "Published" | "Failed" | "OutcomeUnknown" | "Cancelled";
 
 export type MarketingCampaignContent = {
   brief: string | null;
