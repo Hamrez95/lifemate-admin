@@ -48,7 +48,9 @@ test("security RBAC matrix is read-only, explicit about elevated access, accessi
       name: /ماتریس نقش و مجوز؛ برای مشاهده ستون‌های بیشتر اسکرول افقی کنید/,
     });
     await expect(matrix).toBeVisible();
-    await expect(page.getByRole("row", { name: /^health\.read\.elevated\b/ })).toContainText("ویژه");
+    await expect(page.getByRole("row", { name: /^health\.read\.elevated\b/ })).toContainText(
+      "ویژه",
+    );
     await expect(page.getByRole("row", { name: /^security\.audit\.read\b/ })).toContainText("دارد");
     await matrix.focus();
     await expect(matrix).toBeFocused();
