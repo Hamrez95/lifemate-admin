@@ -127,10 +127,26 @@ export function parseFinanceProfitLossResponse(value: unknown): FinanceProfitLos
   ) {
     return null;
   }
+  const availableCurrencies = body.availableCurrencies as string[];
 
   const actual = body.actual === null ? null : parseActual(body.actual);
   if (body.actual !== null && !actual) return null;
-  if (body.state === "ready" && !actual) return null;
+  if (body.state === "ready") {
+    if (!actual || body.currency === null || body.minorUnitExponent === null) return null;
+    if (!availableCurrencies.includes(body.currency)) return null;
+    if (query.currency !== null && query.currency !== body.currency) return null;
+  } else if (actual) {
+    return null;
+  }
+  if (
+    body.state === "currency_required" &&
+    (query.currency !== null ||
+      body.currency !== null ||
+      body.minorUnitExponent !== null ||
+      availableCurrencies.length < 2)
+  ) {
+    return null;
+  }
 
   if (!body.forecast || typeof body.forecast !== "object") return null;
   const forecast = body.forecast as Record<string, unknown>;
@@ -160,7 +176,7 @@ export function parseFinanceProfitLossResponse(value: unknown): FinanceProfitLos
     query: query as FinanceProfitLossResponse["query"],
     currency: body.currency,
     minorUnitExponent: body.minorUnitExponent,
-    availableCurrencies: body.availableCurrencies as string[],
+    availableCurrencies,
     actual,
     forecast: forecast as FinanceProfitLossResponse["forecast"],
     source: source as FinanceProfitLossResponse["source"],
