@@ -41,11 +41,13 @@ const statusLabels: Record<MarketingCampaignStatus, string> = {
 };
 
 const publishLabels: Record<CampaignPublishStatus, string> = {
+  Scheduled: "زمان‌بندی‌شده",
   Queued: "در صف",
   Processing: "در حال پردازش",
   Published: "منتشر شده",
   Failed: "ناموفق",
   OutcomeUnknown: "نتیجه نامشخص",
+  Cancelled: "لغوشده",
 };
 
 function one(value: string | string[] | undefined): string {

@@ -364,7 +364,9 @@ function CalendarViewSection({
   return (
     <div className={styles.days}>
       {groups.map((group) => {
-        const first = new Date(executionInstant(group.items[0]));
+        const firstItem = group.items[0];
+        if (!firstItem) return null;
+        const first = new Date(executionInstant(firstItem));
         return (
           <section className={styles.day} key={group.key}>
             <div className={styles.dayHead}>
