@@ -123,8 +123,11 @@ export default async function FinanceBudgetPage({ searchParams }: FinanceBudgetP
   const comparison = report?.state === "ready" ? report.comparison : null;
   const canFormat = Boolean(comparison && report?.currency && report.minorUnitExponent !== null);
   const money = (value: string | null | undefined) =>
-    canFormat && value !== null && value !== undefined && report?.currency &&
-      report.minorUnitExponent !== null
+    canFormat &&
+    value !== null &&
+    value !== undefined &&
+    report?.currency &&
+    report.minorUnitExponent !== null
       ? formatMinorAmount(value, report.currency, report.minorUnitExponent)
       : "—";
   const fromMonth = report?.query.from.slice(0, 7) ?? single(requested.fromMonth) ?? "";
@@ -132,9 +135,21 @@ export default async function FinanceBudgetPage({ searchParams }: FinanceBudgetP
   const filterCurrency = report?.query.currency ?? single(requested.currency);
 
   const cards: Array<{ label: string; helper: string; value: FinanceVariance | null }> = [
-    { label: "درآمد", helper: "Revenue · Budget vs Actual", value: comparison?.totals.revenue ?? null },
-    { label: "هزینه", helper: "Expense · Budget vs Actual", value: comparison?.totals.expense ?? null },
-    { label: "خالص", helper: "Net result · Budget vs Actual", value: comparison?.totals.net ?? null },
+    {
+      label: "درآمد",
+      helper: "Revenue · Budget vs Actual",
+      value: comparison?.totals.revenue ?? null,
+    },
+    {
+      label: "هزینه",
+      helper: "Expense · Budget vs Actual",
+      value: comparison?.totals.expense ?? null,
+    },
+    {
+      label: "خالص",
+      helper: "Net result · Budget vs Actual",
+      value: comparison?.totals.net ?? null,
+    },
   ];
 
   return (
@@ -190,7 +205,7 @@ export default async function FinanceBudgetPage({ searchParams }: FinanceBudgetP
             {filterCurrency ? <input type="hidden" name="currency" value={filterCurrency} /> : null}
             <div className={styles.filterActions}>
               <button type="submit">اعمال بازه</button>
-              <Link href="/finance/budget">ماه جاری</Link>
+              <Link href="/finance/budget">بازه پیش‌فرض</Link>
             </div>
           </form>
 
@@ -223,7 +238,7 @@ export default async function FinanceBudgetPage({ searchParams }: FinanceBudgetP
                 <p>
                   {report?.reason ??
                     (result.kind === "invalid"
-                      ? "بازه باید از ماه‌های کامل تقویمی تشکیل شود؛ هیچ budget prorating حدسی انجام نشد."
+                      ? "بازه باید از ماه‌های کامل‌شده تقویمی تشکیل شود؛ هیچ budget prorating حدسی انجام نشد."
                       : "Admin API یا منبع بودجه در دسترس نیست؛ مقدار گمشده صفر فرض نشده است.")}
                 </p>
               </div>
@@ -254,9 +269,7 @@ export default async function FinanceBudgetPage({ searchParams }: FinanceBudgetP
                 <p className="eyebrow">Source &amp; approval</p>
                 <h3 id="budget-source-title">منابع مقایسه</h3>
               </div>
-              <span className={styles.sourcePill}>
-                {report?.freshness.status ?? "unavailable"}
-              </span>
+              <span className={styles.sourcePill}>{report?.freshness.status ?? "unavailable"}</span>
             </header>
             <div className={styles.seriesList} role="list" aria-label="منابع بودجه و Actual">
               <div className={styles.seriesRow} role="listitem">
