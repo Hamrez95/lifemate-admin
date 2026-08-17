@@ -1,0 +1,582 @@
+.page {
+  min-width: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.hero,
+.metricCard,
+.filters,
+.stateBanner,
+.boundaryBanner,
+.matrixPanel,
+.roleCard {
+  border: 1px solid var(--line, #e8e2d8);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 12px 38px rgba(65, 54, 44, 0.06);
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding: 1.25rem 1.4rem;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(255, 190, 120, 0.13), transparent 32%),
+    radial-gradient(circle at 88% 22%, rgba(149, 169, 235, 0.14), transparent 34%),
+    rgba(255, 255, 255, 0.96);
+}
+
+.hero h2,
+.panelHeader h3 {
+  margin: 0.2rem 0 0.35rem;
+}
+
+.hero p,
+.stateBanner p,
+.boundaryBanner p,
+.footnote,
+.filterSummary,
+.roleCard p {
+  margin: 0;
+  color: #6e6963;
+  line-height: 1.8;
+}
+
+.sourceCard {
+  min-width: 240px;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #ede4d7;
+  border-radius: 16px;
+  background: #fbf8f3;
+}
+
+.sourceCard span,
+.sourceCard small {
+  color: #787168;
+  font-size: 0.78rem;
+}
+
+.sourceCard strong {
+  color: #34302c;
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.metricCard {
+  min-width: 0;
+  min-height: 132px;
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.metricCard > span,
+.metricCard > small {
+  color: #77716a;
+  font-size: 0.78rem;
+}
+
+.metricCard > strong {
+  display: block;
+  margin: 0.8rem 0 0.35rem;
+  font-size: clamp(1.8rem, 4vw, 2.45rem);
+  color: #302d29;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.4fr) repeat(2, minmax(160px, 0.7fr)) auto;
+  gap: 0.8rem;
+  align-items: end;
+  padding: 0.95rem 1rem;
+}
+
+.searchField,
+.filterField {
+  min-width: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.searchField label,
+.filterField label {
+  color: #625d57;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.searchField input,
+.filterField select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid #ddd5ca;
+  border-radius: 12px;
+  background: #fff;
+  color: #332f2a;
+  padding: 0.45rem 0.7rem;
+  font: inherit;
+}
+
+.filterActions {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filterActions button,
+.filterActions a {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  padding: 0.45rem 0.85rem;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.filterActions button {
+  border: 1px solid #71451d;
+  background: #71451d;
+  color: #fff;
+  cursor: pointer;
+}
+
+.filterActions a {
+  border: 1px solid #ded6cb;
+  background: #faf7f1;
+  color: #514b44;
+}
+
+.searchField input:focus-visible,
+.filterField select:focus-visible,
+.filterActions button:focus-visible,
+.filterActions a:focus-visible,
+.tableRegion:focus-visible {
+  outline: 3px solid rgba(90, 104, 214, 0.3);
+  outline-offset: 2px;
+}
+
+.stateBanner,
+.boundaryBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1rem 1.15rem;
+}
+
+.stateBanner {
+  background: #fffaf0;
+  border-color: #f1dfb3;
+}
+
+.stateBanner > span,
+.boundaryIcon {
+  inline-size: 32px;
+  block-size: 32px;
+  flex: 0 0 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-weight: 900;
+}
+
+.stateBanner > span {
+  background: #ffe9b8;
+  color: #805f15;
+}
+
+.boundaryBanner {
+  background: linear-gradient(145deg, #fff9f4, #faf6ff);
+  border-color: #ead8cc;
+}
+
+.boundaryIcon {
+  background: #f2e2d4;
+  color: #704424;
+}
+
+.boundaryBanner small {
+  display: block;
+  margin-top: 0.35rem;
+  color: #7a736c;
+  line-height: 1.65;
+}
+
+.matrixPanel {
+  min-width: 0;
+  padding: 1rem;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.readOnlyPill {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid #e6d8c9;
+  border-radius: 999px;
+  background: #fbf6f0;
+  color: #745334;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.tableRegion {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  max-height: min(68vh, 760px);
+  overflow: auto;
+  margin-top: 0.9rem;
+  border: 1px solid #eee6dc;
+  border-radius: 16px;
+  background: #fff;
+  overscroll-behavior: contain;
+}
+
+.matrixTable {
+  width: max-content;
+  min-width: 100%;
+  border-spacing: 0;
+  border-collapse: separate;
+  font-size: 0.84rem;
+}
+
+.matrixTable th,
+.matrixTable td {
+  border-inline-end: 1px solid #eee9e2;
+  border-block-end: 1px solid #eee9e2;
+  padding: 0.7rem 0.65rem;
+  vertical-align: middle;
+  background: #fff;
+}
+
+.matrixTable thead th {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 5;
+  background: #f9f6f1;
+}
+
+.permissionHeader,
+.permissionCell {
+  width: 320px;
+  min-width: 320px;
+  max-width: 320px;
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 4;
+  text-align: start;
+  box-shadow: -8px 0 16px rgba(70, 61, 51, 0.04);
+}
+
+.permissionHeader {
+  z-index: 8 !important;
+  background: #f6f1ea !important;
+}
+
+.permissionCell {
+  background: #fffdfa !important;
+}
+
+.roleHeader {
+  width: 122px;
+  min-width: 122px;
+  text-align: center;
+}
+
+.roleHeader strong,
+.roleHeader span,
+.roleHeader em {
+  display: block;
+}
+
+.roleHeader span {
+  margin-top: 0.18rem;
+  color: #7e776f;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.roleHeader em {
+  margin-top: 0.25rem;
+  color: #8a4e45;
+  font-size: 0.68rem;
+  font-style: normal;
+}
+
+.permissionCell > div {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.permissionCell strong {
+  direction: ltr;
+  unicode-bidi: isolate;
+  justify-self: start;
+  color: #332f2a;
+  font-size: 0.8rem;
+}
+
+.permissionCell > div > span {
+  color: #6f6962;
+  line-height: 1.55;
+  font-size: 0.76rem;
+}
+
+.permissionMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.permissionMeta span,
+.permissionMeta em {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0.1rem 0.48rem;
+  border: 1px solid #e8e0d6;
+  border-radius: 999px;
+  background: #faf8f4;
+  color: #665f58;
+  font-size: 0.67rem;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.permissionMeta span[data-risk="SENSITIVE"] {
+  background: #fff7e7;
+  border-color: #eed7a7;
+  color: #745713;
+}
+
+.permissionMeta span[data-risk="HIGH_RISK"] {
+  background: #fff0eb;
+  border-color: #efc8ba;
+  color: #824132;
+}
+
+.permissionMeta span[data-risk="ELEVATED"],
+.permissionMeta em {
+  background: #f8efff;
+  border-color: #dbc5ed;
+  color: #67417e;
+}
+
+.assignmentCell {
+  min-width: 122px;
+  text-align: center;
+}
+
+.assignmentMark {
+  min-width: 58px;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.48rem;
+  border-radius: 999px;
+  border: 1px solid #e8e2da;
+  color: #7b756e;
+  background: #faf9f7;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.assignmentMark[data-state="effective"] {
+  border-color: #b8dfce;
+  background: #eefaf5;
+  color: #27644d;
+}
+
+.assignmentMark[data-state="blocked"] {
+  border-color: #efc7b8;
+  background: #fff1ec;
+  color: #7b4034;
+}
+
+.assignmentMark[data-state="elevated"] {
+  border-color: #d8c2e8;
+  background: #f8f0ff;
+  color: #65427a;
+}
+
+.matrixTable tbody tr[data-elevated="true"] .permissionCell,
+.matrixTable tbody tr[data-elevated="true"] td {
+  background: #fdf9ff;
+}
+
+.footnote {
+  margin-top: 0.8rem;
+  font-size: 0.8rem;
+}
+
+.mobileRoles {
+  display: none;
+  gap: 0.75rem;
+}
+
+.roleCard {
+  min-width: 0;
+  padding: 0.95rem;
+}
+
+.roleCard header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+
+.roleCard header div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.roleCard header div > span {
+  color: #7a746d;
+  font-size: 0.75rem;
+}
+
+.roleCard header > span {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  padding: 0.12rem 0.5rem;
+  border: 1px solid #cce3d8;
+  border-radius: 999px;
+  background: #f2fbf7;
+  color: #32634f;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.roleCard header > span[data-status="Disabled"] {
+  border-color: #edcbc2;
+  background: #fff3ef;
+  color: #7b4438;
+}
+
+.roleCard p {
+  margin-top: 0.65rem;
+  font-size: 0.8rem;
+}
+
+.roleCard ul {
+  margin: 0.7rem 0 0;
+  padding-inline-start: 1.2rem;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.roleCard li {
+  direction: ltr;
+  text-align: start;
+  color: #534e48;
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+.roleCard small {
+  display: block;
+  margin-top: 0.55rem;
+  color: #77716a;
+}
+
+.filterSummary {
+  font-size: 0.8rem;
+}
+
+@media (max-width: 1180px) {
+  .metricGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filterActions {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 820px) {
+  .hero {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sourceCard {
+    min-width: 0;
+  }
+
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .permissionHeader,
+  .permissionCell {
+    width: 280px;
+    min-width: 280px;
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 700px) {
+  .hero,
+  .metricCard,
+  .filters,
+  .stateBanner,
+  .boundaryBanner,
+  .matrixPanel,
+  .roleCard {
+    border-radius: 16px;
+  }
+
+  .metricGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .matrixPanel {
+    display: none;
+  }
+
+  .mobileRoles {
+    display: grid;
+  }
+
+  .filterActions {
+    flex-wrap: wrap;
+  }
+
+  .filterActions button,
+  .filterActions a {
+    flex: 1 1 130px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page * {
+    scroll-behavior: auto !important;
+  }
+}
