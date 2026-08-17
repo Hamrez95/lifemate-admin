@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "security:check": "node scripts/security-check.mjs",
+    "delivery:check": "node scripts/delivery-contract-check.mjs",
     "test:e2e": "playwright test",
     "test:e2e:update": "playwright test --update-snapshots",
     "test:security-denial": "vitest run tests/security-denial-matrix.test.ts tests/auth-mfa-security-contract.test.ts",
