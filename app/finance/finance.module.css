@@ -120,10 +120,18 @@
   border: 1px solid rgba(77, 70, 62, 0.12);
 }
 
-.mint { background: linear-gradient(145deg, #f8fffb, #effaf5); }
-.peach { background: linear-gradient(145deg, #fffaf7, #fff1e8); }
-.blue { background: linear-gradient(145deg, #f8fbff, #edf3ff); }
-.lavender { background: linear-gradient(145deg, #fcfaff, #f4efff); }
+.mint {
+  background: linear-gradient(145deg, #f8fffb, #effaf5);
+}
+.peach {
+  background: linear-gradient(145deg, #fffaf7, #fff1e8);
+}
+.blue {
+  background: linear-gradient(145deg, #f8fbff, #edf3ff);
+}
+.lavender {
+  background: linear-gradient(145deg, #fcfaff, #f4efff);
+}
 
 .splitGrid {
   display: grid;
@@ -208,22 +216,39 @@
 }
 
 @media (max-width: 1100px) {
-  .cardGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .splitGrid { grid-template-columns: 1fr; }
+  .cardGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .splitGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 700px) {
-  .hero { align-items: stretch; flex-direction: column; }
-  .period { min-width: 0; }
-  .cardGrid { grid-template-columns: 1fr; }
+  .hero {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .period {
+    min-width: 0;
+  }
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
   .panel,
   .hero,
   .metricCard,
-  .stateBanner { border-radius: 16px; }
+  .stateBanner {
+    border-radius: 16px;
+  }
   .metricHeader,
-  .panelHeader { flex-wrap: wrap; }
+  .panelHeader {
+    flex-wrap: wrap;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .page * { scroll-behavior: auto !important; }
+  .page * {
+    scroll-behavior: auto !important;
+  }
 }
