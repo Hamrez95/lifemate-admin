@@ -23,7 +23,7 @@ describe("ADM-MKT-006 Content Calendar security contract", () => {
     expect(page).toContain('item.approvalState === "Approved"');
     expect(page).toContain('item.channel?.operatorStatus === "Enabled"');
     expect(page).toContain('item.channel.setupStatus === "CredentialAvailable"');
-    expect(page).toContain("CredentialAvailable هرگز به معنی Connected نیست");
+    expect(page).toMatch(/CredentialAvailable\s+هرگز به\s+معنی Connected نیست/);
     expect(page).toContain("Connectivity: NotVerified");
   });
 
