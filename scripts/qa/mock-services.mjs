@@ -2,6 +2,7 @@ import { createServer } from "node:http";
 import { createPublicKey, generateKeyPairSync, sign } from "node:crypto";
 
 import { securityRbacFixture } from "./security-rbac-fixture.mjs";
+import { securityRoleDetailFixture } from "./security-role-detail-fixture.mjs";
 
 const host = "127.0.0.1";
 const port = 54321;
@@ -270,6 +271,10 @@ export function startQaMockServices() {
 
     if (method === "GET" && url.pathname === "/api/v1/security/role-permission-matrix") {
       return json(response, 200, securityRbacFixture());
+    }
+
+    if (method === "GET" && url.pathname === "/api/v1/security/roles/security") {
+      return json(response, 200, securityRoleDetailFixture());
     }
 
     if (method === "GET" && url.pathname === "/api/v1/finance/profit-loss") {
