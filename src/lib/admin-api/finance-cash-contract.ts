@@ -136,7 +136,42 @@ function validExponent(value: unknown): value is number | null {
   return value === null || (Number.isInteger(value) && Number(value) >= 0 && Number(value) <= 6);
 }
 
-function parseActual(value: unknown): FinanceActualCashPlanning | null {
+function monthSequence(startMonth: string, count: number): string[] {
+  const [year, month] = startMonth.split("-").map(Number);
+  if (!year || !month || month < 1 || month > 12 || count < 1) return [];
+  return Array.from({ length: count }, (_, index) => {
+    const date = new Date(Date.UTC(year, month - 1 + index, 1));
+    return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
+  });
+}
+
+function actualMonths(from: string, to: string): string[] | null {
+  if (!DATE.test(from) || !DATE.test(to) || !from.endsWith("-01")) return null;
+  const [toYear, toMonth, toDay] = to.split("-").map(Number);
+  if (!toYear || !toMonth || !toDay || toMonth < 1 || toMonth > 12) return null;
+  const expectedLastDay = new Date(Date.UTC(toYear, toMonth, 0)).getUTCDate();
+  if (toDay !== expectedLastDay) return null;
+
+  const [fromYear, fromMonth] = from.split("-").map(Number);
+  if (!fromYear || !fromMonth || fromMonth < 1 || fromMonth > 12) return null;
+  const count = (toYear - fromYear) * 12 + (toMonth - fromMonth) + 1;
+  if (count < 1) return null;
+  return monthSequence(from.slice(0, 7), count);
+}
+
+function nextMonthStart(to: string): string | null {
+  const months = actualMonths(to.slice(0, 7) + "-01", to);
+  if (!months) return null;
+  const [year, month] = to.slice(0, 7).split("-").map(Number);
+  if (!year || !month) return null;
+  const next = new Date(Date.UTC(year, month, 1));
+  return `${next.getUTCFullYear()}-${String(next.getUTCMonth() + 1).padStart(2, "0")}-01`;
+}
+
+function parseActual(
+  value: unknown,
+  expectedMonths: readonly string[],
+): FinanceActualCashPlanning | null {
   const row = object(value);
   const freshness = object(row?.freshness);
   if (
@@ -160,6 +195,7 @@ function parseActual(value: unknown): FinanceActualCashPlanning | null {
     !source ||
     !Number.isInteger(burn.monthCount) ||
     Number(burn.monthCount) < 1 ||
+    Number(burn.monthCount) !== expectedMonths.length ||
     !integer(burn.revenueMinor) ||
     !integer(burn.grossBurnMinor) ||
     !integer(burn.netBurnMinor) ||
@@ -185,12 +221,11 @@ function parseActual(value: unknown): FinanceActualCashPlanning | null {
   ) {
     return null;
   }
-  for (const item of burn.series) {
-    const point = object(item);
+  for (let index = 0; index < burn.series.length; index += 1) {
+    const point = object(burn.series[index]);
     if (
       !point ||
-      typeof point.month !== "string" ||
-      !MONTH.test(point.month) ||
+      point.month !== expectedMonths[index] ||
       !integer(point.revenueMinor) ||
       !integer(point.expenseMinor) ||
       !integer(point.netBurnMinor) ||
@@ -253,7 +288,11 @@ function parseRunway(value: unknown): FinanceRunway | null {
   return row as unknown as FinanceRunway;
 }
 
-function parseForecast(value: unknown, horizonMonths: number): FinanceCashForecast | null {
+function parseForecast(
+  value: unknown,
+  horizonMonths: number,
+  forecastStartDate: string,
+): FinanceCashForecast | null {
   const row = object(value);
   if (
     !row ||
@@ -278,6 +317,7 @@ function parseForecast(value: unknown, horizonMonths: number): FinanceCashForeca
     }
   }
 
+  const expectedForecastMonths = monthSequence(forecastStartDate.slice(0, 7), horizonMonths);
   const seen = new Set<FinanceScenario>();
   for (const item of row.scenarios) {
     const scenario = object(item);
@@ -303,12 +343,11 @@ function parseForecast(value: unknown, horizonMonths: number): FinanceCashForeca
     const name = scenario.scenario as FinanceScenario;
     if (seen.has(name)) return null;
     seen.add(name);
-    for (const month of scenario.months) {
-      const point = object(month);
+    for (let index = 0; index < scenario.months.length; index += 1) {
+      const point = object(scenario.months[index]);
       if (
         !point ||
-        typeof point.month !== "string" ||
-        !MONTH.test(point.month) ||
+        point.month !== expectedForecastMonths[index] ||
         !integer(point.revenueMinor) ||
         !integer(point.expenseMinor) ||
         !integer(point.netBurnMinor) ||
@@ -354,8 +393,7 @@ function parseForecast(value: unknown, horizonMonths: number): FinanceCashForeca
     !Number.isInteger(plan.version) ||
     Number(plan.version) < 1 ||
     typeof plan.label !== "string" ||
-    typeof plan.forecastStartMonth !== "string" ||
-    !DATE.test(plan.forecastStartMonth) ||
+    plan.forecastStartMonth !== forecastStartDate ||
     !Number.isInteger(plan.declaredHorizonMonths) ||
     Number(plan.declaredHorizonMonths) < horizonMonths ||
     !timestamp(plan.approvedAtUtc) ||
@@ -396,6 +434,9 @@ export function parseFinanceCashResponse(value: unknown): FinanceCashResponse | 
   ) {
     return null;
   }
+  const expectedActualMonths = actualMonths(query.from, query.to);
+  const expectedForecastStart = nextMonthStart(query.to);
+  if (!expectedActualMonths || !expectedForecastStart) return null;
   if ((body.currency === null) !== (body.minorUnitExponent === null)) return null;
 
   if (body.state === "currency_required") {
@@ -415,8 +456,9 @@ export function parseFinanceCashResponse(value: unknown): FinanceCashResponse | 
   }
 
   if (!body.actual || !body.cash || !body.runway || !body.forecast) return null;
-  if (!parseActual(body.actual) || !parseCash(body.cash) || !parseRunway(body.runway)) return null;
-  if (!parseForecast(body.forecast, Number(query.horizonMonths))) return null;
+  if (!parseActual(body.actual, expectedActualMonths) || !parseCash(body.cash)) return null;
+  if (!parseRunway(body.runway)) return null;
+  if (!parseForecast(body.forecast, Number(query.horizonMonths), expectedForecastStart)) return null;
 
   if (body.state === "ready" || body.state === "partial") {
     if (
