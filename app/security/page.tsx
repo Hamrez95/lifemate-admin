@@ -107,6 +107,9 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
 
   const report = result.kind === "ok" ? result.data : null;
   const permissions = report ? report.permissionGroups.flatMap((group) => group.permissions) : [];
+  const exactPermissionCodeMatch = q
+    ? permissions.some((permission) => permission.code.toLocaleLowerCase("en-US") === q)
+    : false;
   const assignmentByKey = new Map(
     report?.assignments.map((assignment) => [
       assignmentKey(assignment.roleCode, assignment.permissionCode),
@@ -118,6 +121,8 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
     if (domain && permission.domain !== domain) return false;
     if (risk && permission.riskLevel !== risk) return false;
     if (!q) return true;
+    const normalizedCode = permission.code.toLocaleLowerCase("en-US");
+    if (exactPermissionCodeMatch) return normalizedCode === q;
     const searchable = [
       permission.code,
       permission.domain,
@@ -311,7 +316,7 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
                         {report.roles.map((role) => (
                           <th key={role.code} scope="col" className={styles.roleHeader}>
                             <strong>{role.displayName}</strong>
-                            <span>{role.code}</span>
+                            <span style={{ color: "#665f58" }}>{role.code}</span>
                             {role.status !== "Active" ? <em>Disabled</em> : null}
                           </th>
                         ))}
