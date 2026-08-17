@@ -299,6 +299,92 @@ export function startQaMockServices() {
       });
     }
 
+    if (method === "GET" && url.pathname === "/api/v1/finance/budget-vs-actual") {
+      return json(response, 200, {
+        state: "ready",
+        query: {
+          from: url.searchParams.get("from") ?? "2026-08-01",
+          to: url.searchParams.get("to") ?? "2026-08-31",
+          currency: "IRR",
+        },
+        currency: "IRR",
+        minorUnitExponent: 0,
+        availableCurrencies: ["IRR"],
+        comparison: {
+          totals: {
+            revenue: {
+              budgetMinor: "1200000000",
+              actualMinor: "1250000000",
+              varianceMinor: "50000000",
+              varianceBasisPoints: "416",
+              favorability: "favorable",
+            },
+            expense: {
+              budgetMinor: "1600000000",
+              actualMinor: "1510000000",
+              varianceMinor: "-90000000",
+              varianceBasisPoints: "-562",
+              favorability: "favorable",
+            },
+            net: {
+              budgetMinor: "-400000000",
+              actualMinor: "-260000000",
+              varianceMinor: "140000000",
+              varianceBasisPoints: null,
+              favorability: "favorable",
+            },
+          },
+          categories: [
+            {
+              kind: "Revenue",
+              code: "subscription",
+              label: "درآمد اشتراک",
+              budgetMinor: "1200000000",
+              actualMinor: "1250000000",
+              varianceMinor: "50000000",
+              varianceBasisPoints: "416",
+              favorability: "favorable",
+            },
+            {
+              kind: "Expense",
+              code: "payroll",
+              label: "حقوق و مزایا",
+              budgetMinor: "1250000000",
+              actualMinor: "1200000000",
+              varianceMinor: "-50000000",
+              varianceBasisPoints: "-400",
+              favorability: "favorable",
+            },
+            {
+              kind: "Expense",
+              code: "infrastructure",
+              label: "زیرساخت و API",
+              budgetMinor: "350000000",
+              actualMinor: "310000000",
+              varianceMinor: "-40000000",
+              varianceBasisPoints: "-1142",
+              favorability: "favorable",
+            },
+          ],
+        },
+        budgetSource: {
+          kind: "canonical",
+          label: "بودجه عملیاتی مصوب",
+          code: "operating",
+          version: 2,
+          approvedAtUtc: "2026-07-25T10:00:00.000Z",
+        },
+        actualSource: {
+          kind: "canonical",
+          label: "LifeMate posted finance actual ledger",
+          definitionVersion: 1,
+        },
+        freshness: { status: "fresh", asOfUtc: "2026-07-25T10:00:00.000Z" },
+        reason: null,
+        generatedAtUtc: "2026-08-17T09:30:00.000Z",
+      });
+    }
+
     return json(response, 404, {
       status: 404,
       code: "qa_mock_route_missing",

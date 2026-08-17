@@ -19,6 +19,15 @@ async function expectNoViewportOverflow(page: Page) {
   expect(viewportOverflow).toBe(false);
 }
 
+async function expectNoSeriousAccessibilityViolations(page: Page) {
+  const a11y = await new AxeBuilder({ page }).analyze();
+  expect(
+    a11y.violations.filter(
+      (violation) => violation.impact === "critical" || violation.impact === "serious",
+    ),
+  ).toEqual([]);
+}
+
 test("finance P&L renders canonical actuals accessibly without viewport overflow", async ({
   page,
 }) => {
@@ -36,6 +45,7 @@ test("finance P&L renders canonical actuals accessibly without viewport overflow
   await expect(page.getByRole("row", { name: /سود ناخالص/ })).toContainText(
     "تعریف canonical برای COGS",
   );
+  await expect(page.getByRole("link", { name: "بودجه در برابر عملکرد" })).toBeVisible();
   await expectNoViewportOverflow(page);
 
   const filters = page.getByRole("form", { name: "فیلتر بازه گزارش" });
@@ -48,11 +58,33 @@ test("finance P&L renders canonical actuals accessibly without viewport overflow
   expect(filteredUrl.searchParams.get("from")).toBe("2026-08-01");
   expect(filteredUrl.searchParams.get("to")).toBe("2026-08-17");
   await expectNoViewportOverflow(page);
+  await expectNoSeriousAccessibilityViolations(page);
+});
 
-  const a11y = await new AxeBuilder({ page }).analyze();
-  expect(
-    a11y.violations.filter(
-      (violation) => violation.impact === "critical" || violation.impact === "serious",
-    ),
-  ).toEqual([]);
+test("finance budget comparison is discoverable, explicit, accessible, and responsive", async ({
+  page,
+}) => {
+  await signInWithMfa(page);
+  await page.goto("/finance");
+  await page.getByRole("link", { name: "بودجه در برابر عملکرد" }).click();
+  await expect(page).toHaveURL(/\/finance\/budget$/);
+
+  await expect(page.getByRole("heading", { name: "بودجه در برابر عملکرد واقعی" })).toBeVisible();
+  await expect(page.getByText("بودجه عملیاتی مصوب")).toBeVisible();
+  await expect(page.getByRole("table")).toBeVisible();
+  await expect(page.getByRole("row", { name: /حقوق و مزایا/ })).toContainText("مطلوب");
+  await expect(page.getByText(/بودجه ثبت نشده/)).toHaveCount(0);
+  await expectNoViewportOverflow(page);
+
+  const filters = page.getByRole("form", { name: "فیلتر بازه بودجه" });
+  await expect(filters).toBeVisible();
+  await page.getByLabel("از ماه").fill("2026-08");
+  await page.getByLabel("تا ماه").fill("2026-08");
+  await page.getByRole("button", { name: "اعمال بازه" }).click();
+  await expect(page).toHaveURL(/\/finance\/budget\?/);
+  const filteredUrl = new URL(page.url());
+  expect(filteredUrl.searchParams.get("fromMonth")).toBe("2026-08");
+  expect(filteredUrl.searchParams.get("toMonth")).toBe("2026-08");
+  await expectNoViewportOverflow(page);
+  await expectNoSeriousAccessibilityViolations(page);
 });
