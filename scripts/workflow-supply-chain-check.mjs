@@ -2,7 +2,7 @@ import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 
 const workflowsDir = ".github/workflows";
-const immutableRef = /^[0-9a-f]{40}$/u;
+const immutableExternalAction = /^([^\s@]+)@([0-9a-f]{40})$/u;
 const findings = [];
 
 for (const entry of await readdir(workflowsDir, { withFileTypes: true })) {
@@ -21,14 +21,16 @@ for (const entry of await readdir(workflowsDir, { withFileTypes: true })) {
   }
 
   lines.forEach((line, index) => {
-    const match = line.match(/^\s*uses:\s*([^\s@]+)@([^\s#]+)(?:\s+#.*)?$/u);
-    if (!match) return;
+    const usesMatch = line.match(/^\s*uses:\s*([^\s#]+)(?:\s+#.*)?$/u);
+    if (!usesMatch) return;
 
-    const [, action, ref] = match;
-    if (action.startsWith("./")) return;
-    if (!immutableRef.test(ref)) {
+    const reference = usesMatch[1];
+    if (reference.startsWith("./")) return;
+
+    const immutableMatch = reference.match(immutableExternalAction);
+    if (!immutableMatch) {
       findings.push(
-        `${path}:${index + 1}: external action ${action}@${ref} must be pinned to a full 40-character commit SHA`,
+        `${path}:${index + 1}: external action ${reference} must be pinned to a full 40-character commit SHA`,
       );
     }
   });
