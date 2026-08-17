@@ -57,7 +57,9 @@ describe("ADM-FIN-001 P&L response contract", () => {
   });
 
   it("rejects currency amounts without minor-unit semantics", () => {
-    expect(parseFinanceProfitLossResponse({ ...readyResponse, minorUnitExponent: null })).toBeNull();
+    expect(
+      parseFinanceProfitLossResponse({ ...readyResponse, minorUnitExponent: null }),
+    ).toBeNull();
   });
 
   it("accepts a truthful unavailable report without manufacturing zero", () => {
