@@ -12,6 +12,13 @@ async function signInWithMfa(page: Page) {
   await expect(page).toHaveURL(/\/$/);
 }
 
+async function expectNoViewportOverflow(page: Page) {
+  const viewportOverflow = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+  );
+  expect(viewportOverflow).toBe(false);
+}
+
 test("finance P&L renders canonical actuals accessibly without viewport overflow", async ({
   page,
 }) => {
@@ -29,6 +36,7 @@ test("finance P&L renders canonical actuals accessibly without viewport overflow
   await expect(page.getByRole("row", { name: /سود ناخالص/ })).toContainText(
     "تعریف canonical برای COGS",
   );
+  await expectNoViewportOverflow(page);
 
   const filters = page.getByRole("form", { name: "فیلتر بازه گزارش" });
   await expect(filters).toBeVisible();
@@ -39,11 +47,7 @@ test("finance P&L renders canonical actuals accessibly without viewport overflow
   const filteredUrl = new URL(page.url());
   expect(filteredUrl.searchParams.get("from")).toBe("2026-08-01");
   expect(filteredUrl.searchParams.get("to")).toBe("2026-08-17");
-
-  const viewportOverflow = await page.evaluate(
-    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-  );
-  expect(viewportOverflow).toBe(false);
+  await expectNoViewportOverflow(page);
 
   const a11y = await new AxeBuilder({ page }).analyze();
   expect(
