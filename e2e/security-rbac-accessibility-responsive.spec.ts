@@ -37,7 +37,9 @@ test("security RBAC matrix is read-only, explicit about elevated access, accessi
   await expect(page.getByRole("heading", { name: "ماتریس نقش و مجوز" })).toBeVisible();
   await expect(page.getByText("LifeMate admin RBAC control plane")).toBeVisible();
   await expect(page.getByText("مرز Break-glass حفظ می‌شود")).toBeVisible();
-  await expect(page.getByText("خارج از نقش عادی")).toBeVisible();
+  await expect(
+    page.getByLabel("خلاصه تنظیمات RBAC").getByText("خارج از نقش عادی", { exact: true }),
+  ).toBeVisible();
   await expect(page.getByRole("button", { name: /ویرایش|ذخیره|دعوت/ })).toHaveCount(0);
 
   const viewport = page.viewportSize();
