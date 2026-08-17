@@ -88,3 +88,35 @@ test("finance budget comparison is discoverable, explicit, accessible, and respo
   await expectNoViewportOverflow(page);
   await expectNoSeriousAccessibilityViolations(page);
 });
+
+test("finance cash planning separates Actual and Forecast with accessible scenario alternatives", async ({
+  page,
+}) => {
+  await signInWithMfa(page);
+  await page.goto("/finance/cash");
+
+  await expect(page.getByRole("heading", { name: "برنامه‌ریزی نقدینگی" })).toBeVisible();
+  await expect(page.getByLabel("شاخص‌های Burn Rate و Runway")).toContainText("موجودی نقد واقعی");
+  await expect(page.getByText("LifeMate observed management cash balance")).toBeVisible();
+  await expect(page.getByText("Operating cash plan")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "سناریوی پایه" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "سناریوی خوش‌بینانه" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "سناریوی بدبینانه" })).toBeVisible();
+  await expect(page.getByRole("img", { name: /سناریوی پایه:/ })).toBeVisible();
+  await expect(page.getByRole("img", { name: /سناریوی بدبینانه:/ })).toBeVisible();
+  await expect(page.getByText(/Forecast است و Actual محسوب نمی‌شود/)).toBeVisible();
+  await expectNoViewportOverflow(page);
+  await expectNoSeriousAccessibilityViolations(page);
+
+  const filters = page.getByRole("form", { name: "فیلتر برنامه‌ریزی نقدینگی" });
+  await page.getByLabel("از ماه Actual").fill("2026-06");
+  await page.getByLabel("تا ماه Actual").fill("2026-07");
+  await page.getByLabel("افق Forecast (ماه)").fill("6");
+  await page.getByRole("button", { name: "اعمال" }).click();
+  await expect(page).toHaveURL(/\/finance\/cash\?/);
+  const filteredUrl = new URL(page.url());
+  expect(filteredUrl.searchParams.get("fromMonth")).toBe("2026-06");
+  expect(filteredUrl.searchParams.get("toMonth")).toBe("2026-07");
+  expect(filteredUrl.searchParams.get("horizonMonths")).toBe("6");
+  await expectNoViewportOverflow(page);
+});
