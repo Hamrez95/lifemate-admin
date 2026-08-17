@@ -53,8 +53,9 @@ test("role detail keeps memberships traceable, elevated access blocked, accessib
 
     const permissionDetails = table.locator("details").filter({ hasText: "۳ مورد" });
     await permissionDetails.locator("summary").click();
-    await expect(permissionDetails.getByText("security.audit.read", { exact: true })).toBeVisible();
-    await expect(permissionDetails.getByText("از نقش: security", { exact: true })).toBeVisible();
+    const auditPermission = permissionDetails.locator("li").filter({ hasText: "security.audit.read" });
+    await expect(auditPermission.getByText("security.audit.read", { exact: true })).toBeVisible();
+    await expect(auditPermission.getByText("از نقش: security", { exact: true })).toBeVisible();
   } else {
     const mobile = page.getByLabel("خلاصه موبایل عضویت‌های نقش");
     await expect(mobile).toBeVisible();
