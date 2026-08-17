@@ -44,9 +44,7 @@ const response = {
       state: "active",
       effective: true,
       currentRoleCodes: ["security"],
-      effectivePermissions: [
-        { code: "security.audit.read", sourceRoleCodes: ["security"] },
-      ],
+      effectivePermissions: [{ code: "security.audit.read", sourceRoleCodes: ["security"] }],
     },
     {
       membershipId: "33333333-3333-4333-8333-333333333333",
