@@ -56,9 +56,37 @@ describe("ADM-FIN-001 P&L response contract", () => {
     expect(parseFinanceProfitLossResponse({ ...readyResponse, actual: null })).toBeNull();
   });
 
+  it("rejects a ready report without a selected canonical currency", () => {
+    expect(
+      parseFinanceProfitLossResponse({
+        ...readyResponse,
+        currency: null,
+        minorUnitExponent: null,
+      }),
+    ).toBeNull();
+  });
+
   it("rejects currency amounts without minor-unit semantics", () => {
     expect(
       parseFinanceProfitLossResponse({ ...readyResponse, minorUnitExponent: null }),
+    ).toBeNull();
+  });
+
+  it("rejects non-ready states that carry actual values", () => {
+    expect(parseFinanceProfitLossResponse({ ...readyResponse, state: "unavailable" })).toBeNull();
+  });
+
+  it("rejects a currency-required report that does not expose multiple choices", () => {
+    expect(
+      parseFinanceProfitLossResponse({
+        ...readyResponse,
+        state: "currency_required",
+        query: { ...readyResponse.query, currency: null },
+        currency: null,
+        minorUnitExponent: null,
+        availableCurrencies: ["IRR"],
+        actual: null,
+      }),
     ).toBeNull();
   });
 
