@@ -139,6 +139,31 @@ async function readBody(request) {
   }
 }
 
+function cashScenario(scenario, months, openingCashMinor) {
+  let cash = BigInt(openingCashMinor);
+  let depletionMonth = null;
+  const projected = months.map((month) => {
+    const netBurn = BigInt(month.expenseMinor) - BigInt(month.revenueMinor);
+    cash -= netBurn;
+    if (depletionMonth === null && cash <= 0n && netBurn > 0n) depletionMonth = month.month;
+    return { month: month.month, projectedEndingCashMinor: cash.toString() };
+  });
+  return {
+    scenario,
+    months: months.map((month) => ({
+      ...month,
+      netBurnMinor: (BigInt(month.expenseMinor) - BigInt(month.revenueMinor)).toString(),
+    })),
+    projectedCash: {
+      openingCashMinor,
+      endingCashMinor: cash.toString(),
+      depletionMonth,
+      runwayState: depletionMonth ? "depletes_within_horizon" : "beyond_horizon",
+      series: projected,
+    },
+  };
+}
+
 export function startQaMockServices() {
   const server = createServer(async (request, response) => {
     const url = new URL(request.url ?? "/", origin);
@@ -382,6 +407,127 @@ export function startQaMockServices() {
         freshness: { status: "fresh", asOfUtc: "2026-07-25T10:00:00.000Z" },
         reason: null,
         generatedAtUtc: "2026-08-17T09:30:00.000Z",
+      });
+    }
+
+    if (method === "GET" && url.pathname === "/api/v1/finance/cash-planning") {
+      const horizonMonths = Number(url.searchParams.get("horizonMonths") ?? "6");
+      const monthNames = ["2026-08", "2026-09", "2026-10", "2026-11", "2026-12", "2027-01"];
+      const months = monthNames.slice(0, Math.max(1, Math.min(6, horizonMonths)));
+      const base = months.map((month, index) => ({
+        month,
+        revenueMinor: String(700000000 + index * 25000000),
+        expenseMinor: "850000000",
+      }));
+      const upside = months.map((month, index) => ({
+        month,
+        revenueMinor: String(900000000 + index * 30000000),
+        expenseMinor: "820000000",
+      }));
+      const downside = months.map((month) => ({
+        month,
+        revenueMinor: "350000000",
+        expenseMinor: "1000000000",
+      }));
+      const openingCashMinor = "2400000000";
+      return json(response, 200, {
+        state: "ready",
+        query: {
+          from: url.searchParams.get("from") ?? "2026-07-01",
+          to: url.searchParams.get("to") ?? "2026-07-31",
+          currency: "IRR",
+          horizonMonths: months.length,
+        },
+        currency: "IRR",
+        minorUnitExponent: 0,
+        availableCurrencies: ["IRR"],
+        actual: {
+          state: "ready",
+          burn: {
+            monthCount: 1,
+            revenueMinor: "600000000",
+            grossBurnMinor: "900000000",
+            netBurnMinor: "300000000",
+            averageGrossBurnMinor: "900000000",
+            averageNetBurnMinor: "300000000",
+            series: [
+              {
+                month: "2026-07",
+                revenueMinor: "600000000",
+                expenseMinor: "900000000",
+                netBurnMinor: "300000000",
+              },
+            ],
+          },
+          source: {
+            kind: "canonical",
+            label: "LifeMate posted finance actual ledger",
+            definitionVersion: 1,
+          },
+          freshness: { status: "fresh", asOfUtc: "2026-07-31T20:00:00.000Z" },
+          reason: null,
+        },
+        cash: {
+          state: "ready",
+          balanceMinor: openingCashMinor,
+          asOfDate: "2026-07-31",
+          source: {
+            kind: "canonical",
+            label: "LifeMate observed management cash balance",
+            sourceKind: "treasury_close",
+            observedAtUtc: "2026-07-31T20:30:00.000Z",
+          },
+          freshness: { status: "fresh", asOfUtc: "2026-07-31T20:30:00.000Z" },
+          reason: null,
+        },
+        runway: {
+          state: "ready",
+          trailingMonthsBasisPoints: "80000",
+          formula:
+            "observed cash balance / positive average monthly net burn over the selected completed-month actual period",
+          reason: null,
+        },
+        forecast: {
+          state: "ready",
+          plan: {
+            code: "operating_cash",
+            version: 3,
+            label: "Operating cash plan",
+            forecastStartMonth: "2026-08-01",
+            requestedHorizonMonths: months.length,
+            declaredHorizonMonths: 6,
+            approvedAtUtc: "2026-07-29T10:00:00.000Z",
+            sourceKind: "approved_plan",
+          },
+          assumptions: [
+            {
+              scenario: "Base",
+              code: "base_growth",
+              label: "رشد پایه",
+              value: "برنامه مصوب پایه؛ بدون استنباط از Actual",
+            },
+            {
+              scenario: "Upside",
+              code: "upside_growth",
+              label: "رشد خوش‌بینانه",
+              value: "سناریوی مصوب Upside",
+            },
+            {
+              scenario: "Downside",
+              code: "downside_pressure",
+              label: "فشار بدبینانه",
+              value: "سناریوی مصوب Downside",
+            },
+          ],
+          scenarios: [
+            cashScenario("Base", base, openingCashMinor),
+            cashScenario("Upside", upside, openingCashMinor),
+            cashScenario("Downside", downside, openingCashMinor),
+          ],
+          reason: null,
+        },
+        reason: null,
+        generatedAtUtc: "2026-08-17T10:30:00.000Z",
       });
     }
 
