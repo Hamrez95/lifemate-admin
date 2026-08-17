@@ -12,19 +12,23 @@ async function signInWithMfa(page: Parameters<typeof test>[0]["page"]) {
   await expect(page).toHaveURL(/\/$/);
 }
 
-test("finance P&L renders canonical actuals accessibly without viewport overflow", async ({ page }) => {
+test("finance P&L renders canonical actuals accessibly without viewport overflow", async ({
+  page,
+}) => {
   await signInWithMfa(page);
   await page.goto("/finance");
 
   await expect(page.getByRole("heading", { name: "نمای کلی مالی LifeMate" })).toBeVisible();
   await expect(page.getByText("Actual revenue")).toBeVisible();
   await expect(page.getByText("Actual expenses")).toBeVisible();
-  await expect(page.getByText("Forecast", { exact: true })).toBeVisible();
+  await expect(
+    page.getByLabel("شاخص‌های اصلی سود و زیان").getByText("Forecast", { exact: true }),
+  ).toBeVisible();
   await expect(page.getByText(/No canonical forecast source is configured/)).toBeVisible();
   await expect(page.getByRole("table")).toBeVisible();
 
-  const viewportOverflow = await page.evaluate(() =>
-    document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
+  const viewportOverflow = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
   );
   expect(viewportOverflow).toBe(false);
 
