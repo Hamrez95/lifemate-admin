@@ -89,7 +89,11 @@ function parseSeries(value: unknown): FinanceSeriesPoint | null {
 function parseActual(value: unknown): FinanceActual | null {
   if (!value || typeof value !== "object") return null;
   const actual = value as Record<string, unknown>;
-  if (!amount(actual.revenueMinor) || !amount(actual.expenseMinor) || !amount(actual.netResultMinor)) {
+  if (
+    !amount(actual.revenueMinor) ||
+    !amount(actual.expenseMinor) ||
+    !amount(actual.netResultMinor)
+  ) {
     return null;
   }
   if (!Array.isArray(actual.categories) || !Array.isArray(actual.series)) return null;
@@ -108,17 +112,27 @@ function parseActual(value: unknown): FinanceActual | null {
 export function parseFinanceProfitLossResponse(value: unknown): FinanceProfitLossResponse | null {
   if (!value || typeof value !== "object") return null;
   const body = value as Record<string, unknown>;
-  if (typeof body.state !== "string" || !STATE.has(body.state as FinanceProfitLossState)) return null;
+  if (typeof body.state !== "string" || !STATE.has(body.state as FinanceProfitLossState))
+    return null;
   if (!body.query || typeof body.query !== "object") return null;
   const query = body.query as Record<string, unknown>;
   if (typeof query.from !== "string" || !DATE.test(query.from)) return null;
   if (typeof query.to !== "string" || !DATE.test(query.to)) return null;
-  if (query.currency !== null && (typeof query.currency !== "string" || !CURRENCY.test(query.currency))) return null;
-  if (!stringOrNull(body.currency) || (body.currency !== null && !CURRENCY.test(body.currency))) return null;
+  if (
+    query.currency !== null &&
+    (typeof query.currency !== "string" || !CURRENCY.test(query.currency))
+  )
+    return null;
+  if (!stringOrNull(body.currency) || (body.currency !== null && !CURRENCY.test(body.currency)))
+    return null;
   if (!minorUnitExponent(body.minorUnitExponent)) return null;
   if (body.currency === null && body.minorUnitExponent !== null) return null;
   if (body.currency !== null && body.minorUnitExponent === null) return null;
-  if (!Array.isArray(body.availableCurrencies) || !body.availableCurrencies.every((item) => typeof item === "string" && CURRENCY.test(item))) return null;
+  if (
+    !Array.isArray(body.availableCurrencies) ||
+    !body.availableCurrencies.every((item) => typeof item === "string" && CURRENCY.test(item))
+  )
+    return null;
 
   const actual = body.actual === null ? null : parseActual(body.actual);
   if (body.actual !== null && !actual) return null;
@@ -130,14 +144,20 @@ export function parseFinanceProfitLossResponse(value: unknown): FinanceProfitLos
 
   if (!body.source || typeof body.source !== "object") return null;
   const source = body.source as Record<string, unknown>;
-  if (source.kind !== "canonical" || typeof source.label !== "string" || !Number.isInteger(source.definitionVersion)) return null;
+  if (
+    source.kind !== "canonical" ||
+    typeof source.label !== "string" ||
+    !Number.isInteger(source.definitionVersion)
+  )
+    return null;
 
   if (!body.freshness || typeof body.freshness !== "object") return null;
   const freshness = body.freshness as Record<string, unknown>;
   if (freshness.status !== "fresh" && freshness.status !== "unavailable") return null;
   if (!timestampOrNull(freshness.asOfUtc)) return null;
   if (!stringOrNull(body.reason)) return null;
-  if (typeof body.generatedAtUtc !== "string" || Number.isNaN(Date.parse(body.generatedAtUtc))) return null;
+  if (typeof body.generatedAtUtc !== "string" || Number.isNaN(Date.parse(body.generatedAtUtc)))
+    return null;
 
   return {
     state: body.state as FinanceProfitLossState,
@@ -163,23 +183,30 @@ async function correlationId(response: Response): Promise<string | undefined> {
   }
 }
 
-export async function getFinanceProfitLoss(params: URLSearchParams): Promise<FinanceProfitLossResult> {
+export async function getFinanceProfitLoss(
+  params: URLSearchParams,
+): Promise<FinanceProfitLossResult> {
   const supabase = await createServerSupabaseClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   if (claimsError || !claimsData?.claims?.sub) return { kind: "unauthenticated" };
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   const token = session?.access_token;
   if (!token) return { kind: "unauthenticated" };
 
   const config = getPublicRuntimeConfig();
   let response: Response;
   try {
-    response = await fetch(`${config.adminApiUrl}/api/v1/finance/profit-loss?${params.toString()}`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-      signal: AbortSignal.timeout(10_000),
-    });
+    response = await fetch(
+      `${config.adminApiUrl}/api/v1/finance/profit-loss?${params.toString()}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+        signal: AbortSignal.timeout(10_000),
+      },
+    );
   } catch {
     return { kind: "unavailable" };
   }
