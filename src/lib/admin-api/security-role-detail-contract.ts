@@ -186,7 +186,9 @@ function parseMembership(
     !UUID.test(row.membershipId) ||
     typeof row.accountId !== "string" ||
     !UUID.test(row.accountId) ||
-    (row.memberStatus !== "Active" && row.memberStatus !== "Disabled" && row.memberStatus !== "Revoked") ||
+    (row.memberStatus !== "Active" &&
+      row.memberStatus !== "Disabled" &&
+      row.memberStatus !== "Revoked") ||
     !timestamp(row.startsAtUtc) ||
     !nullableTimestamp(row.expiresAtUtc) ||
     !nullableTimestamp(row.revokedAtUtc) ||
@@ -250,7 +252,12 @@ export function isSecurityRoleCode(value: string): boolean {
 
 export function parseSecurityRoleDetailResponse(value: unknown): SecurityRoleDetailResponse | null {
   const body = object(value);
-  if (!body || !timestamp(body.evaluationAtUtc) || !Array.isArray(body.permissions) || !Array.isArray(body.memberships)) {
+  if (
+    !body ||
+    !timestamp(body.evaluationAtUtc) ||
+    !Array.isArray(body.permissions) ||
+    !Array.isArray(body.memberships)
+  ) {
     return null;
   }
   const role = parseRole(body.role);
