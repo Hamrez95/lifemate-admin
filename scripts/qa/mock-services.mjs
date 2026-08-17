@@ -232,10 +232,70 @@ export function startQaMockServices() {
             "users.read.basic",
             "analytics.read",
             "operations.read",
+            "finance.read",
             "ai.business.read",
             "settings.read",
           ],
         },
+      });
+    }
+
+    if (method === "GET" && url.pathname === "/api/v1/finance/profit-loss") {
+      return json(response, 200, {
+        state: "ready",
+        query: {
+          from: url.searchParams.get("from") ?? "2026-07-19",
+          to: url.searchParams.get("to") ?? "2026-08-17",
+          currency: "IRR",
+        },
+        currency: "IRR",
+        minorUnitExponent: 0,
+        availableCurrencies: ["IRR"],
+        actual: {
+          revenueMinor: "1250000000",
+          expenseMinor: "1510000000",
+          netResultMinor: "-260000000",
+          categories: [
+            {
+              code: "payroll",
+              label: "حقوق و مزایا",
+              kind: "Expense",
+              amountMinor: "1200000000",
+            },
+            {
+              code: "infrastructure",
+              label: "زیرساخت و API",
+              kind: "Expense",
+              amountMinor: "310000000",
+            },
+          ],
+          series: [
+            {
+              month: "2026-07",
+              revenueMinor: "600000000",
+              expenseMinor: "720000000",
+              netResultMinor: "-120000000",
+            },
+            {
+              month: "2026-08",
+              revenueMinor: "650000000",
+              expenseMinor: "790000000",
+              netResultMinor: "-140000000",
+            },
+          ],
+        },
+        forecast: {
+          state: "unavailable",
+          reason: "No canonical forecast source is configured.",
+        },
+        source: {
+          kind: "canonical",
+          label: "LifeMate posted finance actual ledger",
+          definitionVersion: 1,
+        },
+        freshness: { status: "fresh", asOfUtc: "2026-08-17T07:00:00.000Z" },
+        reason: null,
+        generatedAtUtc: "2026-08-17T07:01:00.000Z",
       });
     }
 
