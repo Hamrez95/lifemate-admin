@@ -300,6 +300,7 @@ export default async function FinanceCashPage({ searchParams }: FinanceCashPageP
                   <span>{card.helper}</span>
                   <span className={styles.badge}>ACTUAL</span>
                 </div>
+                <h3>{card.label}</h3>
                 <strong>{card.value}</strong>
                 <p>{card.detail}</p>
               </article>
