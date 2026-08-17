@@ -1,4 +1,5 @@
 .page {
+  min-width: 0;
   display: grid;
   gap: 1rem;
 }
@@ -236,6 +237,7 @@
 }
 
 .panel {
+  min-width: 0;
   padding: 1.1rem;
 }
 
@@ -299,6 +301,9 @@
 }
 
 .tableWrap {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   overflow-x: auto;
   margin-top: 0.8rem;
 }
