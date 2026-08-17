@@ -29,6 +29,7 @@ export type FinanceProfitLossResponse = {
   state: FinanceProfitLossState;
   query: { from: string; to: string; currency: string | null };
   currency: string | null;
+  minorUnitExponent: number | null;
   availableCurrencies: string[];
   actual: FinanceActual | null;
   forecast: { state: "unavailable"; reason: string };
@@ -60,6 +61,10 @@ function timestampOrNull(value: unknown): value is string | null {
 
 function amount(value: unknown): value is string {
   return typeof value === "string" && INTEGER.test(value);
+}
+
+function minorUnitExponent(value: unknown): value is number | null {
+  return value === null || (Number.isInteger(value) && Number(value) >= 0 && Number(value) <= 6);
 }
 
 function parseCategory(value: unknown): FinanceCategory | null {
@@ -110,6 +115,9 @@ export function parseFinanceProfitLossResponse(value: unknown): FinanceProfitLos
   if (typeof query.to !== "string" || !DATE.test(query.to)) return null;
   if (query.currency !== null && (typeof query.currency !== "string" || !CURRENCY.test(query.currency))) return null;
   if (!stringOrNull(body.currency) || (body.currency !== null && !CURRENCY.test(body.currency))) return null;
+  if (!minorUnitExponent(body.minorUnitExponent)) return null;
+  if (body.currency === null && body.minorUnitExponent !== null) return null;
+  if (body.currency !== null && body.minorUnitExponent === null) return null;
   if (!Array.isArray(body.availableCurrencies) || !body.availableCurrencies.every((item) => typeof item === "string" && CURRENCY.test(item))) return null;
 
   const actual = body.actual === null ? null : parseActual(body.actual);
@@ -135,6 +143,7 @@ export function parseFinanceProfitLossResponse(value: unknown): FinanceProfitLos
     state: body.state as FinanceProfitLossState,
     query: query as FinanceProfitLossResponse["query"],
     currency: body.currency,
+    minorUnitExponent: body.minorUnitExponent,
     availableCurrencies: body.availableCurrencies as string[],
     actual,
     forecast: forecast as FinanceProfitLossResponse["forecast"],
