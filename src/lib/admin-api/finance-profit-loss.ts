@@ -1,5 +1,5 @@
-import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
-import { createServerSupabaseClient } from "@/src/lib/supabase/server";
+import { getPublicRuntimeConfig } from "../runtime-config";
+import { createServerSupabaseClient } from "../supabase/server";
 
 export type FinanceProfitLossState = "ready" | "unavailable" | "currency_required";
 
