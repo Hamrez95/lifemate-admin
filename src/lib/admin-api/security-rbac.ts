@@ -1,9 +1,6 @@
 import { getPublicRuntimeConfig } from "../runtime-config";
 import { createServerSupabaseClient } from "../supabase/server";
-import {
-  parseSecurityRbacResponse,
-  type SecurityRbacResponse,
-} from "./security-rbac-contract";
+import { parseSecurityRbacResponse, type SecurityRbacResponse } from "./security-rbac-contract";
 
 export type {
   SecurityRbacAssignment,
