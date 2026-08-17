@@ -1,6 +1,8 @@
 import { createServer } from "node:http";
 import { createPublicKey, generateKeyPairSync, sign } from "node:crypto";
 
+import { securityRbacFixture } from "./security-rbac-fixture.mjs";
+
 const host = "127.0.0.1";
 const port = 54321;
 const origin = `http://${host}:${port}`;
@@ -258,11 +260,16 @@ export function startQaMockServices() {
             "analytics.read",
             "operations.read",
             "finance.read",
+            "security.audit.read",
             "ai.business.read",
             "settings.read",
           ],
         },
       });
+    }
+
+    if (method === "GET" && url.pathname === "/api/v1/security/role-permission-matrix") {
+      return json(response, 200, securityRbacFixture());
     }
 
     if (method === "GET" && url.pathname === "/api/v1/finance/profit-loss") {
