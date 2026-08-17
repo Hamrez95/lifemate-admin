@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { parseFinanceProfitLossResponse } from "../src/lib/admin-api/finance-profit-loss";
+import { parseFinanceProfitLossResponse } from "../src/lib/admin-api/finance-profit-loss-contract";
 
 const readyResponse = {
   state: "ready",
