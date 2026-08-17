@@ -24,11 +24,23 @@ The preview/staging workflow is intentionally artifact-only:
 
 `scripts/delivery-contract-check.mjs` enforces the source-controlled parts of this contract in regular CI and in the artifact workflow itself.
 
+## Reproducible CI / supply-chain boundary
+
+Admin workflows are treated as executable supply-chain inputs, not documentation:
+
+- external GitHub Actions must be pinned to full 40-character commit SHAs; mutable tags or branches are rejected;
+- dependency installation in workflows must use `npm ci` with the committed lockfile; `npm install` is rejected;
+- `pull_request_target` is forbidden for Admin workflows because untrusted pull-request code must not inherit a privileged workflow context;
+- checkout credentials are not persisted and workflow permissions remain least-privilege;
+- `scripts/workflow-supply-chain-check.mjs` scans every `.github/workflows/*.yml` file and fails regular CI when these invariants regress.
+
+Pinning an action SHA makes the selected action revision immutable. Updating a pinned action is therefore an explicit reviewed source change rather than an implicit tag movement.
+
 ## Preview review gate
 
 A pull request that changes application/runtime delivery paths should have:
 
-1. `admin-web-ci` green (format, secret boundary, delivery contract, lint, typecheck, unit tests, production build).
+1. `admin-web-ci` green (format, secret boundary, delivery contract, workflow supply-chain policy, lint, typecheck, unit tests, production build).
 2. `admin-qa` green when its path filters apply.
 3. `admin-preview-staging` green with a generated QA artifact when its path filters apply.
 4. No unresolved review thread or known security/accessibility regression.
