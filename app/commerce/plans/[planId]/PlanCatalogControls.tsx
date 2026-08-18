@@ -2,11 +2,7 @@
 
 import { useActionState, useState } from "react";
 
-import {
-  initialCatalogActionState,
-  schedulePriceAction,
-  updatePlanAction,
-} from "../actions";
+import { initialCatalogActionState, schedulePriceAction, updatePlanAction } from "../actions";
 import styles from "../catalog.module.css";
 
 type Props = {
@@ -21,12 +17,7 @@ type Props = {
   canPriceWrite: boolean;
 };
 
-export function PlanCatalogControls({
-  plan,
-  productStatus,
-  canPlanWrite,
-  canPriceWrite,
-}: Props) {
+export function PlanCatalogControls({ plan, productStatus, canPlanWrite, canPriceWrite }: Props) {
   const [planState, planAction, planPending] = useActionState(
     updatePlanAction,
     initialCatalogActionState,
@@ -45,9 +36,7 @@ export function PlanCatalogControls({
         <header>
           <span className={styles.permissionBadge}>commerce.plan.write</span>
           <h3>نام و lifecycle پلن</h3>
-          <p>
-            Retire فقط فروش جدید را متوقف می‌کند؛ Subscription موجود حذف یا جابه‌جا نمی‌شود.
-          </p>
+          <p>Retire فقط فروش جدید را متوقف می‌کند؛ Subscription موجود حذف یا جابه‌جا نمی‌شود.</p>
         </header>
         {!canPlanWrite ? (
           <p className={styles.safetyNote}>مجوز تغییر lifecycle این پلن را ندارید.</p>
@@ -163,7 +152,9 @@ export function PlanCatalogControls({
                   pattern="[A-Za-z0-9][A-Za-z0-9._:-]{1,39}"
                   disabled={pricePending}
                 />
-                <small>مثلاً manual، google_play یا app_store؛ فقط provider canonical استفاده شود.</small>
+                <small>
+                  مثلاً manual، google_play یا app_store؛ فقط provider canonical استفاده شود.
+                </small>
               </label>
               <label className={styles.field}>
                 <span>دوره پرداخت · ماه</span>
