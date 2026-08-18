@@ -7,17 +7,11 @@ type BeforeInstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 };
 
-function isStandalone() {
-  return window.matchMedia("(display-mode: standalone)").matches;
-}
-
 export function InstallPwaButton() {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
 
   useEffect(() => {
-    setInstalled(isStandalone());
-
     const onBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
       setInstallPrompt(event as BeforeInstallPromptEvent);
