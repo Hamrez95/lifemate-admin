@@ -19,10 +19,7 @@ export function PlanCreateForm({
   products: ProductOption[];
   canWrite: boolean;
 }) {
-  const [state, action, pending] = useActionState(
-    createPlanAction,
-    initialCatalogActionState,
-  );
+  const [state, action, pending] = useActionState(createPlanAction, initialCatalogActionState);
   const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID());
   const activeProducts = products.filter((product) => product.status === "Active");
 
@@ -79,7 +76,9 @@ export function PlanCreateForm({
                 placeholder="premium-yearly"
                 disabled={pending}
               />
-              <small>بعد از ساخت تغییر نمی‌کند؛ برای API، entitlement و گزارش‌ها استفاده می‌شود.</small>
+              <small>
+                بعد از ساخت تغییر نمی‌کند؛ برای API، entitlement و گزارش‌ها استفاده می‌شود.
+              </small>
             </label>
             <label className={styles.field}>
               <span>نام نمایشی</span>
