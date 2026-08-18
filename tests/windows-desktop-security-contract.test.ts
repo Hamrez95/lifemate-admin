@@ -13,9 +13,10 @@ describe("Windows desktop security contract", () => {
     expect(workflow).toContain("npm ci --no-audit --no-fund");
   });
 
-  it("binds the packaged server to loopback only", () => {
+  it("binds the packaged server to the fixed loopback-only desktop origin", () => {
+    expect(launcher).toContain("private const int DesktopPort = 47821");
+    expect(launcher).toContain("new TcpListener(IPAddress.Loopback, DesktopPort)");
     expect(launcher).toContain('startInfo.Environment["HOSTNAME"] = "127.0.0.1"');
-    expect(launcher).toContain("new TcpListener(IPAddress.Loopback, 0)");
     expect(launcher).not.toContain("0.0.0.0");
   });
 
