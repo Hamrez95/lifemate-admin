@@ -39,7 +39,9 @@ describe("parseAuditLogResponse", () => {
 
   it("rejects malformed or non-date event payloads fail-closed", () => {
     expect(parseAuditLogResponse({ events: [{ ...event, elevatedAccess: "false" }] })).toBeNull();
-    expect(parseAuditLogResponse({ events: [{ ...event, occurredAtUtc: "not-a-date" }] })).toBeNull();
+    expect(
+      parseAuditLogResponse({ events: [{ ...event, occurredAtUtc: "not-a-date" }] }),
+    ).toBeNull();
     expect(parseAuditLogResponse({ events: {} })).toBeNull();
   });
 });
