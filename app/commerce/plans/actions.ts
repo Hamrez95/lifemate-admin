@@ -166,7 +166,11 @@ export async function schedulePriceAction(
     return { status: "invalid", message: "دوره پرداخت معتبر نیست." };
   }
   const billingPeriodMonths = Number(periodRaw);
-  if (!Number.isSafeInteger(billingPeriodMonths) || billingPeriodMonths < 1 || billingPeriodMonths > 120) {
+  if (
+    !Number.isSafeInteger(billingPeriodMonths) ||
+    billingPeriodMonths < 1 ||
+    billingPeriodMonths > 120
+  ) {
     return { status: "invalid", message: "دوره پرداخت باید بین ۱ تا ۱۲۰ ماه باشد." };
   }
   if (!AMOUNT_PATTERN.test(amountMinor)) {
