@@ -122,8 +122,8 @@ async function PlansContent({ canPlanWrite }: { canPlanWrite: boolean }) {
           <span className={styles.eyebrow}>Commerce · Monetization Control Plane</span>
           <h2 id="commerce-plans-title">پلن و قیمت فروش را بدون دست‌کاری تاریخچه مدیریت کن</h2>
           <p>
-            Plan هویت تجاری محصول است و Price یک نسخه زمان‌دار. تغییر قیمت، مبلغ قبلی یا Subscription
-            موجود را overwrite نمی‌کند؛ همه mutationها دلیل، idempotency و Audit دارند.
+            Plan هویت تجاری محصول است و Price یک نسخه زمان‌دار. تغییر قیمت، مبلغ قبلی یا
+            Subscription موجود را overwrite نمی‌کند؛ همه mutationها دلیل، idempotency و Audit دارند.
           </p>
           <div className={styles.heroActions}>
             <Link className={styles.secondaryLink} href="/commerce">
@@ -152,8 +152,8 @@ async function PlansContent({ canPlanWrite }: { canPlanWrite: boolean }) {
         }}
       />
       <p className={styles.safetyNote}>
-        Trial، Entitlement assignment و bulk Discount Code فقط بعد از قرارداد canonical مربوط به خودشان
-        فعال می‌شوند؛ این صفحه داده یا قابلیت جعلی نمی‌سازد.
+        Trial، Entitlement assignment و bulk Discount Code فقط بعد از قرارداد canonical مربوط به
+        خودشان فعال می‌شوند؛ این صفحه داده یا قابلیت جعلی نمی‌سازد.
       </p>
     </div>
   );
@@ -174,7 +174,9 @@ export default async function CommercePlansPage() {
         {!canRead ? (
           <AdminPageState state="forbidden" />
         ) : (
-          <Suspense fallback={<AdminPageState state="loading" title="در حال دریافت کاتالوگ فروش" />}>
+          <Suspense
+            fallback={<AdminPageState state="loading" title="در حال دریافت کاتالوگ فروش" />}
+          >
             <PlansContent canPlanWrite={canPlanWrite} />
           </Suspense>
         )}
