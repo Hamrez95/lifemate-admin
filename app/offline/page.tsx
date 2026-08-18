@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import styles from "./offline.module.css";
 
 export const metadata = {
@@ -24,9 +26,9 @@ export default function OfflinePage() {
             <small>Offline shell فقط وضعیت اتصال را نمایش می‌دهد.</small>
           </div>
         </div>
-        <a className={styles.retry} href="/">
+        <Link className={styles.retry} href="/">
           تلاش دوباره
-        </a>
+        </Link>
       </section>
     </main>
   );
