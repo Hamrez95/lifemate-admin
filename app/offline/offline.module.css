@@ -5,8 +5,7 @@
   padding: 28px;
   background:
     radial-gradient(circle at 15% 10%, rgba(23, 173, 104, 0.14), transparent 28%),
-    radial-gradient(circle at 85% 20%, rgba(52, 120, 246, 0.12), transparent 30%),
-    #f8f7f4;
+    radial-gradient(circle at 85% 20%, rgba(52, 120, 246, 0.12), transparent 30%), #f8f7f4;
   color: #152238;
 }
 
