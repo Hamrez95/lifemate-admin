@@ -5,6 +5,7 @@ import { PwaRegistrar } from "@/src/components/pwa/PwaRegistrar";
 
 import "./globals.css";
 import "./admin-auth.css";
+import "./pwa.css";
 
 export const metadata: Metadata = {
   applicationName: "LifeMate Command Center",
