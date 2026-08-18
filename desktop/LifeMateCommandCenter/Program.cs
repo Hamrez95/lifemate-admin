@@ -21,15 +21,21 @@ internal static class Program
     [STAThread]
     private static async Task<int> Main(string[] args)
     {
+        var smokeTest = args.Any(static arg =>
+            string.Equals(arg, "--smoke-test", StringComparison.OrdinalIgnoreCase)
+        );
         using var mutex = new Mutex(true, @"Local\LifeMateCommandCenter", out var createdNew);
         if (!createdNew)
         {
-            MessageBox.Show(
-                "LifeMate Command Center is already running.",
-                AppName,
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
+            if (!smokeTest)
+            {
+                MessageBox.Show(
+                    "LifeMate Command Center is already running.",
+                    AppName,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
+            }
             return 0;
         }
 
@@ -61,7 +67,7 @@ internal static class Program
                 );
             }
 
-            if (args.Any(static arg => string.Equals(arg, "--smoke-test", StringComparison.OrdinalIgnoreCase)))
+            if (smokeTest)
             {
                 await VerifyDesktopSurfaceAsync(localOrigin);
                 return 0;
@@ -89,12 +95,29 @@ internal static class Program
         }
         catch (Exception exception)
         {
-            MessageBox.Show(
-                exception.Message,
-                AppName,
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error
-            );
+            if (smokeTest)
+            {
+                try
+                {
+                    File.WriteAllText(
+                        Path.Combine(AppContext.BaseDirectory, "smoke-error.txt"),
+                        exception.ToString()
+                    );
+                }
+                catch
+                {
+                    // Diagnostics are best-effort; the non-zero exit code remains authoritative.
+                }
+            }
+            else
+            {
+                MessageBox.Show(
+                    exception.Message,
+                    AppName,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
             return 1;
         }
         finally
