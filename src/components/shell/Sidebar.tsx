@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { useAdminSession } from "@/src/components/auth/AdminSessionProvider";
 import { LifeMateLogo } from "@/src/components/brand/LifeMateLogo";
@@ -11,9 +12,12 @@ type SidebarProps = { activeSlug: string };
 
 export function Sidebar({ activeSlug }: SidebarProps) {
   const admin = useAdminSession();
+  const pathname = usePathname();
   const visibleWorkspaces = workspaces.filter((workspace) =>
     canAccessWorkspace(workspace, admin.permissions),
   );
+  const canReadAudit = admin.permissions.includes("security.audit.read");
+  const auditActive = pathname === "/security/audit" || pathname.startsWith("/security/audit/");
 
   return (
     <aside className="sidebar" aria-label="ناوبری اصلی Command Center">
@@ -28,10 +32,10 @@ export function Sidebar({ activeSlug }: SidebarProps) {
               <li key={workspace.slug || "command-center"}>
                 <Link
                   className="nav-item"
-                  data-active={active ? "true" : "false"}
+                  data-active={active && !auditActive ? "true" : "false"}
                   href={workspaceHref(workspace)}
                   aria-label={workspace.label}
-                  aria-current={active ? "page" : undefined}
+                  aria-current={active && !auditActive ? "page" : undefined}
                 >
                   <span className="nav-item__symbol" aria-hidden="true">
                     {workspace.symbol}
@@ -39,6 +43,20 @@ export function Sidebar({ activeSlug }: SidebarProps) {
                   <span>{workspace.label}</span>
                   {workspace.slug === "ai" && <span className="nav-item__badge">جدید</span>}
                 </Link>
+                {workspace.slug === "security" && active && canReadAudit ? (
+                  <Link
+                    className="nav-item nav-item--subroute"
+                    data-active={auditActive ? "true" : "false"}
+                    href="/security/audit"
+                    aria-label="گزارش ممیزی"
+                    aria-current={auditActive ? "page" : undefined}
+                  >
+                    <span className="nav-item__symbol" aria-hidden="true">
+                      ↳
+                    </span>
+                    <span>گزارش ممیزی</span>
+                  </Link>
+                ) : null}
               </li>
             );
           })}
