@@ -1,3 +1,4 @@
+import { InstallPwaButton } from "@/src/components/pwa/InstallPwaButton";
 import { GlobalCommandPalette } from "@/src/components/shell/GlobalCommandPalette";
 import { NotificationCenter } from "@/src/components/shell/NotificationCenter";
 import { OperatorMenu } from "@/src/components/shell/OperatorMenu";
@@ -13,6 +14,7 @@ export function Topbar({ title, subtitle }: TopbarProps) {
         {subtitle && <p>{subtitle}</p>}
       </div>
       <div className="topbar__actions">
+        <InstallPwaButton />
         <GlobalCommandPalette />
         <NotificationCenter />
         <OperatorMenu />

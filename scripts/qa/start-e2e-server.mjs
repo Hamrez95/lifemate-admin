@@ -14,6 +14,7 @@ const child = spawn(
       NEXT_PUBLIC_SUPABASE_URL: origin,
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "qa_publishable_key_only",
       NEXT_PUBLIC_ADMIN_API_URL: origin,
+      NEXT_PUBLIC_PWA_TEST: "1",
     },
   },
 );
