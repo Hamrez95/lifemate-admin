@@ -68,7 +68,7 @@ const columns: readonly AdminTableColumn<CommercePlanDistribution>[] = [
     key: "manage",
     header: "مدیریت",
     render: (row) => (
-      <Link className={styles.secondaryLink} href={`/commerce/plans/${row.planId}`}>
+      <Link className={styles.secondaryLink} href={`/commerce/plans/${row.planId}/manage`}>
         قیمت و lifecycle
       </Link>
     ),
@@ -141,7 +141,7 @@ async function PlansContent({ canPlanWrite }: { canPlanWrite: boolean }) {
       <PlanCreateForm products={data.products} canWrite={canPlanWrite} />
       <AdminDataTable
         title="کاتالوگ پلن‌ها"
-        description="پلن‌های بدون Subscriber نیز نمایش داده می‌شوند. برای قیمت و lifecycle وارد جزئیات هر پلن شوید."
+        description="پلن‌های بدون Subscriber نیز نمایش داده می‌شوند. برای قیمت و lifecycle وارد مدیریت هر پلن شوید."
         rows={data.planDistribution}
         columns={columns}
         rowKey={(row) => row.planId}
