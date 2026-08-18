@@ -84,9 +84,9 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
             <div>
               <strong id="audit-boundary-title">مرز فعلی API</strong>
               <p>
-                این نسخه فقط آخرین N رویداد را از endpoint محدودشده می‌خواند. فیلتر تاریخ و pagination
-                پایدار هنوز در قرارداد canonical موجود نیست؛ بنابراین این صفحه آن قابلیت‌ها را شبیه‌سازی
-                نمی‌کند.
+                این نسخه فقط آخرین N رویداد را از endpoint محدودشده می‌خواند. فیلتر تاریخ و
+                pagination پایدار هنوز در قرارداد canonical موجود نیست؛ بنابراین این صفحه آن
+                قابلیت‌ها را شبیه‌سازی نمی‌کند.
               </p>
             </div>
           </section>
@@ -149,7 +149,9 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
                     {events.map((event) => (
                       <tr key={event.id}>
                         <td>
-                          <time dateTime={event.occurredAtUtc}>{formatDate(event.occurredAtUtc)}</time>
+                          <time dateTime={event.occurredAtUtc}>
+                            {formatDate(event.occurredAtUtc)}
+                          </time>
                         </td>
                         <td>
                           <strong>{event.action}</strong>
