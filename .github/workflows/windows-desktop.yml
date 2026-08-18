@@ -101,9 +101,15 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          & "dist/LifeMate-Command-Center-Windows-x64/LifeMateCommandCenter.exe" --smoke-test
-          if ($LASTEXITCODE -ne 0) {
-            throw "Windows portable smoke test failed with exit code $LASTEXITCODE"
+          $package = "dist/LifeMate-Command-Center-Windows-x64"
+          $executable = Join-Path $package "LifeMateCommandCenter.exe"
+          $process = Start-Process -FilePath $executable -ArgumentList "--smoke-test" -Wait -PassThru
+          if ($process.ExitCode -ne 0) {
+            $diagnostic = Join-Path $package "smoke-error.txt"
+            if (Test-Path $diagnostic) {
+              Get-Content $diagnostic | Write-Error
+            }
+            throw "Windows portable smoke test failed with exit code $($process.ExitCode)"
           }
 
       - name: Create ZIP and checksum
