@@ -1,0 +1,132 @@
+name: admin-windows-desktop
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "desktop/**"
+      - "tests/windows-desktop-security-contract.test.ts"
+      - "next.config.ts"
+      - ".github/workflows/windows-desktop.yml"
+      - "app/manifest.ts"
+      - "public/sw.js"
+  push:
+    branches: [main]
+    paths:
+      - "desktop/**"
+      - "tests/windows-desktop-security-contract.test.ts"
+      - "next.config.ts"
+      - ".github/workflows/windows-desktop.yml"
+      - "app/manifest.ts"
+      - "public/sw.js"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: admin-windows-desktop-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_PUBLIC_SUPABASE_URL: https://bwdvmniywyyijjauipnh.supabase.co
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_6YpBDD0gAPcenbYGukOeWg_fZXxUb27
+  NEXT_PUBLIC_ADMIN_API_URL: https://bwdvmniywyyijjauipnh.supabase.co/functions/v1/lifemate-admin-api
+
+jobs:
+  build-windows-portable:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          show-progress: false
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Desktop security contract
+        run: npx vitest run tests/windows-desktop-security-contract.test.ts
+
+      - name: Build standalone Command Center
+        run: npm run build
+
+      - name: Build Windows launcher
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          dotnet --info
+          dotnet publish desktop/LifeMateCommandCenter/LifeMateCommandCenter.csproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:PublishTrimmed=false `
+            --output dist/launcher
+
+      - name: Assemble portable package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $package = Join-Path $PWD "dist/LifeMate-Command-Center-Windows-x64"
+          $app = Join-Path $package "app"
+          $node = Join-Path $package "runtime/node"
+
+          New-Item -ItemType Directory -Force -Path $app | Out-Null
+          New-Item -ItemType Directory -Force -Path $node | Out-Null
+
+          Copy-Item -Path ".next/standalone/*" -Destination $app -Recurse -Force
+          New-Item -ItemType Directory -Force -Path (Join-Path $app ".next") | Out-Null
+          Copy-Item -Path ".next/static" -Destination (Join-Path $app ".next/static") -Recurse -Force
+          Copy-Item -Path "public" -Destination (Join-Path $app "public") -Recurse -Force
+          Copy-Item -Path (Get-Command node).Source -Destination (Join-Path $node "node.exe") -Force
+          Copy-Item -Path "dist/launcher/LifeMateCommandCenter.exe" -Destination (Join-Path $package "LifeMateCommandCenter.exe") -Force
+          Copy-Item -Path "desktop/WINDOWS_README.txt" -Destination (Join-Path $package "README.txt") -Force
+
+          @{
+            SupabaseUrl = $env:NEXT_PUBLIC_SUPABASE_URL
+            SupabasePublishableKey = $env:NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+            AdminApiUrl = $env:NEXT_PUBLIC_ADMIN_API_URL
+          } | ConvertTo-Json | Set-Content -Path (Join-Path $package "config.json") -Encoding utf8NoBOM
+
+      - name: Smoke portable executable
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $package = "dist/LifeMate-Command-Center-Windows-x64"
+          $executable = Join-Path $package "LifeMateCommandCenter.exe"
+          $process = Start-Process -FilePath $executable -ArgumentList "--smoke-test" -Wait -PassThru
+          if ($process.ExitCode -ne 0) {
+            $diagnostic = Join-Path $package "smoke-error.txt"
+            if (Test-Path $diagnostic) {
+              Get-Content $diagnostic | Write-Error
+            }
+            throw "Windows portable smoke test failed with exit code $($process.ExitCode)"
+          }
+
+      - name: Create ZIP and checksum
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $zip = "dist/LifeMate-Command-Center-Windows-x64.zip"
+          Compress-Archive -Path "dist/LifeMate-Command-Center-Windows-x64/*" -DestinationPath $zip -CompressionLevel Optimal
+          $hash = (Get-FileHash -Algorithm SHA256 $zip).Hash.ToLowerInvariant()
+          "$hash  LifeMate-Command-Center-Windows-x64.zip" | Set-Content "dist/LifeMate-Command-Center-Windows-x64.sha256" -Encoding ascii
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: LifeMate-Command-Center-Windows-x64
+          path: |
+            dist/LifeMate-Command-Center-Windows-x64.zip
+            dist/LifeMate-Command-Center-Windows-x64.sha256
+          if-no-files-found: error
+          retention-days: 14
