@@ -14,8 +14,8 @@ export default function OfflinePage() {
         <p className={styles.eyebrow}>LifeMate Command Center · Secure PWA</p>
         <h1 id="offline-title">اتصال به Command Center برقرار نیست</h1>
         <p>
-          برای حفاظت از اطلاعات مدیریتی، پنل هیچ صفحه، گزارش، نشست یا پاسخ API را برای استفاده آفلاین
-          ذخیره نمی‌کند. پس از بازگشت اتصال، صفحه را دوباره بارگذاری کنید.
+          برای حفاظت از اطلاعات مدیریتی، پنل هیچ صفحه، گزارش، نشست یا پاسخ API را برای استفاده
+          آفلاین ذخیره نمی‌کند. پس از بازگشت اتصال، صفحه را دوباره بارگذاری کنید.
         </p>
         <div className={styles.safety}>
           <span aria-hidden="true">✓</span>
