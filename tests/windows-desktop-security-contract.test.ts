@@ -23,7 +23,9 @@ describe("Windows desktop security contract", () => {
     expect(workflow).toContain("NEXT_PUBLIC_SUPABASE_URL");
     expect(workflow).toContain("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
     expect(workflow).toContain("NEXT_PUBLIC_ADMIN_API_URL");
-    expect(workflow).not.toMatch(/SUPABASE_SERVICE_ROLE|SERVICE_ROLE_KEY|DATABASE_URL|DB_PASSWORD/u);
+    expect(workflow).not.toMatch(
+      /SUPABASE_SERVICE_ROLE|SERVICE_ROLE_KEY|DATABASE_URL|DB_PASSWORD/u,
+    );
     expect(launcher).toContain('StartsWith("sb_publishable_"');
   });
 
@@ -38,7 +40,9 @@ describe("Windows desktop security contract", () => {
     expect(launcher).toContain("supabaseUri.Scheme != Uri.UriSchemeHttps");
     expect(launcher).toContain("adminApiUri.Scheme != Uri.UriSchemeHttps");
     expect(launcher).toContain("adminApiUri.Host, supabaseUri.Host");
-    expect(workflow).toContain("https://bwdvmniywyyijjauipnh.supabase.co/functions/v1/lifemate-admin-api");
+    expect(workflow).toContain(
+      "https://bwdvmniywyyijjauipnh.supabase.co/functions/v1/lifemate-admin-api",
+    );
   });
 
   it("documents the unsigned test-build boundary", () => {
