@@ -51,9 +51,9 @@ async function ManagementContent({
           <span className={styles.eyebrow}>Commerce · Plan Control</span>
           <h2 id="plan-management-title">{data.plan.name}</h2>
           <p>
-            کد پایدار <span className={styles.code}>{data.plan.code}</span> برای محصول {data.product.name}.
-            این سطح فقط lifecycle و نسخه جدید قیمت را تغییر می‌دهد و Subscription موجود را دست‌کاری
-            نمی‌کند.
+            کد پایدار <span className={styles.code}>{data.plan.code}</span> برای محصول{" "}
+            {data.product.name}. این سطح فقط lifecycle و نسخه جدید قیمت را تغییر می‌دهد و
+            Subscription موجود را دست‌کاری نمی‌کند.
           </p>
           <div className={styles.heroActions}>
             <Link className={styles.secondaryLink} href={`/commerce/plans/${planId}`}>
@@ -77,8 +77,8 @@ async function ManagementContent({
       />
 
       <p className={styles.safetyNote}>
-        این نسخه عمداً reprice کردن Subscription موجود، Trial policy و Entitlement assignment را انجام
-        نمی‌دهد. هرکدام فقط بعد از قرارداد canonical و سیاست migration مستقل فعال می‌شوند.
+        این نسخه عمداً reprice کردن Subscription موجود، Trial policy و Entitlement assignment را
+        انجام نمی‌دهد. هرکدام فقط بعد از قرارداد canonical و سیاست migration مستقل فعال می‌شوند.
       </p>
     </div>
   );
