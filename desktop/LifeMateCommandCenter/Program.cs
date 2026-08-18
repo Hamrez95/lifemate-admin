@@ -15,6 +15,7 @@ internal sealed record DesktopConfig(
 internal static class Program
 {
     private const string AppName = "LifeMate Command Center";
+    private const int DesktopPort = 47821;
     private static Process? _serverProcess;
 
     [STAThread]
@@ -49,9 +50,9 @@ internal static class Program
                 );
             }
 
-            var port = GetFreeLoopbackPort();
-            var localOrigin = new Uri($"http://127.0.0.1:{port}");
-            _serverProcess = StartServer(nodePath, serverPath, serverDirectory, port, config);
+            EnsureDesktopPortAvailable();
+            var localOrigin = new Uri($"http://127.0.0.1:{DesktopPort}");
+            _serverProcess = StartServer(nodePath, serverPath, serverDirectory, DesktopPort, config);
 
             if (!await WaitForServerAsync(localOrigin, _serverProcess))
             {
@@ -153,13 +154,18 @@ internal static class Program
         return config;
     }
 
-    private static int GetFreeLoopbackPort()
+    private static void EnsureDesktopPortAvailable()
     {
-        var listener = new TcpListener(IPAddress.Loopback, 0);
-        listener.Start();
+        var listener = new TcpListener(IPAddress.Loopback, DesktopPort);
         try
         {
-            return ((IPEndPoint)listener.LocalEndpoint).Port;
+            listener.Start();
+        }
+        catch (SocketException)
+        {
+            throw new InvalidOperationException(
+                $"Local port {DesktopPort} is already in use. Close the conflicting process and try again."
+            );
         }
         finally
         {
