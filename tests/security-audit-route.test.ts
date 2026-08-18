@@ -21,7 +21,7 @@ describe("ADM-SEC-003 audit read surface boundary", () => {
     expect(client).toContain("createServerSupabaseClient");
     expect(client).toContain('url.searchParams.set("limit"');
     expect(client).toContain('cache: "no-store"');
-    expect(client).toContain('Authorization: `Bearer ${token}`');
+    expect(client).toContain("Authorization: `Bearer ${token}`");
     expect(client).not.toMatch(/\.from\(|service_role|SUPABASE_SERVICE|DATABASE_URL/i);
   });
 
