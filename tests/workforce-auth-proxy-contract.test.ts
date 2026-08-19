@@ -22,7 +22,10 @@ describe("workforce authentication transport boundary", () => {
     expect(route).toContain('new Set(["login", "signup", "activate_founder"])');
     expect(route).toContain("/functions/v1/lifemate-admin-auth");
     expect(route).toContain("apikey: publishableKey");
-    expect(route).toContain("Origin: new URL(request.url).origin");
+    expect(route).toContain("Origin: browserOrigin");
+    expect(route).toContain('request.headers.get("x-forwarded-host")');
+    expect(route).toContain('request.headers.get("x-forwarded-proto")');
+    expect(route).toContain('fetchSite !== "same-origin"');
     expect(route).toContain('cache: "no-store"');
     expect(route).not.toMatch(/SERVICE_ROLE|serviceRole|SUPABASE_DB_URL|DATABASE_URL/);
   });
