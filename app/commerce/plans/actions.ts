@@ -25,6 +25,8 @@ const CURRENCY_PATTERN = /^[A-Z]{3}$/;
 const PROVIDER_PATTERN = /^[a-z0-9][a-z0-9._:-]{1,39}$/;
 const AMOUNT_PATTERN = /^\d+$/;
 const POSTGRES_BIGINT_MAX = 9_223_372_036_854_775_807n;
+const PLAN_CHANGE_CONFIRMATION = "confirm-plan-change";
+const PRICE_CHANGE_CONFIRMATION = "confirm-price-version";
 
 function text(formData: FormData, key: string): string {
   const value = formData.get(key);
@@ -112,8 +114,12 @@ export async function updatePlanAction(
   const name = text(formData, "name");
   const status = text(formData, "status");
   const reason = text(formData, "reason");
+  const confirmation = text(formData, "confirmation");
 
   if (!idempotencyKey) return { status: "invalid", message: "شناسه امن درخواست معتبر نیست." };
+  if (confirmation !== PLAN_CHANGE_CONFIRMATION) {
+    return { status: "invalid", message: "تأیید صریح تغییر lifecycle لازم است." };
+  }
   if (!UUID_PATTERN.test(planId)) return { status: "invalid", message: "شناسه پلن معتبر نیست." };
   if (name.length < 2 || name.length > 120) {
     return { status: "invalid", message: "نام پلن باید بین ۲ تا ۱۲۰ نویسه باشد." };
@@ -150,8 +156,12 @@ export async function schedulePriceAction(
   const amountMinor = text(formData, "amountMinor");
   const effectiveFrom = text(formData, "effectiveFrom");
   const reason = text(formData, "reason");
+  const confirmation = text(formData, "confirmation");
 
   if (!idempotencyKey) return { status: "invalid", message: "شناسه امن درخواست معتبر نیست." };
+  if (confirmation !== PRICE_CHANGE_CONFIRMATION) {
+    return { status: "invalid", message: "تأیید صریح نسخه جدید قیمت لازم است." };
+  }
   if (!UUID_PATTERN.test(planId)) return { status: "invalid", message: "شناسه پلن معتبر نیست." };
   if (countryRaw && !COUNTRY_PATTERN.test(countryRaw)) {
     return { status: "invalid", message: "کد کشور باید دو حرف مانند IR باشد." };
