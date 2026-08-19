@@ -27,7 +27,6 @@ export function getPublicRuntimeConfig(): PublicRuntimeConfig {
     "NEXT_PUBLIC_SUPABASE_URL",
     required("NEXT_PUBLIC_SUPABASE_URL", process.env.NEXT_PUBLIC_SUPABASE_URL),
   );
-  const explicitAdminAuthUrl = process.env.NEXT_PUBLIC_ADMIN_AUTH_URL?.trim();
 
   return {
     supabaseUrl,
@@ -39,8 +38,9 @@ export function getPublicRuntimeConfig(): PublicRuntimeConfig {
       "NEXT_PUBLIC_ADMIN_API_URL",
       required("NEXT_PUBLIC_ADMIN_API_URL", process.env.NEXT_PUBLIC_ADMIN_API_URL),
     ),
-    adminAuthUrl: explicitAdminAuthUrl
-      ? httpsOrLocalhost("NEXT_PUBLIC_ADMIN_AUTH_URL", explicitAdminAuthUrl)
-      : `${supabaseUrl}/functions/v1/lifemate-admin-auth`,
+    // Keep workforce authentication same-origin in the browser. The server route
+    // forwards to the public Supabase Edge Function without exposing the browser
+    // to cross-origin preflight/CORS failures.
+    adminAuthUrl: "/api/auth/workforce",
   };
 }
