@@ -7,7 +7,7 @@ import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createBrowserSupabaseClient } from "@/src/lib/supabase/client";
 
 type Step = "provider" | "mfa-challenge" | "mfa-enroll" | "checking";
-type Mode = "login" | "signup";
+type Mode = "login" | "signup" | "activate";
 
 type Enrollment = {
   factorId: string;
@@ -36,6 +36,12 @@ function friendlyAuthError(code?: string): string {
       return "حساب شما ثبت شده اما هنوز نقش و دسترسی آن توسط مدیر سیستم فعال نشده است.";
     case "invalid_registration":
       return "نام کاربری، نام نمایشی یا رمز عبور معتبر نیست. رمز عبور کارکنان باید حداقل ۸ کاراکتر باشد.";
+    case "invalid_activation":
+      return "کد فعال‌سازی یا اطلاعات حساب معتبر نیست.";
+    case "activation_already_used":
+      return "کد فعال‌سازی قبلاً استفاده شده است. حالا از بخش ورود عادی استفاده کنید.";
+    case "activation_unavailable":
+      return "فعال‌سازی حساب در حال حاضر کامل نشد. دوباره تلاش کنید.";
     case "registration_unavailable":
       return "ثبت‌نام در حال حاضر کامل نشد. دوباره تلاش کنید یا با مدیر سیستم تماس بگیرید.";
     default:
@@ -53,6 +59,7 @@ export function AdminLoginFlow() {
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [activationCode, setActivationCode] = useState("");
   const [code, setCode] = useState("");
   const [factorId, setFactorId] = useState<string | null>(null);
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
@@ -144,35 +151,59 @@ export function AdminLoginFlow() {
     return data;
   }
 
+  async function applySession(data: WorkforceAuthResponse) {
+    const accessToken = data.session?.access_token;
+    const refreshToken = data.session?.refresh_token;
+    if (!accessToken || !refreshToken) throw new Error("invalid_session");
+
+    const { error } = await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
+    if (error) throw error;
+
+    if (data.access_state === "pending_role") {
+      await supabase.auth.signOut({ scope: "local" });
+      throw new Error("pending_role");
+    }
+    if (data.access_state === "founder_compat") {
+      continueToCommandCenter();
+      return;
+    }
+    await prepareMfa();
+  }
+
   async function signInWithUsername(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setPending(true);
     setMessage(null);
     try {
       const data = await callWorkforceAuth({ action: "login", username, password });
-      const accessToken = data.session?.access_token;
-      const refreshToken = data.session?.refresh_token;
-      if (!accessToken || !refreshToken) throw new Error("invalid_session");
-
-      const { error } = await supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      });
-      if (error) throw error;
-
-      if (data.access_state === "pending_role") {
-        await supabase.auth.signOut({ scope: "local" });
-        setMessage(friendlyAuthError("pending_role"));
-        return;
-      }
-      if (data.access_state === "founder_compat") {
-        continueToCommandCenter();
-        return;
-      }
-      await prepareMfa();
+      await applySession(data);
     } catch (error) {
-      const code = error instanceof Error ? error.message : undefined;
-      setMessage(friendlyAuthError(code));
+      const errorCode = error instanceof Error ? error.message : undefined;
+      setMessage(friendlyAuthError(errorCode));
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function activateFounder(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setPending(true);
+    setMessage(null);
+    try {
+      const data = await callWorkforceAuth({
+        action: "activate_founder",
+        username,
+        password,
+        activationCode,
+      });
+      setActivationCode("");
+      await applySession(data);
+    } catch (error) {
+      const errorCode = error instanceof Error ? error.message : undefined;
+      setMessage(friendlyAuthError(errorCode));
     } finally {
       setPending(false);
     }
@@ -240,7 +271,7 @@ export function AdminLoginFlow() {
     <div className="auth-flow">
       {step === "provider" && (
         <>
-          <div className="auth-tabs" role="tablist" aria-label="روش ورود Command Center">
+          <div className="auth-tabs auth-tabs--three" role="tablist" aria-label="روش ورود Command Center">
             <button
               type="button"
               className="auth-tab"
@@ -250,7 +281,7 @@ export function AdminLoginFlow() {
                 setMessage(null);
               }}
             >
-              ورود با نام کاربری
+              ورود
             </button>
             <button
               type="button"
@@ -262,6 +293,17 @@ export function AdminLoginFlow() {
               }}
             >
               ثبت‌نام
+            </button>
+            <button
+              type="button"
+              className="auth-tab"
+              data-active={mode === "activate"}
+              onClick={() => {
+                setMode("activate");
+                setMessage(null);
+              }}
+            >
+              فعال‌سازی مدیر
             </button>
           </div>
 
@@ -299,7 +341,7 @@ export function AdminLoginFlow() {
                 می‌شود.
               </p>
             </form>
-          ) : (
+          ) : mode === "signup" ? (
             <form className="auth-form" onSubmit={signUpWithUsername}>
               <label htmlFor="admin-display-name">نام نمایشی</label>
               <input
@@ -353,6 +395,50 @@ export function AdminLoginFlow() {
                 حساب جدید بدون Role ساخته می‌شود و تا زمان تأیید مدیر سیستم هیچ دسترسی مدیریتی
                 ندارد.
               </p>
+            </form>
+          ) : (
+            <form className="auth-form" onSubmit={activateFounder}>
+              <p className="auth-help">
+                این بخش فقط برای اولین فعال‌سازی حساب Founder است و کد آن پس از یک بار استفاده باطل
+                می‌شود.
+              </p>
+              <label htmlFor="admin-activate-username">نام کاربری مدیر</label>
+              <input
+                id="admin-activate-username"
+                type="text"
+                autoComplete="username"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                dir="ltr"
+                required
+                disabled={pending}
+              />
+              <label htmlFor="admin-activate-password">رمز عبور اولیه</label>
+              <input
+                id="admin-activate-password"
+                type="password"
+                autoComplete="new-password"
+                minLength={6}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                dir="ltr"
+                required
+                disabled={pending}
+              />
+              <label htmlFor="admin-activation-code">کد فعال‌سازی یک‌بارمصرف</label>
+              <input
+                id="admin-activation-code"
+                type="password"
+                autoComplete="one-time-code"
+                value={activationCode}
+                onChange={(event) => setActivationCode(event.target.value)}
+                dir="ltr"
+                required
+                disabled={pending}
+              />
+              <button type="submit" className="primary-button" disabled={pending}>
+                {pending ? "در حال فعال‌سازی..." : "فعال‌سازی و ورود"}
+              </button>
             </form>
           )}
         </>
