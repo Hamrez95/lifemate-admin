@@ -1,107 +1,74 @@
 # LifeMate Command Center — Current State
 
-Last verified: 2026-08-16 (Asia/Tehran)
+Last verified: 2026-08-19 (Asia/Tehran)
 
-## Repositories
+## Scope and source of truth
 
-- Admin web: `Hamrez95/lifemate-admin`
-- Core: `Hamrez95/LifeMate`
-- Master roadmap: `Hamrez95/lifemate-admin#49`
-- GitHub Issues are canonical; Trello is portfolio/focus only.
+- Admin implementation scope: `Hamrez95/lifemate-admin` only.
+- Core (`Hamrez95/LifeMate`) is inspected only for required Admin API/database dependencies.
+- GitHub live state, connected Supabase, Vercel and Trello evidence override stale snapshots.
+- Master roadmap remains `Hamrez95/lifemate-admin#49`.
+- Merge does not imply production rollout.
 
-## Verified GitHub state
+## Live GitHub anchor
 
-At the ADM-HOME-001 milestone sync:
+- Admin `main`: `2755d833d821b3f872cc5d86ffac415b084dc2ea` (PR #114).
+- PR #114 added username/password workforce auth through the dedicated server boundary, pending employee signup, Founder first-run activation support, profile/password change, responsive profile navigation and updated browser QA.
+- Exact PR #114 head `46735efe214980f2eefbce3a3f34e8dcbc5fe057` passed `admin-web-ci`, `admin-qa` and `admin-preview-staging`.
+- Open Admin PR #108 is the first batch of #106 Monetization Control Plane and remains intentionally unmerged until it is refreshed on current `main` and its already-merged Core dependency is re-verified live.
 
-- Commerce remains complete through `ADM-COM-005` (#16): Core PR #197 / Admin PR #70.
-- `ADM-PLAT-002` (#4) Secure Global Search / Command Palette: Core #198 / Admin #72.
-- `ADM-PLAT-003` (#30) Admin Notification Center / Alerts: Core #201 / Admin #74.
-- `ADM-QA-001` (#5) is complete via Admin PR #76; permanent `admin-web-ci` and `admin-qa` are active.
-- `ADM-PERF-001` (#39) is complete via Core PR #231 / Admin PR #78.
-- `ADM-HOME-001` (#6) is complete via Admin PR #80.
-- Admin #80 passed format, browser-secret boundary, lint, strict TypeScript, unit tests, production build and permanent browser/security/a11y QA before merge.
-- Existing permission-enforced Core APIs were sufficient for Home; no new Core endpoint/migration was required for #6.
-- Master Issue #49 sets `ADM-ANL-002` (#13) Acquisition / Activation / Retention / Cohorts as the current task.
-- Source merge is **not** production deployment.
+## Live Supabase anchor
 
-Repository/privacy hardening and delivery environments remain tracked under `ADM-OPS-003` (#38).
+Connected LifeMate project is `ACTIVE_HEALTHY` and now contains the real Admin control plane.
 
-## Completed source-control milestones
+Verified live:
 
-- `ADM-PLAT-001` — Admin PR #51
-- `ADM-USR-001` — Core PR #131 / Admin PR #52
-- `ADM-USR-002` — Core PRs #145 + #146 / Admin PR #54
-- `ADM-DATA-001` — Core PR #148 / Admin PR #55
-- `ADM-ANL-001` — Core PR #151 / Admin PR #57
-- `ADM-REL-001` — Core PR #152 / Admin PR #58
-- `ADM-REL-002` — Core PR #153 / Admin PR #59
-- `ADM-USR-004` — Core PR #154 / Admin PR #60
-- `ADM-USR-003` — Core PR #156 / Admin PR #61
-- `ADM-SUP-001` — Core PR #157 / Admin PR #62
-- `ADM-SUP-002` — Core PR #158 + runtime repair #159 / Admin PR #63
-- `ADM-COM-001` — Core PR #161 + correctness repair #176 / Admin PR #64
-- `ADM-COM-002` — Core PR #177 / Admin PR #66
-- `ADM-COM-003` — Core PR #186 / Admin PR #67
-- `ADM-COM-004` — Core PR #189 / Admin PR #69
-- `ADM-COM-005` — Core PR #197 / Admin PR #70
-- `ADM-PLAT-002` — Core PR #198 / Admin PR #72
-- `ADM-PLAT-003` — Core PR #201 / Admin PR #74
-- `ADM-QA-001` — Admin PR #76
-- `ADM-PERF-001` — Core PR #231 / Admin PR #78
-- `ADM-HOME-001` — Admin PR #80
+- `admin` schema exists with RLS enabled on Admin tables.
+- `lifemate-admin-api` is ACTIVE with JWT verification enabled.
+- `lifemate-admin-auth` is ACTIVE and implements the dedicated workforce auth boundary.
+- Founder workforce profile exists with stored username `hamrez`, member status `Active`, and active role `founder`.
+- Founder activation record still reports `consumed=false`; do not claim one-time activation completion until live evidence changes.
+- Supabase security advisor still reports Leaked Password Protection disabled. Password auth must not be treated as production-hardened until owner activation issue #115/#116 is completed with real evidence.
 
-## Founder / Executive Overview now in main
+The deployed `lifemate-admin-api` release points to Core commit `846be65bdd50aa0d8fd0d03164fbff84fbd25d45`, which is ahead of and contains the merged Admin commerce dependency from LifeMate PR #370.
 
-- Home composes only existing server-side, permission-enforced Analytics KPI, Relationship overview, Commerce overview and Notification Center sources.
-- Unauthorized domain sources are not queried, so hidden cards do not leak counts.
-- Every displayed metric carries source/freshness state; unavailable/not-instrumented remains explicit and never becomes a fabricated zero.
-- Analytics preserves the canonical KPI `partial`/`unavailable` semantics rather than upgrading fallback data into false certainty.
-- Active Relationships are labelled only as Relationships; Consent and Access Grant remain separate concepts.
-- Active subscriptions are labelled as subscriptions and are not inferred to be paying-user counts.
-- Support/Security/Operations/Finance/Product attention states reuse the permission-filtered Notification Center and safe deep links.
-- Raw Health and Women Health are excluded from Home aggregation.
-- Per-source failure isolation keeps one unavailable backend source from collapsing the full executive page.
+## Live Vercel anchor
 
-## Permanent QA gate
+- Team project `lifemate-admin` now exists on Vercel.
+- Recent PR #114 preview deployments are `READY`; the previous build-rate-limit condition is no longer blocking preview builds.
+- A production deployment of current `main` still requires fresh evidence. Do not claim production readiness from a preview deployment.
+- GitHub still records the Vercel status on merge `2755d833...` as failed because that merge itself was not deployed while the rate limit was active.
 
-- `.github/workflows/qa.yml` remains a permanent PR/main browser-security gate in addition to `admin-web-ci`.
-- It runs synthetic existing-account OTP -> verified TOTP -> AAL2 -> server claims/workspace authorization without production accounts, PII/PHI, service-role credentials or an application auth bypass.
-- Representative permission-denial tests, Axe serious/critical checks, desktop/mobile visual baselines, RTL/keyboard smoke and zero CI retries remain enforced.
-- Do not weaken this gate to make future UI work pass.
+## Live Trello anchor
 
-## Dataset performance guardrails now in main
+Trello `🎯 Command Center` remains portfolio/focus tracking only. Its Command Center cards are stale relative to current GitHub/Supabase state and must be synchronized after the next verified merge/deployment checkpoint.
 
-- All current pageable Command Center API list surfaces are capped at 100 pages and 100 rows/page; endpoint-specific stricter page-size limits remain stricter.
-- Relationship ledger keeps its independent maximum 366-day time window; Global Search keeps its stricter page-size and DB-backed per-admin throttle.
-- Serialized Admin API JSON responses fail closed above 512 KiB before browser delivery.
-- Admin responses remain `Cache-Control: no-store` and Admin server clients keep bounded timeouts of at most 10 seconds.
-- Performance fixtures/telemetry remain privacy-minimized: no production PII/PHI, raw search text, tokens, payment credentials, provider payloads, Health or Women Health content.
-- Timeout/unavailable remains distinct from empty/zero data.
+## Completed product foundation
 
-## Security rules that remain active
+The master roadmap records the following functional streams as source-complete: shared data table, global search, notifications, browser/security QA, executive overview, performance guardrails, Windows PWA/portable build, user directory/360/actions, analytics/cohorts, relationships/consent/grants, support, commerce reads/actions, marketing/content/calendar, finance workspaces, operations status, RBAC matrix, role detail/admin membership, and read-only AI insights.
 
-1. Admin Web does not query sensitive database tables directly.
-2. Supabase Auth + mandatory MFA/AAL2 precede the Admin API boundary.
-3. Authorization is enforced by the Admin API, not navigation visibility.
-4. Medical data remains default-deny for ordinary admin roles; Women Health is stricter.
-5. Relationship, Consent, Access Grant and Admin Permission remain separate concepts.
-6. Admin role never implies caregiver access.
-7. Elevated sensitive access remains blocked until the approved break-glass workflow is implemented.
-8. Browser code never receives `service_role`, database passwords or payment-provider credentials.
-9. Missing data/search/alert/KPI sources stay explicit unavailable/not-instrumented; production facts are never fabricated.
+Security boundaries remain unchanged:
 
-## Current implementation order
+1. Browser code never receives `service_role`, database passwords, provider secrets or direct privileged DB access.
+2. Auth success alone grants zero Command Center authorization; Admin membership/RBAC is server-side and default-deny.
+3. Sensitive Admin APIs remain permission-enforced and AAL2-gated unless a narrowly documented temporary Founder bootstrap compatibility path is explicitly in force.
+4. Health and Women Health remain unavailable to ordinary roles; break-glass is not implemented yet.
+5. Missing production facts stay explicit unavailable/not-instrumented and are never fabricated.
+6. Authenticated Admin pages and API responses remain non-cacheable.
 
-Completed through:
+## Current execution order
 
-1. `ADM-HOME-001` Founder / Executive Overview (#6)
+1. Restore a real Vercel deployment path for current `main`, smoke the login/auth boundary, and record deployment evidence.
+2. Refresh Admin PR #108 on current `main`; dependency LifeMate PR #370 is already merged and present in the deployed Admin API release. Re-run all Admin CI/QA before merge.
+3. Continue #106 in small dependency-safe batches only where canonical server contracts already exist.
+4. Continue #113/#111/#44 only through audited server-side workforce contracts. Do not bypass MFA, membership, role or audit boundaries.
+5. Keep #115/#116 as owner/manual production-auth hardening work; no fake completion for Google provider, MFA recovery, leaked-password protection or production origin/domain setup.
+6. Finish #43 only when canonical server date filtering and stable cursor pagination exist.
+7. #45, #10 and #25 remain gated by their security/production prerequisites.
 
-Current strictly sequential focus:
+## Delivery rules
 
-2. `ADM-ANL-002` Acquisition / Activation / Retention / Cohorts (#13)
-
-The exact current sequence is maintained in Master Issue #49.
-
-## Production rollout
-
-Merged code is not proof of production deployment. Production migration/function rollout, Founder bootstrap, environment configuration and smoke verification remain gated under `ADM-OPS-002` (#24). Re-verify live Supabase immediately before any production write.
+- Fresh short-lived branch and PR for each implementation batch.
+- Format/lint/strict TypeScript/unit/integration/build/browser/a11y/security gates must pass on the exact head before merge.
+- Review the diff independently from implementation before merge.
+- Production mutation/deployment gates remain explicit; source completion alone is not rollout evidence.
