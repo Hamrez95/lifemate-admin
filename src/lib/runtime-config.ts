@@ -2,6 +2,7 @@ export type PublicRuntimeConfig = {
   supabaseUrl: string;
   supabasePublishableKey: string;
   adminApiUrl: string;
+  adminAuthUrl: string;
 };
 
 function required(name: string, value: string | undefined): string {
@@ -22,11 +23,14 @@ function httpsOrLocalhost(name: string, value: string): string {
 }
 
 export function getPublicRuntimeConfig(): PublicRuntimeConfig {
+  const supabaseUrl = httpsOrLocalhost(
+    "NEXT_PUBLIC_SUPABASE_URL",
+    required("NEXT_PUBLIC_SUPABASE_URL", process.env.NEXT_PUBLIC_SUPABASE_URL),
+  );
+  const explicitAdminAuthUrl = process.env.NEXT_PUBLIC_ADMIN_AUTH_URL?.trim();
+
   return {
-    supabaseUrl: httpsOrLocalhost(
-      "NEXT_PUBLIC_SUPABASE_URL",
-      required("NEXT_PUBLIC_SUPABASE_URL", process.env.NEXT_PUBLIC_SUPABASE_URL),
-    ),
+    supabaseUrl,
     supabasePublishableKey: required(
       "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
@@ -35,5 +39,8 @@ export function getPublicRuntimeConfig(): PublicRuntimeConfig {
       "NEXT_PUBLIC_ADMIN_API_URL",
       required("NEXT_PUBLIC_ADMIN_API_URL", process.env.NEXT_PUBLIC_ADMIN_API_URL),
     ),
+    adminAuthUrl: explicitAdminAuthUrl
+      ? httpsOrLocalhost("NEXT_PUBLIC_ADMIN_AUTH_URL", explicitAdminAuthUrl)
+      : `${supabaseUrl}/functions/v1/lifemate-admin-auth`,
   };
 }

@@ -18,6 +18,7 @@ export function Sidebar({ activeSlug }: SidebarProps) {
   );
   const canReadAudit = admin.permissions.includes("security.audit.read");
   const auditActive = pathname === "/security/audit" || pathname.startsWith("/security/audit/");
+  const profileActive = pathname === "/profile" || pathname.startsWith("/profile/");
 
   return (
     <aside className="sidebar" aria-label="ناوبری اصلی Command Center">
@@ -60,12 +61,26 @@ export function Sidebar({ activeSlug }: SidebarProps) {
               </li>
             );
           })}
+          <li>
+            <Link
+              className="nav-item"
+              data-active={profileActive ? "true" : "false"}
+              href="/profile"
+              aria-label="پروفایل و تغییر رمز عبور"
+              aria-current={profileActive ? "page" : undefined}
+            >
+              <span className="nav-item__symbol" aria-hidden="true">
+                ◎
+              </span>
+              <span>پروفایل و امنیت</span>
+            </Link>
+          </li>
         </ul>
       </nav>
       <div className="sidebar__status" role="status" aria-label="وضعیت امنیت نشست مدیریت">
         <span className="status-dot" aria-hidden="true" />
         <div>
-          <strong>نشست AAL2 فعال</strong>
+          <strong>نشست مدیریتی فعال</strong>
           <span>مجوزها از Admin API دریافت شده‌اند.</span>
         </div>
       </div>

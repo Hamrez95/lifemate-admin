@@ -8,14 +8,33 @@ function source(path: string): string {
 }
 
 describe("ADM-QA-001 authentication and MFA security contract", () => {
-  it("never creates a LifeMate account from the internal admin login flow", () => {
+  it("uses the dedicated workforce username auth boundary without exposing internal email", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
-    expect(login).toContain("shouldCreateUser: false");
-    expect(login).toContain("فقط حساب موجود LifeMate پذیرفته است");
-    expect(login).toContain('type: "sms"');
+    const runtime = source("src/lib/runtime-config.ts");
+    expect(login).toContain("config.adminAuthUrl");
+    expect(runtime).toContain("lifemate-admin-auth");
+    expect(runtime).toContain("NEXT_PUBLIC_ADMIN_AUTH_URL");
+    expect(login).toContain('action: "login"');
+    expect(login).toContain('action: "signup"');
+    expect(login).toContain('action: "activate_founder"');
+    expect(login).toContain("ثبت‌نام با نام کاربری و رمز عبور");
+    expect(login).toContain("ورود با نام کاربری");
+    expect(login).toContain("supabase.auth.setSession");
+    expect(login).not.toContain('type="email"');
+    expect(login).not.toContain('type="tel"');
+    expect(login).not.toContain("service_role");
+    expect(login).not.toContain("SUPABASE_SERVICE_ROLE");
   });
 
-  it("requires AAL2 and supports verified TOTP challenge or controlled enrollment", () => {
+  it("keeps self-registration default-deny until Founder assigns a role", () => {
+    const login = source("src/components/auth/AdminLoginFlow.tsx");
+    expect(login).toContain('data.access_state === "pending_role"');
+    expect(login).toContain("تا زمان تأیید مدیر سیستم");
+    expect(login).toContain("هیچ دسترسی مدیریتی");
+    expect(login).toContain('signOut({ scope: "local" })');
+  });
+
+  it("requires AAL2 for ordinary staff and supports verified TOTP challenge or controlled enrollment", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
     expect(login).toContain("mfa.getAuthenticatorAssuranceLevel()");
     expect(login).toContain('aal.currentLevel === "aal2"');
@@ -24,6 +43,7 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(login).toContain("mfa.challengeAndVerify");
     expect(login).toContain('factorType: "totp"');
     expect(login).toContain("Command Center نشست AAL2 را الزامی می‌کند");
+    expect(login).toContain('data.access_state === "founder_compat"');
   });
 
   it("validates identity claims before using a session token server-side", () => {
@@ -40,7 +60,7 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(proxy).not.toContain("supabase.auth.getSession(");
   });
 
-  it("keeps login errors generic and does not log OTP TOTP or enrollment secrets", () => {
+  it("keeps login errors generic and does not log passwords, TOTP or enrollment secrets", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
     expect(login).toContain("friendlyAuthError");
     expect(login).not.toContain("console.log");

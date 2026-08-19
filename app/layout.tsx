@@ -5,6 +5,8 @@ import { PwaRegistrar } from "@/src/components/pwa/PwaRegistrar";
 
 import "./globals.css";
 import "./admin-auth.css";
+import "./admin-auth-enhanced.css";
+import "./admin-auth-founder.css";
 import "./pwa.css";
 
 export const metadata: Metadata = {
