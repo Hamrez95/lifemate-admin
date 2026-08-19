@@ -8,29 +8,28 @@ function source(path: string): string {
 }
 
 describe("ADM-QA-001 authentication and MFA security contract", () => {
-  it("uses workforce Google OAuth without exposing email or SMS signup UX", () => {
+  it("uses the dedicated workforce username auth boundary without exposing internal email", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
-    expect(login).toContain('provider: "google"');
-    expect(login).toContain('prompt: "select_account"');
-    expect(login).toContain("/auth/callback");
-    expect(login).not.toContain("signInWithOtp");
-    expect(login).not.toContain("signInWithPassword");
-    expect(login).not.toContain("signUp(");
+    expect(login).toContain("lifemate-admin-auth");
+    expect(login).toContain('action: "login"');
+    expect(login).toContain('action: "signup"');
+    expect(login).toContain("ثبت‌نام با نام کاربری و رمز عبور");
+    expect(login).toContain("ورود با نام کاربری");
+    expect(login).toContain("supabase.auth.setSession");
     expect(login).not.toContain('type="email"');
     expect(login).not.toContain('type="tel"');
+    expect(login).not.toContain("service_role");
+    expect(login).not.toContain("SUPABASE_SERVICE_ROLE");
   });
 
-  it("exchanges the OAuth code server-side, never open-redirects, and never caches session redirects", () => {
-    const callback = source("app/auth/callback/route.ts");
-    expect(callback).toContain("exchangeCodeForSession(code)");
-    expect(callback).toContain('new URL("/login", requestUrl.origin)');
-    expect(callback).toContain('"Cache-Control", "private, no-store"');
-    expect(callback).not.toContain('searchParams.get("next")');
-    expect(callback).not.toContain("service_role");
-    expect(callback).not.toContain("SUPABASE_SERVICE_ROLE");
+  it("keeps self-registration default-deny until Founder assigns a role", () => {
+    const login = source("src/components/auth/AdminLoginFlow.tsx");
+    expect(login).toContain('data.access_state === "pending_role"');
+    expect(login).toContain("تا زمان تأیید مدیر سیستم هیچ دسترسی مدیریتی ندارد");
+    expect(login).toContain('signOut({ scope: "local" })');
   });
 
-  it("requires AAL2 and supports verified TOTP challenge or controlled enrollment", () => {
+  it("requires AAL2 for ordinary staff and supports verified TOTP challenge or controlled enrollment", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
     expect(login).toContain("mfa.getAuthenticatorAssuranceLevel()");
     expect(login).toContain('aal.currentLevel === "aal2"');
@@ -39,6 +38,7 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(login).toContain("mfa.challengeAndVerify");
     expect(login).toContain('factorType: "totp"');
     expect(login).toContain("Command Center نشست AAL2 را الزامی می‌کند");
+    expect(login).toContain('data.access_state === "founder_compat"');
   });
 
   it("validates identity claims before using a session token server-side", () => {
@@ -55,7 +55,7 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(proxy).not.toContain("supabase.auth.getSession(");
   });
 
-  it("keeps login errors generic and does not log TOTP or enrollment secrets", () => {
+  it("keeps login errors generic and does not log passwords, TOTP or enrollment secrets", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
     expect(login).toContain("friendlyAuthError");
     expect(login).not.toContain("console.log");
