@@ -1,16 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
-async function signInWithMfa(page: Page) {
-  await page.goto("/login");
-  await page.getByLabel("شماره موبایل حساب LifeMate").fill("09121234567");
-  await page.getByRole("button", { name: "دریافت کد ورود" }).click();
-  await page.getByLabel("کد پیامک").fill("123456");
-  await page.getByRole("button", { name: "تأیید کد" }).click();
-  await page.getByLabel("کد Authenticator").fill("654321");
-  await page.getByRole("button", { name: "ورود امن" }).click();
-  await expect(page).toHaveURL(/\/$/);
-}
+import { signInWithMfa } from "./helpers/sign-in";
 
 async function expectNoViewportOverflow(page: Page) {
   const viewportOverflow = await page.evaluate(
