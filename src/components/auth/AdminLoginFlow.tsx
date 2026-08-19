@@ -180,7 +180,8 @@ export function AdminLoginFlow() {
             required
           />
           <p className="auth-help">
-            حساب جدید از Command Center ساخته نمی‌شود؛ فقط حساب موجود و تأییدشده LifeMate پذیرفته است.
+            حساب جدید از Command Center ساخته نمی‌شود؛ فقط حساب موجود و تأییدشده LifeMate پذیرفته
+            است.
           </p>
           <button type="submit" className="primary-button" disabled={pending}>
             {pending ? "در حال بررسی..." : "ادامه ورود امن"}
