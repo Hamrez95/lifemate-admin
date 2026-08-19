@@ -271,7 +271,11 @@ export function AdminLoginFlow() {
     <div className="auth-flow">
       {step === "provider" && (
         <>
-          <div className="auth-tabs auth-tabs--three" role="tablist" aria-label="روش ورود Command Center">
+          <div
+            className="auth-tabs auth-tabs--three"
+            role="tablist"
+            aria-label="روش ورود Command Center"
+          >
             <button
               type="button"
               className="auth-tab"
