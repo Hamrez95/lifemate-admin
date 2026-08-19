@@ -1,11 +1,11 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const supabaseOrigin = "http://127.0.0.1:54322";
-const authOrigin = `${supabaseOrigin}/auth/v1`;
+const authOrigin = "http://127.0.0.1:54321/auth/v1";
+const workforceAuthUrl = "http://127.0.0.1:54322/functions/v1/lifemate-admin-auth";
 
 function workforceAuthRequest(response: { url(): string }) {
-  return response.url() === `${supabaseOrigin}/functions/v1/lifemate-admin-auth`;
+  return response.url() === workforceAuthUrl;
 }
 
 test("active staff completes username/password then TOTP MFA before an authorized workspace is rendered", async ({
