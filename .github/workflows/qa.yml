@@ -52,8 +52,8 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Install pinned Chromium for Playwright
-        run: npx playwright install --with-deps chromium
+      - name: Install pinned Chromium headless shell for Playwright
+        run: npx playwright install --with-deps --only-shell chromium
 
       - name: Run security denial matrix and browser QA
         run: npm run test:qa
