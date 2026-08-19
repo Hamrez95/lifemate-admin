@@ -7,7 +7,7 @@ function authRequest(path: string) {
   return (response: { url(): string }) => response.url().startsWith(`${authOrigin}${path}`);
 }
 
-test("existing account completes OTP then TOTP MFA before an authorized workspace is rendered", async ({
+test("existing account completes password auth then TOTP MFA before an authorized workspace is rendered", async ({
   page,
 }) => {
   const authRequests: string[] = [];
@@ -18,17 +18,14 @@ test("existing account completes OTP then TOTP MFA before an authorized workspac
   });
 
   await page.goto("/login");
-  await page.getByLabel("شماره موبایل حساب LifeMate").fill("09121234567");
+  await page.getByLabel("ایمیل حساب LifeMate").fill("founder@lifemate.test");
+  await page.getByLabel("رمز عبور LifeMate").fill("qa-password-123");
 
-  const otpRequest = page.waitForResponse(authRequest("/otp"));
-  await page.getByRole("button", { name: "دریافت کد ورود" }).click();
-  expect((await otpRequest).ok()).toBe(true);
-  await expect(page.getByText("کد یک‌بارمصرف برای حساب موجود ارسال شد.")).toBeVisible();
-
-  await page.getByLabel("کد پیامک").fill("123456");
-  const verifyOtp = page.waitForResponse(authRequest("/verify"));
-  await page.getByRole("button", { name: "تأیید کد" }).click();
-  expect((await verifyOtp).ok()).toBe(true);
+  const passwordRequest = page.waitForResponse((response) =>
+    response.url().startsWith(`${authOrigin}/token?grant_type=password`),
+  );
+  await page.getByRole("button", { name: "ادامه ورود امن" }).click();
+  expect((await passwordRequest).ok()).toBe(true);
 
   await expect(page.getByRole("heading", { name: "تأیید دومرحله‌ای" })).toBeVisible();
   await expect(page.getByText(/Command Center نشست AAL2 را الزامی می‌کند/)).toBeVisible();
@@ -38,6 +35,7 @@ test("existing account completes OTP then TOTP MFA before an authorized workspac
 
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { name: "مرکز فرماندهی" })).toBeVisible();
+  expect(authRequests.some((value) => value === "POST /auth/v1/token")).toBe(true);
   expect(
     authRequests.some((value) => value.includes("/factors/") && value.endsWith("/challenge")),
   ).toBe(true);
