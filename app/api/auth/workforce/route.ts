@@ -46,9 +46,10 @@ function requestOriginCandidates(request: Request): ReadonlySet<string> {
   const requestUrl = new URL(request.url);
   const origins = new Set<string>([requestUrl.origin]);
   const forwardedProto = firstForwardedValue(request.headers.get("x-forwarded-proto"));
-  const protocol = forwardedProto === "http" || forwardedProto === "https"
-    ? `${forwardedProto}:`
-    : requestUrl.protocol;
+  const protocol =
+    forwardedProto === "http" || forwardedProto === "https"
+      ? `${forwardedProto}:`
+      : requestUrl.protocol;
 
   const hosts = [
     firstForwardedValue(request.headers.get("x-forwarded-host")),
