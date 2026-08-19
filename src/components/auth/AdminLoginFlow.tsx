@@ -278,6 +278,8 @@ export function AdminLoginFlow() {
           >
             <button
               type="button"
+              role="tab"
+              aria-selected={mode === "login"}
               className="auth-tab"
               data-active={mode === "login"}
               onClick={() => {
@@ -289,6 +291,8 @@ export function AdminLoginFlow() {
             </button>
             <button
               type="button"
+              role="tab"
+              aria-selected={mode === "signup"}
               className="auth-tab"
               data-active={mode === "signup"}
               onClick={() => {
@@ -300,6 +304,8 @@ export function AdminLoginFlow() {
             </button>
             <button
               type="button"
+              role="tab"
+              aria-selected={mode === "activate"}
               className="auth-tab"
               data-active={mode === "activate"}
               onClick={() => {
