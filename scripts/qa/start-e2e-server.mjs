@@ -3,8 +3,8 @@ import { spawn } from "node:child_process";
 import { startQaMockServices } from "./mock-services.mjs";
 import { startQaWorkforceAuth } from "./mock-workforce-auth.mjs";
 
-const { server: mockServer, origin: adminApiOrigin } = await startQaMockServices();
-const { server: workforceAuthServer, origin: supabaseOrigin } = await startQaWorkforceAuth();
+const { server: mockServer, origin: canonicalOrigin } = await startQaMockServices();
+const { server: workforceAuthServer, origin: workforceAuthOrigin } = await startQaWorkforceAuth();
 
 const child = spawn(
   process.platform === "win32" ? "npm.cmd" : "npm",
@@ -13,9 +13,10 @@ const child = spawn(
     stdio: "inherit",
     env: {
       ...process.env,
-      NEXT_PUBLIC_SUPABASE_URL: supabaseOrigin,
+      NEXT_PUBLIC_SUPABASE_URL: canonicalOrigin,
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "qa_publishable_key_only",
-      NEXT_PUBLIC_ADMIN_API_URL: adminApiOrigin,
+      NEXT_PUBLIC_ADMIN_API_URL: canonicalOrigin,
+      NEXT_PUBLIC_ADMIN_AUTH_URL: `${workforceAuthOrigin}/functions/v1/lifemate-admin-auth`,
       NEXT_PUBLIC_PWA_TEST: "1",
     },
   },
