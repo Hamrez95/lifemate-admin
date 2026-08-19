@@ -15,9 +15,9 @@ test("protected Command Center redirects an unauthenticated browser to workforce
   await page.goto("/");
   await expect(page).toHaveURL(/\/login(?:\?|$)/);
   await expect(page.getByRole("heading", { name: /خوش آمدید/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: "ورود" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "ثبت‌نام" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "فعال‌سازی مدیر" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "ورود", exact: true })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "ثبت‌نام", exact: true })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "فعال‌سازی مدیر", exact: true })).toBeVisible();
 });
 
 test("login and pending staff signup are Persian RTL, keyboard reachable and accessible", async ({
@@ -32,9 +32,11 @@ test("login and pending staff signup are Persian RTL, keyboard reachable and acc
   await expect(password).toBeVisible();
   await username.fill("staff.test");
   await password.fill("qa-password");
-  await expect(page.getByRole("button", { name: "ورود با نام کاربری" })).toBeEnabled();
+  await expect(
+    page.getByRole("button", { name: "ورود با نام کاربری", exact: true }),
+  ).toBeEnabled();
 
-  await page.getByRole("button", { name: "ثبت‌نام" }).click();
+  await page.getByRole("tab", { name: "ثبت‌نام", exact: true }).click();
   await expect(page.getByLabel("نام نمایشی")).toBeVisible();
   await expect(page.getByLabel("تکرار رمز عبور")).toBeVisible();
   await expect(page.getByText(/هیچ دسترسی مدیریتی/)).toBeVisible();
