@@ -2,10 +2,10 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 const authOrigin = "http://127.0.0.1:54321/auth/v1";
-const workforceAuthUrl = "http://127.0.0.1:54322/functions/v1/lifemate-admin-auth";
+const workforceAuthPath = "/api/auth/workforce";
 
 function workforceAuthRequest(response: { url(): string }) {
-  return response.url() === workforceAuthUrl;
+  return new URL(response.url()).pathname === workforceAuthPath;
 }
 
 test("active staff completes username/password then TOTP MFA before an authorized workspace is rendered", async ({
