@@ -8,11 +8,13 @@ function source(path: string): string {
 }
 
 describe("ADM-QA-001 authentication and MFA security contract", () => {
-  it("never creates a LifeMate account from the internal admin login flow", () => {
+  it("uses the existing canonical LifeMate identity without creating an account", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
-    expect(login).toContain("shouldCreateUser: false");
-    expect(login).toContain("فقط حساب موجود LifeMate پذیرفته است");
-    expect(login).toContain('type: "sms"');
+    expect(login).toContain("supabase.auth.signInWithPassword");
+    expect(login).toContain("حساب جدید از Command Center ساخته نمی‌شود");
+    expect(login).not.toContain("signUp(");
+    expect(login).not.toContain("signInWithOtp");
+    expect(login).not.toContain("shouldCreateUser");
   });
 
   it("requires AAL2 and supports verified TOTP challenge or controlled enrollment", () => {
@@ -40,7 +42,7 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(proxy).not.toContain("supabase.auth.getSession(");
   });
 
-  it("keeps login errors generic and does not log OTP TOTP or enrollment secrets", () => {
+  it("keeps login errors generic and does not log password TOTP or enrollment secrets", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
     expect(login).toContain("friendlyAuthError");
     expect(login).not.toContain("console.log");
