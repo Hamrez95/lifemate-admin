@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -43,8 +44,11 @@ export function OperatorMenu() {
       </span>
       <span className="operator-chip__copy">
         <strong>{role}</strong>
-        <small>نشست مدیریتی AAL2</small>
+        <small>حساب مدیریتی LifeMate</small>
       </span>
+      <Link className="operator-chip__profile" href="/profile" aria-label="پروفایل و تغییر رمز عبور">
+        پروفایل
+      </Link>
       <button
         type="button"
         className="operator-chip__logout"
