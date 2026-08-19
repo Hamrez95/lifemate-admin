@@ -135,7 +135,7 @@ export function AdminLoginFlow() {
   async function callWorkforceAuth(
     payload: Record<string, string>,
   ): Promise<WorkforceAuthResponse> {
-    const response = await fetch(`${config.supabaseUrl}/functions/v1/lifemate-admin-auth`, {
+    const response = await fetch(config.adminAuthUrl, {
       method: "POST",
       headers: {
         apikey: config.supabasePublishableKey,
