@@ -82,6 +82,17 @@ export function PlanCatalogControls({ plan, productStatus, canPlanWrite, canPric
                 disabled={planPending}
               />
             </label>
+            <label className={styles.safetyNote}>
+              <input
+                name="confirmation"
+                type="checkbox"
+                value="confirm-plan-change"
+                required
+                disabled={planPending}
+              />{" "}
+              تأیید می‌کنم اثر lifecycle روی فروش جدید را بررسی کرده‌ام و Subscription موجود نباید
+              تغییر کند.
+            </label>
             <div className={styles.feedback} data-status={planState.status} aria-live="polite">
               {planState.message ?? ""}
             </div>
@@ -204,6 +215,17 @@ export function PlanCatalogControls({ plan, productStatus, canPlanWrite, canPric
               تغییر قیمت هیچ Subscription موجود را reprice نمی‌کند. سیاست grandfather / migration
               باید در task مستقل و صریح تعریف شود.
             </p>
+            <label className={styles.safetyNote}>
+              <input
+                name="confirmation"
+                type="checkbox"
+                value="confirm-price-version"
+                required
+                disabled={pricePending}
+              />{" "}
+              مبلغ، ارز، دوره و زمان شروع را بررسی کرده‌ام و تأیید می‌کنم این عملیات فقط یک نسخه جدید
+              قیمت می‌سازد.
+            </label>
             <div className={styles.feedback} data-status={priceState.status} aria-live="polite">
               {priceState.message ?? ""}
             </div>
