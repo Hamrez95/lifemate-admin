@@ -200,8 +200,8 @@ export function AdminLoginFlow() {
           </div>
           <h2>فعال‌سازی Authenticator</h2>
           <p className="auth-help">
-            این مرحله برای هر عضو Command Center اجباری است. QR را با Google Authenticator، Microsoft
-            Authenticator، 1Password یا برنامه TOTP مشابه اسکن کنید و سپس کد را وارد کنید.
+            این مرحله برای هر عضو Command Center اجباری است. QR را با Google Authenticator،
+            Microsoft Authenticator، 1Password یا برنامه TOTP مشابه اسکن کنید و سپس کد را وارد کنید.
           </p>
           <div className="mfa-qr">
             {/* eslint-disable-next-line @next/next/no-img-element */}
