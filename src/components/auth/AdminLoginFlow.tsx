@@ -3,10 +3,9 @@
 import { useRouter } from "next/navigation";
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
-import { normalizeAdminPhone } from "@/src/lib/auth/phone";
 import { createBrowserSupabaseClient } from "@/src/lib/supabase/client";
 
-type Step = "phone" | "otp" | "mfa-challenge" | "mfa-enroll" | "checking";
+type Step = "provider" | "mfa-challenge" | "mfa-enroll" | "checking";
 
 type Enrollment = {
   factorId: string;
@@ -15,15 +14,13 @@ type Enrollment = {
 };
 
 function friendlyAuthError(): string {
-  return "ورود کامل نشد. اطلاعات را بررسی کنید و دوباره تلاش کنید.";
+  return "ورود کامل نشد. دوباره تلاش کنید یا از مدیر سیستم برای بررسی عضویت کمک بگیرید.";
 }
 
 export function AdminLoginFlow() {
   const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const [step, setStep] = useState<Step>("checking");
-  const [phoneInput, setPhoneInput] = useState("");
-  const [phone, setPhone] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [factorId, setFactorId] = useState<string | null>(null);
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
@@ -79,7 +76,7 @@ export function AdminLoginFlow() {
       } = await supabase.auth.getSession();
       if (!active) return;
       if (!session) {
-        setStep("phone");
+        setStep("provider");
         return;
       }
       try {
@@ -87,7 +84,7 @@ export function AdminLoginFlow() {
       } catch {
         if (active) {
           setMessage(friendlyAuthError());
-          setStep("phone");
+          setStep("provider");
         }
       }
     })();
@@ -96,49 +93,23 @@ export function AdminLoginFlow() {
     };
   }, [prepareMfa, supabase]);
 
-  async function requestOtp(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const normalized = normalizeAdminPhone(phoneInput);
-    if (!normalized) {
-      setMessage("شماره موبایل را با فرمت معتبر وارد کنید؛ برای ایران می‌توانید با ۰۹ شروع کنید.");
-      return;
-    }
-
+  async function signInWithGoogle() {
     setPending(true);
     setMessage(null);
     try {
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: normalized,
-        options: { shouldCreateUser: false },
+      const redirectTo = `${window.location.origin}/auth/callback`;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo,
+          queryParams: { prompt: "select_account" },
+        },
       });
       if (error) throw error;
-      setPhone(normalized);
-      setCode("");
-      setStep("otp");
-      setMessage("کد یک‌بارمصرف برای حساب موجود ارسال شد.");
     } catch {
-      setMessage("امکان ارسال کد ورود نبود. اگر عضو LifeMate هستید کمی بعد دوباره تلاش کنید.");
-    } finally {
-      setPending(false);
-    }
-  }
-
-  async function verifyOtp(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!phone || !/^\d{6,8}$/.test(code)) {
-      setMessage("کد یک‌بارمصرف معتبر را وارد کنید.");
-      return;
-    }
-
-    setPending(true);
-    setMessage(null);
-    try {
-      const { error } = await supabase.auth.verifyOtp({ phone, token: code, type: "sms" });
-      if (error) throw error;
-      await prepareMfa();
-    } catch {
-      setMessage(friendlyAuthError());
-    } finally {
+      setMessage(
+        "ورود با Google در دسترس نیست. اگر این محیط تازه راه‌اندازی شده، تنظیمات Google provider را بررسی کنید.",
+      );
       setPending(false);
     }
   }
@@ -146,7 +117,7 @@ export function AdminLoginFlow() {
   async function verifyMfa(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!factorId || !/^\d{6,8}$/.test(code)) {
-      setMessage("کد برنامه احراز هویت را وارد کنید.");
+      setMessage("کد برنامه Authenticator را وارد کنید.");
       return;
     }
 
@@ -174,55 +145,25 @@ export function AdminLoginFlow() {
 
   return (
     <div className="auth-flow">
-      {step === "phone" && (
-        <form onSubmit={requestOtp} className="auth-form">
-          <label htmlFor="admin-phone">شماره موبایل حساب LifeMate</label>
-          <input
-            id="admin-phone"
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            value={phoneInput}
-            onChange={(event) => setPhoneInput(event.target.value)}
-            placeholder="۰۹۱۲۱۲۳۴۵۶۷"
-            dir="ltr"
-            disabled={pending}
-          />
-          <p className="auth-help">
-            ورود حساب جدید از این صفحه ساخته نمی‌شود؛ فقط حساب موجود LifeMate پذیرفته است.
-          </p>
-          <button type="submit" className="primary-button" disabled={pending}>
-            {pending ? "در حال ارسال..." : "دریافت کد ورود"}
-          </button>
-        </form>
-      )}
-
-      {step === "otp" && (
-        <form onSubmit={verifyOtp} className="auth-form">
-          <label htmlFor="admin-otp">کد پیامک</label>
-          <input
-            id="admin-otp"
-            className="code-input"
-            type="text"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            value={code}
-            onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 8))}
-            dir="ltr"
-            disabled={pending}
-          />
-          <button type="submit" className="primary-button" disabled={pending}>
-            {pending ? "در حال بررسی..." : "تأیید کد"}
-          </button>
+      {step === "provider" && (
+        <div className="auth-form">
           <button
             type="button"
-            className="text-button"
-            onClick={() => setStep("phone")}
+            className="primary-button"
+            onClick={() => void signInWithGoogle()}
             disabled={pending}
           >
-            اصلاح شماره موبایل
+            {pending ? "در حال انتقال امن..." : "ورود با Google"}
           </button>
-        </form>
+          <p className="auth-help">
+            فقط هویت‌های عضو تیم اجازه ادامه دارند. ورود موفق Google به‌تنهایی هیچ نقش یا دسترسی
+            مدیریتی ایجاد نمی‌کند.
+          </p>
+          <p className="auth-help">
+            ورود با شماره موبایل پس از فعال‌شدن provider پیامک canonical LifeMate اضافه می‌شود؛ این
+            صفحه SMS آزمایشی یا حساب جدید نمی‌سازد.
+          </p>
+        </div>
       )}
 
       {step === "mfa-challenge" && (
@@ -259,8 +200,8 @@ export function AdminLoginFlow() {
           </div>
           <h2>فعال‌سازی Authenticator</h2>
           <p className="auth-help">
-            این مرحله برای دسترسی مدیریتی اجباری است. QR را با یک برنامه TOTP اسکن کنید و سپس کد را
-            وارد کنید.
+            این مرحله برای هر عضو Command Center اجباری است. QR را با Google Authenticator، Microsoft
+            Authenticator، 1Password یا برنامه TOTP مشابه اسکن کنید و سپس کد را وارد کنید.
           </p>
           <div className="mfa-qr">
             {/* eslint-disable-next-line @next/next/no-img-element */}
