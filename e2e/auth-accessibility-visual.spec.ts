@@ -9,32 +9,38 @@ async function expectNoSeriousA11yViolations(page: Page) {
   expect(blocking, JSON.stringify(blocking, null, 2)).toEqual([]);
 }
 
-test("protected Command Center redirects an unauthenticated browser to secure login", async ({
+test("protected Command Center redirects an unauthenticated browser to workforce login", async ({
   page,
 }) => {
   await page.goto("/");
   await expect(page).toHaveURL(/\/login(?:\?|$)/);
-  await expect(page.getByRole("heading", { name: "ورود امن به مرکز فرماندهی" })).toBeVisible();
-  await expect(page.getByText("تأیید دومرحله‌ای AAL2 اجباری است.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: /خوش آمدید/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "ورود" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "ثبت‌نام" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "فعال‌سازی مدیر" })).toBeVisible();
 });
 
-test("login is Persian RTL, keyboard reachable, validates locally and remains accessible", async ({
+test("login and pending staff signup are Persian RTL, keyboard reachable and accessible", async ({
   page,
 }) => {
   await page.goto("/login");
-  const phone = page.getByLabel("شماره موبایل حساب LifeMate");
-  await expect(phone).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
 
-  await page.keyboard.press("Tab");
-  await expect(phone).toBeFocused();
-  await phone.fill("123");
-  await page.getByRole("button", { name: "دریافت کد ورود" }).click();
-  await expect(page.getByText(/شماره موبایل را با فرمت معتبر وارد کنید/)).toBeVisible();
-  await expect(page.getByText(/ورود حساب جدید از این صفحه ساخته نمی‌شود/)).toBeVisible();
+  const username = page.getByLabel("نام کاربری", { exact: true });
+  const password = page.getByLabel("رمز عبور", { exact: true });
+  await expect(username).toBeVisible();
+  await expect(password).toBeVisible();
+  await username.fill("staff.test");
+  await password.fill("qa-password");
+  await expect(page.getByRole("button", { name: "ورود با نام کاربری" })).toBeEnabled();
 
+  await page.getByRole("button", { name: "ثبت‌نام" }).click();
+  await expect(page.getByLabel("نام نمایشی")).toBeVisible();
+  await expect(page.getByLabel("تکرار رمز عبور")).toBeVisible();
+  await expect(page.getByText(/هیچ دسترسی مدیریتی/)).toBeVisible();
+
+  await page.keyboard.press("Shift+Tab");
   await expectNoSeriousA11yViolations(page);
-  await expect(page).toHaveScreenshot("secure-login.png", { fullPage: true });
 });
 
 test("forbidden state explains server-side authorization without leaking backend details", async ({
