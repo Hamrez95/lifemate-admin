@@ -125,7 +125,9 @@ export function AdminLoginFlow() {
     };
   }, [prepareMfa, supabase]);
 
-  async function callWorkforceAuth(payload: Record<string, string>): Promise<WorkforceAuthResponse> {
+  async function callWorkforceAuth(
+    payload: Record<string, string>,
+  ): Promise<WorkforceAuthResponse> {
     const response = await fetch(`${config.supabaseUrl}/functions/v1/lifemate-admin-auth`, {
       method: "POST",
       headers: {
@@ -194,7 +196,9 @@ export function AdminLoginFlow() {
       setMode("login");
       setPassword("");
       setConfirmPassword("");
-      setMessage("ثبت‌نام انجام شد. پس از اینکه مدیر سیستم Role شما را فعال کرد می‌توانید وارد شوید.");
+      setMessage(
+        "ثبت‌نام انجام شد. پس از اینکه مدیر سیستم Role شما را فعال کرد می‌توانید وارد شوید.",
+      );
     } catch (error) {
       const errorCode = error instanceof Error ? error.message : undefined;
       setMessage(friendlyAuthError(errorCode));
@@ -291,7 +295,8 @@ export function AdminLoginFlow() {
                 {pending ? "در حال ورود..." : "ورود با نام کاربری"}
               </button>
               <p className="auth-help">
-                ورود هویت را تأیید می‌کند؛ Role و Permission کارکنان فقط توسط مدیر سیستم فعال می‌شود.
+                ورود هویت را تأیید می‌کند؛ Role و Permission کارکنان فقط توسط مدیر سیستم فعال
+                می‌شود.
               </p>
             </form>
           ) : (
@@ -345,7 +350,8 @@ export function AdminLoginFlow() {
                 {pending ? "در حال ثبت‌نام..." : "ثبت‌نام با نام کاربری و رمز عبور"}
               </button>
               <p className="auth-help">
-                حساب جدید بدون Role ساخته می‌شود و تا زمان تأیید مدیر سیستم هیچ دسترسی مدیریتی ندارد.
+                حساب جدید بدون Role ساخته می‌شود و تا زمان تأیید مدیر سیستم هیچ دسترسی مدیریتی
+                ندارد.
               </p>
             </form>
           )}
@@ -359,7 +365,8 @@ export function AdminLoginFlow() {
           </div>
           <h2>تأیید دومرحله‌ای</h2>
           <p className="auth-help">
-            برای حساب‌های کارکنان، Command Center نشست AAL2 را الزامی می‌کند. کد فعلی Authenticator را وارد کنید.
+            برای حساب‌های کارکنان، Command Center نشست AAL2 را الزامی می‌کند. کد فعلی Authenticator
+            را وارد کنید.
           </p>
           <label htmlFor="admin-mfa-code">کد Authenticator</label>
           <input
@@ -386,7 +393,8 @@ export function AdminLoginFlow() {
           </div>
           <h2>فعال‌سازی Authenticator</h2>
           <p className="auth-help">
-            QR را با Google Authenticator، Microsoft Authenticator، 1Password یا برنامه TOTP مشابه اسکن کنید و سپس کد را وارد کنید.
+            QR را با Google Authenticator، Microsoft Authenticator، 1Password یا برنامه TOTP مشابه
+            اسکن کنید و سپس کد را وارد کنید.
           </p>
           <div className="mfa-qr">
             {/* eslint-disable-next-line @next/next/no-img-element */}
