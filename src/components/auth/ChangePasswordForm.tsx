@@ -28,7 +28,7 @@ export function ChangePasswordForm() {
     try {
       const { error } = await supabase.auth.updateUser({
         password: newPassword,
-        currentPassword,
+        current_password: currentPassword,
       });
       if (error) throw error;
       setCurrentPassword("");
