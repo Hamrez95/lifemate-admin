@@ -45,9 +45,9 @@ test("authorized staff without commerce permission is denied before write contro
   await expect(page.getByText("برای مشاهده این بخش مجوز لازم را ندارید.")).toBeVisible();
   await expect(page.getByText("commerce.plan.write")).toHaveCount(0);
   await expect(page.getByText("commerce.price.write")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /ساخت پلن|ثبت تغییر|ثبت نسخه جدید قیمت/ })).toHaveCount(
-    0,
-  );
+  await expect(
+    page.getByRole("button", { name: /ساخت پلن|ثبت تغییر|ثبت نسخه جدید قیمت/ }),
+  ).toHaveCount(0);
 
   await expectNoViewportOverflow(page);
   await expectNoSeriousAccessibilityViolations(page);
