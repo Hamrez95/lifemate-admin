@@ -15,23 +15,26 @@ test("protected Command Center redirects an unauthenticated browser to secure lo
   await page.goto("/");
   await expect(page).toHaveURL(/\/login(?:\?|$)/);
   await expect(page.getByRole("heading", { name: "ورود امن به مرکز فرماندهی" })).toBeVisible();
-  await expect(page.getByText("تأیید دومرحله‌ای AAL2 اجباری است.")).toBeVisible();
+  await expect(page.getByText(/تأیید دومرحله‌ای AAL2 اجباری است/)).toBeVisible();
 });
 
 test("login is Persian RTL, keyboard reachable, validates locally and remains accessible", async ({
   page,
 }) => {
   await page.goto("/login");
-  const phone = page.getByLabel("شماره موبایل حساب LifeMate");
-  await expect(phone).toBeVisible();
+  const email = page.getByLabel("ایمیل حساب LifeMate");
+  const password = page.getByLabel("رمز عبور LifeMate");
+  await expect(email).toBeVisible();
+  await expect(password).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
 
   await page.keyboard.press("Tab");
-  await expect(phone).toBeFocused();
-  await phone.fill("123");
-  await page.getByRole("button", { name: "دریافت کد ورود" }).click();
-  await expect(page.getByText(/شماره موبایل را با فرمت معتبر وارد کنید/)).toBeVisible();
-  await expect(page.getByText(/ورود حساب جدید از این صفحه ساخته نمی‌شود/)).toBeVisible();
+  await expect(email).toBeFocused();
+  await email.fill("not-an-email");
+  await password.fill("x");
+  await page.getByRole("button", { name: "ادامه ورود امن" }).click();
+  await expect(page.getByText(/ایمیل و رمز عبور حساب موجود LifeMate را وارد کنید/)).toBeVisible();
+  await expect(page.getByText(/حساب جدید از Command Center ساخته نمی‌شود/)).toBeVisible();
 
   await expectNoSeriousA11yViolations(page);
   await expect(page).toHaveScreenshot("secure-login.png", { fullPage: true });
