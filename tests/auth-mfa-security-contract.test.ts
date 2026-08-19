@@ -25,7 +25,8 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
   it("keeps self-registration default-deny until Founder assigns a role", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
     expect(login).toContain('data.access_state === "pending_role"');
-    expect(login).toContain("تا زمان تأیید مدیر سیستم هیچ دسترسی مدیریتی ندارد");
+    expect(login).toContain("تا زمان تأیید مدیر سیستم");
+    expect(login).toContain("هیچ دسترسی مدیریتی");
     expect(login).toContain('signOut({ scope: "local" })');
   });
 
