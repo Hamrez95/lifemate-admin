@@ -11,9 +11,13 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
   it("uses the dedicated workforce username auth boundary without exposing internal email", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
     const runtime = source("src/lib/runtime-config.ts");
+    const workforceProxy = source("app/api/auth/workforce/route.ts");
     expect(login).toContain("config.adminAuthUrl");
-    expect(runtime).toContain("lifemate-admin-auth");
-    expect(runtime).toContain("NEXT_PUBLIC_ADMIN_AUTH_URL");
+    expect(runtime).toContain('adminAuthUrl: "/api/auth/workforce"');
+    expect(workforceProxy).toContain("/functions/v1/lifemate-admin-auth");
+    expect(workforceProxy).toContain("NEXT_PUBLIC_ADMIN_AUTH_URL");
+    expect(workforceProxy).toContain("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
+    expect(workforceProxy).not.toMatch(/SERVICE_ROLE|serviceRole|SUPABASE_DB_URL|DATABASE_URL/);
     expect(login).toContain('action: "login"');
     expect(login).toContain('action: "signup"');
     expect(login).toContain('action: "activate_founder"');
