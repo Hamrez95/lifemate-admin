@@ -223,8 +223,8 @@ export function PlanCatalogControls({ plan, productStatus, canPlanWrite, canPric
                 required
                 disabled={pricePending}
               />{" "}
-              مبلغ، ارز، دوره و زمان شروع را بررسی کرده‌ام و تأیید می‌کنم این عملیات فقط یک نسخه جدید
-              قیمت می‌سازد.
+              مبلغ، ارز، دوره و زمان شروع را بررسی کرده‌ام و تأیید می‌کنم این عملیات فقط یک نسخه
+              جدید قیمت می‌سازد.
             </label>
             <div className={styles.feedback} data-status={priceState.status} aria-live="polite">
               {priceState.message ?? ""}
