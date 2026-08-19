@@ -3,10 +3,6 @@ import { expect, test } from "@playwright/test";
 
 const authOrigin = "http://127.0.0.1:54321/auth/v1";
 
-function authRequest(path: string) {
-  return (response: { url(): string }) => response.url().startsWith(`${authOrigin}${path}`);
-}
-
 test("existing account completes password auth then TOTP MFA before an authorized workspace is rendered", async ({
   page,
 }) => {
