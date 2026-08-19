@@ -17,17 +17,18 @@ export default function LoginPage() {
         </div>
         <div className="auth-card__intro">
           <p className="eyebrow">LifeMate Command Center</p>
-          <h1 id="admin-login-title">ورود امن به مرکز فرماندهی</h1>
+          <h1 id="admin-login-title">ورود امن اعضای تیم</h1>
           <p>
-            فقط اعضای تأییدشده‌ی تیم می‌توانند وارد شوند. بعد از کد ورود، تأیید دومرحله‌ای AAL2
-            اجباری است.
+            Command Center فقط برای اعضای دعوت‌شده‌ی تیم است. هویت ورود از دسترسی مدیریتی جداست و
+            بعد از ورود، تأیید دومرحله‌ای AAL2 برای همه اجباری است.
           </p>
         </div>
         <AdminLoginFlow />
         <div className="auth-card__security-note">
           <span aria-hidden="true">▱</span>
           <p>
-            این صفحه هیچ service-role، رمز دیتابیس یا کلید مدیریتی را دریافت یا نگهداری نمی‌کند.
+            ورود موفق هیچ دسترسی خودکاری ایجاد نمی‌کند؛ Role و Permission فقط از Admin Control Plane
+            و با ثبت Audit اعمال می‌شوند.
           </p>
         </div>
       </section>
