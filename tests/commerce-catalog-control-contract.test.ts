@@ -36,6 +36,20 @@ describe("P0 Monetization Control Plane — plan and pricing batch", () => {
     expect(controls).toContain("commerce.price.write");
   });
 
+  it("requires explicit operator confirmation for lifecycle and price changes", () => {
+    const actions = source("app/commerce/plans/actions.ts");
+    const controls = source("app/commerce/plans/[planId]/PlanCatalogControls.tsx");
+
+    expect(actions).toContain('PLAN_CHANGE_CONFIRMATION = "confirm-plan-change"');
+    expect(actions).toContain('PRICE_CHANGE_CONFIRMATION = "confirm-price-version"');
+    expect(actions).toContain("confirmation !== PLAN_CHANGE_CONFIRMATION");
+    expect(actions).toContain("confirmation !== PRICE_CHANGE_CONFIRMATION");
+    expect(controls).toContain('value="confirm-plan-change"');
+    expect(controls).toContain('value="confirm-price-version"');
+    expect(controls).toContain('name="confirmation"');
+    expect(controls).toContain("required");
+  });
+
   it("keeps price history append-only and never claims existing subscriptions are repriced", () => {
     const page = source("app/commerce/plans/page.tsx");
     const controls = source("app/commerce/plans/[planId]/PlanCatalogControls.tsx");
