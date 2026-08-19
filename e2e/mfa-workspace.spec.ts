@@ -36,7 +36,7 @@ test("active staff completes username/password then TOTP MFA before an authorize
   await expect(page.getByRole("heading", { name: "مرکز فرماندهی" })).toBeVisible();
   await expect(
     page
-      .getByRole("navigation", { name: "ناوبری اصلی Command Center" })
+      .getByRole("complementary", { name: "ناوبری اصلی Command Center" })
       .getByRole("link", { name: "پروفایل و تغییر رمز عبور" }),
   ).toBeVisible();
   expect(
