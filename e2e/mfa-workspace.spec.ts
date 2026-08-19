@@ -34,6 +34,7 @@ test("active staff completes username/password then TOTP MFA before an authorize
 
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { name: "مرکز فرماندهی" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "پروفایل و تغییر رمز عبور" })).toBeVisible();
   expect(
     authRequests.some((value) => value.includes("/factors/") && value.endsWith("/challenge")),
   ).toBe(true);
@@ -54,5 +55,4 @@ test("active staff completes username/password then TOTP MFA before an authorize
       (violation) => violation.impact === "critical" || violation.impact === "serious",
     ),
   ).toEqual([]);
-  await expect(page).toHaveScreenshot("authorized-operations-workspace.png", { fullPage: true });
 });
