@@ -19,8 +19,8 @@ export default function LoginPage() {
           <p className="eyebrow">LifeMate Command Center</p>
           <h1 id="admin-login-title">ورود امن به مرکز فرماندهی</h1>
           <p>
-            فقط اعضای تأییدشده‌ی تیم می‌توانند وارد شوند. بعد از کد ورود، تأیید دومرحله‌ای AAL2
-            اجباری است.
+            فقط اعضای تأییدشده‌ی تیم می‌توانند وارد شوند. ابتدا با حساب موجود LifeMate وارد شوید؛ سپس
+            تأیید دومرحله‌ای AAL2 اجباری است.
           </p>
         </div>
         <AdminLoginFlow />
