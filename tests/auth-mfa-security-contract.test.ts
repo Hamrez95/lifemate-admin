@@ -20,10 +20,11 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(login).not.toContain('type="tel"');
   });
 
-  it("exchanges the OAuth code server-side and never accepts an arbitrary redirect target", () => {
+  it("exchanges the OAuth code server-side, never open-redirects, and never caches session redirects", () => {
     const callback = source("app/auth/callback/route.ts");
     expect(callback).toContain("exchangeCodeForSession(code)");
     expect(callback).toContain('new URL("/login", requestUrl.origin)');
+    expect(callback).toContain('"Cache-Control", "private, no-store"');
     expect(callback).not.toContain('searchParams.get("next")');
     expect(callback).not.toContain("service_role");
     expect(callback).not.toContain("SUPABASE_SERVICE_ROLE");
