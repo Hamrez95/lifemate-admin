@@ -3,10 +3,9 @@
 import { useRouter } from "next/navigation";
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
-import { normalizeAdminPhone } from "@/src/lib/auth/phone";
 import { createBrowserSupabaseClient } from "@/src/lib/supabase/client";
 
-type Step = "phone" | "otp" | "mfa-challenge" | "mfa-enroll" | "checking";
+type Step = "credentials" | "mfa-challenge" | "mfa-enroll" | "checking";
 
 type Enrollment = {
   factorId: string;
@@ -14,16 +13,18 @@ type Enrollment = {
   secret: string;
 };
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function friendlyAuthError(): string {
-  return "ورود کامل نشد. اطلاعات را بررسی کنید و دوباره تلاش کنید.";
+  return "ورود کامل نشد. ایمیل یا رمز عبور را بررسی کنید و دوباره تلاش کنید.";
 }
 
 export function AdminLoginFlow() {
   const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const [step, setStep] = useState<Step>("checking");
-  const [phoneInput, setPhoneInput] = useState("");
-  const [phone, setPhone] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [factorId, setFactorId] = useState<string | null>(null);
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
@@ -79,7 +80,7 @@ export function AdminLoginFlow() {
       } = await supabase.auth.getSession();
       if (!active) return;
       if (!session) {
-        setStep("phone");
+        setStep("credentials");
         return;
       }
       try {
@@ -87,7 +88,7 @@ export function AdminLoginFlow() {
       } catch {
         if (active) {
           setMessage(friendlyAuthError());
-          setStep("phone");
+          setStep("credentials");
         }
       }
     })();
@@ -96,45 +97,23 @@ export function AdminLoginFlow() {
     };
   }, [prepareMfa, supabase]);
 
-  async function requestOtp(event: FormEvent<HTMLFormElement>) {
+  async function signIn(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const normalized = normalizeAdminPhone(phoneInput);
-    if (!normalized) {
-      setMessage("شماره موبایل را با فرمت معتبر وارد کنید؛ برای ایران می‌توانید با ۰۹ شروع کنید.");
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!EMAIL_PATTERN.test(normalizedEmail) || password.length < 1) {
+      setMessage("ایمیل و رمز عبور حساب موجود LifeMate را وارد کنید.");
       return;
     }
 
     setPending(true);
     setMessage(null);
     try {
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: normalized,
-        options: { shouldCreateUser: false },
+      const { error } = await supabase.auth.signInWithPassword({
+        email: normalizedEmail,
+        password,
       });
       if (error) throw error;
-      setPhone(normalized);
-      setCode("");
-      setStep("otp");
-      setMessage("کد یک‌بارمصرف برای حساب موجود ارسال شد.");
-    } catch {
-      setMessage("امکان ارسال کد ورود نبود. اگر عضو LifeMate هستید کمی بعد دوباره تلاش کنید.");
-    } finally {
-      setPending(false);
-    }
-  }
-
-  async function verifyOtp(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!phone || !/^\d{6,8}$/.test(code)) {
-      setMessage("کد یک‌بارمصرف معتبر را وارد کنید.");
-      return;
-    }
-
-    setPending(true);
-    setMessage(null);
-    try {
-      const { error } = await supabase.auth.verifyOtp({ phone, token: code, type: "sms" });
-      if (error) throw error;
+      setPassword("");
       await prepareMfa();
     } catch {
       setMessage(friendlyAuthError());
@@ -174,53 +153,37 @@ export function AdminLoginFlow() {
 
   return (
     <div className="auth-flow">
-      {step === "phone" && (
-        <form onSubmit={requestOtp} className="auth-form">
-          <label htmlFor="admin-phone">شماره موبایل حساب LifeMate</label>
+      {step === "credentials" && (
+        <form onSubmit={signIn} className="auth-form">
+          <label htmlFor="admin-email">ایمیل حساب LifeMate</label>
           <input
-            id="admin-phone"
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            value={phoneInput}
-            onChange={(event) => setPhoneInput(event.target.value)}
-            placeholder="۰۹۱۲۱۲۳۴۵۶۷"
+            id="admin-email"
+            type="email"
+            inputMode="email"
+            autoComplete="username"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="name@example.com"
             dir="ltr"
             disabled={pending}
+            required
+          />
+          <label htmlFor="admin-password">رمز عبور LifeMate</label>
+          <input
+            id="admin-password"
+            type="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            dir="ltr"
+            disabled={pending}
+            required
           />
           <p className="auth-help">
-            ورود حساب جدید از این صفحه ساخته نمی‌شود؛ فقط حساب موجود LifeMate پذیرفته است.
+            حساب جدید از Command Center ساخته نمی‌شود؛ فقط حساب موجود و تأییدشده LifeMate پذیرفته است.
           </p>
           <button type="submit" className="primary-button" disabled={pending}>
-            {pending ? "در حال ارسال..." : "دریافت کد ورود"}
-          </button>
-        </form>
-      )}
-
-      {step === "otp" && (
-        <form onSubmit={verifyOtp} className="auth-form">
-          <label htmlFor="admin-otp">کد پیامک</label>
-          <input
-            id="admin-otp"
-            className="code-input"
-            type="text"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            value={code}
-            onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 8))}
-            dir="ltr"
-            disabled={pending}
-          />
-          <button type="submit" className="primary-button" disabled={pending}>
-            {pending ? "در حال بررسی..." : "تأیید کد"}
-          </button>
-          <button
-            type="button"
-            className="text-button"
-            onClick={() => setStep("phone")}
-            disabled={pending}
-          >
-            اصلاح شماره موبایل
+            {pending ? "در حال بررسی..." : "ادامه ورود امن"}
           </button>
         </form>
       )}
