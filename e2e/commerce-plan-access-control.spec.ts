@@ -41,7 +41,9 @@ test("authorized staff without commerce permission is denied before write contro
   await page.goto("/commerce/plans");
 
   await expect(page).toHaveURL(/\/commerce\/plans$/);
-  await expect(page.getByRole("alert")).toContainText("دسترسی مجاز نیست");
+  await expect(page.locator('section[role="alert"][data-state="forbidden"]')).toContainText(
+    "دسترسی مجاز نیست",
+  );
   await expect(page.getByText("برای مشاهده این بخش مجوز لازم را ندارید.")).toBeVisible();
   await expect(page.getByText("commerce.plan.write")).toHaveCount(0);
   await expect(page.getByText("commerce.price.write")).toHaveCount(0);
