@@ -46,7 +46,11 @@ export function OperatorMenu() {
         <strong>{role}</strong>
         <small>حساب مدیریتی LifeMate</small>
       </span>
-      <Link className="operator-chip__profile" href="/profile" aria-label="پروفایل و تغییر رمز عبور">
+      <Link
+        className="operator-chip__profile"
+        href="/profile"
+        aria-label="پروفایل و تغییر رمز عبور"
+      >
         پروفایل
       </Link>
       <button
