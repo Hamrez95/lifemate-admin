@@ -32,9 +32,7 @@ test("login and pending staff signup are Persian RTL, keyboard reachable and acc
   await expect(password).toBeVisible();
   await username.fill("staff.test");
   await password.fill("qa-password");
-  await expect(
-    page.getByRole("button", { name: "ورود با نام کاربری", exact: true }),
-  ).toBeEnabled();
+  await expect(page.getByRole("button", { name: "ورود با نام کاربری", exact: true })).toBeEnabled();
 
   await page.getByRole("tab", { name: "ثبت‌نام", exact: true }).click();
   await expect(page.getByLabel("نام نمایشی")).toBeVisible();
