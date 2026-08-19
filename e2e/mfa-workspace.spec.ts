@@ -1,13 +1,14 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const authOrigin = "http://127.0.0.1:54321/auth/v1";
+const supabaseOrigin = "http://127.0.0.1:54322";
+const authOrigin = `${supabaseOrigin}/auth/v1`;
 
-function authRequest(path: string) {
-  return (response: { url(): string }) => response.url().startsWith(`${authOrigin}${path}`);
+function workforceAuthRequest(response: { url(): string }) {
+  return response.url() === `${supabaseOrigin}/functions/v1/lifemate-admin-auth`;
 }
 
-test("existing account completes OTP then TOTP MFA before an authorized workspace is rendered", async ({
+test("active staff completes username/password then TOTP MFA before an authorized workspace is rendered", async ({
   page,
 }) => {
   const authRequests: string[] = [];
@@ -18,17 +19,12 @@ test("existing account completes OTP then TOTP MFA before an authorized workspac
   });
 
   await page.goto("/login");
-  await page.getByLabel("شماره موبایل حساب LifeMate").fill("09121234567");
+  await page.getByLabel("نام کاربری", { exact: true }).fill("staff.test");
+  await page.getByLabel("رمز عبور", { exact: true }).fill("qa-password");
 
-  const otpRequest = page.waitForResponse(authRequest("/otp"));
-  await page.getByRole("button", { name: "دریافت کد ورود" }).click();
-  expect((await otpRequest).ok()).toBe(true);
-  await expect(page.getByText("کد یک‌بارمصرف برای حساب موجود ارسال شد.")).toBeVisible();
-
-  await page.getByLabel("کد پیامک").fill("123456");
-  const verifyOtp = page.waitForResponse(authRequest("/verify"));
-  await page.getByRole("button", { name: "تأیید کد" }).click();
-  expect((await verifyOtp).ok()).toBe(true);
+  const loginRequest = page.waitForResponse(workforceAuthRequest);
+  await page.getByRole("button", { name: "ورود با نام کاربری" }).click();
+  expect((await loginRequest).ok()).toBe(true);
 
   await expect(page.getByRole("heading", { name: "تأیید دومرحله‌ای" })).toBeVisible();
   await expect(page.getByText(/Command Center نشست AAL2 را الزامی می‌کند/)).toBeVisible();
