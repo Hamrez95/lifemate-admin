@@ -37,10 +37,49 @@ function upstreamAuthUrl(): string {
   return parsed.toString();
 }
 
-function sameOrigin(request: Request): boolean {
-  const origin = request.headers.get("origin")?.trim();
-  if (!origin) return true;
-  return origin === new URL(request.url).origin;
+function firstForwardedValue(value: string | null): string | null {
+  const first = value?.split(",", 1)[0]?.trim();
+  return first || null;
+}
+
+function requestOriginCandidates(request: Request): ReadonlySet<string> {
+  const requestUrl = new URL(request.url);
+  const origins = new Set<string>([requestUrl.origin]);
+  const forwardedProto = firstForwardedValue(request.headers.get("x-forwarded-proto"));
+  const protocol = forwardedProto === "http" || forwardedProto === "https"
+    ? `${forwardedProto}:`
+    : requestUrl.protocol;
+
+  const hosts = [
+    firstForwardedValue(request.headers.get("x-forwarded-host")),
+    request.headers.get("host")?.trim() || null,
+    requestUrl.host,
+  ];
+  for (const host of hosts) {
+    if (!host) continue;
+    try {
+      origins.add(new URL(`${protocol}//${host}`).origin);
+    } catch {
+      // Ignore malformed forwarding metadata and keep the request fail-closed.
+    }
+  }
+  return origins;
+}
+
+function verifiedBrowserOrigin(request: Request): string | null {
+  const value = request.headers.get("origin")?.trim();
+  if (!value || value === "null") return null;
+
+  const fetchSite = request.headers.get("sec-fetch-site")?.trim().toLowerCase();
+  if (fetchSite && fetchSite !== "same-origin") return null;
+
+  let origin: string;
+  try {
+    origin = new URL(value).origin;
+  } catch {
+    return null;
+  }
+  return requestOriginCandidates(request).has(origin) ? origin : null;
 }
 
 async function readPayload(request: Request): Promise<Record<string, unknown> | null> {
@@ -63,7 +102,8 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  if (!sameOrigin(request)) {
+  const browserOrigin = verifiedBrowserOrigin(request);
+  if (!browserOrigin) {
     return json(403, { ok: false, code: "origin_denied" });
   }
 
@@ -87,7 +127,7 @@ export async function POST(request: Request) {
     const headers: Record<string, string> = {
       apikey: publishableKey,
       "Content-Type": "application/json",
-      Origin: new URL(request.url).origin,
+      Origin: browserOrigin,
     };
     const forwardedFor = request.headers.get("x-forwarded-for")?.slice(0, 512);
     if (forwardedFor) headers["X-Forwarded-For"] = forwardedFor;
