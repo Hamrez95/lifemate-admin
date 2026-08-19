@@ -1,0 +1,18 @@
+.auth-tabs--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.auth-tabs--three .auth-tab {
+  padding-inline: 8px;
+  font-size: 10px;
+}
+
+@media (max-width: 420px) {
+  .auth-tabs--three {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .auth-tabs--three .auth-tab:last-child {
+    grid-column: 1 / -1;
+  }
+}
