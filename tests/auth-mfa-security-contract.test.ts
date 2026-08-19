@@ -8,11 +8,25 @@ function source(path: string): string {
 }
 
 describe("ADM-QA-001 authentication and MFA security contract", () => {
-  it("never creates a LifeMate account from the internal admin login flow", () => {
+  it("uses workforce Google OAuth without exposing email or SMS signup UX", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
-    expect(login).toContain("shouldCreateUser: false");
-    expect(login).toContain("فقط حساب موجود LifeMate پذیرفته است");
-    expect(login).toContain('type: "sms"');
+    expect(login).toContain('provider: "google"');
+    expect(login).toContain('prompt: "select_account"');
+    expect(login).toContain("/auth/callback");
+    expect(login).not.toContain("signInWithOtp");
+    expect(login).not.toContain("signInWithPassword");
+    expect(login).not.toContain("signUp(");
+    expect(login).not.toContain('type="email"');
+    expect(login).not.toContain('type="tel"');
+  });
+
+  it("exchanges the OAuth code server-side and never accepts an arbitrary redirect target", () => {
+    const callback = source("app/auth/callback/route.ts");
+    expect(callback).toContain("exchangeCodeForSession(code)");
+    expect(callback).toContain('new URL("/login", requestUrl.origin)');
+    expect(callback).not.toContain('searchParams.get("next")');
+    expect(callback).not.toContain("service_role");
+    expect(callback).not.toContain("SUPABASE_SERVICE_ROLE");
   });
 
   it("requires AAL2 and supports verified TOTP challenge or controlled enrollment", () => {
@@ -40,7 +54,7 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(proxy).not.toContain("supabase.auth.getSession(");
   });
 
-  it("keeps login errors generic and does not log OTP TOTP or enrollment secrets", () => {
+  it("keeps login errors generic and does not log TOTP or enrollment secrets", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
     expect(login).toContain("friendlyAuthError");
     expect(login).not.toContain("console.log");
