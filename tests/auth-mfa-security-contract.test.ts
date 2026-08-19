@@ -10,9 +10,13 @@ function source(path: string): string {
 describe("ADM-QA-001 authentication and MFA security contract", () => {
   it("uses the dedicated workforce username auth boundary without exposing internal email", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
-    expect(login).toContain("lifemate-admin-auth");
+    const runtime = source("src/lib/runtime-config.ts");
+    expect(login).toContain("config.adminAuthUrl");
+    expect(runtime).toContain("lifemate-admin-auth");
+    expect(runtime).toContain("NEXT_PUBLIC_ADMIN_AUTH_URL");
     expect(login).toContain('action: "login"');
     expect(login).toContain('action: "signup"');
+    expect(login).toContain('action: "activate_founder"');
     expect(login).toContain("ثبت‌نام با نام کاربری و رمز عبور");
     expect(login).toContain("ورود با نام کاربری");
     expect(login).toContain("supabase.auth.setSession");
