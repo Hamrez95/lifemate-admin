@@ -23,6 +23,7 @@ export type AuditLogResponse = {
     status: "fresh";
     asOfUtc: string;
   } | null;
+  supportsServerPaging: boolean;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -71,9 +72,9 @@ function parseEvent(value: unknown): AuditLogEvent | null {
   };
 }
 
-function parseFilters(value: unknown): AuditLogResponse["filters"] {
+function parseFilters(value: unknown): AuditLogResponse["filters"] | null {
   if (!isRecord(value) || !nullableString(value.from) || !nullableString(value.to)) {
-    return { from: null, to: null };
+    return null;
   }
   return { from: value.from, to: value.to };
 }
@@ -99,13 +100,31 @@ export function parseAuditLogResponse(value: unknown): AuditLogResponse | null {
     events.push(event);
   }
 
-  const nextCursor = value.nextCursor === undefined ? null : value.nextCursor;
-  if (!nullableString(nextCursor)) return null;
+  const hasAnyNewContractField =
+    "nextCursor" in value || "filters" in value || "freshness" in value;
+  if (!hasAnyNewContractField) {
+    return {
+      events,
+      nextCursor: null,
+      filters: { from: null, to: null },
+      freshness: null,
+      supportsServerPaging: false,
+    };
+  }
+
+  if (!("nextCursor" in value) || !("filters" in value) || !("freshness" in value)) {
+    return null;
+  }
+  if (!nullableString(value.nextCursor)) return null;
+  const filters = parseFilters(value.filters);
+  const freshness = parseFreshness(value.freshness);
+  if (!filters || !freshness) return null;
 
   return {
     events,
-    nextCursor,
-    filters: parseFilters(value.filters),
-    freshness: parseFreshness(value.freshness),
+    nextCursor: value.nextCursor,
+    filters,
+    freshness,
+    supportsServerPaging: true,
   };
 }
