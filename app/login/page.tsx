@@ -42,8 +42,8 @@ export default function LoginPage() {
                 <p className="eyebrow">LifeMate Security</p>
                 <h2>ورود ساده، دسترسی کنترل‌شده</h2>
                 <p>
-                  ورود، فعال‌سازی Founder و MFA همان مسیر امنیتی فعلی را طی می‌کنند و مجوزها فقط
-                  سمت سرور تصمیم‌گیری می‌شوند.
+                  ورود، فعال‌سازی Founder و MFA همان مسیر امنیتی فعلی را طی می‌کنند و مجوزها فقط سمت
+                  سرور تصمیم‌گیری می‌شوند.
                 </p>
               </div>
             </div>
@@ -59,7 +59,9 @@ export default function LoginPage() {
             <div className="auth-card__intro">
               <p className="eyebrow">LifeMate Command Center</p>
               <h2 id="admin-login-title">ورود به حساب مدیریتی</h2>
-              <p>اطلاعات حساب را وارد کنید؛ در صورت نیاز، مرحله MFA بعد از ورود نمایش داده می‌شود.</p>
+              <p>
+                اطلاعات حساب را وارد کنید؛ در صورت نیاز، مرحله MFA بعد از ورود نمایش داده می‌شود.
+              </p>
             </div>
             <AdminLoginFlow />
             <div className="auth-card__security-note">
