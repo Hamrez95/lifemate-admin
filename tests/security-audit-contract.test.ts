@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { parseAuditLogResponse } from "@/src/lib/admin-api/audit-log-contract";
+import { parseAuditLogResponse } from "../src/lib/admin-api/audit-log-contract";
 
 const event = {
   id: "123e4567-e89b-42d3-a456-426614174000",
