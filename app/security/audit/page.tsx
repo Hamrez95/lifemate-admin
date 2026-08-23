@@ -65,6 +65,7 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
   const from = dateOnly(single(requested.from));
   const to = dateOnly(single(requested.to));
   const cursor = single(requested.cursor).trim();
+  const advancedQueryRequested = Boolean(from || to || cursor);
   const invalidRange = Boolean(from && to && from > to);
   const result = invalidRange
     ? null
@@ -73,8 +74,13 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
   if (result?.kind === "unauthenticated") redirect("/login");
   if (result?.kind === "forbidden") redirect("/forbidden");
 
-  const events = result?.kind === "ok" ? result.data.events : null;
-  const nextCursor = result?.kind === "ok" ? result.data.nextCursor : null;
+  const serverPagingAvailable = result?.kind === "ok" && result.data.supportsServerPaging;
+  const contractUnavailable = Boolean(
+    result?.kind === "ok" && advancedQueryRequested && !result.data.supportsServerPaging,
+  );
+  const events =
+    result?.kind === "ok" && !contractUnavailable ? result.data.events : null;
+  const nextCursor = serverPagingAvailable ? result.data.nextCursor : null;
 
   return (
     <AdminSessionProvider admin={admin}>
@@ -102,22 +108,42 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
           <section className={styles.boundary} aria-labelledby="audit-boundary-title">
             <div>
               <strong id="audit-boundary-title">مرز امن API</strong>
-              <p>
-                فیلتر تاریخ و صفحه‌بندی روی Admin API اجرا می‌شود و ترتیب رویدادها با cursor پایدار
-                حفظ می‌شود. مرورگر فقط داده ممیزی محدودشده را می‌گیرد و به جدول‌های دیتابیس دسترسی
-                مستقیم ندارد.
-              </p>
+              {serverPagingAvailable ? (
+                <p>
+                  فیلتر تاریخ و صفحه‌بندی روی Admin API اجرا می‌شود و ترتیب رویدادها با cursor پایدار
+                  حفظ می‌شود. مرورگر فقط داده ممیزی محدودشده را می‌گیرد و به جدول‌های دیتابیس دسترسی
+                  مستقیم ندارد.
+                </p>
+              ) : (
+                <p>
+                  API فعلی هنوز قرارداد فیلتر و صفحه‌بندی پایدار را اعلام نکرده است. تا زمان فعال شدن
+                  نسخه canonical جدید، فقط آخرین رویدادهای read-only نمایش داده می‌شوند و نتیجه
+                  فیلترشده جعل نمی‌شود.
+                </p>
+              )}
             </div>
           </section>
 
           <form className={styles.toolbar} method="get" action="/security/audit">
             <div className={styles.field}>
               <label htmlFor="audit-from">از تاریخ</label>
-              <input id="audit-from" name="from" type="date" defaultValue={from} />
+              <input
+                id="audit-from"
+                name="from"
+                type="date"
+                defaultValue={from}
+                disabled={!serverPagingAvailable}
+              />
             </div>
             <div className={styles.field}>
               <label htmlFor="audit-to">تا تاریخ</label>
-              <input id="audit-to" name="to" type="date" defaultValue={to} />
+              <input
+                id="audit-to"
+                name="to"
+                type="date"
+                defaultValue={to}
+                disabled={!serverPagingAvailable}
+              />
             </div>
             <div className={styles.field}>
               <label htmlFor="audit-limit">تعداد در هر صفحه</label>
@@ -136,14 +162,25 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
           </form>
 
           <p className={styles.utcHint}>
-            مرز روزها برای query سرور بر اساس UTC محاسبه می‌شود؛ زمان رویدادها در جدول به وقت تهران
-            نمایش داده می‌شود.
+            {serverPagingAvailable
+              ? "مرز روزها برای query سرور بر اساس UTC محاسبه می‌شود؛ زمان رویدادها در جدول به وقت تهران نمایش داده می‌شود."
+              : "فیلتر تاریخ تا زمانی که Admin API قرارداد جدید را اعلام نکند غیرفعال می‌ماند."}
           </p>
 
           {invalidRange ? (
             <section className={styles.state} role="alert">
               <strong>بازه تاریخ معتبر نیست.</strong>
               <p>تاریخ شروع باید قبل از تاریخ پایان یا برابر با آن باشد.</p>
+            </section>
+          ) : null}
+
+          {contractUnavailable ? (
+            <section className={styles.state} role="status" aria-live="polite">
+              <strong>فیلتر سروری هنوز فعال نشده است.</strong>
+              <p>
+                این درخواست نمایش داده نمی‌شود چون API فعلی قرارداد canonical فیلتر و cursor را تأیید
+                نکرده است. فیلترها را پاک کنید یا پس از rollout backend دوباره تلاش کنید.
+              </p>
             </section>
           ) : null}
 
