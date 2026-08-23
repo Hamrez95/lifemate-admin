@@ -9,5 +9,7 @@ type EmptyStateProps = {
 };
 
 export function EmptyState({ title, description, actions }: EmptyStateProps) {
-  return <StateCard icon="◇" title={title} description={description} actions={actions} role="status" />;
+  return (
+    <StateCard icon="◇" title={title} description={description} actions={actions} role="status" />
+  );
 }
