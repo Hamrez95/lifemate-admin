@@ -1,0 +1,223 @@
+.appShell {
+  display: grid;
+  grid-template-columns: var(--lm-sidebar-width) minmax(0, 1fr);
+  min-height: 100vh;
+  background: var(--lm-bg);
+}
+
+.content {
+  min-width: 0;
+}
+
+.pageHeader {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: var(--lm-text-muted);
+  font-size: 10px;
+}
+
+.breadcrumb a {
+  color: var(--lm-green-deep);
+  text-decoration: none;
+}
+
+.breadcrumbSeparator {
+  opacity: 0.45;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: clamp(22px, 2.4vw, 30px);
+  line-height: 1.35;
+  letter-spacing: -0.035em;
+}
+
+.pageSubtitle {
+  max-width: 780px;
+  margin: 0;
+  color: var(--lm-text-muted);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.metricCard,
+.tableCard,
+.stateCard {
+  border: 1px solid var(--lm-border);
+  border-radius: 18px;
+  background: var(--lm-surface-raised);
+  box-shadow: 0 10px 30px rgba(28, 45, 61, 0.055);
+}
+
+.metricCard {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 16px;
+}
+
+.metricLabel {
+  color: var(--lm-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.metricValue {
+  color: var(--lm-text);
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.metricMeta {
+  color: var(--lm-text-muted);
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.tableCard {
+  overflow: hidden;
+}
+
+.tableScroller {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  text-align: right;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid var(--lm-border);
+  padding: 13px 15px;
+  vertical-align: middle;
+}
+
+.table th {
+  background: #faf9f6;
+  color: var(--lm-text-muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.table td {
+  color: var(--lm-text);
+  font-size: 11px;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.stateCard {
+  display: grid;
+  min-height: 220px;
+  place-items: center;
+  padding: clamp(24px, 5vw, 42px);
+  text-align: center;
+}
+
+.stateInner {
+  display: grid;
+  width: min(560px, 100%);
+  gap: 10px;
+  justify-items: center;
+}
+
+.stateIcon {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  border-radius: 16px;
+  background: var(--lm-green-soft);
+  color: var(--lm-green-deep);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.stateTitle {
+  margin: 0;
+  font-size: 18px;
+}
+
+.stateDescription {
+  margin: 0;
+  color: var(--lm-text-muted);
+  font-size: 11px;
+  line-height: 1.9;
+}
+
+.stateActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.spinner {
+  width: 25px;
+  height: 25px;
+  border: 3px solid var(--lm-green-soft);
+  border-top-color: var(--lm-green);
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1024px) {
+  .appShell {
+    grid-template-columns: 210px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .appShell {
+    grid-template-columns: 1fr;
+  }
+
+  .table {
+    min-width: 620px;
+  }
+}
+
+@media (max-width: 390px) {
+  .metricCard {
+    padding: 14px;
+  }
+
+  .pageTitle {
+    font-size: 22px;
+  }
+
+  .stateCard {
+    min-height: 190px;
+    border-radius: 15px;
+    padding: 20px 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
