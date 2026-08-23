@@ -49,12 +49,7 @@ function eventReference(event: AuditLogEvent): string {
   return event.resourceId ? `${event.resourceType} · ${event.resourceId}` : event.resourceType;
 }
 
-function nextPageHref(input: {
-  limit: number;
-  from: string;
-  to: string;
-  cursor: string;
-}): string {
+function nextPageHref(input: { limit: number; from: string; to: string; cursor: string }): string {
   const params = new URLSearchParams({ limit: String(input.limit), cursor: input.cursor });
   if (input.from) params.set("from", input.from);
   if (input.to) params.set("to", input.to);
@@ -94,8 +89,8 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
               <p className="eyebrow">ADM-SEC-003 · READ ONLY</p>
               <h2 id="audit-title">Audit Log Explorer</h2>
               <p>
-                رویدادهای ثبت‌شده در منبع canonical را بدون دسترسی مستقیم مرورگر به دیتابیس
-                نمایش می‌دهد. payload خام، metadata محرمانه و secret در این نما نمایش داده نمی‌شود.
+                رویدادهای ثبت‌شده در منبع canonical را بدون دسترسی مستقیم مرورگر به دیتابیس نمایش
+                می‌دهد. payload خام، metadata محرمانه و secret در این نما نمایش داده نمی‌شود.
               </p>
             </div>
             <div className={styles.heroActions}>
@@ -225,9 +220,7 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
               </div>
               {nextCursor ? (
                 <nav className={styles.pagination} aria-label="صفحه‌بندی گزارش ممیزی">
-                  <Link href={nextPageHref({ limit, from, to, cursor: nextCursor })}>
-                    صفحه بعد
-                  </Link>
+                  <Link href={nextPageHref({ limit, from, to, cursor: nextCursor })}>صفحه بعد</Link>
                 </nav>
               ) : null}
             </section>
