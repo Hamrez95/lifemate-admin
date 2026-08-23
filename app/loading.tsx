@@ -7,14 +7,10 @@ export default function Loading() {
         <span className={styles.code} aria-hidden="true">
           LM
         </span>
-        <h1 id="loading-title">در حال آماده‌سازی مرکز فرماندهی</h1>
-        <p>
-          در حال بررسی نشست امن و دریافت داده‌های مجاز هستیم. تا زمان دریافت پاسخ معتبر، هیچ داده
-          فرضی یا مستقیم از دیتابیس نمایش داده نمی‌شود.
-        </p>
+        <h1 id="loading-title">در حال بارگذاری…</h1>
         <div className={styles.status}>
           <span className={styles.spinner} aria-hidden="true" />
-          <span>در حال بارگذاری امن…</span>
+          <span>لطفاً یک لحظه صبر کنید</span>
         </div>
       </section>
     </main>
