@@ -39,6 +39,16 @@ describe("ADM-SEC-003 audit read surface boundary", () => {
     expect(client).not.toMatch(/offset|localStorage|sessionStorage/);
   });
 
+  it("fails safe when frontend lands before the canonical backend paging contract", () => {
+    const page = source("app/security/audit/page.tsx");
+    const contract = source("src/lib/admin-api/audit-log-contract.ts");
+    expect(contract).toContain("supportsServerPaging: false");
+    expect(contract).toContain("hasAnyNewContractField");
+    expect(page).toContain("contractUnavailable");
+    expect(page).toContain("disabled={!serverPagingAvailable}");
+    expect(page).toContain("نتیجه فیلترشده جعل نمی‌شود");
+  });
+
   it("keeps raw metadata and direct database access out of the view", () => {
     const page = source("app/security/audit/page.tsx");
     expect(page).not.toMatch(/metadataJson|metadata_json|providerPayload|rawPayload/);
