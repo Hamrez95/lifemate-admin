@@ -27,9 +27,9 @@ for (const viewport of viewports) {
     await expect(page.getByRole("main")).toBeVisible();
     await expectNoViewportOverflow(page);
 
-    const shellDirection = await page.locator(".app-shell").evaluate((element) =>
-      getComputedStyle(element).direction,
-    );
+    const shellDirection = await page
+      .locator(".app-shell")
+      .evaluate((element) => getComputedStyle(element).direction);
     expect(shellDirection).toBe("rtl");
 
     const sidebar = page.getByLabel("ناوبری اصلی Command Center");
