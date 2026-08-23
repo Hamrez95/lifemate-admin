@@ -13,11 +13,15 @@ export function PageHeader({ title, subtitle, sectionLabel = "مرکز فرما�
     <div className={styles.pageHeader}>
       <nav className={styles.breadcrumb} aria-label="مسیر صفحه">
         <Link href="/">LifeMate</Link>
-        <span className={styles.breadcrumbSeparator} aria-hidden="true">/</span>
+        <span className={styles.breadcrumbSeparator} aria-hidden="true">
+          /
+        </span>
         <span>{sectionLabel}</span>
         {title !== sectionLabel ? (
           <>
-            <span className={styles.breadcrumbSeparator} aria-hidden="true">/</span>
+            <span className={styles.breadcrumbSeparator} aria-hidden="true">
+              /
+            </span>
             <span aria-current="page">{title}</span>
           </>
         ) : null}
