@@ -10,6 +10,7 @@ import {
 } from "@/src/lib/admin-api/security-role-detail";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
+import { StaffMembershipControls } from "./StaffMembershipControls";
 import styles from "./role-detail.module.css";
 
 type RoleDetailPageProps = {
@@ -58,6 +59,7 @@ function groupPermissions(permissions: SecurityRoleDetailPermission[]) {
 export default async function RoleDetailPage({ params }: RoleDetailPageProps) {
   const admin = await requireAdminAccess();
   if (!admin.permissions.includes("security.audit.read")) redirect("/forbidden");
+  const canManageStaff = admin.permissions.includes("security.staff.manage");
 
   const { roleCode } = await params;
   const result = await getSecurityRoleDetail(roleCode);
@@ -223,7 +225,9 @@ export default async function RoleDetailPage({ params }: RoleDetailPageProps) {
                     <p className="eyebrow">Membership lifecycle</p>
                     <h3 id="memberships-title">عضویت‌های ادمین</h3>
                   </div>
-                  <span className={styles.readOnlyPill}>UUID only</span>
+                  <span className={styles.readOnlyPill}>
+                    {canManageStaff ? "کنترل امن" : "UUID only"}
+                  </span>
                 </header>
                 <p className={styles.identityNote}>
                   منبع canonical این control plane نام یا ایمیل عضو را ارائه نمی‌کند؛ برای جلوگیری
@@ -251,6 +255,7 @@ export default async function RoleDetailPage({ params }: RoleDetailPageProps) {
                             <th scope="col">پایان</th>
                             <th scope="col">نقش‌های جاری</th>
                             <th scope="col">Permission مؤثر</th>
+                            <th scope="col">کنترل</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -290,6 +295,17 @@ export default async function RoleDetailPage({ params }: RoleDetailPageProps) {
                                   </ul>
                                 </details>
                               </td>
+                              <td>
+                                <StaffMembershipControls
+                                  accountId={membership.accountId}
+                                  memberStatus={membership.memberStatus}
+                                  roleCode={report.role.code}
+                                  hasCurrentRole={membership.currentRoleCodes.includes(
+                                    report.role.code,
+                                  )}
+                                  canManage={canManageStaff}
+                                />
+                              </td>
                             </tr>
                           ))}
                         </tbody>
@@ -322,6 +338,20 @@ export default async function RoleDetailPage({ params }: RoleDetailPageProps) {
                               <dt>Permission مؤثر</dt>
                               <dd>
                                 {membership.effectivePermissions.length.toLocaleString("fa-IR")}
+                              </dd>
+                            </div>
+                            <div>
+                              <dt>کنترل</dt>
+                              <dd>
+                                <StaffMembershipControls
+                                  accountId={membership.accountId}
+                                  memberStatus={membership.memberStatus}
+                                  roleCode={report.role.code}
+                                  hasCurrentRole={membership.currentRoleCodes.includes(
+                                    report.role.code,
+                                  )}
+                                  canManage={canManageStaff}
+                                />
                               </dd>
                             </div>
                           </dl>
