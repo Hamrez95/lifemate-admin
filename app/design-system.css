@@ -1,0 +1,263 @@
+:root {
+  --lm-bg: #f7f5ef;
+  --lm-surface: #fffdfa;
+  --lm-surface-raised: #ffffff;
+  --lm-surface-soft: #f8f6f1;
+  --lm-text: #172235;
+  --lm-text-muted: #667085;
+  --lm-border: #e8e2d8;
+  --lm-border-strong: #dcd4c7;
+  --lm-green: #16aa66;
+  --lm-green-deep: #087746;
+  --lm-green-soft: #edf9f2;
+  --lm-shadow: 0 5px 18px rgba(30, 43, 55, 0.055);
+  --lm-radius-md: 14px;
+  --lm-radius-lg: 18px;
+  --lm-sidebar-width: 236px;
+}
+
+body {
+  background:
+    radial-gradient(circle at 72% -10%, rgba(22, 170, 102, 0.055), transparent 32%),
+    linear-gradient(180deg, #faf8f3 0%, var(--lm-bg) 34%, #f6f4ee 100%);
+}
+
+.app-shell {
+  direction: rtl;
+  background: transparent;
+}
+
+.sidebar {
+  border-left-color: var(--lm-border);
+  background: rgba(255, 254, 251, 0.985);
+  box-shadow: -4px 0 18px rgba(29, 44, 55, 0.025);
+}
+
+.sidebar__brand {
+  padding: 20px 18px 16px;
+  background: #fffefa;
+}
+
+.sidebar__nav {
+  padding: 10px 9px;
+}
+
+.nav-item {
+  min-height: 43px;
+  border-radius: 10px;
+  color: #344054;
+}
+
+.nav-item:hover {
+  background: #f7f6f2;
+}
+
+.nav-item[data-active="true"] {
+  border-color: #d3ecdf;
+  background: #eff9f3;
+  color: var(--lm-green-deep);
+  box-shadow: inset -3px 0 0 var(--lm-green);
+}
+
+.nav-item__symbol {
+  background: transparent;
+  color: #667085;
+}
+
+.nav-item[data-active="true"] .nav-item__symbol {
+  background: #e1f5e9;
+  color: var(--lm-green-deep);
+}
+
+.sidebar__status {
+  border-color: #d6ebdf;
+  border-radius: 12px;
+  background: #f5fbf7;
+  box-shadow: none;
+}
+
+.topbar {
+  min-height: 78px;
+  gap: 18px;
+  border-bottom-color: var(--lm-border);
+  background: rgba(255, 254, 251, 0.94);
+  padding: 12px clamp(18px, 2.5vw, 30px);
+  box-shadow: 0 2px 12px rgba(28, 42, 55, 0.025);
+}
+
+.topbar__actions {
+  gap: 7px;
+}
+
+.icon-button,
+.search-control {
+  border-color: var(--lm-border);
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(31, 44, 57, 0.025);
+}
+
+.main-content {
+  width: min(1500px, 100%);
+  padding: 18px clamp(16px, 2.5vw, 30px) 44px;
+}
+
+.dashboard-stack {
+  gap: 14px;
+}
+
+.notice-banner,
+.section-card,
+.workspace-placeholder,
+.standalone-state__card,
+.metric-card {
+  border-color: var(--lm-border);
+  background: var(--lm-surface-raised);
+  box-shadow: var(--lm-shadow);
+}
+
+.section-card {
+  border-radius: 14px;
+  padding: 15px;
+}
+
+.metric-grid {
+  gap: 10px;
+}
+
+.metric-card {
+  border-radius: 13px;
+  background: #fff;
+}
+
+.metric-card[data-tone="blue"] {
+  border-color: #dbe7fb;
+}
+
+.metric-card[data-tone="violet"] {
+  border-color: #e3ddfa;
+}
+
+.metric-card[data-tone="orange"] {
+  border-color: #f2dfcb;
+}
+
+.workspace-placeholder {
+  min-height: 420px;
+  border-radius: 16px;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --lm-sidebar-width: 210px;
+  }
+
+  .topbar {
+    padding-inline: 20px;
+  }
+
+  .main-content {
+    padding-inline: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .sidebar {
+    width: 72px;
+  }
+
+  .sidebar__brand {
+    display: grid;
+    place-items: center;
+    padding-inline: 8px;
+  }
+
+  .brand__copy,
+  .nav-item > span:not(.nav-item__symbol),
+  .sidebar__status {
+    display: none;
+  }
+
+  .nav-item {
+    justify-content: center;
+    padding-inline: 6px;
+    box-shadow: none !important;
+  }
+
+  .topbar {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .main-content {
+    padding: 16px 14px 38px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell {
+    display: block;
+  }
+
+  .sidebar {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 50;
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 0;
+    border-top: 1px solid var(--lm-border);
+    box-shadow: 0 -6px 22px rgba(28, 42, 55, 0.06);
+  }
+
+  .sidebar__brand,
+  .sidebar__status {
+    display: none;
+  }
+
+  .sidebar__nav {
+    overflow-x: auto;
+    padding: 6px 7px calc(6px + env(safe-area-inset-bottom));
+  }
+
+  .sidebar__nav ul {
+    display: flex;
+    min-width: max-content;
+  }
+
+  .nav-item {
+    width: 46px;
+    min-height: 44px;
+    padding: 4px;
+  }
+
+  .app-shell__content {
+    padding-bottom: 70px;
+  }
+
+  .topbar {
+    position: relative;
+    display: grid;
+    min-height: auto;
+    padding: 14px 12px;
+  }
+
+  .topbar__actions {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .main-content {
+    padding: 12px 10px 32px;
+  }
+
+  .section-card,
+  .metric-card {
+    border-radius: 12px;
+  }
+}

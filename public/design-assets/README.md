@@ -4,23 +4,23 @@ These are reusable, transparent PNG illustrations for the Command Center's RTL d
 
 ## Asset map
 
-| Asset | Primary use |
-| --- | --- |
-| `founder-ecosystem-hero-v1.png` | Founder dashboard and mobile CEO monitor |
-| `login-mfa-hero-v1.png` | Login and MFA pages |
-| `ai-advisor-hero-v1.png` | AI daily brief and AI advisor |
-| `user-privacy-hero-v1.png` | User search, User 360, sensitive-access states |
-| `relationships-consent-hero-v1.png` | Relationships, requests, and consent |
-| `commerce-hero-v1.png` | Plans, promotions, subscriptions, and revenue |
-| `marketing-hero-v1.png` | Campaigns, marketing studio, and calendar |
-| `finance-hero-v1.png` | Finance overview, budget, and scenarios |
-| `support-hero-v1.png` | Support queue and ticket detail |
-| `security-audit-hero-v1.png` | Security, roles, permissions, and audit |
-| `empty-success-sprout-v1.png` | Empty, success, and confirmation states |
-| `wellmate-mascot-v1.webp` | WellMate product card, ecosystem hero, or empty state |
-| `caremate-mascot-v1.webp` | CareMate product card, ecosystem hero, or empty state |
-| `connection-ribbon-v1.webp` | Decorative connection between WellMate and CareMate cards |
-| `ecosystem-paths-v1.webp` | Full-bleed, low-priority ecosystem background scene |
+| Asset                               | Primary use                                               |
+| ----------------------------------- | --------------------------------------------------------- |
+| `founder-ecosystem-hero-v1.png`     | Founder dashboard and mobile CEO monitor                  |
+| `login-mfa-hero-v1.png`             | Login and MFA pages                                       |
+| `ai-advisor-hero-v1.png`            | AI daily brief and AI advisor                             |
+| `user-privacy-hero-v1.png`          | User search, User 360, sensitive-access states            |
+| `relationships-consent-hero-v1.png` | Relationships, requests, and consent                      |
+| `commerce-hero-v1.png`              | Plans, promotions, subscriptions, and revenue             |
+| `marketing-hero-v1.png`             | Campaigns, marketing studio, and calendar                 |
+| `finance-hero-v1.png`               | Finance overview, budget, and scenarios                   |
+| `support-hero-v1.png`               | Support queue and ticket detail                           |
+| `security-audit-hero-v1.png`        | Security, roles, permissions, and audit                   |
+| `empty-success-sprout-v1.png`       | Empty, success, and confirmation states                   |
+| `wellmate-mascot-v1.webp`           | WellMate product card, ecosystem hero, or empty state     |
+| `caremate-mascot-v1.webp`           | CareMate product card, ecosystem hero, or empty state     |
+| `connection-ribbon-v1.webp`         | Decorative connection between WellMate and CareMate cards |
+| `ecosystem-paths-v1.webp`           | Full-bleed, low-priority ecosystem background scene       |
 
 ## Implementation rules
 
