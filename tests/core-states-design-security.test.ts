@@ -34,6 +34,14 @@ describe("Command Center core state design/security contract", () => {
     expect(error).not.toMatch(/service_role|DATABASE_URL|SUPABASE_SERVICE|\.from\(/i);
   });
 
+  it("keeps not-found truthful instead of fabricating a destination", () => {
+    const notFound = source("app/not-found.tsx");
+    expect(notFound).toContain("404");
+    expect(notFound).toContain("هیچ داده‌ای");
+    expect(notFound).toContain('href="/"');
+    expect(notFound).not.toMatch(/service_role|DATABASE_URL|SUPABASE_SERVICE|\.from\(/i);
+  });
+
   it("respects reduced motion and keyboard focus", () => {
     const styles = source("app/standalone-state.module.css");
     expect(styles).toContain("@media (prefers-reduced-motion: reduce)");
