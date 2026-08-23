@@ -14,7 +14,8 @@ export default function CommandCenterError({ reset }: { reset: () => void }) {
         <h1 id="error-title">مرکز فرماندهی موقتاً در دسترس نیست.</h1>
         <p>
           برای حفظ امنیت، در صورت خطای Auth یا Admin API به داده مستقیم دیتابیس fallback نمی‌کنیم.
-          می‌توانید دوباره تلاش کنید؛ اگر خطا ادامه داشت، وضعیت سرویس باید از مسیر عملیاتی بررسی شود.
+          می‌توانید دوباره تلاش کنید؛ اگر خطا ادامه داشت، وضعیت سرویس باید از مسیر عملیاتی بررسی
+          شود.
         </p>
         <div className={styles.actions}>
           <button className={styles.primary} type="button" onClick={reset}>
