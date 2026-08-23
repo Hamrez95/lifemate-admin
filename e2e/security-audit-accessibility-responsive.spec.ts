@@ -38,19 +38,24 @@ test("audit explorer is permission-discoverable, fail-closed, accessible, and re
 
   await expect(page).toHaveURL(/\/security\/audit$/);
   await expect(page.getByRole("heading", { name: "Audit Log Explorer" })).toBeVisible();
-  await expect(page.getByText("مرز فعلی API")).toBeVisible();
-  await expect(page.getByText(/فیلتر تاریخ و pagination پایدار/)).toBeVisible();
+  await expect(page.getByText("مرز امن API")).toBeVisible();
 
   // The QA mock intentionally has no audit endpoint yet. The product must therefore
-  // render a truthful unavailable state instead of inventing operator events.
+  // render a truthful unavailable state instead of inventing operator events or
+  // pretending server-side filtering/pagination is active.
   await expect(page.getByText("گزارش ممیزی در دسترس نیست.")).toBeVisible();
-  await expect(page.getByText("هیچ رویداد فرضی نمایش داده نمی‌شود.")).toBeVisible();
+  await expect(page.getByText(/هیچ رویداد فرضی نمایش داده نمی‌شود/)).toBeVisible();
   await expect(page.getByRole("button", { name: /ویرایش|حذف|دعوت|ذخیره/ })).toHaveCount(0);
 
-  const limit = page.getByLabel("تعداد رویدادهای اخیر");
+  const from = page.getByLabel("از تاریخ");
+  const to = page.getByLabel("تا تاریخ");
+  await expect(from).toBeDisabled();
+  await expect(to).toBeDisabled();
+
+  const limit = page.getByLabel("تعداد در هر صفحه");
   await expect(limit).toHaveValue("50");
   await limit.selectOption("25");
-  await page.getByRole("button", { name: "به‌روزرسانی نما" }).click();
+  await page.getByRole("button", { name: "اعمال فیلتر" }).click();
   await expect(page).toHaveURL(/\/security\/audit\?limit=25$/);
   await expect(page.getByText("گزارش ممیزی در دسترس نیست.")).toBeVisible();
 
