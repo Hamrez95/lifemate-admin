@@ -34,7 +34,7 @@ describe("ADM-SEC-003 audit read surface boundary", () => {
     expect(page).toContain('type="date"');
     expect(page).toContain("nextCursor");
     expect(page).toContain("صفحه بعد");
-    expect(page).toContain("cursor پایدار");
+    expect(page).toMatch(/cursor\s+پایدار/);
     expect(client).toContain("Math.min(100");
     expect(client).not.toMatch(/offset|localStorage|sessionStorage/);
   });
@@ -46,7 +46,7 @@ describe("ADM-SEC-003 audit read surface boundary", () => {
     expect(contract).toContain("hasAnyNewContractField");
     expect(page).toContain("contractUnavailable");
     expect(page).toContain("disabled={!serverPagingAvailable}");
-    expect(page).toContain("نتیجه فیلترشده جعل نمی‌شود");
+    expect(page).toMatch(/نتیجه\s+فیلترشده جعل نمی‌شود/);
   });
 
   it("keeps raw metadata and direct database access out of the view", () => {
