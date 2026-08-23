@@ -11,11 +11,20 @@ type StateCardProps = {
   role?: "status" | "alert";
 };
 
-export function StateCard({ icon, title, description, actions, busy = false, role }: StateCardProps) {
+export function StateCard({
+  icon,
+  title,
+  description,
+  actions,
+  busy = false,
+  role,
+}: StateCardProps) {
   return (
     <section className={styles.stateCard} aria-busy={busy || undefined} role={role}>
       <div className={styles.stateInner}>
-        <span className={styles.stateIcon} aria-hidden="true">{icon}</span>
+        <span className={styles.stateIcon} aria-hidden="true">
+          {icon}
+        </span>
         <h2 className={styles.stateTitle}>{title}</h2>
         <p className={styles.stateDescription}>{description}</p>
         {actions ? <div className={styles.stateActions}>{actions}</div> : null}
