@@ -21,7 +21,9 @@ test("protected Command Center redirects an unauthenticated browser to workforce
 }) => {
   await page.goto("/");
   await expect(page).toHaveURL(/\/login(?:\?|$)/);
-  await expect(page.getByRole("heading", { name: /ورود امن به مرکز فرماندهی LifeMate/ })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /ورود امن به مرکز فرماندهی LifeMate/ }),
+  ).toBeVisible();
   await expect(page.getByRole("tab", { name: "ورود", exact: true })).toBeVisible();
   await expect(page.getByRole("tab", { name: "ثبت‌نام", exact: true })).toBeVisible();
   await expect(page.getByRole("tab", { name: "فعال‌سازی مدیر", exact: true })).toBeVisible();
