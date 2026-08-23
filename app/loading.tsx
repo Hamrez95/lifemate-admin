@@ -10,7 +10,7 @@ export default function Loading() {
         <h1 id="loading-title">در حال بارگذاری…</h1>
         <div className={styles.status}>
           <span className={styles.spinner} aria-hidden="true" />
-          <span>لطفاً یک لحظه صبر کنید</span>
+          <span>لطفاً یک لحظه صبر کنید؛ هیچ داده‌ای تا تأیید امنیتی نمایش داده نمی‌شود.</span>
         </div>
       </section>
     </main>
