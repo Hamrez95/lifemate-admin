@@ -78,8 +78,7 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
   const contractUnavailable = Boolean(
     result?.kind === "ok" && advancedQueryRequested && !result.data.supportsServerPaging,
   );
-  const events =
-    result?.kind === "ok" && !contractUnavailable ? result.data.events : null;
+  const events = result?.kind === "ok" && !contractUnavailable ? result.data.events : null;
   const nextCursor = serverPagingAvailable ? result.data.nextCursor : null;
 
   return (
@@ -110,14 +109,14 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
               <strong id="audit-boundary-title">مرز امن API</strong>
               {serverPagingAvailable ? (
                 <p>
-                  فیلتر تاریخ و صفحه‌بندی روی Admin API اجرا می‌شود و ترتیب رویدادها با cursor پایدار
-                  حفظ می‌شود. مرورگر فقط داده ممیزی محدودشده را می‌گیرد و به جدول‌های دیتابیس دسترسی
-                  مستقیم ندارد.
+                  فیلتر تاریخ و صفحه‌بندی روی Admin API اجرا می‌شود و ترتیب رویدادها با cursor
+                  پایدار حفظ می‌شود. مرورگر فقط داده ممیزی محدودشده را می‌گیرد و به جدول‌های دیتابیس
+                  دسترسی مستقیم ندارد.
                 </p>
               ) : (
                 <p>
-                  API فعلی هنوز قرارداد فیلتر و صفحه‌بندی پایدار را اعلام نکرده است. تا زمان فعال شدن
-                  نسخه canonical جدید، فقط آخرین رویدادهای read-only نمایش داده می‌شوند و نتیجه
+                  API فعلی هنوز قرارداد فیلتر و صفحه‌بندی پایدار را اعلام نکرده است. تا زمان فعال
+                  شدن نسخه canonical جدید، فقط آخرین رویدادهای read-only نمایش داده می‌شوند و نتیجه
                   فیلترشده جعل نمی‌شود.
                 </p>
               )}
@@ -178,8 +177,8 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
             <section className={styles.state} role="status" aria-live="polite">
               <strong>فیلتر سروری هنوز فعال نشده است.</strong>
               <p>
-                این درخواست نمایش داده نمی‌شود چون API فعلی قرارداد canonical فیلتر و cursor را تأیید
-                نکرده است. فیلترها را پاک کنید یا پس از rollout backend دوباره تلاش کنید.
+                این درخواست نمایش داده نمی‌شود چون API فعلی قرارداد canonical فیلتر و cursor را
+                تأیید نکرده است. فیلترها را پاک کنید یا پس از rollout backend دوباره تلاش کنید.
               </p>
             </section>
           ) : null}
