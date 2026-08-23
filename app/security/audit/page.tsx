@@ -18,7 +18,11 @@ function single(value: string | string[] | undefined): string {
 
 function requestedLimit(value: string): number {
   const parsed = Number.parseInt(value, 10);
-  return [25, 50, 100, 200].includes(parsed) ? parsed : 50;
+  return [25, 50, 100].includes(parsed) ? parsed : 50;
+}
+
+function dateOnly(value: string): string {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "";
 }
 
 function display(value: string | null): string {
@@ -45,17 +49,37 @@ function eventReference(event: AuditLogEvent): string {
   return event.resourceId ? `${event.resourceType} · ${event.resourceId}` : event.resourceType;
 }
 
+function nextPageHref(input: { limit: number; from: string; to: string; cursor: string }): string {
+  const params = new URLSearchParams({ limit: String(input.limit), cursor: input.cursor });
+  if (input.from) params.set("from", input.from);
+  if (input.to) params.set("to", input.to);
+  return `/security/audit?${params.toString()}`;
+}
+
 export default async function AuditPage({ searchParams }: AuditPageProps) {
   const admin = await requireAdminAccess();
   if (!admin.permissions.includes("security.audit.read")) redirect("/forbidden");
 
   const requested = await searchParams;
   const limit = requestedLimit(single(requested.limit));
-  const result = await getAuditLog(limit);
-  if (result.kind === "unauthenticated") redirect("/login");
-  if (result.kind === "forbidden") redirect("/forbidden");
+  const from = dateOnly(single(requested.from));
+  const to = dateOnly(single(requested.to));
+  const cursor = single(requested.cursor).trim();
+  const advancedQueryRequested = Boolean(from || to || cursor);
+  const invalidRange = Boolean(from && to && from > to);
+  const result = invalidRange
+    ? null
+    : await getAuditLog({ limit, from: from || null, to: to || null, cursor: cursor || null });
 
-  const events = result.kind === "ok" ? result.data.events : null;
+  if (result?.kind === "unauthenticated") redirect("/login");
+  if (result?.kind === "forbidden") redirect("/forbidden");
+
+  const serverPagingAvailable = result?.kind === "ok" && result.data.supportsServerPaging;
+  const contractUnavailable = Boolean(
+    result?.kind === "ok" && advancedQueryRequested && !result.data.supportsServerPaging,
+  );
+  const events = result?.kind === "ok" && !contractUnavailable ? result.data.events : null;
+  const nextCursor = serverPagingAvailable ? result.data.nextCursor : null;
 
   return (
     <AdminSessionProvider admin={admin}>
@@ -70,8 +94,8 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
               <p className="eyebrow">ADM-SEC-003 · READ ONLY</p>
               <h2 id="audit-title">Audit Log Explorer</h2>
               <p>
-                آخرین رویدادهای ثبت‌شده در منبع canonical را بدون دسترسی مستقیم مرورگر به دیتابیس
-                نمایش می‌دهد. payload خام، metadata محرمانه و secret در این نما نمایش داده نمی‌شود.
+                رویدادهای ثبت‌شده در منبع canonical را بدون دسترسی مستقیم مرورگر به دیتابیس نمایش
+                می‌دهد. payload خام، metadata محرمانه و secret در این نما نمایش داده نمی‌شود.
               </p>
             </div>
             <div className={styles.heroActions}>
@@ -82,27 +106,84 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
 
           <section className={styles.boundary} aria-labelledby="audit-boundary-title">
             <div>
-              <strong id="audit-boundary-title">مرز فعلی API</strong>
-              <p>
-                این نسخه فقط آخرین N رویداد را از endpoint محدودشده می‌خواند. فیلتر تاریخ و
-                pagination پایدار هنوز در قرارداد canonical موجود نیست؛ بنابراین این صفحه آن
-                قابلیت‌ها را شبیه‌سازی نمی‌کند.
-              </p>
+              <strong id="audit-boundary-title">مرز امن API</strong>
+              {serverPagingAvailable ? (
+                <p>
+                  فیلتر تاریخ و صفحه‌بندی روی Admin API اجرا می‌شود و ترتیب رویدادها با cursor
+                  پایدار حفظ می‌شود. مرورگر فقط داده ممیزی محدودشده را می‌گیرد و به جدول‌های دیتابیس
+                  دسترسی مستقیم ندارد.
+                </p>
+              ) : (
+                <p>
+                  API فعلی هنوز قرارداد فیلتر و صفحه‌بندی پایدار را اعلام نکرده است. تا زمان فعال
+                  شدن نسخه canonical جدید، فقط آخرین رویدادهای read-only نمایش داده می‌شوند و نتیجه
+                  فیلترشده جعل نمی‌شود.
+                </p>
+              )}
             </div>
           </section>
 
           <form className={styles.toolbar} method="get" action="/security/audit">
-            <label htmlFor="audit-limit">تعداد رویدادهای اخیر</label>
-            <select id="audit-limit" name="limit" defaultValue={String(limit)}>
-              <option value="25">۲۵</option>
-              <option value="50">۵۰</option>
-              <option value="100">۱۰۰</option>
-              <option value="200">۲۰۰</option>
-            </select>
-            <button type="submit">به‌روزرسانی نما</button>
+            <div className={styles.field}>
+              <label htmlFor="audit-from">از تاریخ</label>
+              <input
+                id="audit-from"
+                name="from"
+                type="date"
+                defaultValue={from}
+                disabled={!serverPagingAvailable}
+              />
+            </div>
+            <div className={styles.field}>
+              <label htmlFor="audit-to">تا تاریخ</label>
+              <input
+                id="audit-to"
+                name="to"
+                type="date"
+                defaultValue={to}
+                disabled={!serverPagingAvailable}
+              />
+            </div>
+            <div className={styles.field}>
+              <label htmlFor="audit-limit">تعداد در هر صفحه</label>
+              <select id="audit-limit" name="limit" defaultValue={String(limit)}>
+                <option value="25">۲۵</option>
+                <option value="50">۵۰</option>
+                <option value="100">۱۰۰</option>
+              </select>
+            </div>
+            <button type="submit">اعمال فیلتر</button>
+            {(from || to || cursor) && (
+              <Link className={styles.clearLink} href="/security/audit">
+                پاک کردن فیلترها
+              </Link>
+            )}
           </form>
 
-          {result.kind === "unavailable" ? (
+          <p className={styles.utcHint}>
+            {serverPagingAvailable
+              ? "مرز روزها برای query سرور بر اساس UTC محاسبه می‌شود؛ زمان رویدادها در جدول به وقت تهران نمایش داده می‌شود."
+              : "فیلتر تاریخ تا زمانی که Admin API قرارداد جدید را اعلام نکند غیرفعال می‌ماند."}
+          </p>
+
+          {invalidRange ? (
+            <section className={styles.state} role="alert">
+              <strong>بازه تاریخ معتبر نیست.</strong>
+              <p>تاریخ شروع باید قبل از تاریخ پایان یا برابر با آن باشد.</p>
+            </section>
+          ) : null}
+
+          {contractUnavailable ? (
+            <section className={styles.state} role="status" aria-live="polite">
+              <strong>فیلتر سروری هنوز فعال نشده است.</strong>
+              <p>
+                این درخواست نمایش داده نمی‌شود چون API فعلی قرارداد canonical فیلتر و cursor را
+                تأیید نکرده است. فیلترها را پاک کنید یا پس از rollout backend دوباره تلاش کنید.
+              </p>
+            </section>
+          ) : null}
+
+          {result?.kind === "unavailable" ? (
             <section className={styles.state} role="status" aria-live="polite">
               <strong>گزارش ممیزی در دسترس نیست.</strong>
               <p>
@@ -115,7 +196,7 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
           {events?.length === 0 ? (
             <section className={styles.state} role="status">
               <strong>رویدادی برای نمایش وجود ندارد.</strong>
-              <p>منبع canonical پاسخ داده است و مجموعه فعلی خالی است.</p>
+              <p>منبع canonical پاسخ داده است و برای این بازه نتیجه‌ای وجود ندارد.</p>
             </section>
           ) : null}
 
@@ -124,9 +205,9 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
               <header className={styles.panelHeader}>
                 <div>
                   <p className="eyebrow">Canonical events</p>
-                  <h3 id="events-heading">آخرین رویدادها</h3>
+                  <h3 id="events-heading">رویدادهای ممیزی</h3>
                 </div>
-                <span>{events.length.toLocaleString("fa-IR")} رویداد</span>
+                <span>{events.length.toLocaleString("fa-IR")} رویداد در این صفحه</span>
               </header>
               <div
                 className={styles.tableRegion}
@@ -173,6 +254,11 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
                   </tbody>
                 </table>
               </div>
+              {nextCursor ? (
+                <nav className={styles.pagination} aria-label="صفحه‌بندی گزارش ممیزی">
+                  <Link href={nextPageHref({ limit, from, to, cursor: nextCursor })}>صفحه بعد</Link>
+                </nav>
+              ) : null}
             </section>
           ) : null}
         </div>

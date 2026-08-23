@@ -42,7 +42,9 @@
 }
 
 .heroActions a,
-.toolbar button {
+.toolbar button,
+.clearLink,
+.pagination a {
   min-height: 42px;
   display: inline-flex;
   align-items: center;
@@ -61,6 +63,9 @@
 .heroActions a:focus-visible,
 .toolbar button:focus-visible,
 .toolbar select:focus-visible,
+.toolbar input:focus-visible,
+.clearLink:focus-visible,
+.pagination a:focus-visible,
 .tableRegion:focus-visible {
   outline: 3px solid #2d6a5f;
   outline-offset: 3px;
@@ -95,18 +100,36 @@
   flex-wrap: wrap;
 }
 
-.toolbar label {
+.field {
+  display: grid;
+  gap: 7px;
+}
+
+.field label {
   font-weight: 700;
 }
 
-.toolbar select {
+.toolbar select,
+.toolbar input {
   min-height: 42px;
-  min-width: 110px;
+  min-width: 150px;
   border: 1px solid #d8d0c7;
   border-radius: 12px;
   background: #fff;
+  color: #2f2925;
   padding-inline: 12px;
   font: inherit;
+}
+
+.clearLink {
+  color: #665f58;
+}
+
+.utcHint {
+  margin: -10px 2px 0;
+  color: #756d66;
+  font-size: 0.82rem;
+  line-height: 1.8;
 }
 
 .state {
@@ -198,6 +221,20 @@
   color: #8a372e;
 }
 
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 20px;
+  border-top: 1px solid #ebe6e1;
+  background: #fbfaf8;
+}
+
+.pagination a {
+  border-color: #b9cbc4;
+  background: #eef6f2;
+  color: #24594f;
+}
+
 @media (max-width: 760px) {
   .hero {
     flex-direction: column;
@@ -213,13 +250,15 @@
     align-items: stretch;
   }
 
-  .toolbar label {
-    width: 100%;
+  .field {
+    flex: 1 1 180px;
   }
 
   .toolbar select,
-  .toolbar button {
-    flex: 1 1 140px;
+  .toolbar input,
+  .toolbar button,
+  .clearLink {
+    width: 100%;
   }
 
   .panelHeader {

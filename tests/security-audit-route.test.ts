@@ -20,17 +20,33 @@ describe("ADM-SEC-003 audit read surface boundary", () => {
     const client = source("src/lib/admin-api/audit-log.ts");
     expect(client).toContain("createServerSupabaseClient");
     expect(client).toContain('url.searchParams.set("limit"');
+    expect(client).toContain('url.searchParams.set("from"');
+    expect(client).toContain('url.searchParams.set("to"');
+    expect(client).toContain('url.searchParams.set("cursor"');
     expect(client).toContain('cache: "no-store"');
     expect(client).toContain("Authorization: `Bearer ${token}`");
     expect(client).not.toMatch(/\.from\(|service_role|SUPABASE_SERVICE|DATABASE_URL/i);
   });
 
-  it("does not simulate unavailable server date filters or pagination", () => {
+  it("uses canonical server date filters and cursor pagination without browser simulation", () => {
     const page = source("app/security/audit/page.tsx");
     const client = source("src/lib/admin-api/audit-log.ts");
-    expect(page).toContain("فیلتر تاریخ");
-    expect(page).toContain("قابلیت‌ها را شبیه‌سازی نمی‌کند");
-    expect(client).not.toMatch(/cursor|offset|fromDate|toDate|dateFrom|dateTo/);
+    expect(page).toContain('type="date"');
+    expect(page).toContain("nextCursor");
+    expect(page).toContain("صفحه بعد");
+    expect(page).toMatch(/cursor\s+پایدار/);
+    expect(client).toContain("Math.min(100");
+    expect(client).not.toMatch(/offset|localStorage|sessionStorage/);
+  });
+
+  it("fails safe when frontend lands before the canonical backend paging contract", () => {
+    const page = source("app/security/audit/page.tsx");
+    const contract = source("src/lib/admin-api/audit-log-contract.ts");
+    expect(contract).toContain("supportsServerPaging: false");
+    expect(contract).toContain("hasAnyNewContractField");
+    expect(page).toContain("contractUnavailable");
+    expect(page).toContain("disabled={!serverPagingAvailable}");
+    expect(page).toMatch(/نتیجه\s+فیلترشده جعل نمی‌شود/);
   });
 
   it("keeps raw metadata and direct database access out of the view", () => {
