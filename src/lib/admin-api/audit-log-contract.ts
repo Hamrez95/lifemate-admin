@@ -14,6 +14,15 @@ export type AuditLogEvent = {
 
 export type AuditLogResponse = {
   events: AuditLogEvent[];
+  nextCursor: string | null;
+  filters: {
+    from: string | null;
+    to: string | null;
+  };
+  freshness: {
+    status: "fresh";
+    asOfUtc: string;
+  } | null;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -62,6 +71,25 @@ function parseEvent(value: unknown): AuditLogEvent | null {
   };
 }
 
+function parseFilters(value: unknown): AuditLogResponse["filters"] {
+  if (!isRecord(value) || !nullableString(value.from) || !nullableString(value.to)) {
+    return { from: null, to: null };
+  }
+  return { from: value.from, to: value.to };
+}
+
+function parseFreshness(value: unknown): AuditLogResponse["freshness"] {
+  if (
+    !isRecord(value) ||
+    value.status !== "fresh" ||
+    typeof value.asOfUtc !== "string" ||
+    !validIsoDate(value.asOfUtc)
+  ) {
+    return null;
+  }
+  return { status: "fresh", asOfUtc: value.asOfUtc };
+}
+
 export function parseAuditLogResponse(value: unknown): AuditLogResponse | null {
   if (!isRecord(value) || !Array.isArray(value.events)) return null;
   const events: AuditLogEvent[] = [];
@@ -70,5 +98,14 @@ export function parseAuditLogResponse(value: unknown): AuditLogResponse | null {
     if (!event) return null;
     events.push(event);
   }
-  return { events };
+
+  const nextCursor = value.nextCursor === undefined ? null : value.nextCursor;
+  if (!nullableString(nextCursor)) return null;
+
+  return {
+    events,
+    nextCursor,
+    filters: parseFilters(value.filters),
+    freshness: parseFreshness(value.freshness),
+  };
 }
