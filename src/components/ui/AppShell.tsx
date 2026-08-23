@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
 
-import styles from "./design-system.module.css";
-
 type AppShellProps = {
   sidebar: ReactNode;
   header: ReactNode;
@@ -10,9 +8,9 @@ type AppShellProps = {
 
 export function AppShell({ sidebar, header, children }: AppShellProps) {
   return (
-    <div className={styles.appShell}>
+    <div className="app-shell">
       {sidebar}
-      <div className={styles.content}>
+      <div className="app-shell__content">
         {header}
         {children}
       </div>
