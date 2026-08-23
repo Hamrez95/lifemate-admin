@@ -2,7 +2,9 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-function source(path: string) { return readFileSync(resolve(process.cwd(), path), "utf8"); }
+function source(path: string) {
+  return readFileSync(resolve(process.cwd(), path), "utf8");
+}
 
 describe("ADM-SEC-004 staff controls", () => {
   it("uses only canonical, purpose-specific Admin API endpoints", () => {
@@ -20,7 +22,7 @@ describe("ADM-SEC-004 staff controls", () => {
     const menu = source("app/security/roles/[roleCode]/StaffMembershipControls.tsx");
     expect(client).toContain('roleCode === "founder" || roleCode === "super_admin"');
     expect(menu).toContain("تغییر دسترسی خودتان در API مسدود می‌شود");
-    expect(menu).toContain('minLength={10}');
+    expect(menu).toContain("minLength={10}");
     expect(menu).toContain('name="idempotencyKey"');
   });
 
