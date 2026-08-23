@@ -42,24 +42,54 @@ describe("Audit Explorer response contract", () => {
         status: "fresh",
         asOfUtc: "2026-08-23T10:01:00.000Z",
       },
+      supportsServerPaging: true,
     });
   });
 
-  it("keeps old read-only responses non-crashing during staged rollout", () => {
+  it("keeps old read-only responses non-crashing but marks paging unavailable", () => {
     expect(parseAuditLogResponse({ events: [event] })).toEqual({
       events: [event],
       nextCursor: null,
       filters: { from: null, to: null },
       freshness: null,
+      supportsServerPaging: false,
     });
   });
 
+  it("fails closed on partially rolled out pagination contracts", () => {
+    expect(
+      parseAuditLogResponse({ events: [event], nextCursor: null }),
+    ).toBeNull();
+    expect(
+      parseAuditLogResponse({
+        events: [event],
+        nextCursor: null,
+        filters: { from: null, to: null },
+      }),
+    ).toBeNull();
+  });
+
   it("rejects invalid cursors and malformed events", () => {
-    expect(parseAuditLogResponse({ events: [event], nextCursor: 42 })).toBeNull();
+    expect(
+      parseAuditLogResponse({
+        events: [event],
+        nextCursor: 42,
+        filters: { from: null, to: null },
+        freshness: {
+          status: "fresh",
+          asOfUtc: "2026-08-23T10:01:00.000Z",
+        },
+      }),
+    ).toBeNull();
     expect(
       parseAuditLogResponse({
         events: [{ ...event, occurredAtUtc: "not-a-date" }],
         nextCursor: null,
+        filters: { from: null, to: null },
+        freshness: {
+          status: "fresh",
+          asOfUtc: "2026-08-23T10:01:00.000Z",
+        },
       }),
     ).toBeNull();
   });
