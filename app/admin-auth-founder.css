@@ -249,6 +249,11 @@
     width: min(620px, 100%);
   }
 
+  .auth-stage {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .auth-trust-row {
     grid-template-columns: 1fr;
   }
@@ -269,12 +274,20 @@
 }
 
 @media (max-width: 680px) {
+  .auth-shell,
+  .auth-stage {
+    width: 100%;
+    min-width: 0;
+  }
+
   .auth-header {
     margin-bottom: 14px;
   }
 
   .auth-header h1 {
+    max-width: 100%;
     font-size: 22px;
+    overflow-wrap: anywhere;
   }
 
   .auth-trust-row {
@@ -282,6 +295,7 @@
   }
 
   .auth-stage .auth-card {
+    min-width: 0;
     min-height: calc(100svh - 148px);
   }
 }
