@@ -1,0 +1,134 @@
+.page {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: clamp(20px, 5vw, 56px);
+  background:
+    radial-gradient(circle at 70% 10%, rgba(23, 173, 104, 0.08), transparent 32%), var(--lm-bg);
+}
+
+.card {
+  width: min(620px, 100%);
+  border: 1px solid var(--lm-border);
+  border-radius: 24px;
+  background: rgba(255, 253, 249, 0.96);
+  box-shadow: 0 22px 60px rgba(34, 48, 68, 0.08);
+  padding: clamp(24px, 5vw, 42px);
+  text-align: center;
+}
+
+.code {
+  display: inline-grid;
+  min-width: 58px;
+  min-height: 58px;
+  place-items: center;
+  border: 1px solid rgba(23, 173, 104, 0.16);
+  border-radius: 18px;
+  background: var(--lm-green-soft);
+  color: var(--lm-green-deep);
+  font-size: 0.9rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.card h1 {
+  margin: 20px 0 10px;
+  color: var(--lm-text);
+  font-size: clamp(1.35rem, 4vw, 2rem);
+  line-height: 1.45;
+}
+
+.card p {
+  max-width: 50ch;
+  margin: 0 auto;
+  color: var(--lm-text-muted);
+  line-height: 1.95;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.primary,
+.secondary {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  padding: 0 16px;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primary {
+  border: 1px solid var(--lm-green-deep);
+  background: var(--lm-green-deep);
+  color: #fff;
+}
+
+.secondary {
+  border: 1px solid var(--lm-border-strong);
+  background: var(--lm-surface-raised);
+  color: var(--lm-text);
+}
+
+.primary:focus-visible,
+.secondary:focus-visible {
+  outline: none;
+  box-shadow: var(--lm-focus);
+}
+
+.status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+  color: var(--lm-text-muted);
+  font-size: 0.88rem;
+}
+
+.spinner {
+  width: 22px;
+  height: 22px;
+  border: 3px solid rgba(23, 173, 104, 0.18);
+  border-top-color: var(--lm-green-deep);
+  border-radius: 50%;
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+    border-color: var(--lm-green-deep);
+  }
+}
+
+@media (max-width: 520px) {
+  .page {
+    place-items: start center;
+    padding-top: 11vh;
+  }
+
+  .actions {
+    display: grid;
+  }
+
+  .primary,
+  .secondary {
+    width: 100%;
+  }
+}
