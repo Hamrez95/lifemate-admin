@@ -8,7 +8,7 @@ import styles from "./standalone-state.module.css";
 
 export default function CommandCenterError({ reset }: { reset: () => void }) {
   return (
-    <main className={styles.page}>
+    <main className={styles.page} role="alert">
       <ErrorState
         title="مرکز فرماندهی موقتاً در دسترس نیست."
         description="برای حفظ امنیت، در صورت خطای Auth یا Admin API به داده مستقیم دیتابیس fallback نمی‌کنیم. می‌توانید دوباره تلاش کنید؛ اگر خطا ادامه داشت، وضعیت سرویس باید از مسیر عملیاتی بررسی شود."
