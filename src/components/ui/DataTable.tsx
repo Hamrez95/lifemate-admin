@@ -17,7 +17,9 @@ export function DataTable({ caption, headers, rows }: DataTableProps) {
           <thead>
             <tr>
               {headers.map((header) => (
-                <th key={header} scope="col">{header}</th>
+                <th key={header} scope="col">
+                  {header}
+                </th>
               ))}
             </tr>
           </thead>
