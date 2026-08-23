@@ -27,7 +27,8 @@ test("protected Command Center redirects an unauthenticated browser to workforce
   await expect(page.getByRole("tab", { name: "ورود", exact: true })).toBeVisible();
   await expect(page.getByRole("tab", { name: "ثبت‌نام", exact: true })).toBeVisible();
   await expect(page.getByRole("tab", { name: "فعال‌سازی مدیر", exact: true })).toBeVisible();
-  await expect(page.getByAltText(/ورود امن و تأیید دومرحله‌ای LifeMate/)).toBeVisible();
+  await expect(page.getByAltText(/ورود امن و تأیید دومرحله‌ای LifeMate/)).toHaveCount(1);
+  await expectNoViewportOverflow(page);
 });
 
 test("login and pending staff signup are Persian RTL, keyboard reachable and accessible", async ({
