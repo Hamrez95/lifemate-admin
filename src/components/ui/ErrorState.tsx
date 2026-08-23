@@ -13,5 +13,7 @@ export function ErrorState({
   description = "برای حفظ امنیت، در صورت خطای Auth یا Admin API به داده مستقیم دیتابیس fallback نمی‌کنیم.",
   actions,
 }: ErrorStateProps) {
-  return <StateCard icon="!" title={title} description={description} actions={actions} role="alert" />;
+  return (
+    <StateCard icon="!" title={title} description={description} actions={actions} role="alert" />
+  );
 }
