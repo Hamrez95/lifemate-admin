@@ -2,54 +2,52 @@
 
 Internal management frontend for the LifeMate digital-health ecosystem.
 
-## Current implementation status
+## Current live checkpoint — 2026-08-23
 
-The repository now contains the first two reviewed vertical slices:
+The frontend foundation, secure Admin boundary, workforce authentication work, and the first write-capable monetization slice are merged to `main`.
 
-### PR 1 — Admin Web Foundation
+Important delivery caveats:
+
+- `main` currently points at `3b8f74a47a7bc5a922e74fb067faa14784d1a591` (same-origin workforce auth proxy, PR #119).
+- The latest verified Vercel **production** deployment is still the earlier `ec87fb61276ed66295ad32424880ca4a178cd0d4` commit from PR #118.
+- A Vercel build-rate-limit status is reported against the current `main` head, so source completion must not be described as production-ready until exact-head deployment evidence exists.
+- `Hamrez95/LifeMate` owns canonical business migrations and `lifemate-admin-api` contracts. This repository must not add browser-side database shortcuts.
+- The separate `lifemate-admin-staging` Supabase project is not production-equivalent and must not be promoted without explicit migration/RLS/grant drift evidence.
+
+### Implemented frontend/security foundation
 
 - Next.js App Router + TypeScript
-- Persian/RTL-first application shell
-- LifeMate Command Center design tokens and responsive layout
-- routes for the 12 approved management workspaces
-- explicit placeholder states that never present fixture metrics as production facts
-- accessibility baseline (skip link, semantic navigation, focus states, reduced-motion support)
-- CI for formatting, linting, type checking, unit tests, security checks, and production build
-
-### PR 2 — Authentication and Admin security boundary
-
-Frontend:
-
+- Persian/RTL-first shell and responsive management workspaces
 - Supabase Auth using publishable browser configuration only
-- existing-account phone OTP sign-in (`shouldCreateUser: false`)
-- mandatory TOTP MFA / AAL2 before Command Center access
-- Next.js SSR session handling and fail-closed protected routes
-- capability-aware workspace navigation and route checks
-- no direct database reads or mutations from the browser
+- mandatory Admin API authorization boundary with active membership/capability checks and AAL2 target
+- same-origin workforce authentication proxy
+- capability-aware navigation and protected routes
+- no direct sensitive database reads or mutations from the browser
+- format/security/lint/typecheck/unit/build and Playwright/security-denial QA workflows
+- audited plan creation/lifecycle and append-only versioned pricing controls where canonical server contracts exist
 
-Core LifeMate repository (`Hamrez95/LifeMate`):
+### Canonical backend boundary
 
-- separate `supabase/functions/lifemate-admin-api` server boundary
-- dedicated `admin` PostgreSQL control-plane schema
-- Founder / Super Admin / Product / Support / Marketing / Finance / Technical / Security roles
-- capability-based server authorization
-- append-oriented administrative audit foundation
-- dedicated least-privilege `lifemate_admin_runtime` database identity
-- ordinary Admin runtime has no direct access to the `lifemate` health schema
-- elevated health permissions are not ordinary role permissions and are reserved for future subject-specific, time-bound break-glass access
+Core LifeMate repository (`Hamrez95/LifeMate`) contains:
 
-> The code is merged, but the Admin API/control-plane migration is **not considered live production functionality until the reviewed migration and Edge Function are deployed with explicit environment configuration and the initial Founder bootstrap is completed**.
+- `supabase/migrations/`: canonical forward PostgreSQL migrations
+- `supabase/functions/lifemate-admin-api/`: authenticated administrative API boundary
+- dedicated `admin` control-plane schema
+- explicit role/capability authorization and append-oriented audit foundation
+- dedicated least-privilege `lifemate_admin_runtime` identity
+- no ordinary runtime grant to raw `lifemate` health tables
+- elevated raw-health access reserved for a future reviewed break-glass workflow; Founder/Super Admin has no implicit bypass
 
 ## Architecture boundary
 
 ```text
 Browser: lifemate-admin
         |
-        | Supabase Auth session + mandatory MFA/AAL2
+        | publishable Supabase Auth session
         v
 Authenticated lifemate-admin-api
         |
-        | admin membership + capability RBAC
+        | active admin membership + capability + AAL2
         | validation + correlation IDs + audit + idempotency
         v
 lifemate_admin_runtime
@@ -60,7 +58,7 @@ Approved management tables / read models
 ordinary raw-health access -> DENIED
 ```
 
-The browser must never connect directly to sensitive production healthcare tables and must never receive service-role keys, database credentials, AI secrets, social tokens, payment secrets, or other privileged credentials.
+The browser must never receive a service-role key, database credential, AI/provider secret, payment secret, raw health payload, or privileged runtime credential.
 
 ## Environment variables
 
@@ -72,7 +70,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 NEXT_PUBLIC_ADMIN_API_URL=
 ```
 
-Never place a Supabase service-role key, PostgreSQL URL/password, AI provider secret, payment secret, or social access token in `NEXT_PUBLIC_*` values.
+Never place a Supabase service-role key, PostgreSQL URL/password, AI provider secret, payment secret, social access token, OTP, or signing key in `NEXT_PUBLIC_*` values.
 
 ## Local development
 
@@ -93,15 +91,16 @@ Then open `http://localhost:3000`.
 ```bash
 npm run format:check
 npm run security:check
+npm run delivery:check
+npm run workflow:check
 npm run lint
 npm run typecheck
 npm test
 npm run build
+npm run test:qa
 ```
 
 ## Version choices
-
-The current foundation uses stable supported versions compatible with the selected Next.js lint/auth stack:
 
 - Next.js 16.2.11
 - React 19.2.7
@@ -112,8 +111,8 @@ The current foundation uses stable supported versions compatible with the select
 - Prettier 3.9
 - Vitest 4.1
 
-## Next vertical slice
+## Current priority
 
-The next product-data slice is the measurement foundation: formal Event Taxonomy, KPI Dictionary and purpose-built analytics/read models before Founder dashboard metrics are wired. Fake metrics are not acceptable substitutes for missing instrumentation.
+Before expanding monetization or lower-priority settings work, reconcile operational gates: exact-head delivery evidence, repository/environment protection, Founder AAL2/bootstrap evidence, Audit Explorer backend pagination/filter contract, incident/backup/restore runbooks, and final Persian/RTL/a11y polish.
 
 See `AGENTS.md` and `SECURITY.md` before making changes.
