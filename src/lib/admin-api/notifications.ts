@@ -1,5 +1,5 @@
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
-import { createServerSupabaseClient } from "@/src/lib/supabase/server";
+import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 
 export type NotificationSource = "support" | "security" | "operations" | "finance" | "product";
 export type NotificationSeverity = "info" | "warning" | "critical";
@@ -335,11 +335,7 @@ function parseReadState(value: unknown): NotificationReadStateData | null {
 }
 
 async function token(): Promise<string | null> {
-  const supabase = await createServerSupabaseClient();
-  const { data: claimsData, error } = await supabase.auth.getClaims();
-  if (error || !claimsData?.claims?.sub) return null;
-  const { data } = await supabase.auth.getSession();
-  return data.session?.access_token ?? null;
+  return await getServerAdminAccessToken();
 }
 
 async function problem(response: Response): Promise<{ message?: string; correlationId?: string }> {
