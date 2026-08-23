@@ -69,7 +69,9 @@ test("forbidden state explains server authorization, stays keyboard reachable, a
 
 test("not-found state is truthful, responsive, and accessible", async ({ page }) => {
   await page.goto("/this-route-does-not-exist");
-  await expect(page.getByRole("heading", { name: "این بخش در مرکز فرماندهی پیدا نشد." })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "این بخش در مرکز فرماندهی پیدا نشد." }),
+  ).toBeVisible();
   await expect(page.getByText(/هیچ داده‌ای/)).toBeVisible();
   await expect(page.locator("body")).not.toContainText("service_role");
   await expectNoViewportOverflow(page);
