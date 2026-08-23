@@ -52,11 +52,13 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
 
   it("validates identity claims before using a session token server-side", () => {
     const server = source("src/lib/admin-api/server.ts");
+    const session = source("src/lib/admin-api/session.ts");
     const proxy = source("src/lib/supabase/proxy.ts");
 
-    expect(server.indexOf("supabase.auth.getClaims()")).toBeLessThan(
-      server.indexOf("supabase.auth.getSession()"),
+    expect(session.indexOf("supabase.auth.getClaims()")).toBeLessThan(
+      session.indexOf("supabase.auth.getSession()"),
     );
+    expect(server).toContain("getServerAdminAccessToken");
     expect(server).toContain("Authorization: `Bearer ${token}`");
     expect(server).toContain('cache: "no-store"');
     expect(server).toContain("AbortSignal.timeout(10_000)");

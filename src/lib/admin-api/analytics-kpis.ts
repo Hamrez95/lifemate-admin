@@ -1,5 +1,5 @@
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
-import { createServerSupabaseClient } from "@/src/lib/supabase/server";
+import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 
 export type KpiValueState = "ready" | "partial" | "unavailable";
 
@@ -113,14 +113,7 @@ async function correlationId(response: Response): Promise<string | undefined> {
 }
 
 export async function getKpiValues(params: URLSearchParams): Promise<AnalyticsKpiValuesResult> {
-  const supabase = await createServerSupabaseClient();
-  const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
-  if (claimsError || !claimsData?.claims?.sub) return { kind: "unauthenticated" };
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  const token = session?.access_token;
+  const token = await getServerAdminAccessToken();
   if (!token) return { kind: "unauthenticated" };
 
   const config = getPublicRuntimeConfig();

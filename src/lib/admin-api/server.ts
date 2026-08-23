@@ -5,8 +5,8 @@ import type {
   AdminApiProblem,
   AdminCapabilitySnapshot,
 } from "@/src/lib/admin-api/types";
+import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
-import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
 async function parseProblem(response: Response): Promise<AdminApiProblem | null> {
   try {
@@ -24,16 +24,7 @@ async function parseProblem(response: Response): Promise<AdminApiProblem | null>
 }
 
 export async function getAdminAccess(): Promise<AdminAccessResult> {
-  const supabase = await createServerSupabaseClient();
-  const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
-  if (claimsError || !claimsData?.claims?.sub) return { kind: "unauthenticated" };
-
-  // getClaims() above establishes identity. getSession() is used only to obtain the
-  // raw bearer token that must be forwarded to the separate Admin API.
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  const token = session?.access_token;
+  const token = await getServerAdminAccessToken();
   if (!token) return { kind: "unauthenticated" };
 
   const config = getPublicRuntimeConfig();
