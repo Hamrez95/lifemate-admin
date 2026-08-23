@@ -57,9 +57,7 @@ describe("Audit Explorer response contract", () => {
   });
 
   it("fails closed on partially rolled out pagination contracts", () => {
-    expect(
-      parseAuditLogResponse({ events: [event], nextCursor: null }),
-    ).toBeNull();
+    expect(parseAuditLogResponse({ events: [event], nextCursor: null })).toBeNull();
     expect(
       parseAuditLogResponse({
         events: [event],
