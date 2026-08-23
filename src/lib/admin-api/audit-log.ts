@@ -4,6 +4,13 @@ import { parseAuditLogResponse, type AuditLogResponse } from "./audit-log-contra
 
 export type { AuditLogEvent, AuditLogResponse } from "./audit-log-contract";
 
+export type AuditLogQuery = {
+  limit?: number;
+  from?: string | null;
+  to?: string | null;
+  cursor?: string | null;
+};
+
 export type AuditLogResult =
   | { kind: "ok"; data: AuditLogResponse }
   | { kind: "unauthenticated" }
@@ -19,8 +26,14 @@ async function correlationId(response: Response): Promise<string | undefined> {
   }
 }
 
-export async function getAuditLog(limit = 50): Promise<AuditLogResult> {
-  const boundedLimit = Math.min(200, Math.max(1, Math.trunc(limit)));
+function normalizedDate(value: string | null | undefined, boundary: "start" | "end") {
+  const normalized = value?.trim() ?? "";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(normalized)) return null;
+  return `${normalized}T${boundary === "start" ? "00:00:00.000" : "23:59:59.999"}Z`;
+}
+
+export async function getAuditLog(query: AuditLogQuery = {}): Promise<AuditLogResult> {
+  const boundedLimit = Math.min(100, Math.max(1, Math.trunc(query.limit ?? 50)));
   const supabase = await createServerSupabaseClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   if (claimsError || !claimsData?.claims?.sub) return { kind: "unauthenticated" };
@@ -36,6 +49,11 @@ export async function getAuditLog(limit = 50): Promise<AuditLogResult> {
   try {
     const url = new URL(`${config.adminApiUrl}/api/v1/audit`);
     url.searchParams.set("limit", String(boundedLimit));
+    const from = normalizedDate(query.from, "start");
+    const to = normalizedDate(query.to, "end");
+    if (from) url.searchParams.set("from", from);
+    if (to) url.searchParams.set("to", to);
+    if (query.cursor?.trim()) url.searchParams.set("cursor", query.cursor.trim());
     response = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
