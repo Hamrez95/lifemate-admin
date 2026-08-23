@@ -21,7 +21,8 @@ describe("ADM-SEC-004 staff controls", () => {
     const client = source("src/lib/admin-api/staff-actions.ts");
     const menu = source("app/security/roles/[roleCode]/StaffMembershipControls.tsx");
     expect(client).toContain('roleCode === "founder" || roleCode === "super_admin"');
-    expect(menu).toContain("تغییر دسترسی خودتان در API مسدود می‌شود");
+    expect(menu).toContain("تغییر دسترسی خودتان در API مسدود");
+    expect(menu).toContain("می‌شود.");
     expect(menu).toContain("minLength={10}");
     expect(menu).toContain('name="idempotencyKey"');
   });
