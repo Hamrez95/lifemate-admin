@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
@@ -16,6 +17,7 @@ import {
 
 import { UserActionMenu } from "./UserActionMenu";
 import styles from "./user-detail.module.css";
+import privacyStyles from "./user-privacy-reference.module.css";
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const ACTIVITY_PAGE_SIZE = 20;
@@ -101,9 +103,7 @@ function labelStatus(value: string): string {
 
 function tabHref(accountId: string, tab: UserDetailTab, page?: number): string {
   const search = new URLSearchParams({ tab });
-  if (tab === "activity" && page && page > 1) {
-    search.set("page", String(page));
-  }
+  if (tab === "activity" && page && page > 1) search.set("page", String(page));
   return `/users/${accountId}?${search.toString()}`;
 }
 
@@ -156,9 +156,8 @@ function SectionState({
       />
     );
   }
-  if (section.state === "empty") {
+  if (section.state === "empty")
     return <AdminPageState state="empty" title="داده‌ای برای این بخش ثبت نشده است" />;
-  }
   return null;
 }
 
@@ -388,6 +387,45 @@ function OverviewActivityPreview({
   );
 }
 
+function TemporarySensitiveAccessCard() {
+  return (
+    <SectionFrame
+      title="دسترسی موقت به اطلاعات حساس"
+      description="کنترل break-glass فقط پس از قرارداد canonical Core"
+      wide
+    >
+      <div className={privacyStyles.sensitiveAccess}>
+        <div className={privacyStyles.sensitiveAccessLead}>
+          <span className={privacyStyles.sensitiveIcon} aria-hidden="true">
+            ⌁
+          </span>
+          <div>
+            <strong>اطلاعات حساس در حالت پیش‌فرض قفل هستند.</strong>
+            <p id="temporary-access-unavailable">
+              endpoint canonical برای درخواست دسترسی موقت در Core موجود نیست؛ بنابراین این کنترل
+              عمداً غیرفعال است و هیچ workaround سمت UI ساخته نمی‌شود.
+            </p>
+          </div>
+        </div>
+        <div
+          className={privacyStyles.sensitiveRequirements}
+          aria-label="پیش‌نیازهای دسترسی موقت حساس"
+        >
+          <span>AAL2 الزامی</span>
+          <span>Permission اختصاصی</span>
+          <span>دلیل اجباری</span>
+          <span>مدت محدود</span>
+          <span>Idempotency</span>
+          <span>Audit اجباری</span>
+        </div>
+        <button type="button" disabled aria-describedby="temporary-access-unavailable">
+          درخواست دسترسی موقت
+        </button>
+      </div>
+    </SectionFrame>
+  );
+}
+
 function TabNavigation({ accountId, activeTab }: { accountId: string; activeTab: UserDetailTab }) {
   return (
     <nav className={styles.tabs} aria-label="بخش‌های جزئیات کاربر">
@@ -432,9 +470,8 @@ function SupportTab({ canReadSupport }: { canReadSupport: boolean }) {
 }
 
 function ActivityTimeline({ data }: { data: UserActivityResponse }) {
-  if (data.items.length === 0) {
+  if (data.items.length === 0)
     return <AdminPageState state="empty" title="رویداد مدیریتی برای این کاربر ثبت نشده است" />;
-  }
 
   return (
     <ol className={styles.timeline}>
@@ -458,7 +495,7 @@ async function ActivityTab({ accountId, page }: { accountId: string; page: numbe
   const result = await getUserActivity(accountId, page, ACTIVITY_PAGE_SIZE);
   if (result.kind === "unauthenticated") redirect("/login");
   if (result.kind === "not_found") notFound();
-  if (result.kind === "forbidden") {
+  if (result.kind === "forbidden")
     return (
       <AdminPageState
         state="forbidden"
@@ -466,8 +503,7 @@ async function ActivityTab({ accountId, page }: { accountId: string; page: numbe
         description="مجوز security.audit.read برای این بخش الزامی است."
       />
     );
-  }
-  if (result.kind === "unavailable") {
+  if (result.kind === "unavailable")
     return (
       <AdminPageState
         state="unavailable"
@@ -475,7 +511,6 @@ async function ActivityTab({ accountId, page }: { accountId: string; page: numbe
         description={result.correlationId ? `کد پیگیری: ${result.correlationId}` : undefined}
       />
     );
-  }
 
   const data = result.data;
   const previousHref = data.page > 1 ? tabHref(accountId, "activity", data.page - 1) : undefined;
@@ -546,13 +581,12 @@ function ActiveTabContent({
   if (activeTab === "relationships") return <RelationshipsCard data={data} />;
   if (activeTab === "commerce") return <CommerceCard data={data} />;
   if (activeTab === "support") return <SupportTab canReadSupport={canReadSupport} />;
-  if (activeTab === "activity") {
+  if (activeTab === "activity")
     return (
       <Suspense fallback={<TabLoadingView />}>
         <ActivityTab accountId={accountId} page={activityPage} />
       </Suspense>
     );
-  }
 
   return (
     <div className={styles.grid}>
@@ -564,6 +598,7 @@ function ActiveTabContent({
         canManage={canManageUsers}
       />
       <OverviewActivityPreview data={data} accountId={accountId} />
+      <TemporarySensitiveAccessCard />
     </div>
   );
 }
@@ -585,7 +620,7 @@ async function UserDetailContent({
   if (result.kind === "unauthenticated") redirect("/login");
   if (result.kind === "not_found") notFound();
   if (result.kind === "forbidden") return <AdminPageState state="forbidden" />;
-  if (result.kind === "unavailable") {
+  if (result.kind === "unavailable")
     return (
       <AdminPageState
         state="unavailable"
@@ -596,7 +631,6 @@ async function UserDetailContent({
         }
       />
     );
-  }
 
   const data = result.data;
   const account = data.account.data;
@@ -607,29 +641,38 @@ async function UserDetailContent({
   return (
     <div className={styles.page}>
       <section className={styles.hero}>
-        <div className={styles.heroTop}>
+        <div className={`${styles.heroTop} ${privacyStyles.heroTop}`}>
           <div className={styles.identity}>
             <Link className={styles.backLink} href="/users">
               بازگشت به فهرست کاربران
             </Link>
-            <span className={styles.eyebrow}>LifeMate User Detail</span>
+            <span className={styles.eyebrow}>User 360 · Privacy by default</span>
             <h2>{displayName || "کاربر LifeMate"}</h2>
             <code>{account.id}</code>
+            <div className={styles.metaRow}>
+              <span className={styles.badge} data-status={account.status}>
+                {labelStatus(account.status)}
+              </span>
+              <span className={styles.softBadge}>آخرین دریافت: {freshness}</span>
+            </div>
           </div>
-          <div className={styles.metaRow}>
-            <span className={styles.badge} data-status={account.status}>
-              {labelStatus(account.status)}
-            </span>
-            <span className={styles.softBadge}>آخرین دریافت: {freshness}</span>
+          <div className={privacyStyles.heroVisual}>
+            <Image
+              src="/design-assets/user-privacy-hero-v1.png"
+              alt="تصویر حریم خصوصی User 360 در LifeMate"
+              width={720}
+              height={560}
+              sizes="(max-width: 680px) 70vw, 280px"
+            />
           </div>
         </div>
       </section>
 
       <div className={styles.notice}>
-        <strong>مرز حریم خصوصی</strong>
+        <strong>شما در نمای پشتیبانی پیش‌فرض هستید.</strong>
         <p>
-          این صفحه عمداً داده خام سلامت و Women Health را نمایش نمی‌دهد. دسترسی حساس فقط از مسیر
-          مستقل و کنترل‌شده break-glass قابل تعریف خواهد بود.
+          داده خام سلامت، Women Health، اطلاعات تماس حساس و هر دامنه نیازمند break-glass در این صفحه
+          باز نمی‌شود. نبود قرارداد Core به معنی نبود دسترسی است.
         </p>
       </div>
 
@@ -661,8 +704,8 @@ export default async function UserDetailPage({ params, searchParams }: UserDetai
     <AdminSessionProvider admin={admin}>
       <AdminShell
         activeSlug="users"
-        title="جزئیات کاربر"
-        subtitle="نمای عملیاتی permission-aware با تب‌های مستقل، Timeline و مرزهای روشن حریم خصوصی"
+        title="User 360"
+        subtitle="نمای عملیاتی حداقلی با مرز حریم خصوصی و دسترسی حساس fail-closed"
       >
         {!canReadUsers ? (
           <AdminPageState state="forbidden" />
