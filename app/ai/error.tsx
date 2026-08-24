@@ -1,6 +1,11 @@
 "use client";
 
-export default function AiError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function AiError({
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
   return (
     <div role="alert" style={{ display: "grid", gap: "0.65rem", padding: "1rem" }}>
       <strong>خطا در بارگذاری بخش هوشمند.</strong>
