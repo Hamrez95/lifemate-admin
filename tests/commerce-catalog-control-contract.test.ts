@@ -55,7 +55,7 @@ describe("P0 Monetization Control Plane — plan and pricing batch", () => {
     const controls = source("app/commerce/plans/[planId]/PlanCatalogControls.tsx");
     const manage = source("app/commerce/plans/[planId]/manage/page.tsx");
 
-    expect(page).toContain("overwrite نمی‌کند");
+    expect(page).toContain("Subscription قبلی را به‌صورت ضمنی بازنویسی نمی‌کند");
     expect(controls).toContain("مبلغ تاریخی overwrite نمی‌شود");
     expect(controls).toContain("هیچ Subscription موجود را reprice نمی‌کند");
     expect(manage).toContain("Subscription موجود را دست‌کاری");
@@ -73,18 +73,21 @@ describe("P0 Monetization Control Plane — plan and pricing batch", () => {
     expect(actions).toContain("idempotencyKey");
   });
 
-  it("does not fabricate Trial Entitlement or bulk-code controls before canonical contracts exist", () => {
+  it("blocks trial entitlement and independent discount-code controls on Core 412", () => {
     const page = source("app/commerce/plans/page.tsx");
     const manage = source("app/commerce/plans/[planId]/manage/page.tsx");
 
-    expect(page).toContain("Trial، Entitlement assignment و bulk Discount Code");
-    expect(page).toContain("قابلیت جعلی نمی‌سازد");
+    expect(page).toContain("Trial configuration · Core #412");
+    expect(page).toContain("Entitlement assignment · Core #412");
+    expect(page).toContain("Discount-code issuance جداگانه و bulk");
+    expect(page).toContain("Core #412 فعال نمی‌شود");
     expect(manage).toContain("Trial policy و Entitlement assignment");
   });
 
   it("keeps Persian RTL UI responsive keyboard visible and motion aware", () => {
     const page = source("app/commerce/plans/page.tsx");
     const css = source("app/commerce/plans/catalog.module.css");
+    const sharedCss = source("app/commerce/commerce-reference.module.css");
 
     expect(page).toContain('dir="rtl"');
     expect(css).toContain("var(--lm-blue)");
@@ -93,5 +96,7 @@ describe("P0 Monetization Control Plane — plan and pricing batch", () => {
     expect(css).toContain("max-width: 760px");
     expect(css).toContain("prefers-reduced-motion");
     expect(css).not.toContain("linear-gradient");
+    expect(sharedCss).toContain("max-width: 820px");
+    expect(sharedCss).toContain("overflow-wrap: anywhere");
   });
 });

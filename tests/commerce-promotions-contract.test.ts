@@ -27,11 +27,9 @@ describe("ADM-COM-005 Promotions / Discount Codes", () => {
   it("keeps Promotion Discount Code Plan and Entitlement semantics separate", () => {
     const page = source("app/commerce/promotions/page.tsx");
 
-    expect(page).toContain("<span>Promotion</span>");
-    expect(page).toContain("<span>Discount Code</span>");
-    expect(page).toContain("<span>Plan</span>");
-    expect(page).toContain("هیچ‌کدام Plan، Entitlement");
-    expect(page).toContain("یا Transaction نیستند");
+    expect(page).toContain("Promotion یک قانون تجاری canonical است");
+    expect(page).toContain("Discount-code issuance · Core #412");
+    expect(page).toContain("هیچ generator یا edit form جداگانه فعال نیست");
     expect(page).toContain("/commerce/promotions/${row.promotionId}");
   });
 
@@ -50,7 +48,7 @@ describe("ADM-COM-005 Promotions / Discount Codes", () => {
     const page = source("app/commerce/promotions/page.tsx");
     const client = source("src/lib/admin-api/commerce-promotions.ts");
 
-    expect(page).toContain("جست‌وجوی جزئی کد پشتیبانی نمی‌شود");
+    expect(page).toContain("جست‌وجوی جزئی یا تولید کد جدید اینجا انجام نمی‌شود");
     expect(page).toContain("primaryCodeMasked");
     expect(client).toContain('state: "unavailable"');
     expect(client).toContain("count: null");
@@ -92,17 +90,17 @@ describe("ADM-COM-005 Promotions / Discount Codes", () => {
     expect(detail).toContain('evidence.state === "forbidden"');
   });
 
-  it("keeps Persian RTL visuals responsive keyboard visible and motion aware", () => {
+  it("uses the commerce hero and reference 10 responsive shell", () => {
     const list = source("app/commerce/promotions/page.tsx");
-    const css = source("app/commerce/promotions/promotions.module.css");
+    const shared = source("app/commerce/CommerceWorkspaceHeader.tsx");
+    const css = source("app/commerce/commerce-reference.module.css");
 
-    expect(list).toContain('dir="rtl"');
-    expect(css).toContain("var(--lm-green)");
-    expect(css).toContain("var(--lm-blue)");
-    expect(css).toContain("var(--lm-orange-soft)");
-    expect(css).toContain("var(--lm-violet-soft)");
+    expect(list).toContain('active="promotions"');
+    expect(list).toContain("Reference 10");
+    expect(shared).toContain("/design-assets/commerce-hero-v1.png");
+    expect(css).toContain("var(--lm-green-soft)");
     expect(css).toContain(":focus-visible");
-    expect(css).toContain("max-width: 760px");
+    expect(css).toContain("max-width: 820px");
     expect(css).toContain("prefers-reduced-motion");
   });
 });
