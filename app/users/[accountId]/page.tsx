@@ -17,9 +17,9 @@ import {
 
 import { UserActionMenu } from "./UserActionMenu";
 import styles from "./user-detail.module.css";
+import privacyStyles from "./user-privacy-reference.module.css";
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const ACTIVITY_PAGE_SIZE = 20;
 
 const statusLabels: Record<string, string> = {
@@ -394,9 +394,9 @@ function TemporarySensitiveAccessCard() {
       description="کنترل break-glass فقط پس از قرارداد canonical Core"
       wide
     >
-      <div className={styles.sensitiveAccess}>
-        <div className={styles.sensitiveAccessLead}>
-          <span className={styles.sensitiveIcon} aria-hidden="true">
+      <div className={privacyStyles.sensitiveAccess}>
+        <div className={privacyStyles.sensitiveAccessLead}>
+          <span className={privacyStyles.sensitiveIcon} aria-hidden="true">
             ⌁
           </span>
           <div>
@@ -407,7 +407,10 @@ function TemporarySensitiveAccessCard() {
             </p>
           </div>
         </div>
-        <div className={styles.sensitiveRequirements} aria-label="پیش‌نیازهای دسترسی موقت حساس">
+        <div
+          className={privacyStyles.sensitiveRequirements}
+          aria-label="پیش‌نیازهای دسترسی موقت حساس"
+        >
           <span>AAL2 الزامی</span>
           <span>Permission اختصاصی</span>
           <span>دلیل اجباری</span>
@@ -638,7 +641,7 @@ async function UserDetailContent({
   return (
     <div className={styles.page}>
       <section className={styles.hero}>
-        <div className={styles.heroTop}>
+        <div className={`${styles.heroTop} ${privacyStyles.heroTop}`}>
           <div className={styles.identity}>
             <Link className={styles.backLink} href="/users">
               بازگشت به فهرست کاربران
@@ -653,7 +656,7 @@ async function UserDetailContent({
               <span className={styles.softBadge}>آخرین دریافت: {freshness}</span>
             </div>
           </div>
-          <div className={styles.heroVisual}>
+          <div className={privacyStyles.heroVisual}>
             <Image
               src="/design-assets/user-privacy-hero-v1.png"
               alt="تصویر حریم خصوصی User 360 در LifeMate"
