@@ -1,4 +1,7 @@
+import Image from "next/image";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import { AdminPageState, AdminPagination } from "@/src/components/admin-data-table";
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
@@ -42,6 +45,7 @@ const kindMeta: Record<
 
 const statusLabels: Record<string, string> = {
   Active: "فعال",
+  Pending: "در انتظار",
   Ended: "پایان‌یافته",
   Revoked: "لغوشده",
   Expired: "منقضی",
@@ -96,6 +100,17 @@ function kindTotal(
     .reduce((total, item) => total + item.total, 0);
 }
 
+function statusTotal(
+  summary: Array<{ kind: RelationshipOverviewKind; status: string; total: number }>,
+  kind: RelationshipOverviewKind,
+  statuses: string[],
+): number {
+  const normalized = new Set(statuses.map((status) => status.toLowerCase()));
+  return summary
+    .filter((item) => item.kind === kind && normalized.has(item.status.toLowerCase()))
+    .reduce((total, item) => total + item.total, 0);
+}
+
 function itemTitle(item: RelationshipOverviewItem): string {
   if (item.kind === "relationship") return item.type ?? "Relationship";
   if (item.kind === "consent") return item.purpose ?? "Consent";
@@ -146,10 +161,86 @@ function OverviewItem({ item }: { item: RelationshipOverviewItem }) {
   );
 }
 
+function SensitiveActions() {
+  const actions = [
+    { title: "تمدید دسترسی", symbol: "＋" },
+    { title: "ویرایش دامنه مجوز", symbol: "✎" },
+    { title: "لغو دسترسی", symbol: "⊘" },
+  ];
+
+  return (
+    <section className={styles.sensitiveActions} aria-labelledby="relationship-sensitive-actions-title">
+      <div className={styles.sectionHeading}>
+        <div>
+          <span className={styles.eyebrow}>Sensitive operations</span>
+          <h3 id="relationship-sensitive-actions-title">اقدامات حساس</h3>
+          <p>
+            Core هنوز mutation canonical این عملیات را ارائه نمی‌کند؛ هیچ مسیر جایگزین یا دسترسی
+            مستقیم ساخته نمی‌شود.
+          </p>
+        </div>
+        <span className={styles.failClosedBadge}>Fail closed</span>
+      </div>
+      <div className={styles.actionGrid}>
+        {actions.map((action) => (
+          <article className={styles.actionCard} key={action.title}>
+            <span className={styles.actionSymbol} aria-hidden="true">
+              {action.symbol}
+            </span>
+            <div>
+              <strong>{action.title}</strong>
+              <p>Permission: باید در قرارداد canonical Core تعریف و برای اپراتور احراز شود.</p>
+              <p>Confirmation: تأیید صریح و دوباره قبل از اجرای mutation الزامی است.</p>
+            </div>
+            <button type="button" disabled title="endpoint canonical برای این اقدام وجود ندارد">
+              غیرفعال؛ endpoint موجود نیست
+            </button>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function WorkspaceTabs({ filters }: { filters: URLSearchParams }) {
+  const activeKind = filters.get("kind") ?? "";
+  const activeStatus = filters.get("status") ?? "";
+  const isPending = activeKind === "relationship" && activeStatus.toLowerCase() === "pending";
+
+  return (
+    <nav className={styles.tabs} aria-label="بخش‌های روابط و رضایت">
+      <Link
+        href="/relationships?kind=relationship"
+        data-active={activeKind === "relationship" && !isPending ? "true" : "false"}
+      >
+        روابط
+      </Link>
+      <Link href="/relationships?kind=relationship&status=Pending" data-active={isPending ? "true" : "false"}>
+        درخواست‌ها
+      </Link>
+      <Link href="/relationships?kind=access_grant" data-active={activeKind === "access_grant" ? "true" : "false"}>
+        مجوزهای دسترسی
+      </Link>
+      <Link href="/relationships?kind=consent" data-active={activeKind === "consent" ? "true" : "false"}>
+        رضایت‌ها
+      </Link>
+      <Link href="/relationships/ledger">تاریخچه و فعالیت‌ها</Link>
+    </nav>
+  );
+}
+
 async function RelationshipsContent({ filters }: { filters: URLSearchParams }) {
   const result = await getRelationshipOverview(filters);
   if (result.kind === "unauthenticated") redirect("/login");
-  if (result.kind === "forbidden") return <AdminPageState state="forbidden" />;
+  if (result.kind === "forbidden") {
+    return (
+      <AdminPageState
+        state="forbidden"
+        title="مجوز مشاهده روابط و رضایت وجود ندارد"
+        description="برای این workspace مجوز relationships.read لازم است."
+      />
+    );
+  }
   if (result.kind === "invalid") {
     return (
       <AdminPageState
@@ -163,6 +254,7 @@ async function RelationshipsContent({ filters }: { filters: URLSearchParams }) {
     return (
       <AdminPageState
         state="unavailable"
+        title="منبع canonical روابط و رضایت در دسترس نیست"
         description={result.correlationId ? `کد پیگیری: ${result.correlationId}` : undefined}
       />
     );
@@ -172,122 +264,168 @@ async function RelationshipsContent({ filters }: { filters: URLSearchParams }) {
   const totalPages = Math.max(1, Math.ceil(data.total / data.pageSize));
   const previousHref = data.page > 1 ? pageHref(filters, data.page - 1) : undefined;
   const nextHref = data.page < totalPages ? pageHref(filters, data.page + 1) : undefined;
+  const activeRelationships = statusTotal(data.summary, "relationship", ["Active"]);
+  const pendingRequests = statusTotal(data.summary, "relationship", ["Pending"]);
+  const activeGrants = statusTotal(data.summary, "access_grant", ["Active", "Granted"]);
+  const revokedRecords = statusTotal(data.summary, "consent", ["Revoked"]);
 
   return (
     <div className={styles.page}>
       <section className={styles.hero}>
         <div className={styles.heroCopy}>
-          <span className={styles.eyebrow}>Trust Architecture · LifeMate</span>
-          <h2>روابط، رضایت و مجوز؛ سه مفهوم مستقل</h2>
+          <span className={styles.eyebrow}>Relationships · Access · Consent</span>
+          <h2>روابط، دسترسی و رضایت</h2>
           <p>
-            این صفحه عمداً این سه لایه را از هم جدا نگه می‌دارد تا وجود یک رابطه خانوادگی یا یک
-            رضایت، به اشتباه به معنی دسترسی به داده تلقی نشود.
+            مدیریت رابطه، رضایت و مجوزهای دسترسی با مرزهای مستقل. Relationship هیچ‌وقت به‌تنهایی
+            مجوز مشاهده اطلاعات سلامت ایجاد نمی‌کند.
           </p>
+          <div className={styles.heroChips}>
+            <span>Canonical API only</span>
+            <span>relationships.read</span>
+            <span>حداقل‌سازی داده</span>
+          </div>
         </div>
-        <div className={styles.trustDiagram} aria-label="سه لایه مستقل اعتماد و دسترسی">
-          {(Object.keys(kindMeta) as RelationshipOverviewKind[]).map((kind) => (
-            <div key={kind} className={styles.diagramNode} data-kind={kind}>
-              <span aria-hidden="true">{kindMeta[kind].symbol}</span>
-              <strong>{kindMeta[kind].short}</strong>
-            </div>
-          ))}
+        <div className={styles.heroVisual}>
+          <Image
+            src="/design-assets/relationships-consent-hero-v1.png"
+            alt="تصویر روابط، دسترسی و رضایت LifeMate"
+            width={720}
+            height={560}
+            sizes="(max-width: 720px) 76vw, 320px"
+            priority
+          />
         </div>
       </section>
 
-      <section className={styles.pillarGrid} aria-label="خلاصه سه مفهوم">
-        {(Object.keys(kindMeta) as RelationshipOverviewKind[]).map((kind) => {
-          const meta = kindMeta[kind];
-          return (
-            <article className={styles.pillarCard} data-kind={kind} key={kind}>
-              <div className={styles.pillarTopline}>
-                <span className={styles.pillarIcon} aria-hidden="true">
-                  {meta.symbol}
-                </span>
-                <span className={styles.pillarCount}>
-                  {kindTotal(data.summary, kind).toLocaleString("fa-IR")}
-                </span>
-              </div>
-              <h3>{meta.label}</h3>
-              <p>{meta.description}</p>
-              <div className={styles.pillarStatuses}>
-                {data.summary
-                  .filter((item) => item.kind === kind)
-                  .map((item) => (
-                    <span key={`${kind}-${item.status}`}>
-                      {labelStatus(item.status)}: {item.total.toLocaleString("fa-IR")}
-                    </span>
-                  ))}
-              </div>
-            </article>
-          );
-        })}
-      </section>
-
-      <section className={styles.filterCard} aria-labelledby="relationship-filters-title">
-        <div>
-          <span className={styles.eyebrow}>نمای عملیاتی</span>
-          <h3 id="relationship-filters-title">فیلتر رکوردها</h3>
-          <p>
-            فقط metadata لازم نمایش داده می‌شود؛ نام و اطلاعات تماس طرف‌های رابطه در این overview
-            نیست.
-          </p>
-        </div>
-        <form className={styles.filters} method="get">
-          <label>
-            <span>نوع</span>
-            <select name="kind" defaultValue={data.filters.kind ?? ""}>
-              <option value="">همه انواع</option>
-              <option value="relationship">Relationship</option>
-              <option value="consent">Consent</option>
-              <option value="access_grant">Access Grant</option>
-            </select>
-          </label>
-          <label>
-            <span>وضعیت</span>
-            <input
-              name="status"
-              maxLength={32}
-              defaultValue={data.filters.status ?? ""}
-              placeholder="مثلاً Active یا Revoked"
-            />
-          </label>
-          <input type="hidden" name="pageSize" value={data.pageSize} />
-          <button type="submit">اعمال فیلتر</button>
-        </form>
-      </section>
-
-      <section className={styles.activityCard} aria-labelledby="relationship-activity-title">
-        <div className={styles.sectionHeading}>
+      <section className={styles.policyGrid} aria-label="مرزهای رضایت و دسترسی">
+        <article data-tone="green">
+          <span className={styles.policyIcon} aria-hidden="true">✓</span>
           <div>
-            <span className={styles.eyebrow}>آخرین رکوردها</span>
-            <h3 id="relationship-activity-title">وضعیت‌های ثبت‌شده</h3>
-            <p>
-              {data.total.toLocaleString("fa-IR")} رکورد مطابق فیلتر · تازه‌سازی:{" "}
-              {formatDateTime(data.freshness.asOfUtc)}
-            </p>
+            <strong>مجوز مشاهده اطلاعات سلامت</strong>
+            <p>هرگونه مشاهده داده سلامت نیازمند رضایت صریح و Access Grant معتبر در Core است.</p>
           </div>
-          <span className={styles.ledgerHint}>Ledger کامل در ADM-REL-002</span>
-        </div>
-
-        {data.items.length === 0 ? (
-          <AdminPageState state="empty" title="رکوردی با این فیلتر پیدا نشد" />
-        ) : (
-          <div className={styles.activityList}>
-            {data.items.map((item) => (
-              <OverviewItem key={`${item.kind}-${item.id}`} item={item} />
-            ))}
+        </article>
+        <article data-tone="blue">
+          <span className={styles.policyIcon} aria-hidden="true">○</span>
+          <div>
+            <strong>اشتراک تجاری ≠ دسترسی به اطلاعات سلامت</strong>
+            <p>Subscription فقط قابلیت تجاری می‌دهد و هیچ مجوز پزشکی یا رضایت ایجاد نمی‌کند.</p>
           </div>
-        )}
-
-        <AdminPagination
-          page={data.page}
-          pageSize={data.pageSize}
-          total={data.total}
-          previousHref={previousHref}
-          nextHref={nextHref}
-          ariaLabel="صفحه‌بندی روابط، رضایت‌ها و مجوزهای دسترسی"
-        />
+        </article>
       </section>
+
+      <WorkspaceTabs filters={filters} />
+
+      <div className={styles.workspaceGrid}>
+        <main className={styles.workspaceMain}>
+          <section className={styles.filterCard} aria-labelledby="relationship-filters-title">
+            <div>
+              <span className={styles.eyebrow}>نمای عملیاتی</span>
+              <h3 id="relationship-filters-title">فیلتر رکوردهای canonical</h3>
+              <p>فقط metadata لازم نمایش داده می‌شود؛ داده پزشکی خام یا اطلاعات تماس حساس در این نما نیست.</p>
+            </div>
+            <form className={styles.filters} method="get">
+              <label>
+                <span>نوع</span>
+                <select name="kind" defaultValue={data.filters.kind ?? ""}>
+                  <option value="">همه انواع</option>
+                  <option value="relationship">Relationship</option>
+                  <option value="consent">Consent</option>
+                  <option value="access_grant">Access Grant</option>
+                </select>
+              </label>
+              <label>
+                <span>وضعیت</span>
+                <input
+                  name="status"
+                  maxLength={32}
+                  defaultValue={data.filters.status ?? ""}
+                  placeholder="مثلاً Active یا Revoked"
+                />
+              </label>
+              <input type="hidden" name="pageSize" value={data.pageSize} />
+              <button type="submit">اعمال فیلتر</button>
+            </form>
+          </section>
+
+          <section className={styles.activityCard} aria-labelledby="relationship-activity-title">
+            <div className={styles.sectionHeading}>
+              <div>
+                <span className={styles.eyebrow}>Canonical records</span>
+                <h3 id="relationship-activity-title">روابط، درخواست‌ها و وضعیت رضایت</h3>
+                <p>
+                  {data.total.toLocaleString("fa-IR")} رکورد مطابق فیلتر · تازه‌سازی:{" "}
+                  {formatDateTime(data.freshness.asOfUtc)}
+                </p>
+              </div>
+              <Link className={styles.ledgerHint} href="/relationships/ledger">
+                مشاهده Ledger کامل
+              </Link>
+            </div>
+
+            {data.items.length === 0 ? (
+              <div className={styles.emptyState}>
+                <Image
+                  src="/design-assets/relationships-consent-hero-v1.png"
+                  alt=""
+                  width={360}
+                  height={280}
+                  sizes="180px"
+                />
+                <AdminPageState
+                  state="empty"
+                  title="رکوردی با این فیلتر پیدا نشد"
+                  description="برای گسترش نتیجه، سطح دسترسی یا دامنه داده افزایش داده نمی‌شود."
+                />
+              </div>
+            ) : (
+              <div className={styles.activityList}>
+                {data.items.map((item) => (
+                  <OverviewItem key={`${item.kind}-${item.id}`} item={item} />
+                ))}
+              </div>
+            )}
+
+            <AdminPagination
+              page={data.page}
+              pageSize={data.pageSize}
+              total={data.total}
+              previousHref={previousHref}
+              nextHref={nextHref}
+              ariaLabel="صفحه‌بندی روابط، رضایت‌ها و مجوزهای دسترسی"
+            />
+          </section>
+
+          <SensitiveActions />
+        </main>
+
+        <aside className={styles.summaryRail} aria-label="خلاصه وضعیت روابط و رضایت">
+          <section className={styles.summaryCard}>
+            <span className={styles.eyebrow}>خلاصه وضعیت</span>
+            <h3>روابط و دسترسی</h3>
+            <div className={styles.metricGrid}>
+              <div data-tone="green"><span>روابط فعال</span><strong>{activeRelationships.toLocaleString("fa-IR")}</strong></div>
+              <div data-tone="orange"><span>درخواست‌های در انتظار</span><strong>{pendingRequests.toLocaleString("fa-IR")}</strong></div>
+              <div data-tone="blue"><span>مجوزهای فعال</span><strong>{activeGrants.toLocaleString("fa-IR")}</strong></div>
+              <div data-tone="red"><span>رضایت‌های لغوشده</span><strong>{revokedRecords.toLocaleString("fa-IR")}</strong></div>
+            </div>
+          </section>
+
+          <section className={styles.summaryCard}>
+            <span className={styles.eyebrow}>سه لایه مستقل</span>
+            {(Object.keys(kindMeta) as RelationshipOverviewKind[]).map((kind) => {
+              const meta = kindMeta[kind];
+              return (
+                <div className={styles.summaryRow} key={kind}>
+                  <span>{meta.symbol}</span>
+                  <div><strong>{meta.short}</strong><small>{meta.description}</small></div>
+                  <b>{kindTotal(data.summary, kind).toLocaleString("fa-IR")}</b>
+                </div>
+              );
+            })}
+          </section>
+        </aside>
+      </div>
     </div>
   );
 }
@@ -301,13 +439,27 @@ export default async function RelationshipsPage({ searchParams }: RelationshipsP
     <AdminSessionProvider admin={admin}>
       <AdminShell
         activeSlug="relationships"
-        title="روابط و رضایت"
-        subtitle="Relationship، Consent و Access Grant با مرزهای مستقل"
+        title="روابط، دسترسی و رضایت"
+        subtitle="Relationship، Consent و Access Grant با داده canonical و مرزهای روشن حریم خصوصی"
       >
         {!canReadRelationships ? (
-          <AdminPageState state="forbidden" />
+          <AdminPageState
+            state="forbidden"
+            title="مجوز ورود به روابط و رضایت وجود ندارد"
+            description="برای مشاهده این workspace مجوز relationships.read لازم است."
+          />
         ) : (
-          <RelationshipsContent filters={filters} />
+          <Suspense
+            fallback={
+              <AdminPageState
+                state="loading"
+                title="در حال دریافت روابط و وضعیت رضایت"
+                description="داده فقط از API canonical بارگذاری می‌شود."
+              />
+            }
+          >
+            <RelationshipsContent filters={filters} />
+          </Suspense>
         )}
       </AdminShell>
     </AdminSessionProvider>
