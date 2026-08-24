@@ -196,6 +196,30 @@ function Summary({ report }: { report: MarketingCampaignList }) {
   );
 }
 
+function AttributionUnavailable() {
+  return (
+    <section
+      className={styles.attributionUnavailable}
+      aria-labelledby="attribution-unavailable-title"
+    >
+      <div className={styles.unavailableIcon} aria-hidden="true">
+        !
+      </div>
+      <div>
+        <span className={styles.eyebrow}>Attribution · Unavailable</span>
+        <h3 id="attribution-unavailable-title">
+          ROAS، CAC و conversion فقط با قرارداد canonical نمایش داده می‌شوند
+        </h3>
+        <p>
+          قرارداد فعلی Campaigns فقط lifecycle و metadata عملیاتی کمپین را برمی‌گرداند. تا وقتی Core
+          read-model معتبر برای spend، attribution، conversion و revenue نداشته باشد، این صفحه هیچ
+          KPI، نمودار یا مقایسه ساختگی تولید نمی‌کند.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 function CreateCampaign() {
   return (
     <details className={styles.createCard}>
@@ -265,7 +289,7 @@ export default async function CampaignsPage({ searchParams }: CampaignPageProps)
         <div className={styles.page}>
           <header className={styles.hero}>
             <div>
-              <p className={styles.eyebrow}>Campaign operations</p>
+              <p className={styles.eyebrow}>Campaign operations · Reference 13</p>
               <h2>از ایده تا اجرای کنترل‌شده، بدون auto-publish.</h2>
               <p>
                 وضعیت کمپین با وضعیت انتشار شبکه اجتماعی یکی نیست. این صفحه lifecycle عملیاتی را
@@ -306,6 +330,7 @@ export default async function CampaignsPage({ searchParams }: CampaignPageProps)
           ) : result?.kind === "ok" ? (
             <>
               <Summary report={result.data} />
+              <AttributionUnavailable />
               {canWrite ? <CreateCampaign /> : null}
               <AdminDataTable
                 title="فهرست کمپین‌ها"

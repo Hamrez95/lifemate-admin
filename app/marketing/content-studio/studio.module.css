@@ -1,35 +1,57 @@
 .page {
   display: grid;
   gap: 1.15rem;
+  min-width: 0;
+  direction: rtl;
 }
 
 .hero {
+  position: relative;
+  isolation: isolate;
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.65fr);
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.62fr);
   gap: 1rem;
-  padding: 1.45rem;
-  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+  padding: 1.5rem;
+  border: 1px solid color-mix(in srgb, var(--accent-mint) 26%, var(--border-subtle));
   border-radius: 28px;
   background:
     radial-gradient(
-      circle at 8% 6%,
-      color-mix(in srgb, var(--accent-violet, #7c5cff) 20%, transparent),
-      transparent 34%
+      circle at 8% 8%,
+      color-mix(in srgb, var(--accent-violet, #7c5cff) 15%, transparent),
+      transparent 31%
     ),
     radial-gradient(
-      circle at 92% 96%,
-      color-mix(in srgb, var(--accent-mint) 20%, transparent),
-      transparent 36%
+      circle at 92% 92%,
+      color-mix(in srgb, var(--accent-mint) 17%, transparent),
+      transparent 34%
     ),
     linear-gradient(145deg, var(--surface-raised), var(--surface-soft));
   box-shadow: var(--shadow-card);
 }
 
+.hero::after {
+  position: absolute;
+  inset: 0 48% 0 0;
+  z-index: -1;
+  background: url("/design-assets/marketing-hero-v1.png") left center / contain no-repeat;
+  opacity: 0.2;
+  content: "";
+  pointer-events: none;
+}
+
+.hero > * {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
 .hero h2 {
-  max-width: 22ch;
+  max-width: 24ch;
   margin: 0.3rem 0 0.6rem;
-  font-size: clamp(1.7rem, 3vw, 2.65rem);
-  line-height: 1.35;
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  line-height: 1.38;
+  overflow-wrap: anywhere;
 }
 
 .hero p,
@@ -40,6 +62,8 @@
   margin: 0;
   color: var(--text-secondary);
   line-height: 1.85;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .eyebrow {
@@ -57,7 +81,8 @@
   padding: 1rem;
   border: 1px solid color-mix(in srgb, var(--accent-mint) 35%, var(--border-subtle));
   border-radius: 20px;
-  background: color-mix(in srgb, var(--surface-raised) 88%, var(--accent-mint));
+  background: color-mix(in srgb, var(--surface-raised) 91%, var(--accent-mint));
+  backdrop-filter: blur(10px);
 }
 
 .guardrailPanel strong {
@@ -74,6 +99,10 @@
   font-size: 0.78rem;
 }
 
+.guardrailList li {
+  overflow-wrap: anywhere;
+}
+
 .guardrailList li::before {
   content: "✓";
   margin-inline-end: 0.45rem;
@@ -87,6 +116,7 @@
   border-radius: 16px;
   background: var(--surface-soft);
   font-weight: 800;
+  overflow-wrap: anywhere;
 }
 
 .notice[data-kind="success"] {
@@ -103,11 +133,21 @@
 .boundaryCard,
 .variantsSection,
 .historySection {
+  min-width: 0;
   padding: 1.15rem;
   border: 1px solid var(--border-subtle);
   border-radius: 24px;
   background: var(--surface-raised);
   box-shadow: var(--shadow-card);
+}
+
+.generatorCard {
+  border-color: color-mix(in srgb, var(--accent-strong) 18%, var(--border-subtle));
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--surface-raised) 96%, var(--accent-violet, #7c5cff)),
+    var(--surface-raised)
+  );
 }
 
 .sectionHead {
@@ -118,11 +158,16 @@
   margin-bottom: 0.9rem;
 }
 
+.sectionHead > * {
+  min-width: 0;
+}
+
 .sectionHead h3,
 .sectionHead h4,
 .contextCard h3,
 .boundaryCard h3 {
   margin: 0.18rem 0 0.2rem;
+  overflow-wrap: anywhere;
 }
 
 .selectorForm {
@@ -136,6 +181,7 @@
 .generatorForm select,
 .generatorForm textarea {
   width: 100%;
+  min-width: 0;
   border: 1px solid var(--border-subtle);
   border-radius: 14px;
   padding: 0.72rem 0.8rem;
@@ -168,21 +214,24 @@
 .generatorForm textarea:focus-visible,
 .selectorForm button:focus-visible,
 .primaryButton:focus-visible,
-.reviewLink:focus-visible {
+.reviewLink:focus-visible,
+.variantBody:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--accent-strong) 35%, transparent);
   outline-offset: 2px;
 }
 
 .workspaceGrid {
   display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.38fr);
   gap: 1rem;
+  min-width: 0;
 }
 
 .contextStack {
   display: grid;
   align-content: start;
   gap: 1rem;
+  min-width: 0;
 }
 
 .contextGrid,
@@ -196,7 +245,8 @@
 .contextGrid div,
 .boundaryGrid div {
   min-width: 0;
-  padding: 0.7rem;
+  padding: 0.72rem;
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 75%, transparent);
   border-radius: 14px;
   background: var(--surface-soft);
 }
@@ -213,6 +263,7 @@
   display: block;
   margin-top: 0.18rem;
   overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .boundaryCard {
@@ -237,6 +288,7 @@
 .generatorForm label {
   display: grid;
   gap: 0.35rem;
+  min-width: 0;
   color: var(--text-secondary);
   font-size: 0.78rem;
   font-weight: 800;
@@ -246,10 +298,11 @@
   color: var(--text-secondary);
   font-weight: 500;
   line-height: 1.7;
+  overflow-wrap: anywhere;
 }
 
 .generatorForm textarea {
-  min-height: 92px;
+  min-height: 102px;
   resize: vertical;
   line-height: 1.8;
 }
@@ -267,6 +320,7 @@
   color: var(--text-secondary);
   font-size: 0.75rem;
   line-height: 1.7;
+  overflow-wrap: anywhere;
 }
 
 .modelBadge,
@@ -283,6 +337,7 @@
   color: var(--text-secondary);
   font-size: 0.7rem;
   font-weight: 900;
+  overflow-wrap: anywhere;
 }
 
 .modelBadge {
@@ -310,7 +365,7 @@
   border-radius: 20px;
   background: linear-gradient(
     155deg,
-    color-mix(in srgb, var(--surface-soft) 92%, var(--accent-strong)),
+    color-mix(in srgb, var(--surface-soft) 94%, var(--accent-strong)),
     var(--surface-raised)
   );
 }
@@ -318,10 +373,12 @@
 .variantCard h4 {
   margin: 0;
   line-height: 1.55;
+  overflow-wrap: anywhere;
 }
 
 .variantBody {
   width: 100%;
+  min-width: 0;
   min-height: 180px;
   border: 1px solid var(--border-subtle);
   border-radius: 14px;
@@ -341,11 +398,13 @@
 }
 
 .tags span {
+  max-width: 100%;
   border-radius: 999px;
   padding: 0.22rem 0.45rem;
   background: var(--surface-soft);
   color: var(--text-secondary);
   font-size: 0.68rem;
+  overflow-wrap: anywhere;
 }
 
 .rationale {
@@ -353,6 +412,7 @@
   color: var(--text-secondary);
   font-size: 0.75rem;
   line-height: 1.75;
+  overflow-wrap: anywhere;
 }
 
 .variantFooter {
@@ -363,9 +423,9 @@
 
 .reviewLink {
   width: 100%;
+  border: 1px solid var(--border-subtle);
   background: var(--surface-soft);
   color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
 }
 
 .reviewHint {
@@ -374,6 +434,7 @@
   font-size: 0.68rem;
   line-height: 1.6;
   text-align: center;
+  overflow-wrap: anywhere;
 }
 
 .historyList {
@@ -386,6 +447,7 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.7rem;
   align-items: center;
+  min-width: 0;
   padding: 0.8rem;
   border: 1px solid var(--border-subtle);
   border-radius: 16px;
@@ -411,12 +473,18 @@
   background: var(--surface-soft);
   color: var(--text-secondary);
   line-height: 1.8;
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 1080px) {
   .hero,
   .workspaceGrid {
     grid-template-columns: 1fr;
+  }
+
+  .hero::after {
+    inset: 10% 40% 0 -5%;
+    opacity: 0.12;
   }
 
   .variantsGrid {
@@ -433,6 +501,10 @@
   .variantsSection,
   .historySection {
     padding: 1rem;
+  }
+
+  .hero {
+    border-radius: 21px;
   }
 
   .selectorForm,
@@ -453,5 +525,13 @@
   .primaryButton,
   .selectorForm button {
     width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selectorForm button,
+  .primaryButton,
+  .reviewLink {
+    scroll-behavior: auto;
   }
 }
