@@ -7,7 +7,7 @@ test("Founder dashboard stays concise and touch-friendly without viewport overfl
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await signInWithMfa(page);
-  await page.goto("/");
+  await expect(page).toHaveURL(/\/$/);
 
   await expect(page.getByRole("heading", { name: /پالس اجرایی LifeMate/ })).toBeVisible();
   await expect(page.getByAltText(/اکوسیستم LifeMate برای داشبورد Founder/)).toBeVisible();
