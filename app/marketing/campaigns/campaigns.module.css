@@ -147,6 +147,44 @@
   font-size: clamp(1.35rem, 2vw, 1.7rem);
 }
 
+.attributionUnavailable {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: start;
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--warning) 38%, var(--border-subtle));
+  border-radius: 19px;
+  background: linear-gradient(145deg, var(--surface-raised), color-mix(in srgb, var(--surface-soft) 88%, var(--warning)));
+}
+
+.attributionUnavailable h3 {
+  margin: 0.2rem 0 0.35rem;
+  font-size: 1rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.attributionUnavailable p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.unavailableIcon {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--warning) 35%, var(--border-subtle));
+  border-radius: 14px;
+  background: var(--surface-raised);
+  font-size: 1.25rem;
+  font-weight: 950;
+}
+
 .createCard {
   overflow: clip;
   border: 1px solid var(--border-subtle);
@@ -323,6 +361,10 @@
   .filters,
   .createForm {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .attributionUnavailable {
+    grid-template-columns: 1fr;
   }
 
   .statusForm {
