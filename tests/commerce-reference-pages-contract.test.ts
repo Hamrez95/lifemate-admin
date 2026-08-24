@@ -12,6 +12,7 @@ describe("Commerce references 10/11", () => {
     const header = source("app/commerce/CommerceWorkspaceHeader.tsx");
 
     expect(header).toContain("/design-assets/commerce-hero-v1.png");
+    expect(header).toContain('sizes="(max-width: 720px) 60vw, (max-width: 1100px) 34vw, 360px"');
     expect(header).toContain('href: "/commerce/plans"');
     expect(header).toContain('href: "/commerce/promotions"');
     expect(header).toContain('href: "/commerce/subscriptions"');
