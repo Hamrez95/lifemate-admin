@@ -1,3 +1,5 @@
+import Image from "next/image";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AdminPageState } from "@/src/components/admin-data-table";
@@ -28,17 +30,17 @@ const numberFormat = new Intl.NumberFormat("fa-IR");
 const topicLabels: Record<AdvisorTopic, { title: string; description: string; icon: string }> = {
   product_overview: {
     title: "نمای کلی محصول",
-    description: "ترکیب شاخص‌های جذب و فعالیت برای یک نگاه مدیریتی کوتاه.",
-    icon: "◈",
+    description: "جمع‌بندی KPIهای تأییدشده برای تصمیم مدیریتی.",
+    icon: "◇",
   },
   acquisition: {
-    title: "جذب و ورود کاربران",
-    description: "تمرکز روی حساب‌های جدید در read model تأییدشده.",
+    title: "جذب کاربران",
+    description: "تمرکز روی ورودی حساب‌های جدید در read model مجاز.",
     icon: "↗",
   },
   activity: {
     title: "فعالیت کاربران",
-    description: "تمرکز روی Monthly Active Accounts با freshness واقعی.",
+    description: "بررسی فعالیت ماهانه با freshness واقعی داده.",
     icon: "◎",
   },
 };
@@ -60,7 +62,7 @@ function validTopic(value: string): AdvisorTopic {
 
 function displayDate(value: string): string {
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "—" : dateTimeFormat.format(date);
+  return Number.isNaN(date.getTime()) ? "نامشخص" : dateTimeFormat.format(date);
 }
 
 function displayValue(value: number | null): string {
@@ -72,30 +74,17 @@ function EvidenceCard({ item }: { item: AdvisorEvidence }) {
     <article className={styles.evidenceCard} data-state={item.state}>
       <div className={styles.evidenceHead}>
         <div>
-          <span className={styles.eyebrow}>Evidence</span>
+          <span className={styles.eyebrow}>داده پشتیبان</span>
           <h4>{evidenceLabels[item.label] ?? item.label}</h4>
         </div>
         <strong>{displayValue(item.value)}</strong>
       </div>
-      <dl>
-        <div>
-          <dt>وضعیت</dt>
-          <dd>{item.state}</dd>
-        </div>
-        <div>
-          <dt>Freshness</dt>
-          <dd>{item.freshness.status}</dd>
-        </div>
-        <div>
-          <dt>As of</dt>
-          <dd>{displayDate(item.freshness.asOfUtc)}</dd>
-        </div>
-        <div>
-          <dt>Source ID</dt>
-          <dd>{item.sourceId}</dd>
-        </div>
-      </dl>
-      <p className={styles.sourceLine}>{item.source}</p>
+      <div className={styles.evidenceMeta}>
+        <span>وضعیت: {item.state}</span>
+        <span>تازگی: {item.freshness.status}</span>
+        <span>به‌روزرسانی: {displayDate(item.freshness.asOfUtc)}</span>
+      </div>
+      <p className={styles.sourceLine}>منبع canonical: {item.source}</p>
       {item.caveat ? <p className={styles.caveat}>{item.caveat}</p> : null}
     </article>
   );
@@ -106,13 +95,10 @@ function InsightResult({ insight }: { insight: AdvisorInsight }) {
     <section className={styles.answerPanel} aria-labelledby="advisor-answer-title">
       <header className={styles.answerHeader}>
         <div>
-          <span className={styles.eyebrow}>Grounded insight</span>
-          <h3 id="advisor-answer-title">جمع‌بندی Advisor</h3>
+          <span className={styles.eyebrow}>پاسخ تأییدشده Core</span>
+          <h3 id="advisor-answer-title">جمع‌بندی مشاور</h3>
         </div>
-        <div className={styles.modeBadge}>
-          <span>Mode</span>
-          <strong>{insight.mode}</strong>
-        </div>
+        <span className={styles.safeBadge}>فقط داده کسب‌وکاری مجاز</span>
       </header>
 
       <p className={styles.summary}>{insight.summary}</p>
@@ -123,38 +109,50 @@ function InsightResult({ insight }: { insight: AdvisorInsight }) {
             <span>{finding.severity === "attention" ? "نیازمند توجه" : "اطلاع"}</span>
             <h4>{finding.title}</h4>
             <p>{finding.detail}</p>
-            <small>Evidence: {finding.evidenceIds.join(" · ")}</small>
           </article>
         ))}
       </div>
 
-      <div className={styles.evidenceGrid}>
-        {insight.evidence.map((item) => (
-          <EvidenceCard key={item.sourceId} item={item} />
-        ))}
-      </div>
+      <section className={styles.evidenceSection} aria-labelledby="evidence-title">
+        <div className={styles.sectionTitleRow}>
+          <div>
+            <span className={styles.eyebrow}>Evidence</span>
+            <h3 id="evidence-title">داده‌های پشتیبان پاسخ</h3>
+          </div>
+          <span>{numberFormat.format(insight.evidence.length)} منبع</span>
+        </div>
+        <div className={styles.evidenceGrid}>
+          {insight.evidence.map((item) => (
+            <EvidenceCard key={item.sourceId} item={item} />
+          ))}
+        </div>
+      </section>
 
-      <aside className={styles.boundaryBox} aria-label="مرزهای امنیتی Advisor">
+      <aside className={styles.boundaryBox} aria-label="مرز ایمنی مشاور هوشمند">
         <div>
-          <strong>مدل خارجی در فاز اول فعال نیست.</strong>
+          <strong>مرز داده فعال است.</strong>
           <p>
-            نتیجه از fallback قطعی و evidence-backed ساخته شده است؛ بنابراین قطع مدل یا prompt
-            injection نمی‌تواند منبع داده یا permission را تغییر دهد.
+            این صفحه فقط read modelهای کسب‌وکاری allowlisted را مصرف می‌کند. داده سلامت خام، داده
+            هویتی حساس و توصیه پزشکی در این سطح مجاز نیستند.
           </p>
         </div>
-        <span>{insight.model.status}</span>
+        <span>
+          {insight.model.status === "not_configured" ? "مدل خارجی غیرفعال" : "محافظت‌شده"}
+        </span>
       </aside>
 
-      <details className={styles.caveats}>
-        <summary>محدودیت‌ها و caveatها</summary>
-        <ul>
-          {insight.caveats.map((caveat) => (
-            <li key={caveat}>{caveat}</li>
-          ))}
-        </ul>
-      </details>
+      {insight.caveats.length > 0 ? (
+        <details className={styles.caveats}>
+          <summary>محدودیت‌های پاسخ</summary>
+          <ul>
+            {insight.caveats.map((caveat) => (
+              <li key={caveat}>{caveat}</li>
+            ))}
+          </ul>
+        </details>
+      ) : null}
 
-      <p className={styles.generatedAt}>تولید پاسخ: {displayDate(insight.generatedAtUtc)}</p>
+      <p className={styles.generatedAt}>زمان تولید پاسخ: {displayDate(insight.generatedAtUtc)}</p>
     </section>
   );
 }
@@ -171,60 +169,76 @@ export default async function AiPage({ searchParams }: AiPageProps) {
     submitted && canUseAdvisor && canReadAnalytics
       ? await getAdvisorInsight(topic, question || null)
       : null;
+
   if (result?.kind === "unauthenticated") redirect("/login");
 
   return (
     <AdminSessionProvider admin={admin}>
       <AdminShell
         activeSlug="ai"
-        title="AI Insight Desk"
-        subtitle="Advisor داخلی و read-only روی read modelهای تأییدشده"
+        title="مشاور هوشمند LifeMate"
+        subtitle="تحلیل مدیریتی read-only روی قراردادهای تأییدشده Core"
       >
         <main className={styles.page}>
+          <nav className={styles.aiTabs} aria-label="بخش‌های هوش مصنوعی">
+            <Link href="/ai/daily-brief">گزارش روزانه</Link>
+            <Link href="/ai" aria-current="page">
+              مشاور هوشمند
+            </Link>
+          </nav>
+
           <header className={styles.hero}>
-            <div>
-              <p className={styles.eyebrow}>LifeMate Intelligence · Read only</p>
-              <h2>پاسخ کوتاه مدیریتی، با مدرک کنار هر نتیجه.</h2>
+            <div className={styles.heroCopy}>
+              <p className={styles.eyebrow}>LifeMate AI Advisor · Canonical only</p>
+              <h2>از داده تأییدشده سؤال مدیریتی بپرس؛ پاسخ بدون مدرک نمایش داده نمی‌شود.</h2>
               <p>
-                این بخش chatbot عمومی نیست. سؤال شما فقط موضوع بررسی را توضیح می‌دهد؛ منبع داده،
-                permission و KPIها از allowlist ثابت انتخاب می‌شوند و هیچ SQL آزاد، health data خام
-                یا mutation در دسترس Advisor نیست.
+                مطابق مرجع صفحه ۲۵، مسیر تحلیل کوتاه و تصمیم‌محور است. سؤال شما فقط context است و
+                منبع داده یا permission را تغییر نمی‌دهد.
               </p>
+              <div className={styles.heroBadges}>
+                <span>Read only</span>
+                <span>Analytics allowlist</span>
+                <span>بدون داده سلامت خام</span>
+              </div>
             </div>
-            <div className={styles.securityStamp}>
-              <span>Data boundary</span>
-              <strong>Approved read models only</strong>
-              <small>Raw Health / Women Health: blocked</small>
+            <div className={styles.heroVisual}>
+              <Image
+                src="/design-assets/ai-advisor-hero-v1.png"
+                alt="تصویر انتزاعی مشاور هوشمند LifeMate"
+                width={720}
+                height={560}
+                sizes="(max-width: 760px) 78vw, 330px"
+              />
             </div>
           </header>
 
           {!canUseAdvisor ? (
             <AdminPageState
               state="forbidden"
-              title="دسترسی Advisor فعال نیست"
-              description="برای این بخش permission اختصاصی ai.advisor.read لازم است."
+              title="دسترسی مشاور فعال نیست"
+              description="برای این صفحه مجوز ai.advisor.read لازم است."
             />
           ) : !canReadAnalytics ? (
             <AdminPageState
               state="forbidden"
-              title="دسترسی منبع داده کامل نیست"
-              description="Advisor علاوه بر permission خودش، permission منبع analytics.read را نیز نیاز دارد."
+              title="منبع تحلیل مجاز نیست"
+              description="برای خواندن evidence این صفحه مجوز analytics.read نیز لازم است."
             />
           ) : (
             <>
               <section className={styles.askPanel} aria-labelledby="ask-title">
                 <div className={styles.askHead}>
                   <div>
-                    <span className={styles.eyebrow}>Ask with boundaries</span>
-                    <h3 id="ask-title">موضوع را انتخاب کن و سؤال مدیریتی کوتاه بپرس</h3>
+                    <span className={styles.eyebrow}>تحلیل جدید</span>
+                    <h3 id="ask-title">موضوع بررسی را انتخاب کنید</h3>
                   </div>
-                  <span className={styles.readOnlyBadge}>No mutation</span>
+                  <span className={styles.safeBadge}>بدون mutation</span>
                 </div>
 
                 <form method="get" className={styles.askForm}>
                   <input type="hidden" name="run" value="1" />
                   <fieldset className={styles.topicGrid}>
-                    <legend>موضوع بررسی</legend>
+                    <legend>دامنه داده مجاز</legend>
                     {advisorTopics.map((item) => (
                       <label key={item} data-selected={topic === item}>
                         <input
@@ -241,22 +255,24 @@ export default async function AiPage({ searchParams }: AiPageProps) {
                       </label>
                     ))}
                   </fieldset>
+
                   <label className={styles.questionField}>
-                    <span>سؤال اختیاری</span>
+                    <span>سؤال مدیریتی اختیاری</span>
                     <textarea
                       name="q"
                       rows={3}
                       maxLength={500}
                       defaultValue={question}
-                      placeholder="مثلاً: الان از نظر جذب و فعالیت کاربران چه چیزی نیازمند توجه است؟"
+                      placeholder="مثلاً: در جذب یا فعالیت کاربران چه چیزی نیازمند توجه است؟"
                     />
                     <small>
-                      متن سؤال به SQL، connector یا مدل خارجی تبدیل نمی‌شود؛ فقط untrusted context
-                      است.
+                      اطلاعات هویتی، سلامت، پزشکی یا متن حساس وارد نکنید. سؤال به SQL یا connector
+                      آزاد تبدیل نمی‌شود.
                     </small>
                   </label>
+
                   <button type="submit" className={styles.runButton}>
-                    بررسی read modelهای مجاز
+                    تحلیل با داده canonical
                   </button>
                 </form>
               </section>
@@ -267,42 +283,39 @@ export default async function AiPage({ searchParams }: AiPageProps) {
                 <AdminPageState
                   state="forbidden"
                   title="منبع درخواستی مجاز نیست"
-                  description={result.message}
+                  description={result.message ?? "Core این درخواست را مجاز ندانست."}
                 />
               ) : result?.kind === "invalid" ? (
                 <AdminPageState
                   state="error"
-                  title="درخواست Advisor معتبر نیست"
-                  description={result.message}
+                  title="درخواست معتبر نیست"
+                  description="موضوع یا متن سؤال را کوتاه‌تر و بدون داده حساس ارسال کنید."
                 />
               ) : result?.kind === "unavailable" ? (
                 <AdminPageState
                   state="unavailable"
-                  title="Advisor فعلاً به read model پاسخ نگرفت"
+                  title="پاسخ فعلاً در دسترس نیست"
                   description={
                     result.correlationId
                       ? `کد پیگیری: ${result.correlationId}`
-                      : "هیچ پاسخ ساختگی نمایش داده نمی‌شود. بعداً دوباره تلاش کنید."
+                      : "هیچ پاسخ جایگزین یا ساختگی نمایش داده نمی‌شود."
                   }
                 />
               ) : submitted ? (
-                <AdminPageState state="unavailable" />
+                <AdminPageState
+                  state="unavailable"
+                  title="پاسخی دریافت نشد"
+                  description="هیچ خلاصه ساختگی نمایش داده نمی‌شود."
+                />
               ) : (
-                <section className={styles.emptyState} aria-label="راهنمای شروع Advisor">
-                  <span>01</span>
+                <section className={styles.startState} aria-label="راهنمای شروع مشاور">
                   <div>
-                    <strong>یک موضوع را انتخاب کن.</strong>
-                    <p>
-                      Advisor فقط همان KPIهای allowlisted را می‌خواند و نتیجه را همراه source و
-                      freshness نشان می‌دهد.
-                    </p>
+                    <strong>۱. دامنه را انتخاب کنید</strong>
+                    <p>فقط KPIهای allowlisted در قرارداد Advisor خوانده می‌شوند.</p>
                   </div>
-                  <span>02</span>
                   <div>
-                    <strong>نتیجه را به‌عنوان insight مدیریتی بخوان، نه حقیقت بدون زمینه.</strong>
-                    <p>
-                      Unavailable و partial عمداً برجسته می‌شوند تا داده ناقص با صفر اشتباه نشود.
-                    </p>
+                    <strong>۲. پاسخ را با evidence بخوانید</strong>
+                    <p>مقدار ناموجود به صفر تبدیل نمی‌شود و freshness کنار داده باقی می‌ماند.</p>
                   </div>
                 </section>
               )}
