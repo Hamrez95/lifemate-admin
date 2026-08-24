@@ -16,6 +16,11 @@ import {
 } from "@/src/lib/admin-api/commerce-overview";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
+import {
+  CommerceDependencyGrid,
+  CommerceWorkspaceHeader,
+  CoreDependencyNotice,
+} from "../CommerceWorkspaceHeader";
 import { PlanCreateForm } from "./PlanCreateForm";
 import styles from "./catalog.module.css";
 
@@ -117,31 +122,29 @@ async function PlansContent({ canPlanWrite }: { canPlanWrite: boolean }) {
   const { data } = result;
   return (
     <div className={styles.page} dir="rtl">
-      <section className={styles.hero} aria-labelledby="commerce-plans-title">
-        <div className={styles.heroCopy}>
-          <span className={styles.eyebrow}>Commerce · Monetization Control Plane</span>
-          <h2 id="commerce-plans-title">پلن و قیمت فروش را بدون دست‌کاری تاریخچه مدیریت کن</h2>
-          <p>
-            Plan هویت تجاری محصول است و Price یک نسخه زمان‌دار. تغییر قیمت، مبلغ قبلی یا
-            Subscription موجود را overwrite نمی‌کند؛ همه mutationها دلیل، idempotency و Audit دارند.
-          </p>
-          <div className={styles.heroActions}>
-            <Link className={styles.secondaryLink} href="/commerce">
-              نمای فروش و تجارت
-            </Link>
-            <Link className={styles.secondaryLink} href="/commerce/promotions">
-              پروموشن و کد تخفیف
-            </Link>
-          </div>
-        </div>
-        <span className={styles.safetyBadge}>AAL2 · RBAC · Audit</span>
-      </section>
+      <CommerceWorkspaceHeader
+        active="plans"
+        eyebrow="Commerce · Reference 11"
+        title="پلن و قیمت‌گذاری با تاریخچه واقعی Core"
+        description="Plan هویت تجاری محصول است و Price یک نسخه زمان‌دار. ساخت پلن و زمان‌بندی قیمت فقط از endpointهای canonical موجود انجام می‌شود و هیچ تغییر قیمت، Subscription قبلی را به‌صورت ضمنی بازنویسی نمی‌کند."
+      />
 
       <Summary data={data} />
+      <CommerceDependencyGrid>
+        <CoreDependencyNotice title="Plan lifecycle + versioned price" tone="available">
+          endpointهای ساخت/ویرایش پلن و زمان‌بندی Price موجودند. mutationها permission، reason، Idempotency-Key و Audit سمت Admin API دارند.
+        </CoreDependencyNotice>
+        <CoreDependencyNotice title="Trial configuration · Core #412">
+          مدت، eligibility و lifecycle آزمایشی فقط قابل مشاهده‌اند؛ فرم تنظیم Trial تا تکمیل قرارداد Core #412 فعال نمی‌شود.
+        </CoreDependencyNotice>
+        <CoreDependencyNotice title="Entitlement assignment · Core #412">
+          اتصال Plan به Feature/Entitlement هنوز mutation canonical با concurrency semantics ندارد؛ بنابراین فرم ساختگی ارائه نمی‌شود.
+        </CoreDependencyNotice>
+      </CommerceDependencyGrid>
       <PlanCreateForm products={data.products} canWrite={canPlanWrite} />
       <AdminDataTable
         title="کاتالوگ پلن‌ها"
-        description="پلن‌های بدون Subscriber نیز نمایش داده می‌شوند. برای قیمت و lifecycle وارد مدیریت هر پلن شوید."
+        description="پلن‌های بدون Subscriber نیز نمایش داده می‌شوند. Price فقط در مدیریت هر پلن از قرارداد versioned pricing Core خوانده و تغییر داده می‌شود."
         rows={data.planDistribution}
         columns={columns}
         rowKey={(row) => row.planId}
@@ -152,8 +155,7 @@ async function PlansContent({ canPlanWrite }: { canPlanWrite: boolean }) {
         }}
       />
       <p className={styles.safetyNote}>
-        Trial، Entitlement assignment و bulk Discount Code فقط بعد از قرارداد canonical مربوط به
-        خودشان فعال می‌شوند؛ این صفحه داده یا قابلیت جعلی نمی‌سازد.
+        Discount-code issuance جداگانه و bulk نیز تا تکمیل Core #412 فعال نیست. این صفحه قیمت، Trial یا Entitlement را از داده‌های دیگر حدس نمی‌زند.
       </p>
     </div>
   );
