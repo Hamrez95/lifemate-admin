@@ -9,6 +9,7 @@
   width: 13px;
   height: 13px;
   flex: 0 0 13px;
+  contain: paint;
   border: 2px solid rgba(255, 255, 255, 0.45);
   border-top-color: currentColor;
   border-radius: 50%;
