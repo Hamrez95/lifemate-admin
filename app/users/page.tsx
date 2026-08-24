@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -179,7 +180,7 @@ function DirectoryFilterBar({ query }: { query: DirectoryQuery }) {
     <AdminTableFilterBar action="/users" clearHref="/users" ariaLabel="فیلتر کاربران">
       <input type="hidden" name="page" value="1" />
       <div className="admin-list-filter admin-list-filter--search">
-        <label htmlFor="user-directory-search">جست‌وجوی نام</label>
+        <label htmlFor="user-directory-search">جست‌وجوی کاربر یا حساب</label>
         <input
           id="user-directory-search"
           name="q"
@@ -187,7 +188,7 @@ function DirectoryFilterBar({ query }: { query: DirectoryQuery }) {
           minLength={2}
           maxLength={120}
           defaultValue={query.table.search ?? ""}
-          placeholder="حداقل دو نویسه"
+          placeholder="نام یا شناسه مجاز در قرارداد"
           autoComplete="off"
         />
       </div>
@@ -251,9 +252,7 @@ async function DirectoryContent({ query }: { query: DirectoryQuery }) {
   const result = await getUserDirectory(toApiParams(query));
 
   if (result.kind === "unauthenticated") redirect("/login");
-  if (result.kind === "forbidden") {
-    return <AdminPageState state="forbidden" />;
-  }
+  if (result.kind === "forbidden") return <AdminPageState state="forbidden" />;
   if (result.kind === "invalid") {
     return (
       <AdminPageState
@@ -282,10 +281,32 @@ async function DirectoryContent({ query }: { query: DirectoryQuery }) {
     data.page * data.pageSize < data.total ? pageHref(query, data.page + 1) : undefined;
   const freshnessTime = formatDateTime(data.freshness.asOfUtc);
 
+  if (data.items.length === 0) {
+    return (
+      <section className="user-directory__empty" aria-labelledby="user-directory-empty-title">
+        <div>
+          <span className="user-directory__eyebrow">Privacy-first search</span>
+          <h3 id="user-directory-empty-title">کاربری با این فیلترهای مجاز پیدا نشد</h3>
+          <p>
+            دامنه جست‌وجو همان قرارداد canonical کاربران است. اطلاعات تماس، سلامت یا Women Health
+            برای گسترش نتیجه جست‌وجو استفاده یا نمایش داده نمی‌شوند.
+          </p>
+        </div>
+        <Image
+          src="/design-assets/user-privacy-hero-v1.png"
+          alt="تصویر حریم خصوصی و مدیریت امن کاربران LifeMate"
+          width={720}
+          height={560}
+          sizes="(max-width: 720px) 74vw, 280px"
+        />
+      </section>
+    );
+  }
+
   return (
     <AdminDataTable
       title="فهرست کاربران"
-      description="فقط اطلاعات پایه حساب و عضویت محصول نمایش داده می‌شود؛ داده‌های سلامت در این نما وجود ندارند."
+      description="فقط اطلاعات پایه حساب و عضویت محصول نمایش داده می‌شود؛ داده‌های سلامت و اطلاعات تماس حساس در این نما وجود ندارند."
       rows={data.items}
       columns={columns}
       rowKey={(row) => row.accountId}
@@ -314,15 +335,48 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
     <AdminSessionProvider admin={admin}>
       <AdminShell
         activeSlug="users"
-        title="کاربران"
-        subtitle="فهرست امن حساب‌ها، وضعیت عضویت و مسیر ورود به User 360"
+        title="کاربران و حساب‌ها"
+        subtitle="جست‌وجوی امن، حداقل‌سازی داده و مسیر ورود به User 360"
       >
         <div className="user-directory">
+          <section className="user-directory__intro" aria-labelledby="user-directory-intro-title">
+            <div className="user-directory__intro-copy">
+              <span className="user-directory__eyebrow">Users · Privacy by default</span>
+              <h2 id="user-directory-intro-title">کاربر را پیدا کن، بدون بازکردن داده‌ای که لازم نیست.</h2>
+              <p>
+                این workspace فقط read model پایه کاربران را از Admin API می‌خواند. هیچ جست‌وجوی
+                مستقیم روی Supabase، اطلاعات تماس خام یا داده سلامت انجام نمی‌شود.
+              </p>
+              <div className="user-directory__guardrails" aria-label="مرزهای جست‌وجوی کاربر">
+                <span>Canonical API only</span>
+                <span>اطلاعات حساس پنهان</span>
+                <span>ورود به User 360 با مجوز</span>
+              </div>
+            </div>
+            <div className="user-directory__intro-visual">
+              <Image
+                src="/design-assets/user-privacy-hero-v1.png"
+                alt="تصویر حریم خصوصی و جست‌وجوی امن کاربران LifeMate"
+                width={720}
+                height={560}
+                sizes="(max-width: 720px) 72vw, 300px"
+              />
+            </div>
+          </section>
+
+          <aside className="user-directory__privacy-note" aria-label="سیاست حداقل‌سازی داده">
+            <strong>نمایش پیش‌فرض حداقلی است.</strong>
+            <span>
+              فقط شناسه حساب، نام نمایشیِ مجاز، وضعیت و عضویت محصول نمایش داده می‌شود؛ این صفحه
+              مسیر میان‌بر برای داده حساس ندارد.
+            </span>
+          </aside>
+
           <DirectoryFilterBar query={query} />
           {!canReadUsers ? (
             <AdminPageState state="forbidden" />
           ) : (
-            <Suspense fallback={<AdminPageState state="loading" />}>
+            <Suspense fallback={<AdminPageState state="loading" title="در حال دریافت کاربران" />}>
               <DirectoryContent query={query} />
             </Suspense>
           )}
