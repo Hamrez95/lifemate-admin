@@ -89,20 +89,43 @@ const fixture: FounderOverviewData = {
     ],
     asOfUtc: "2026-08-15T21:29:00.000Z",
   },
+  activity: {
+    state: "ready",
+    asOfUtc: "2026-08-15T21:29:30.000Z",
+    items: [
+      {
+        id: "evt-1",
+        action: "role.membership.updated",
+        resourceType: "staff_membership",
+        result: "success",
+        elevatedAccess: true,
+        occurredAtUtc: "2026-08-15T21:29:00.000Z",
+      },
+    ],
+  },
+  services: {
+    state: "not_instrumented",
+    items: [],
+    asOfUtc: null,
+    reason: "قرارداد canonical برای وضعیت سرویس‌ها در Founder Overview هنوز وجود ندارد.",
+  },
   shortcuts: [{ label: "تحلیل‌ها", href: "/analytics", helper: "KPIهای canonical و freshness" }],
 };
 
 describe("FounderOverview", () => {
-  it("renders trusted values, source states and unavailable values without fabrication", () => {
+  it("renders canonical values and unavailable states without fabrication", () => {
     const html = renderToStaticMarkup(<FounderOverview data={fixture} />);
 
-    expect(html).toContain("آنچه الان برای تصمیم مدیریتی مهم است، بدون عدد نمایشی");
+    expect(html).toContain("پالس اجرایی LifeMate، فقط بر پایه داده قابل ردیابی");
+    expect(html).toContain("founder-ecosystem-hero-v1.png");
     expect(html).toContain("کاربران فعال · ۳۰ روز");
     expect(html).toContain("۱۲۵");
     expect(html).toContain("روابط فعال");
     expect(html).toContain("—");
     expect(html).toContain("منبع متصل نیست");
     expect(html).toContain("تاخیر Outbox نیاز به توجه دارد");
+    expect(html).toContain("role.membership.updated");
+    expect(html).toContain("وضعیت سرویس‌ها فعلاً در دسترس نیست");
     expect(html).toContain("WellMate");
   });
 

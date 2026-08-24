@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import type {
@@ -46,135 +47,85 @@ function metricValue(value: number | null): string {
   return value === null ? "—" : numberFormat.format(value);
 }
 
+function EmptyPanel({ title, detail }: { title: string; detail: string }) {
+  return (
+    <div className={styles.emptyPanel} role="status">
+      <strong>{title}</strong>
+      <p>{detail}</p>
+    </div>
+  );
+}
+
 export function FounderOverview({ data }: { data: FounderOverviewData }) {
   return (
-    <div className="dashboard-stack">
+    <div className={styles.dashboard}>
       <section className={styles.hero} aria-labelledby="founder-pulse-title">
         <div className={styles.heroCopy}>
-          <p className="eyebrow">Founder pulse · داده قابل ردیابی</p>
-          <h2 id="founder-pulse-title">آنچه الان برای تصمیم مدیریتی مهم است، بدون عدد نمایشی.</h2>
+          <p className="eyebrow">Founder Command Center</p>
+          <h2 id="founder-pulse-title">پالس اجرایی LifeMate، فقط بر پایه داده قابل ردیابی.</h2>
           <p>
-            هر کارت فقط از منبع مجاز همان حوزه می‌آید. منبع ناقص یا قطع‌شده با «—» و وضعیت صریح
-            نمایش داده می‌شود؛ نبود داده هرگز به صفر تبدیل نمی‌شود.
+            این نما برای تصمیم سریع Founder ساخته شده است. هر عدد از API canonical همان حوزه می‌آید
+            و نبود داده با وضعیت صریح نمایش داده می‌شود، نه با صفر یا KPI نمایشی.
           </p>
+          <div className={styles.heroMeta}>
+            <span className="state-pill state-pill--safe">Permission-aware</span>
+            <span>{freshnessLabel(data.generatedAtUtc)}</span>
+          </div>
         </div>
-        <div className={styles.heroPulse} aria-label="وضعیت تازگی نمای اجرایی">
-          <span className="state-pill state-pill--safe">Permission-aware</span>
-          <strong>آخرین جمع‌آوری نمای مدیریتی</strong>
-          <span>{freshnessLabel(data.generatedAtUtc)}</span>
-          <span>Raw Health و Women Health در این نما تجمیع نمی‌شوند.</span>
+        <div className={styles.heroVisual}>
+          <Image
+            src="/design-assets/founder-ecosystem-hero-v1.png"
+            alt="تصویر مفهومی اکوسیستم LifeMate برای داشبورد Founder"
+            width={1536}
+            height={1024}
+            sizes="(max-width: 720px) 44vw, (max-width: 1100px) 34vw, 360px"
+            priority
+            className={styles.heroImage}
+          />
         </div>
       </section>
 
-      <section className="section-card" aria-labelledby="executive-metrics-title">
-        <div className="section-card__header">
+      <section className={styles.kpiSection} aria-labelledby="executive-metrics-title">
+        <div className={styles.sectionHeading}>
           <div>
             <p className="eyebrow">Executive metrics</p>
-            <h2 id="executive-metrics-title">پالس اکوسیستم</h2>
+            <h2 id="executive-metrics-title">آنچه الان باید ببینید</h2>
           </div>
-          <span className="state-pill state-pill--safe">منبع + freshness روی هر کارت</span>
+          <span className={styles.sectionHint}>منبع و freshness روی هر کارت</span>
         </div>
 
         {data.metrics.length > 0 ? (
-          <div className="metric-grid">
+          <div className={styles.metricGrid}>
             {data.metrics.map((metric) => (
               <Link className={styles.metricLink} href={metric.href} key={metric.key}>
-                <article
-                  className={`metric-card ${styles.metricCard}`}
-                  data-tone={metric.tone}
-                  aria-label={`${metric.label}: ${metricValue(metric.value)}`}
-                >
-                  <div className="metric-card__topline">
-                    <span className="metric-card__icon" aria-hidden="true">
-                      ◌
-                    </span>
+                <article className={styles.metricCard} data-tone={metric.tone}>
+                  <div className={styles.metricTopline}>
                     <span>{metric.label}</span>
-                  </div>
-                  <strong className={styles.metricValue}>{metricValue(metric.value)}</strong>
-                  <p className={styles.metricNote}>{metric.note ?? metric.source}</p>
-                  <div className={styles.metricFooter}>
                     <span className={styles.stateBadge} data-state={metric.state}>
                       {stateLabel(metric.state)}
                     </span>
-                    <span className={styles.sourceMeta}>{freshnessLabel(metric.asOfUtc)}</span>
                   </div>
+                  <strong className={styles.metricValue}>{metricValue(metric.value)}</strong>
+                  <p>{metric.note ?? metric.source}</p>
+                  <span className={styles.meta}>{freshnessLabel(metric.asOfUtc)}</span>
                 </article>
               </Link>
             ))}
           </div>
         ) : (
-          <div className={styles.emptyBox}>
-            <div>
-              <strong>برای KPIهای این صفحه دسترسی فعالی وجود ندارد.</strong>
-              <p>وجود یا مقدار منابع غیرمجاز از طریق Home افشا نمی‌شود.</p>
-            </div>
-          </div>
+          <EmptyPanel
+            title="KPI قابل نمایش وجود ندارد."
+            detail="برای این نشست، منبع canonical مجاز یا داده قابل نمایش در دسترس نیست."
+          />
         )}
       </section>
 
-      <div className={styles.twoColumn}>
-        <section className="section-card" aria-labelledby="product-status-title">
-          <div className="section-card__header">
+      <div className={styles.monitorGrid}>
+        <section className={styles.panel} aria-labelledby="priority-alerts-title">
+          <div className={styles.sectionHeading}>
             <div>
-              <p className="eyebrow">Product & commerce</p>
-              <h2 id="product-status-title">وضعیت محصولات</h2>
-            </div>
-            {data.products ? (
-              <span className={styles.stateBadge} data-state={data.products.state}>
-                {stateLabel(data.products.state)}
-              </span>
-            ) : null}
-          </div>
-
-          {!data.products ? (
-            <div className={styles.emptyBox}>
-              <div>
-                <strong>Commerce برای این مدیر نمایش داده نمی‌شود.</strong>
-                <p>Home از روی نبود permission درباره وجود محصول یا اشتراک نتیجه‌گیری نمی‌کند.</p>
-              </div>
-            </div>
-          ) : data.products.state === "unavailable" ? (
-            <div className={styles.emptyBox}>
-              <div>
-                <strong>منبع Commerce موقتاً در دسترس نیست.</strong>
-                <p>وضعیت محصول با مقدار ساختگی جایگزین نشده است.</p>
-              </div>
-            </div>
-          ) : data.products.items.length === 0 ? (
-            <div className={styles.emptyBox}>
-              <div>
-                <strong>محصولی در منبع canonical ثبت نشده است.</strong>
-                <p>{freshnessLabel(data.products.asOfUtc)}</p>
-              </div>
-            </div>
-          ) : (
-            <div className={styles.productGrid}>
-              {data.products.items.slice(0, 6).map((product) => (
-                <article className={styles.productCard} key={product.code}>
-                  <div className={styles.productTop}>
-                    <strong>{product.name}</strong>
-                    <span className={styles.stateBadge} data-state="ready">
-                      {product.status}
-                    </span>
-                  </div>
-                  <span className={styles.productCode}>{product.code}</span>
-                  <p>{numberFormat.format(product.planCount)} پلن ثبت‌شده</p>
-                </article>
-              ))}
-            </div>
-          )}
-          {data.products ? (
-            <p className={styles.meta}>
-              منبع: {data.products.source} · {freshnessLabel(data.products.asOfUtc)}
-            </p>
-          ) : null}
-        </section>
-
-        <section className="section-card" aria-labelledby="attention-sources-title">
-          <div className="section-card__header">
-            <div>
-              <p className="eyebrow">Attention map</p>
-              <h2 id="attention-sources-title">منابع نیازمند توجه</h2>
+              <p className="eyebrow">Attention</p>
+              <h2 id="priority-alerts-title">نیازمند توجه</h2>
             </div>
             {data.alerts ? (
               <span className={styles.stateBadge} data-state={data.alerts.state}>
@@ -184,90 +135,178 @@ export function FounderOverview({ data }: { data: FounderOverviewData }) {
           </div>
 
           {!data.alerts ? (
-            <div className={styles.emptyBox}>
-              <div>
-                <strong>هیچ منبع Alert مجازی برای این مدیر وجود ندارد.</strong>
-                <p>حتی count منابع غیرمجاز در Home نمایش داده نمی‌شود.</p>
-              </div>
-            </div>
-          ) : (
-            <div className={styles.sourceGrid}>
-              {data.alerts.sources.map((source) => {
-                const content = (
-                  <article className={styles.sourceCard}>
-                    <div className={styles.sourceTop}>
-                      <strong>{sourceLabels[source.source]}</strong>
-                      <span className={styles.stateBadge} data-state={source.state}>
-                        {stateLabel(source.state)}
-                      </span>
+            <EmptyPanel
+              title="هشداری برای این سطح دسترسی نمایش داده نمی‌شود."
+              detail="وجود منابع غیرمجاز از Home قابل استنتاج نیست."
+            />
+          ) : data.alerts.items.length > 0 ? (
+            <div className={styles.alertList}>
+              {data.alerts.items.slice(0, 6).map((alert) => {
+                const body = (
+                  <>
+                    <div className={styles.alertTop}>
+                      <strong>{alert.title}</strong>
+                      <span>{sourceLabels[alert.source]}</span>
                     </div>
-                    <div className={styles.sourceCount}>
-                      {source.unreadCount === null ? "—" : numberFormat.format(source.unreadCount)}
-                    </div>
-                    <p>مورد خوانده‌نشده · {freshnessLabel(source.asOfUtc)}</p>
-                  </article>
+                    <p>{alert.summary ?? "جزئیات بیشتر در منبع همین حوزه موجود است."}</p>
+                    <span className={styles.meta}>{freshnessLabel(alert.freshnessAtUtc)}</span>
+                  </>
                 );
-                return source.href ? (
-                  <Link className={styles.metricLink} href={source.href} key={source.source}>
-                    {content}
+                return alert.deepLink ? (
+                  <Link
+                    className={styles.alertCard}
+                    data-severity={alert.severity}
+                    href={alert.deepLink}
+                    key={alert.alertKey}
+                  >
+                    {body}
                   </Link>
                 ) : (
-                  <div key={source.source}>{content}</div>
+                  <article
+                    className={styles.alertCard}
+                    data-severity={alert.severity}
+                    key={alert.alertKey}
+                  >
+                    {body}
+                  </article>
                 );
               })}
             </div>
+          ) : (
+            <EmptyPanel
+              title={
+                data.alerts.state === "unavailable"
+                  ? "منبع هشدار در دسترس نیست."
+                  : "هشدار فعالی ثبت نشده است."
+              }
+              detail={freshnessLabel(data.alerts.asOfUtc)}
+            />
+          )}
+
+          {data.alerts?.sources.length ? (
+            <div className={styles.sourceStrip} aria-label="وضعیت منابع هشدار">
+              {data.alerts.sources.map((source) => (
+                <div className={styles.sourceItem} key={source.source}>
+                  <span>{sourceLabels[source.source]}</span>
+                  <strong>
+                    {source.unreadCount === null ? "—" : numberFormat.format(source.unreadCount)}
+                  </strong>
+                  <small>{stateLabel(source.state)}</small>
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </section>
+
+        <section className={styles.panel} aria-labelledby="activity-title">
+          <div className={styles.sectionHeading}>
+            <div>
+              <p className="eyebrow">Recent activity</p>
+              <h2 id="activity-title">فعالیت‌های اخیر</h2>
+            </div>
+            {data.activity ? (
+              <span className={styles.stateBadge} data-state={data.activity.state}>
+                {stateLabel(data.activity.state)}
+              </span>
+            ) : null}
+          </div>
+
+          {!data.activity ? (
+            <EmptyPanel
+              title="فعالیت مدیریتی برای این سطح دسترسی نمایش داده نمی‌شود."
+              detail="این بخش فقط از Audit API canonical و permission امنیتی تغذیه می‌شود."
+            />
+          ) : data.activity.items.length > 0 ? (
+            <div className={styles.activityList}>
+              {data.activity.items.map((item) => (
+                <article className={styles.activityItem} key={item.id}>
+                  <div>
+                    <strong>{item.action}</strong>
+                    <span>{item.resourceType}</span>
+                  </div>
+                  <div className={styles.activityMeta}>
+                    <span>{item.result}</span>
+                    {item.elevatedAccess ? <span className={styles.elevated}>Elevated</span> : null}
+                    <time dateTime={item.occurredAtUtc}>{freshnessLabel(item.occurredAtUtc)}</time>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <EmptyPanel
+              title={
+                data.activity.state === "unavailable"
+                  ? "Audit API در دسترس نیست."
+                  : "فعالیت اخیری ثبت نشده است."
+              }
+              detail={freshnessLabel(data.activity.asOfUtc)}
+            />
           )}
         </section>
       </div>
 
-      {data.alerts && data.alerts.items.length > 0 ? (
-        <section className="section-card" aria-labelledby="priority-alerts-title">
-          <div className="section-card__header">
+      <div className={styles.monitorGrid}>
+        <section className={styles.panel} aria-labelledby="products-title">
+          <div className={styles.sectionHeading}>
             <div>
-              <p className="eyebrow">Priority alerts</p>
-              <h2 id="priority-alerts-title">موارد مهم برای بررسی</h2>
+              <p className="eyebrow">Product & commerce</p>
+              <h2 id="products-title">وضعیت محصولات</h2>
             </div>
-            <span className="state-pill">حداکثر ۶ مورد از منابع مجاز</span>
+            {data.products ? (
+              <span className={styles.stateBadge} data-state={data.products.state}>
+                {stateLabel(data.products.state)}
+              </span>
+            ) : null}
           </div>
-          <div className={styles.alertList}>
-            {data.alerts.items.map((alert) => {
-              const content = (
-                <>
-                  <div className={styles.alertTop}>
-                    <strong>{alert.title}</strong>
-                    <span className={styles.stateBadge} data-state="partial">
-                      {sourceLabels[alert.source]}
-                    </span>
-                  </div>
-                  <p>{alert.summary ?? "جزئیات بیشتری در منبع این حوزه موجود است."}</p>
-                  <span className={styles.meta}>{freshnessLabel(alert.freshnessAtUtc)}</span>
-                </>
-              );
-              return alert.deepLink ? (
-                <Link
-                  className={styles.alertCard}
-                  data-severity={alert.severity}
-                  href={alert.deepLink}
-                  key={alert.alertKey}
-                >
-                  {content}
-                </Link>
-              ) : (
-                <article
-                  className={styles.alertCard}
-                  data-severity={alert.severity}
-                  key={alert.alertKey}
-                >
-                  {content}
-                </article>
-              );
-            })}
-          </div>
-        </section>
-      ) : null}
 
-      <section className="section-card" aria-labelledby="founder-shortcuts-title">
-        <div className="section-card__header">
+          {!data.products ? (
+            <EmptyPanel
+              title="Commerce برای این سطح دسترسی نمایش داده نمی‌شود."
+              detail="Home از نبود permission درباره وجود محصول یا اشتراک نتیجه‌گیری نمی‌کند."
+            />
+          ) : data.products.items.length > 0 ? (
+            <div className={styles.productGrid}>
+              {data.products.items.slice(0, 6).map((product) => (
+                <article className={styles.productCard} key={product.code}>
+                  <div>
+                    <strong>{product.name}</strong>
+                    <span className={styles.productCode}>{product.code}</span>
+                  </div>
+                  <div>
+                    <span>{product.status}</span>
+                    <strong>{numberFormat.format(product.planCount)} پلن</strong>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <EmptyPanel
+              title={
+                data.products.state === "unavailable"
+                  ? "منبع Commerce در دسترس نیست."
+                  : "محصولی در منبع canonical ثبت نشده است."
+              }
+              detail={freshnessLabel(data.products.asOfUtc)}
+            />
+          )}
+        </section>
+
+        <section className={styles.panel} aria-labelledby="services-title">
+          <div className={styles.sectionHeading}>
+            <div>
+              <p className="eyebrow">Service status</p>
+              <h2 id="services-title">وضعیت سرویس‌ها</h2>
+            </div>
+            <span className={styles.stateBadge} data-state={data.services.state}>
+              {stateLabel(data.services.state)}
+            </span>
+          </div>
+          <EmptyPanel title="وضعیت سرویس‌ها فعلاً در دسترس نیست." detail={data.services.reason} />
+        </section>
+      </div>
+
+      <section className={styles.shortcuts} aria-labelledby="founder-shortcuts-title">
+        <div className={styles.sectionHeading}>
           <div>
             <p className="eyebrow">Founder shortcuts</p>
             <h2 id="founder-shortcuts-title">مسیرهای سریع مجاز</h2>
@@ -277,23 +316,16 @@ export function FounderOverview({ data }: { data: FounderOverviewData }) {
           <nav className={styles.shortcutGrid} aria-label="مسیرهای سریع مرکز فرماندهی">
             {data.shortcuts.map((shortcut) => (
               <Link className={styles.shortcutCard} href={shortcut.href} key={shortcut.href}>
-                <strong>
-                  {shortcut.label}
-                  <span className={styles.shortcutArrow} aria-hidden="true">
-                    ←
-                  </span>
-                </strong>
-                <p>{shortcut.helper}</p>
+                <strong>{shortcut.label}</strong>
+                <span>{shortcut.helper}</span>
               </Link>
             ))}
           </nav>
         ) : (
-          <div className={styles.emptyBox}>
-            <div>
-              <strong>میانبر قابل نمایش وجود ندارد.</strong>
-              <p>Navigation هم از permission boundary عبور نمی‌کند.</p>
-            </div>
-          </div>
+          <EmptyPanel
+            title="میانبر قابل نمایش وجود ندارد."
+            detail="Navigation نیز از permission boundary عبور نمی‌کند."
+          />
         )}
       </section>
     </div>
