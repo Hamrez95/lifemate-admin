@@ -1,12 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  getAuditLog: vi.fn(),
   getKpiValues: vi.fn(),
   getCommerceOverview: vi.fn(),
   listAdminNotifications: vi.fn(),
   getRelationshipOverview: vi.fn(),
 }));
 
+vi.mock("@/src/lib/admin-api/audit-log", () => ({
+  getAuditLog: mocks.getAuditLog,
+}));
 vi.mock("@/src/lib/admin-api/analytics-kpis", () => ({
   getKpiValues: mocks.getKpiValues,
 }));
@@ -33,6 +37,7 @@ describe("Founder overview server composition", () => {
       new Date("2026-08-15T21:30:00.000Z"),
     );
 
+    expect(mocks.getAuditLog).not.toHaveBeenCalled();
     expect(mocks.getKpiValues).not.toHaveBeenCalled();
     expect(mocks.getCommerceOverview).not.toHaveBeenCalled();
     expect(mocks.getRelationshipOverview).not.toHaveBeenCalled();
@@ -40,6 +45,8 @@ describe("Founder overview server composition", () => {
     expect(result.metrics).toEqual([]);
     expect(result.products).toBeNull();
     expect(result.alerts).toBeNull();
+    expect(result.activity).toBeNull();
+    expect(result.services).toMatchObject({ state: "not_instrumented", items: [] });
     expect(result.shortcuts).toEqual([
       { label: "کاربران", href: "/users", helper: "دایرکتوری و پروفایل‌های مدیریتی" },
     ]);
@@ -119,6 +126,52 @@ describe("Founder overview server composition", () => {
       source: "product",
       state: "not_instrumented",
       unreadCount: null,
+    });
+  });
+
+  it("uses only the canonical audit API for recent Founder activity", async () => {
+    mocks.getAuditLog.mockResolvedValue({
+      kind: "ok",
+      data: {
+        events: [
+          {
+            id: "evt-1",
+            actorAccountId: "account-1",
+            action: "role.membership.updated",
+            resourceType: "staff_membership",
+            resourceId: "member-1",
+            result: "success",
+            reason: null,
+            correlationId: "corr-1",
+            requestId: "req-1",
+            elevatedAccess: true,
+            occurredAtUtc: "2026-08-15T21:29:00.000Z",
+          },
+        ],
+        nextCursor: null,
+        filters: { from: null, to: null },
+        freshness: { status: "fresh", asOfUtc: "2026-08-15T21:29:30.000Z" },
+        supportsServerPaging: true,
+      },
+    });
+
+    const result = await getFounderOverview(
+      ["security.audit.read"],
+      new Date("2026-08-15T21:30:00.000Z"),
+    );
+
+    expect(mocks.getAuditLog).toHaveBeenCalledWith({ limit: 5 });
+    expect(result.activity).toMatchObject({
+      state: "ready",
+      asOfUtc: "2026-08-15T21:29:30.000Z",
+    });
+    expect(result.activity?.items[0]).toEqual({
+      id: "evt-1",
+      action: "role.membership.updated",
+      resourceType: "staff_membership",
+      result: "success",
+      elevatedAccess: true,
+      occurredAtUtc: "2026-08-15T21:29:00.000Z",
     });
   });
 });
