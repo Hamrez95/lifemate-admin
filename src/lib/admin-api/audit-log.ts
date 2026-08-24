@@ -9,6 +9,7 @@ export type AuditLogQuery = {
   from?: string | null;
   to?: string | null;
   cursor?: string | null;
+  timeoutMs?: number;
 };
 
 export type AuditLogResult =
@@ -34,6 +35,7 @@ function normalizedDate(value: string | null | undefined, boundary: "start" | "e
 
 export async function getAuditLog(query: AuditLogQuery = {}): Promise<AuditLogResult> {
   const boundedLimit = Math.min(100, Math.max(1, Math.trunc(query.limit ?? 50)));
+  const timeoutMs = Math.min(10_000, Math.max(500, Math.trunc(query.timeoutMs ?? 10_000)));
   const supabase = await createServerSupabaseClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   if (claimsError || !claimsData?.claims?.sub) return { kind: "unauthenticated" };
@@ -57,7 +59,7 @@ export async function getAuditLog(query: AuditLogQuery = {}): Promise<AuditLogRe
     response = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
-      signal: AbortSignal.timeout(10_000),
+      signal: AbortSignal.timeout(timeoutMs),
     });
   } catch {
     return { kind: "unavailable" };
