@@ -1,0 +1,26 @@
+name: finance-format
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/finance-references-14-16]
+permissions:
+  contents: write
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: feat/finance-references-14-16
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx prettier --write app/finance/error.tsx app/finance/finance.module.css app/finance/format.ts app/finance/scenario/page.tsx tests/finance-reference-pages-contract.test.ts
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/finance tests/finance-reference-pages-contract.test.ts
+          git diff --cached --quiet || git commit -m "chore(finance): apply repo formatting"
+          git push origin HEAD:feat/finance-references-14-16
