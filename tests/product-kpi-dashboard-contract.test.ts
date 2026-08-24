@@ -46,7 +46,8 @@ describe("ADM-ANL-001 Product KPI dashboard", () => {
   it("ships a responsive colorful LifeMate-specific visual layer", () => {
     const css = source("app/analytics/analytics-reference.module.css");
 
-    expect(css).toContain("var(--lm-green)");
+    expect(css).toContain("var(--lm-green-soft)");
+    expect(css).toContain("var(--lm-green-deep)");
     expect(css).toContain("var(--lm-blue)");
     expect(css).toContain("var(--lm-violet)");
     expect(css).toContain("@media (max-width: 680px)");
