@@ -14,12 +14,12 @@ describe("Users / User 360 privacy reference", () => {
 
     expect(directory).toContain('import Image from "next/image"');
     expect(detail).toContain('import Image from "next/image"');
-    expect(directory).toContain('/design-assets/user-privacy-hero-v1.png');
-    expect(detail).toContain('/design-assets/user-privacy-hero-v1.png');
-    expect(directory).toContain('width={720}');
-    expect(directory).toContain('height={560}');
-    expect(detail).toContain('width={720}');
-    expect(detail).toContain('height={560}');
+    expect(directory).toContain("/design-assets/user-privacy-hero-v1.png");
+    expect(detail).toContain("/design-assets/user-privacy-hero-v1.png");
+    expect(directory).toContain("width={720}");
+    expect(directory).toContain("height={560}");
+    expect(detail).toContain("width={720}");
+    expect(detail).toContain("height={560}");
     expect(directory).not.toMatch(/phone|email|health_observations|women_calendar/i);
   });
 
@@ -33,7 +33,7 @@ describe("Users / User 360 privacy reference", () => {
     expect(detail).toContain("مدت محدود");
     expect(detail).toContain("Idempotency");
     expect(detail).toContain("Audit اجباری");
-    expect(detail).toContain("<button type=\"button\" disabled");
+    expect(detail).toContain('<button type="button" disabled');
     expect(detail).not.toMatch(/\/api\/v1\/users\/.*temporary|break-glass\/request/i);
   });
 
