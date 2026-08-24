@@ -28,7 +28,7 @@ describe("ADM-ANL-001 Product KPI dashboard", () => {
     expect(page).toContain('return "—"');
     expect(page).toContain("محدود");
     expect(page).toContain("ناموجود");
-    expect(page).toContain('data-state={value.state}');
+    expect(page).toContain("data-state={value.state}");
     expect(page).toContain("نمودار ساختگی یا backfill نمایش داده نمی‌شود");
   });
 
