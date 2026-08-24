@@ -5,6 +5,7 @@ import { useActionState, useMemo, useState } from "react";
 import type { SupportAssignee } from "@/src/lib/admin-api/support-ticket";
 
 import { initialSupportActionFormState, runSupportTicketAction } from "./actions";
+import feedbackStyles from "./operation-feedback.module.css";
 import styles from "./ticket-detail.module.css";
 
 type TicketOperationsProps = {
@@ -33,8 +34,8 @@ function Feedback({ state }: { state: typeof initialSupportActionFormState }) {
 
 function SubmitLabel({ pending, idle }: { pending: boolean; idle: string }) {
   return pending ? (
-    <span className={styles.pendingLabel}>
-      <span className={styles.spinner} aria-hidden="true" />
+    <span className={feedbackStyles.pendingLabel}>
+      <span className={feedbackStyles.spinner} aria-hidden="true" />
       در حال ارسال…
     </span>
   ) : (
@@ -85,7 +86,7 @@ function StatusForm({ ticketId, current, seed }: { ticketId: string; current: st
           <option value="Open">باز</option><option value="Pending">در انتظار بررسی</option><option value="WaitingOnUser">منتظر کاربر</option><option value="Resolved">حل‌شده</option><option value="Closed">بسته</option>
         </select>
       </label>
-      <small className={styles.auditHint}>تغییر وضعیت فقط از Admin API انجام می‌شود و رویداد آن در Timeline/Audit ثبت می‌شود.</small>
+      <small className={feedbackStyles.auditHint}>تغییر وضعیت فقط از Admin API انجام می‌شود و رویداد آن در Timeline/Audit ثبت می‌شود.</small>
       <Feedback state={state} />
       <button className={styles.primaryButton} data-tone="green" type="submit" disabled={pending}>
         <SubmitLabel pending={pending} idle="تغییر وضعیت" />
