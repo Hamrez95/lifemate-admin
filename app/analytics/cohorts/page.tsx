@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import { AdminPageState } from "@/src/components/admin-data-table";
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
@@ -13,132 +14,117 @@ import {
 } from "@/src/lib/admin-api/analytics-cohorts";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
-import styles from "./cohorts.module.css";
+import styles from "./cohorts-reference.module.css";
 
-type CohortsPageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-};
-
-const numberFormat = new Intl.NumberFormat("fa-IR");
-const percentFormat = new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 1 });
-const dateFormat = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
+const number = new Intl.NumberFormat("fa-IR");
+const percent = new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 1 });
+const date = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
   timeZone: "Asia/Tehran",
-  year: "numeric",
   month: "short",
   day: "numeric",
 });
-const dateTimeFormat = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+const dateTime = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
   timeZone: "Asia/Tehran",
-  dateStyle: "short",
+  dateStyle: "medium",
   timeStyle: "short",
 });
-
 const products = [
   { value: "", label: "همه محصولات" },
   { value: "wellmate", label: "WellMate" },
   { value: "caremate", label: "CareMate" },
-  { value: "women_health", label: "Women Health" },
+  { value: "women_health", label: "سلامت بانوان" },
 ] as const;
 
-function one(value: string | string[] | undefined): string {
+function one(value: string | string[] | undefined) {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
 }
-
-function filters(input: Record<string, string | string[] | undefined>): URLSearchParams {
-  const params = new URLSearchParams();
+function filters(input: Record<string, string | string[] | undefined>) {
+  const p = new URLSearchParams();
   for (const key of ["from", "to", "product"] as const) {
-    const value = one(input[key]).trim();
-    if (value) params.set(key, value);
+    const v = one(input[key]).trim();
+    if (v) p.set(key, v);
   }
-  return params;
+  return p;
+}
+function fmtDate(value: string) {
+  const d = new Date(`${value}T12:00:00Z`);
+  return Number.isNaN(d.getTime()) ? value : date.format(d);
+}
+function stateLabel(state: string) {
+  return state === "ready"
+    ? "آماده"
+    : state === "partial"
+      ? "داده محدود"
+      : state === "suppressed"
+        ? "محافظت‌شده"
+        : "ناموجود";
 }
 
-function formatDate(value: string): string {
-  const date = new Date(`${value}T12:00:00.000Z`);
-  return Number.isNaN(date.getTime()) ? value : dateFormat.format(date);
-}
-
-function formatDateTime(value: string | null): string {
-  if (!value) return "—";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "—" : dateTimeFormat.format(date);
-}
-
-function stateLabel(state: string): string {
-  switch (state) {
-    case "partial":
-      return "داده محدود اما واقعی";
-    case "suppressed":
-      return "حفاظت حریم خصوصی";
-    case "ready":
-      return "آماده";
-    default:
-      return "در دسترس نیست";
-  }
-}
-
-function RetentionValue({ cell }: { cell: RetentionCell }) {
-  if (cell.state === "suppressed") {
+function RetentionCellView({ cell }: { cell: RetentionCell }) {
+  if (cell.state === "suppressed")
     return (
-      <span className={styles.suppressed} title={cell.reason ?? undefined}>
-        کمتر از آستانه
+      <span className={styles.cellSuppressed} title={cell.reason ?? undefined}>
+        خصوصی
       </span>
     );
-  }
-  if (cell.state === "unavailable" || cell.rate === null) {
+  if (cell.state === "unavailable" || cell.rate === null)
     return (
-      <span className={styles.unavailable} title={cell.reason ?? undefined}>
+      <span className={styles.cellUnavailable} title={cell.reason ?? undefined}>
         —
       </span>
     );
-  }
-  return <span>{percentFormat.format(cell.rate * 100)}٪</span>;
+  return (
+    <span
+      className={styles.cellReady}
+      style={
+        { "--retention": `${Math.max(0, Math.min(100, cell.rate * 100))}%` } as React.CSSProperties
+      }
+    >
+      {percent.format(cell.rate * 100)}٪
+    </span>
+  );
 }
 
-function CohortTable({ rows }: { rows: CohortRow[] }) {
-  if (rows.length === 0) {
+function Heatmap({ rows }: { rows: CohortRow[] }) {
+  if (rows.length === 0)
     return (
       <AdminPageState
         state="empty"
         title="Cohort قابل نمایش وجود ندارد"
-        description="برای بازه انتخاب‌شده سری acquisition معتبری از منبع canonical دریافت نشده است."
+        description="سری acquisition معتبری از API canonical دریافت نشده است."
       />
     );
-  }
-
   return (
-    <div className={styles.tableScroller} tabIndex={0} aria-label="جدول cohort؛ قابل پیمایش افقی">
-      <table className={styles.cohortTable}>
-        <caption>
-          Cohortهای روزانه بر اساس account_created. D1/D7/D30 فقط وقتی app_opened history واقعاً
-          instrument شود مقدار می‌گیرند.
-        </caption>
+    <div
+      className={styles.heatmapScroll}
+      tabIndex={0}
+      aria-label="نقشه حرارتی cohort، قابل پیمایش افقی"
+    >
+      <table className={styles.heatmap}>
+        <caption>Retention D1 / D7 / D30 فقط از داده canonical و با suppression حریم خصوصی</caption>
         <thead>
           <tr>
-            <th scope="col">Cohort</th>
+            <th scope="col">شروع Cohort</th>
             <th scope="col">اندازه</th>
             <th scope="col">D1</th>
             <th scope="col">D7</th>
             <th scope="col">D30</th>
-            <th scope="col">وضعیت منبع</th>
+            <th scope="col">منبع</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((row) => (
             <tr key={row.cohortDate}>
-              <th scope="row">{formatDate(row.cohortDate)}</th>
+              <th scope="row">{fmtDate(row.cohortDate)}</th>
               <td>
-                {row.suppressed ? (
-                  <span className={styles.suppressed}>
-                    کمتر از {numberFormat.format(COHORT_SUPPRESSION_THRESHOLD)}
-                  </span>
-                ) : (
-                  numberFormat.format(row.size ?? 0)
-                )}
+                {row.suppressed
+                  ? `< ${number.format(COHORT_SUPPRESSION_THRESHOLD)}`
+                  : number.format(row.size ?? 0)}
               </td>
               {row.retention.map((cell) => (
-                <td key={cell.day} data-cell-state={cell.state}>
-                  <RetentionValue cell={cell} />
+                <td key={cell.day} data-state={cell.state}>
+                  <RetentionCellView cell={cell} />
                 </td>
               ))}
               <td>
@@ -154,53 +140,90 @@ function CohortTable({ rows }: { rows: CohortRow[] }) {
   );
 }
 
-function UnavailableCard({ title, reason }: { title: string; reason: string }) {
+function AcquisitionChart({ rows }: { rows: CohortRow[] }) {
+  const points = rows.filter((r) => !r.suppressed && r.size !== null).slice(-24);
+  if (points.length === 0)
+    return (
+      <AdminPageState
+        state="unavailable"
+        title="نمودار Acquisition قابل ساخت نیست"
+        description="اندازه cohortها در این بازه موجود یا قابل نمایش نیست."
+      />
+    );
+  const max = Math.max(...points.map((p) => p.size ?? 0), 1);
+  const width = Math.max(520, points.length * 30);
   return (
-    <article className={styles.unavailableCard}>
-      <div className={styles.cardTopline}>
-        <strong>{title}</strong>
-        <span className={styles.stateBadge} data-state="unavailable">
-          —
-        </span>
-      </div>
+    <div
+      className={styles.chartScroll}
+      tabIndex={0}
+      aria-label="نمودار acquisition cohort، قابل پیمایش افقی"
+    >
+      <svg
+        className={styles.chart}
+        viewBox={`0 0 ${width} 230`}
+        role="img"
+        aria-label="اندازه cohortهای acquisition"
+      >
+        <line x1="30" x2={width - 18} y1="188" y2="188" className={styles.gridLine} />
+        {points.map((point, index) => {
+          const h = Math.max(3, ((point.size ?? 0) / max) * 142);
+          const x = 36 + index * ((width - 72) / points.length);
+          const label = `${fmtDate(point.cohortDate)}: ${number.format(point.size ?? 0)} کاربر`;
+          return (
+            <g
+              key={point.cohortDate}
+              tabIndex={0}
+              role="img"
+              aria-label={label}
+              className={styles.barGroup}
+            >
+              <rect x={x} y={188 - h} width="14" height={h} rx="7" className={styles.bar}>
+                <title>{label}</title>
+              </rect>
+              <text x={x + 7} y="210" textAnchor="middle">
+                {index % Math.max(1, Math.ceil(points.length / 6)) === 0
+                  ? fmtDate(point.cohortDate)
+                  : ""}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+function UnavailablePanel({ title, reason }: { title: string; reason: string }) {
+  return (
+    <article className={styles.unavailablePanel}>
+      <span>Unavailable</span>
+      <strong>{title}</strong>
       <p>{reason}</p>
     </article>
   );
 }
 
-function CohortWorkspace({ report }: { report: AnalyticsCohortReport }) {
+function Workspace({ report }: { report: AnalyticsCohortReport }) {
   return (
     <div className={styles.page}>
-      <section className={styles.hero} aria-labelledby="cohort-hero-title">
+      <section className={styles.hero}>
         <div>
-          <p className={styles.eyebrow}>Acquisition → Activation → Retention</p>
-          <h2 id="cohort-hero-title">
-            رشد را فقط جایی اندازه می‌گیریم که تاریخچه قابل اثبات داریم.
-          </h2>
+          <span className={styles.eyebrow}>Cohort Retention · Reference 24</span>
+          <h2>تحلیل ماندگاری گروهی</h2>
           <p>
-            Acquisition فعلی از account_created واقعی می‌آید. Activation و D1/D7/D30 تا زمان
-            instrumentation رویدادهای canonical عمداً «—» می‌مانند؛ last-active snapshot جایگزین
-            تاریخچه retention نمی‌شود.
+            کدام cohortها می‌مانند و چه چیزی واقعاً قابل اثبات است؟ Acquisition فعلی واقعی است؛
+            retention تا زمانی که تاریخچه canonical موجود نباشد «—» می‌ماند.
           </p>
         </div>
-        <div className={styles.definitionPanel}>
-          <span>Definition v{report.definition.version.toLocaleString("fa-IR")}</span>
-          <strong>
-            Taxonomy v{report.definition.eventTaxonomyVersion.toLocaleString("fa-IR")}
-          </strong>
-          <small>
-            Asia/Tehran · suppression &lt;{" "}
-            {numberFormat.format(report.definition.suppressionThreshold)}
-          </small>
-        </div>
+        <aside>
+          <span>Definition</span>
+          <strong>v{report.definition.version.toLocaleString("fa-IR")}</strong>
+          <span>Suppression</span>
+          <strong>&lt; {number.format(report.definition.suppressionThreshold)}</strong>
+        </aside>
       </section>
 
-      <section className={styles.filterCard} aria-labelledby="cohort-filters-title">
-        <div>
-          <p className={styles.eyebrow}>Bounded query</p>
-          <h3 id="cohort-filters-title">بازه cohort</h3>
-          <p>حداکثر ۱۸۰ روز؛ محاسبات تاریخی بر اساس روز تقویمی تهران.</p>
-        </div>
+      <section className={styles.toolbar}>
         <form className={styles.filters} method="get">
           <label>
             <span>از تاریخ</span>
@@ -213,143 +236,154 @@ function CohortWorkspace({ report }: { report: AnalyticsCohortReport }) {
           <label>
             <span>محصول</span>
             <select name="product" defaultValue={report.query.product ?? ""}>
-              {products.map((product) => (
-                <option value={product.value} key={product.value || "all"}>
-                  {product.label}
+              {products.map((p) => (
+                <option key={p.value || "all"} value={p.value}>
+                  {p.label}
                 </option>
               ))}
             </select>
           </label>
           <button type="submit">اعمال فیلتر</button>
         </form>
+        <div className={styles.actions}>
+          <button type="button" disabled title="endpoint canonical برای export cohort وجود ندارد">
+            خروجی
+          </button>
+          <button
+            type="button"
+            disabled
+            title="endpoint canonical برای drill-down cohort وجود ندارد"
+          >
+            Drill-down
+          </button>
+        </div>
       </section>
 
-      <section className={styles.summaryGrid} aria-label="خلاصه funnel">
-        <article className={styles.summaryCard} data-tone="green">
+      <section className={styles.metricGrid} aria-label="شاخص‌های cohort">
+        <article data-tone="green">
           <span>Acquisition</span>
           <strong>
-            {report.acquisition.total === null
-              ? "—"
-              : numberFormat.format(report.acquisition.total)}
+            {report.acquisition.total === null ? "—" : number.format(report.acquisition.total)}
           </strong>
-          <p>account_created · {stateLabel(report.acquisition.state)}</p>
-          <small>تا {formatDateTime(report.acquisition.asOfUtc)}</small>
+          <small>{stateLabel(report.acquisition.state)}</small>
         </article>
-        <article className={styles.summaryCard} data-tone="blue">
-          <span>Activation · ۷ روز</span>
+        <article data-tone="blue">
+          <span>Activation · 7d</span>
           <strong>—</strong>
-          <p>{report.activation.reason}</p>
+          <small>{report.activation.reason}</small>
         </article>
-        <article className={styles.summaryCard} data-tone="violet">
-          <span>Retention · D1 / D7 / D30</span>
+        <article data-tone="violet">
+          <span>Retention D1/D7/D30</span>
           <strong>—</strong>
-          <p>{report.retention.reason}</p>
+          <small>{report.retention.reason}</small>
         </article>
       </section>
 
-      <section className={styles.sectionCard} aria-labelledby="cohort-table-title">
-        <div className={styles.sectionHeading}>
+      <section className={styles.heatmapCard}>
+        <header>
           <div>
-            <p className={styles.eyebrow}>Cohort table</p>
-            <h3 id="cohort-table-title">Cohortهای Acquisition</h3>
-            <p>
-              Cohortهای ۱ تا {numberFormat.format(report.definition.suppressionThreshold - 1)} نفر
-              قبل از رسیدن به مرورگر suppress می‌شوند. صفر واقعی با unavailable یکی نیست.
-            </p>
+            <span className={styles.eyebrow}>نقشه حرارتی ماندگاری</span>
+            <h3>Retention Cohorts</h3>
+            <p>هر سلول فقط وقتی مقدار واقعی وجود داشته باشد رنگ می‌گیرد.</p>
           </div>
-          <span className={styles.stateBadge} data-state={report.acquisition.state}>
-            {stateLabel(report.acquisition.state)}
+          <span className={styles.stateBadge} data-state={report.retention.state}>
+            {stateLabel(report.retention.state)}
           </span>
-        </div>
-        <CohortTable rows={report.retention.cohorts} />
+        </header>
+        <Heatmap rows={report.retention.cohorts} />
       </section>
 
       <div className={styles.twoColumn}>
-        <section className={styles.sectionCard} aria-labelledby="channel-title">
-          <div className={styles.sectionHeading}>
+        <section className={styles.chartCard}>
+          <header>
             <div>
-              <p className={styles.eyebrow}>Acquisition attribution</p>
-              <h3 id="channel-title">کانال‌های جذب</h3>
+              <span className={styles.eyebrow}>منحنی Acquisition</span>
+              <h3>اندازه cohortهای واقعی</h3>
             </div>
-          </div>
-          <UnavailableCard title="Channel attribution" reason={report.channels.reason} />
+          </header>
+          <AcquisitionChart rows={report.retention.cohorts} />
+          <p className={styles.chartHint}>tooltip با hover و focus کیبورد در دسترس است.</p>
         </section>
-        <section className={styles.sectionCard} aria-labelledby="churn-title">
-          <div className={styles.sectionHeading}>
+        <section className={styles.infoCard}>
+          <span className={styles.eyebrow}>تعریف و شرایط شمول</span>
+          <dl>
             <div>
-              <p className={styles.eyebrow}>Lifecycle</p>
-              <h3 id="churn-title">Churn / Return</h3>
+              <dt>Acquisition</dt>
+              <dd>{report.definition.acquisitionEvent}</dd>
             </div>
-          </div>
-          <UnavailableCard title="Churn / Return" reason={report.churnReturn.reason} />
+            <div>
+              <dt>Activation</dt>
+              <dd>
+                {report.definition.activationEvent} · {report.definition.activationWindowDays}d
+              </dd>
+            </div>
+            <div>
+              <dt>Retention</dt>
+              <dd>{report.definition.retentionEvent} · D1/D7/D30</dd>
+            </div>
+            <div>
+              <dt>Timezone</dt>
+              <dd>{report.definition.timezone}</dd>
+            </div>
+          </dl>
         </section>
       </div>
 
-      <section className={styles.definitionCard} aria-labelledby="cohort-definition-title">
-        <div className={styles.sectionHeading}>
-          <div>
-            <p className={styles.eyebrow}>Auditable definition</p>
-            <h3 id="cohort-definition-title">تعریف نسخه‌دار</h3>
-          </div>
-          <Link href="/analytics">بازگشت به KPIها</Link>
-        </div>
-        <dl className={styles.definitionList}>
-          <div>
-            <dt>Acquisition</dt>
-            <dd>{report.definition.acquisitionEvent} v1</dd>
-          </div>
-          <div>
-            <dt>Activation</dt>
-            <dd>{report.definition.activationEvent} v1 · window 7d</dd>
-          </div>
-          <div>
-            <dt>Retention</dt>
-            <dd>{report.definition.retentionEvent} v1 · D1 / D7 / D30</dd>
-          </div>
-          <div>
-            <dt>Privacy</dt>
-            <dd>
-              Aggregate only · suppression &lt;{" "}
-              {numberFormat.format(report.definition.suppressionThreshold)}
-            </dd>
-          </div>
-        </dl>
+      <div className={styles.twoColumn}>
+        <UnavailablePanel title="کانال‌های جذب" reason={report.channels.reason} />
+        <UnavailablePanel title="Churn / Return" reason={report.churnReturn.reason} />
+      </div>
+      <section className={styles.footerMeta}>
+        <span>آخرین تولید: {dateTime.format(new Date(report.generatedAtUtc))}</span>
+        <span>Taxonomy v{report.definition.eventTaxonomyVersion.toLocaleString("fa-IR")}</span>
+        <span>
+          KPI Dictionary v{report.definition.kpiDictionaryVersion.toLocaleString("fa-IR")}
+        </span>
+        <Link href="/analytics/funnel">قیف فعال‌سازی</Link>
+        <Link href="/analytics">نمای کلی Analytics</Link>
       </section>
     </div>
   );
 }
 
-export default async function CohortsPage({ searchParams }: CohortsPageProps) {
+async function Content({ query }: { query: URLSearchParams }) {
+  const result = await getAnalyticsCohorts(query);
+  if (result.kind === "unauthenticated") redirect("/login");
+  if (result.kind === "forbidden") return <AdminPageState state="forbidden" />;
+  if (result.kind === "invalid")
+    return (
+      <AdminPageState state="error" title="فیلتر cohort معتبر نیست" description={result.message} />
+    );
+  if (result.kind === "unavailable")
+    return (
+      <AdminPageState
+        state="unavailable"
+        title="Cohort canonical در دسترس نیست"
+        description={result.correlationId ? `کد پیگیری: ${result.correlationId}` : undefined}
+      />
+    );
+  return <Workspace report={result.data} />;
+}
+
+export default async function CohortsPage({ searchParams }: Props) {
   const admin = await requireAdminAccess();
   const canRead = admin.permissions.includes("analytics.read");
-  const result = canRead ? await getAnalyticsCohorts(filters(await searchParams)) : null;
-
-  if (result?.kind === "unauthenticated") redirect("/login");
-
+  const query = filters(await searchParams);
   return (
     <AdminSessionProvider admin={admin}>
       <AdminShell
         activeSlug="analytics"
-        title="Acquisition / Retention"
-        subtitle="Cohortهای aggregate، تعریف نسخه‌دار و بدون retention ساختگی"
+        title="تحلیل ماندگاری گروهی"
+        subtitle="Reference 24 · aggregate canonical cohorts"
       >
-        {!canRead || result?.kind === "forbidden" ? (
+        {!canRead ? (
           <AdminPageState state="forbidden" />
-        ) : result?.kind === "invalid" ? (
-          <AdminPageState
-            state="error"
-            title="فیلتر cohort معتبر نیست"
-            description={result.message}
-          />
-        ) : result?.kind === "unavailable" ? (
-          <AdminPageState
-            state="unavailable"
-            description={result.correlationId ? `کد پیگیری: ${result.correlationId}` : undefined}
-          />
-        ) : result?.kind === "ok" ? (
-          <CohortWorkspace report={result.data} />
         ) : (
-          <AdminPageState state="unavailable" />
+          <Suspense
+            fallback={<AdminPageState state="loading" title="در حال دریافت Cohortهای canonical" />}
+          >
+            <Content query={query} />
+          </Suspense>
         )}
       </AdminShell>
     </AdminSessionProvider>
