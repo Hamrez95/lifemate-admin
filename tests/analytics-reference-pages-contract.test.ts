@@ -26,12 +26,18 @@ describe("Analytics references 6 / 9 / 24", () => {
   });
 
   it("fails closed for unsupported export and drill-down actions", () => {
-    for (const path of ["app/analytics/page.tsx", "app/analytics/funnel/page.tsx", "app/analytics/cohorts/page.tsx"]) {
+    for (const path of [
+      "app/analytics/page.tsx",
+      "app/analytics/funnel/page.tsx",
+      "app/analytics/cohorts/page.tsx",
+    ]) {
       const page = source(path);
       expect(page).toContain("disabled");
       expect(page).toContain("endpoint canonical");
     }
-    expect(source("app/analytics/funnel/page.tsx")).toContain("endpoint اختصاصی funnel هنوز در Core وجود ندارد");
+    expect(source("app/analytics/funnel/page.tsx")).toContain(
+      "endpoint اختصاصی funnel هنوز در Core وجود ندارد",
+    );
   });
 
   it("supports loading, unavailable, forbidden and error states", () => {
@@ -53,11 +59,11 @@ describe("Analytics references 6 / 9 / 24", () => {
     const funnelCss = source("app/analytics/funnel/funnel.module.css");
     const cohortsCss = source("app/analytics/cohorts/cohorts-reference.module.css");
 
-    expect(overview).toContain('tabIndex={0}');
+    expect(overview).toContain("tabIndex={0}");
     expect(funnel).toContain('role="tooltip"');
-    expect(cohorts).toContain('tabIndex={0}');
-    expect(overviewCss).toContain("@media(max-width:680px)");
-    expect(funnelCss).toContain("@media(max-width:620px)");
-    expect(cohortsCss).toContain("@media(max-width:680px)");
+    expect(cohorts).toContain("tabIndex={0}");
+    expect(overviewCss).toContain("@media (max-width: 680px)");
+    expect(funnelCss).toContain("@media (max-width: 620px)");
+    expect(cohortsCss).toContain("@media (max-width: 680px)");
   });
 });
