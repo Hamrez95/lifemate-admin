@@ -57,4 +57,6 @@ describe("Marketing references 12/13/23", () => {
     expect(css).toContain("overflow-x: auto");
     expect(css).toContain("max-width: 680px");
   });
+
+  // This suite intentionally guards truthful unavailable states as part of the visual references.
 });
