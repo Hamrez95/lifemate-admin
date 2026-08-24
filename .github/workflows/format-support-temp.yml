@@ -34,11 +34,7 @@ jobs:
         with:
           name: support-formatted
           path: |
-            app/support/page.tsx
-            app/support/support.css
-            app/support/[ticketId]/TicketOperations.tsx
-            app/support/[ticketId]/actions.ts
-            app/support/[ticketId]/operation-feedback.module.css
+            app/support/**
             tests/support-reference-pages-contract.test.ts
           if-no-files-found: error
           retention-days: 1
