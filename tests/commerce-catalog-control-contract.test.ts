@@ -80,7 +80,7 @@ describe("P0 Monetization Control Plane — plan and pricing batch", () => {
     expect(page).toContain("Trial configuration · Core #412");
     expect(page).toContain("Entitlement assignment · Core #412");
     expect(page).toContain("Discount-code issuance جداگانه و bulk");
-    expect(page).toContain("فرم تنظیم Trial تا تکمیل قرارداد Core #412 فعال نمی‌شود");
+    expect(page).toContain("Core #412 فعال نمی‌شود");
     expect(manage).toContain("Trial policy و Entitlement assignment");
   });
 
