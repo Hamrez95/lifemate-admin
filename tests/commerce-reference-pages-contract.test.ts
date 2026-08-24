@@ -11,7 +11,7 @@ describe("Commerce references 10/11", () => {
   it("uses the approved commerce hero and exposes the four workspace tabs", () => {
     const header = source("app/commerce/CommerceWorkspaceHeader.tsx");
 
-    expect(header).toContain('/design-assets/commerce-hero-v1.png');
+    expect(header).toContain("/design-assets/commerce-hero-v1.png");
     expect(header).toContain('href: "/commerce/plans"');
     expect(header).toContain('href: "/commerce/promotions"');
     expect(header).toContain('href: "/commerce/subscriptions"');

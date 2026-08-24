@@ -75,7 +75,10 @@ function parseQuery(input: Record<string, string | string[] | undefined>): Subsc
 }
 
 function apiParams(query: SubscriptionQuery): URLSearchParams {
-  const params = new URLSearchParams({ page: String(query.page), pageSize: String(query.pageSize) });
+  const params = new URLSearchParams({
+    page: String(query.page),
+    pageSize: String(query.pageSize),
+  });
   if (query.product) params.set("product", query.product);
   if (query.status) params.set("status", query.status);
   return params;
@@ -225,9 +228,13 @@ function RenewalHighlights({ data }: { data: CommerceOverviewResponse }) {
               <div>
                 <strong>{row.planName}</strong>
                 <br />
-                <span>{row.productCode} · {statusLabels[row.status] ?? row.status}</span>
+                <span>
+                  {row.productCode} · {statusLabels[row.status] ?? row.status}
+                </span>
               </div>
-              <time dateTime={row.currentPeriodEndUtc}>{formatDateTime(row.currentPeriodEndUtc)}</time>
+              <time dateTime={row.currentPeriodEndUtc}>
+                {formatDateTime(row.currentPeriodEndUtc)}
+              </time>
             </li>
           ))}
         </ul>
@@ -240,7 +247,8 @@ async function SubscriptionsContent({ query }: { query: SubscriptionQuery }) {
   const result = await getCommerceOverview(apiParams(query));
   if (result.kind === "unauthenticated") redirect("/login");
   if (result.kind === "forbidden") return <AdminPageState state="forbidden" />;
-  if (result.kind === "invalid") return <AdminPageState state="error" title="فیلتر اشتراک معتبر نیست" />;
+  if (result.kind === "invalid")
+    return <AdminPageState state="error" title="فیلتر اشتراک معتبر نیست" />;
   if (result.kind === "unavailable") {
     return (
       <AdminPageState
@@ -252,9 +260,10 @@ async function SubscriptionsContent({ query }: { query: SubscriptionQuery }) {
 
   const { data } = result;
   const previousHref = data.page > 1 ? pageHref(query, data.page - 1) : undefined;
-  const nextHref = data.page * data.pageSize < data.subscriptions.total
-    ? pageHref(query, data.page + 1)
-    : undefined;
+  const nextHref =
+    data.page * data.pageSize < data.subscriptions.total
+      ? pageHref(query, data.page + 1)
+      : undefined;
 
   return (
     <div className={styles.page} dir="rtl">
@@ -267,13 +276,16 @@ async function SubscriptionsContent({ query }: { query: SubscriptionQuery }) {
       <SubscriptionMetrics data={data} />
       <CommerceDependencyGrid>
         <CoreDependencyNotice title="Subscription read model" tone="available">
-          فهرست و وضعیت اشتراک‌ها از endpoint canonical موجود دریافت می‌شود و داده نمونه جایگزین آن نمی‌شود.
+          فهرست و وضعیت اشتراک‌ها از endpoint canonical موجود دریافت می‌شود و داده نمونه جایگزین آن
+          نمی‌شود.
         </CoreDependencyNotice>
         <CoreDependencyNotice title="Trial configuration · Core #412">
-          Trial فعلی فقط قابل مشاهده است. فرم تنظیم eligibility، مدت یا lifecycle تا بسته‌شدن قرارداد Core #412 فعال نمی‌شود.
+          Trial فعلی فقط قابل مشاهده است. فرم تنظیم eligibility، مدت یا lifecycle تا بسته‌شدن
+          قرارداد Core #412 فعال نمی‌شود.
         </CoreDependencyNotice>
         <CoreDependencyNotice title="Subscription mutation" tone="info">
-          endpoint امنی برای دست‌کاری مستقیم اشتراک فعال وجود ندارد؛ بنابراین action مدیریتی ساختگی ارائه نشده است.
+          endpoint امنی برای دست‌کاری مستقیم اشتراک فعال وجود ندارد؛ بنابراین action مدیریتی ساختگی
+          ارائه نشده است.
         </CoreDependencyNotice>
       </CommerceDependencyGrid>
       <div className={styles.sectionGrid}>
@@ -283,13 +295,25 @@ async function SubscriptionsContent({ query }: { query: SubscriptionQuery }) {
             <div>
               <span>SAFETY</span>
               <h3 id="subscription-boundary-title">مرز تغییرات تجاری</h3>
-              <p>ویرایش Plan یا Price نباید اشتراک‌های موجود را بدون قرارداد migration/reprice تغییر دهد.</p>
+              <p>
+                ویرایش Plan یا Price نباید اشتراک‌های موجود را بدون قرارداد migration/reprice تغییر
+                دهد.
+              </p>
             </div>
           </header>
           <ul className={styles.list}>
-            <li><strong>Plan lifecycle</strong><span>از مسیر canonical پلن</span></li>
-            <li><strong>Versioned Price</strong><span>از endpoint قیمت زمان‌دار</span></li>
-            <li><strong>Trial / eligibility</strong><span>Blocked by Core #412</span></li>
+            <li>
+              <strong>Plan lifecycle</strong>
+              <span>از مسیر canonical پلن</span>
+            </li>
+            <li>
+              <strong>Versioned Price</strong>
+              <span>از endpoint قیمت زمان‌دار</span>
+            </li>
+            <li>
+              <strong>Trial / eligibility</strong>
+              <span>Blocked by Core #412</span>
+            </li>
           </ul>
         </section>
       </div>

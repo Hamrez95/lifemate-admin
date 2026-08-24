@@ -106,7 +106,9 @@ function PlanContext({ data }: { data: CommerceOverviewResponse }) {
                   <strong>{row.planName}</strong>
                 </Link>
                 <br />
-                <span>{row.productName} · {row.planCode}</span>
+                <span>
+                  {row.productName} · {row.planCode}
+                </span>
               </div>
               <span>{row.subscriptions.toLocaleString("fa-IR")} اشتراک</span>
             </li>
@@ -121,7 +123,8 @@ async function RevenueContent() {
   const result = await getCommerceOverview(new URLSearchParams({ page: "1", pageSize: "25" }));
   if (result.kind === "unauthenticated") redirect("/login");
   if (result.kind === "forbidden") return <AdminPageState state="forbidden" />;
-  if (result.kind === "invalid") return <AdminPageState state="error" title="درخواست Commerce معتبر نیست" />;
+  if (result.kind === "invalid")
+    return <AdminPageState state="error" title="درخواست Commerce معتبر نیست" />;
   if (result.kind === "unavailable") {
     return (
       <AdminPageState
@@ -143,24 +146,35 @@ async function RevenueContent() {
       />
       <RevenueMetricsUnavailable />
       <section className={styles.unavailablePanel} aria-labelledby="revenue-dependency-title">
-        <div className={styles.unavailableIcon} aria-hidden="true">!</div>
+        <div className={styles.unavailableIcon} aria-hidden="true">
+          !
+        </div>
         <div>
-          <h3 id="revenue-dependency-title">Revenue KPI endpoint هنوز در قرارداد فعلی Core وجود ندارد</h3>
+          <h3 id="revenue-dependency-title">
+            Revenue KPI endpoint هنوز در قرارداد فعلی Core وجود ندارد
+          </h3>
           <p>
-            از تعداد Subscription، قیمت فعلی Plan یا Transactionهای ناقص، MRR/ARR/ARPU محاسبه نمی‌کنیم؛ چون grandfathered pricing، refund، currency، billing period و migration semantics می‌توانند نتیجه را غلط کنند.
+            از تعداد Subscription، قیمت فعلی Plan یا Transactionهای ناقص، MRR/ARR/ARPU محاسبه
+            نمی‌کنیم؛ چون grandfathered pricing، refund، currency، billing period و migration
+            semantics می‌توانند نتیجه را غلط کنند.
           </p>
-          <p><code>Required: canonical recurring-revenue read model + KPI definitions</code></p>
+          <p>
+            <code>Required: canonical recurring-revenue read model + KPI definitions</code>
+          </p>
         </div>
       </section>
       <CommerceDependencyGrid>
         <CoreDependencyNotice title="Price source" tone="available">
-          قیمت فقط در صفحه مدیریت Plan از قرارداد versioned pricing Core نمایش داده و زمان‌بندی می‌شود؛ این صفحه قیمت را از تعداد اشتراک حدس نمی‌زند.
+          قیمت فقط در صفحه مدیریت Plan از قرارداد versioned pricing Core نمایش داده و زمان‌بندی
+          می‌شود؛ این صفحه قیمت را از تعداد اشتراک حدس نمی‌زند.
         </CoreDependencyNotice>
         <CoreDependencyNotice title="Trial · Entitlement · Discount · Core #412">
-          mutationهای باقی‌مانده Monetization تا تکمیل Core #412 در UI درآمد یا برنامه‌های فروش فعال نمی‌شوند.
+          mutationهای باقی‌مانده Monetization تا تکمیل Core #412 در UI درآمد یا برنامه‌های فروش فعال
+          نمی‌شوند.
         </CoreDependencyNotice>
         <CoreDependencyNotice title="Revenue mutation" tone="info">
-          صفحه درآمد read-only است. هیچ action برای reprice، migrate یا دست‌کاری Subscription فعال ندارد.
+          صفحه درآمد read-only است. هیچ action برای reprice، migrate یا دست‌کاری Subscription فعال
+          ندارد.
         </CoreDependencyNotice>
       </CommerceDependencyGrid>
       <div className={styles.sectionGrid}>
@@ -173,7 +187,9 @@ async function RevenueContent() {
             <span>FRESHNESS</span>
             <h3 id="revenue-freshness-title">منبع snapshot عملیاتی</h3>
             <p>
-              Commerce Overview: {data.freshness.status === "fresh" ? "تازه" : "قدیمی"} · {formatDateTime(data.freshness.asOfUtc)}. این timestamp فقط وضعیت داده عملیاتی را نشان می‌دهد، نه freshness یک KPI درآمدی که هنوز وجود ندارد.
+              Commerce Overview: {data.freshness.status === "fresh" ? "تازه" : "قدیمی"} ·{" "}
+              {formatDateTime(data.freshness.asOfUtc)}. این timestamp فقط وضعیت داده عملیاتی را نشان
+              می‌دهد، نه freshness یک KPI درآمدی که هنوز وجود ندارد.
             </p>
           </div>
         </header>
@@ -196,7 +212,9 @@ export default async function CommerceRevenuePage() {
         {!canRead ? (
           <AdminPageState state="forbidden" />
         ) : (
-          <Suspense fallback={<AdminPageState state="loading" title="در حال دریافت snapshot تجارت" />}>
+          <Suspense
+            fallback={<AdminPageState state="loading" title="در حال دریافت snapshot تجارت" />}
+          >
             <RevenueContent />
           </Suspense>
         )}

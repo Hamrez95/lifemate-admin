@@ -132,13 +132,16 @@ async function PlansContent({ canPlanWrite }: { canPlanWrite: boolean }) {
       <Summary data={data} />
       <CommerceDependencyGrid>
         <CoreDependencyNotice title="Plan lifecycle + versioned price" tone="available">
-          endpointهای ساخت/ویرایش پلن و زمان‌بندی Price موجودند. mutationها permission، reason، Idempotency-Key و Audit سمت Admin API دارند.
+          endpointهای ساخت/ویرایش پلن و زمان‌بندی Price موجودند. mutationها permission، reason،
+          Idempotency-Key و Audit سمت Admin API دارند.
         </CoreDependencyNotice>
         <CoreDependencyNotice title="Trial configuration · Core #412">
-          مدت، eligibility و lifecycle آزمایشی فقط قابل مشاهده‌اند؛ فرم تنظیم Trial تا تکمیل قرارداد Core #412 فعال نمی‌شود.
+          مدت، eligibility و lifecycle آزمایشی فقط قابل مشاهده‌اند؛ فرم تنظیم Trial تا تکمیل قرارداد
+          Core #412 فعال نمی‌شود.
         </CoreDependencyNotice>
         <CoreDependencyNotice title="Entitlement assignment · Core #412">
-          اتصال Plan به Feature/Entitlement هنوز mutation canonical با concurrency semantics ندارد؛ بنابراین فرم ساختگی ارائه نمی‌شود.
+          اتصال Plan به Feature/Entitlement هنوز mutation canonical با concurrency semantics ندارد؛
+          بنابراین فرم ساختگی ارائه نمی‌شود.
         </CoreDependencyNotice>
       </CommerceDependencyGrid>
       <PlanCreateForm products={data.products} canWrite={canPlanWrite} />
@@ -155,7 +158,8 @@ async function PlansContent({ canPlanWrite }: { canPlanWrite: boolean }) {
         }}
       />
       <p className={styles.safetyNote}>
-        Discount-code issuance جداگانه و bulk نیز تا تکمیل Core #412 فعال نیست. این صفحه قیمت، Trial یا Entitlement را از داده‌های دیگر حدس نمی‌زند.
+        Discount-code issuance جداگانه و bulk نیز تا تکمیل Core #412 فعال نیست. این صفحه قیمت، Trial
+        یا Entitlement را از داده‌های دیگر حدس نمی‌زند.
       </p>
     </div>
   );

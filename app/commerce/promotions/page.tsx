@@ -311,13 +311,16 @@ async function PromotionsContent({
       <Summary data={data} />
       <CommerceDependencyGrid>
         <CoreDependencyNotice title="Promotion rule mutation" tone="available">
-          ساخت و lifecycle خود Promotion endpoint canonical دارد؛ فقط با commerce.promo.write، reason، Idempotency-Key و Audit فعال است.
+          ساخت و lifecycle خود Promotion endpoint canonical دارد؛ فقط با commerce.promo.write،
+          reason، Idempotency-Key و Audit فعال است.
         </CoreDependencyNotice>
         <CoreDependencyNotice title="Discount-code issuance · Core #412">
-          تولید تک‌کد، bulk، usage cap و activation/deactivation مستقل هنوز قرارداد کامل Core ندارد؛ هیچ generator یا edit form جداگانه فعال نیست.
+          تولید تک‌کد، bulk، usage cap و activation/deactivation مستقل هنوز قرارداد کامل Core ندارد؛
+          هیچ generator یا edit form جداگانه فعال نیست.
         </CoreDependencyNotice>
         <CoreDependencyNotice title="Redemption analytics" tone="info">
-          تا زمانی که منبع canonical redemption آماده نباشد، عملکرد کدها به‌صورت unavailable نمایش داده می‌شود و ROI ساختگی تولید نمی‌شود.
+          تا زمانی که منبع canonical redemption آماده نباشد، عملکرد کدها به‌صورت unavailable نمایش
+          داده می‌شود و ROI ساختگی تولید نمی‌شود.
         </CoreDependencyNotice>
       </CommerceDependencyGrid>
       <PromotionCreateForm products={data.products} canWrite={canWrite} />

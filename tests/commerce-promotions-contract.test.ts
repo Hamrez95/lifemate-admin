@@ -97,7 +97,7 @@ describe("ADM-COM-005 Promotions / Discount Codes", () => {
 
     expect(list).toContain('active="promotions"');
     expect(list).toContain("Reference 10");
-    expect(shared).toContain('/design-assets/commerce-hero-v1.png');
+    expect(shared).toContain("/design-assets/commerce-hero-v1.png");
     expect(css).toContain("var(--lm-green-soft)");
     expect(css).toContain(":focus-visible");
     expect(css).toContain("max-width: 820px");
