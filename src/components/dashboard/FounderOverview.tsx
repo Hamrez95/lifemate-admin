@@ -64,8 +64,8 @@ export function FounderOverview({ data }: { data: FounderOverviewData }) {
           <p className="eyebrow">Founder Command Center</p>
           <h2 id="founder-pulse-title">پالس اجرایی LifeMate، فقط بر پایه داده قابل ردیابی.</h2>
           <p>
-            این نما برای تصمیم سریع Founder ساخته شده است. هر عدد از API canonical همان حوزه می‌آید و
-            نبود داده با وضعیت صریح نمایش داده می‌شود، نه با صفر یا KPI نمایشی.
+            این نما برای تصمیم سریع Founder ساخته شده است. هر عدد از API canonical همان حوزه می‌آید
+            و نبود داده با وضعیت صریح نمایش داده می‌شود، نه با صفر یا KPI نمایشی.
           </p>
           <div className={styles.heroMeta}>
             <span className="state-pill state-pill--safe">Permission-aware</span>
@@ -174,7 +174,11 @@ export function FounderOverview({ data }: { data: FounderOverviewData }) {
             </div>
           ) : (
             <EmptyPanel
-              title={data.alerts.state === "unavailable" ? "منبع هشدار در دسترس نیست." : "هشدار فعالی ثبت نشده است."}
+              title={
+                data.alerts.state === "unavailable"
+                  ? "منبع هشدار در دسترس نیست."
+                  : "هشدار فعالی ثبت نشده است."
+              }
               detail={freshnessLabel(data.alerts.asOfUtc)}
             />
           )}
@@ -184,7 +188,9 @@ export function FounderOverview({ data }: { data: FounderOverviewData }) {
               {data.alerts.sources.map((source) => (
                 <div className={styles.sourceItem} key={source.source}>
                   <span>{sourceLabels[source.source]}</span>
-                  <strong>{source.unreadCount === null ? "—" : numberFormat.format(source.unreadCount)}</strong>
+                  <strong>
+                    {source.unreadCount === null ? "—" : numberFormat.format(source.unreadCount)}
+                  </strong>
                   <small>{stateLabel(source.state)}</small>
                 </div>
               ))}
@@ -228,7 +234,11 @@ export function FounderOverview({ data }: { data: FounderOverviewData }) {
             </div>
           ) : (
             <EmptyPanel
-              title={data.activity.state === "unavailable" ? "Audit API در دسترس نیست." : "فعالیت اخیری ثبت نشده است."}
+              title={
+                data.activity.state === "unavailable"
+                  ? "Audit API در دسترس نیست."
+                  : "فعالیت اخیری ثبت نشده است."
+              }
               detail={freshnessLabel(data.activity.asOfUtc)}
             />
           )}
@@ -271,7 +281,11 @@ export function FounderOverview({ data }: { data: FounderOverviewData }) {
             </div>
           ) : (
             <EmptyPanel
-              title={data.products.state === "unavailable" ? "منبع Commerce در دسترس نیست." : "محصولی در منبع canonical ثبت نشده است."}
+              title={
+                data.products.state === "unavailable"
+                  ? "منبع Commerce در دسترس نیست."
+                  : "محصولی در منبع canonical ثبت نشده است."
+              }
               detail={freshnessLabel(data.products.asOfUtc)}
             />
           )}
