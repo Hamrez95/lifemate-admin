@@ -26,9 +26,10 @@ describe("ADM-ANL-001 Product KPI dashboard", () => {
     expect(page).toContain('value.state === "unavailable"');
     expect(page).toContain('value.state === "partial"');
     expect(page).toContain('return "—"');
-    expect(page).toContain("داده محدود اما واقعی");
-    expect(page).toContain("هنوز اندازه‌گیری نشده");
-    expect(page).toContain("نمودار ساختگی نمایش داده نمی‌شود");
+    expect(page).toContain("محدود");
+    expect(page).toContain("ناموجود");
+    expect(page).toContain('data-state={value.state}');
+    expect(page).toContain("نمودار ساختگی یا backfill نمایش داده نمی‌شود");
   });
 
   it("enforces analytics permission and includes an accessible chart summary", () => {
@@ -37,11 +38,13 @@ describe("ADM-ANL-001 Product KPI dashboard", () => {
     expect(page).toContain('permissions.includes("analytics.read")');
     expect(page).toContain('role="img"');
     expect(page).toContain("aria-label");
-    expect(page).toContain("وضعیت منبع");
+    expect(page).toContain("tabIndex={0}");
+    expect(page).toContain("<title>{label}</title>");
+    expect(page).toContain("value.source");
   });
 
   it("ships a responsive colorful LifeMate-specific visual layer", () => {
-    const css = source("app/analytics/analytics.module.css");
+    const css = source("app/analytics/analytics-reference.module.css");
 
     expect(css).toContain("var(--lm-green)");
     expect(css).toContain("var(--lm-blue)");
