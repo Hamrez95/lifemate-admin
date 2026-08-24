@@ -61,9 +61,7 @@ export async function getAuditLog(query: AuditLogQuery = {}): Promise<AuditLogRe
     response = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
-      signal: customTimeoutMs
-        ? AbortSignal.timeout(customTimeoutMs)
-        : AbortSignal.timeout(3_000),
+      signal: customTimeoutMs ? AbortSignal.timeout(customTimeoutMs) : AbortSignal.timeout(3_000),
     });
   } catch {
     return { kind: "unavailable" };
