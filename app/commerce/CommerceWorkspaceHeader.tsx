@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import styles from "./commerce-reference.module.css";
 
@@ -73,7 +74,7 @@ export function CoreDependencyNotice({
   tone = "blocked",
 }: {
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
   tone?: "blocked" | "available" | "info";
 }) {
   return (
@@ -89,7 +90,7 @@ export function CoreDependencyNotice({
   );
 }
 
-export function CommerceDependencyGrid({ children }: { children: React.ReactNode }) {
+export function CommerceDependencyGrid({ children }: { children: ReactNode }) {
   return (
     <section className={styles.dependencyGrid} aria-label="وضعیت قراردادهای Core">
       {children}
