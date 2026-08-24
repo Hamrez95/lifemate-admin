@@ -20,7 +20,7 @@ for (const viewport of viewports) {
   test(`shared RTL shell is stable at ${viewport.name}`, async ({ page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await signInWithMfa(page);
-    await page.goto("/");
+    await expect(page).toHaveURL(/\/$/);
 
     await expect(page.getByLabel("ناوبری اصلی Command Center")).toBeVisible();
     await expect(page.getByRole("navigation", { name: "مسیر صفحه" })).toBeVisible();
