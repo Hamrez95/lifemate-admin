@@ -35,7 +35,7 @@ function normalizedDate(value: string | null | undefined, boundary: "start" | "e
 
 export async function getAuditLog(query: AuditLogQuery = {}): Promise<AuditLogResult> {
   const boundedLimit = Math.min(100, Math.max(1, Math.trunc(query.limit ?? 50)));
-  const timeoutMs = Math.min(10_000, Math.max(500, Math.trunc(query.timeoutMs ?? 10_000)));
+  const timeoutMs = Math.min(10_000, Math.max(500, Math.trunc(query.timeoutMs ?? 3_000)));
   const supabase = await createServerSupabaseClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   if (claimsError || !claimsData?.claims?.sub) return { kind: "unauthenticated" };
