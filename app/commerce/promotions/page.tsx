@@ -19,6 +19,11 @@ import {
 } from "@/src/lib/admin-api/commerce-promotions";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
+import {
+  CommerceDependencyGrid,
+  CommerceWorkspaceHeader,
+  CoreDependencyNotice,
+} from "../CommerceWorkspaceHeader";
 import { PromotionCreateForm } from "./PromotionCreateForm";
 import styles from "./promotions.module.css";
 
@@ -120,31 +125,6 @@ function formatDiscount(row: CommercePromotionRow): string {
   }
 }
 
-function Hero() {
-  return (
-    <section className={styles.hero} aria-labelledby="promotions-title">
-      <div>
-        <span className={styles.eyebrow}>Commerce · Promotion Rules</span>
-        <h2 id="promotions-title">تخفیف را مدیریت کن، بدون دست‌زدن به Plan و Entitlement</h2>
-        <p>
-          Promotion قانون تجاری است و Discount Code کلید استفاده از آن؛ هیچ‌کدام Plan، Entitlement
-          یا Transaction نیستند. تغییرات مالی با دلیل و idempotency ثبت می‌شوند.
-        </p>
-        <Link href="/commerce" className={styles.secondaryAction}>
-          بازگشت به نمای تجارت
-        </Link>
-      </div>
-      <div className={styles.heroVisual} aria-hidden="true">
-        <span>Promotion</span>
-        <i>≠</i>
-        <span>Discount Code</span>
-        <i>≠</i>
-        <span>Plan</span>
-      </div>
-    </section>
-  );
-}
-
 function Summary({ data }: { data: CommercePromotionsResponse }) {
   const cards = [
     ["کل", data.summary.total, "neutral"],
@@ -210,7 +190,7 @@ function Filters({ query, data }: { query: PromotionsQuery; data: CommercePromot
           placeholder="WELCOME-20"
           defaultValue={query.code}
         />
-        <small>جست‌وجوی جزئی کد پشتیبانی نمی‌شود.</small>
+        <small>فقط lookup کد canonical؛ جست‌وجوی جزئی یا تولید کد جدید اینجا انجام نمی‌شود.</small>
       </div>
       <div className="admin-list-filter admin-list-filter--compact">
         <label htmlFor="promotion-page-size">تعداد در صفحه</label>
@@ -247,11 +227,11 @@ const columns: readonly AdminTableColumn<CommercePromotionRow>[] = [
   { key: "discount", header: "تخفیف", render: (row) => <strong>{formatDiscount(row)}</strong> },
   {
     key: "code",
-    header: "کد اصلی",
+    header: "کد canonical",
     render: (row) => (
       <div className={styles.codeCell}>
         <code dir="ltr">{row.primaryCodeMasked ?? "—"}</code>
-        <small>{row.codeCount.toLocaleString("fa-IR")} کد</small>
+        <small>{row.codeCount.toLocaleString("fa-IR")} کد ثبت‌شده</small>
       </div>
     ),
   },
@@ -317,18 +297,34 @@ async function PromotionsContent({
 
   return (
     <div className={styles.page} dir="rtl">
-      <Hero />
+      <CommerceWorkspaceHeader
+        active="promotions"
+        eyebrow="Commerce · Reference 10"
+        title="قوانین تخفیف و پروموشن، فقط از قرارداد واقعی Core"
+        description="Promotion یک قانون تجاری canonical است. فهرست، مقدار تخفیف، بازه اعتبار و کد mask‌شده فقط از Admin API نمایش داده می‌شوند؛ تولید یا ویرایش کدهای مستقل تا آماده‌شدن Core #412 فعال نمی‌شود."
+      />
       <div className={styles.sourceStrip} data-stale={data.freshness.status === "stale"}>
         <span>{data.source.label}</span>
         <span>Snapshot: {formatDateTime(data.freshness.asOfUtc)}</span>
         <span>{data.freshness.status === "stale" ? "هشدار: داده قدیمی است" : "داده تازه"}</span>
       </div>
       <Summary data={data} />
+      <CommerceDependencyGrid>
+        <CoreDependencyNotice title="Promotion rule mutation" tone="available">
+          ساخت و lifecycle خود Promotion endpoint canonical دارد؛ فقط با commerce.promo.write، reason، Idempotency-Key و Audit فعال است.
+        </CoreDependencyNotice>
+        <CoreDependencyNotice title="Discount-code issuance · Core #412">
+          تولید تک‌کد، bulk، usage cap و activation/deactivation مستقل هنوز قرارداد کامل Core ندارد؛ هیچ generator یا edit form جداگانه فعال نیست.
+        </CoreDependencyNotice>
+        <CoreDependencyNotice title="Redemption analytics" tone="info">
+          تا زمانی که منبع canonical redemption آماده نباشد، عملکرد کدها به‌صورت unavailable نمایش داده می‌شود و ROI ساختگی تولید نمی‌شود.
+        </CoreDependencyNotice>
+      </CommerceDependencyGrid>
       <PromotionCreateForm products={data.products} canWrite={canWrite} />
       <Filters query={query} data={data} />
       <AdminDataTable
         title="پروموشن‌ها"
-        description="کدها در لیست mask شده‌اند و آمار redemption تا زمان وجود منبع canonical به‌صورت unavailable نمایش داده می‌شود."
+        description="کدها فقط طبق payload Core به‌صورت mask شده نمایش داده می‌شوند. هیچ کد، تخفیف یا آمار استفاده از روی داده‌های محلی ساخته نمی‌شود."
         rows={data.items}
         columns={columns}
         rowKey={(row) => row.promotionId}
