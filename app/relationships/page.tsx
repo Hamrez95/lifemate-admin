@@ -13,6 +13,7 @@ import {
 } from "@/src/lib/admin-api/relationship-overview";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
+import referenceStyles from "./relationships-reference.module.css";
 import styles from "./relationships.module.css";
 
 type RelationshipsPageProps = {
@@ -169,7 +170,10 @@ function SensitiveActions() {
   ];
 
   return (
-    <section className={styles.sensitiveActions} aria-labelledby="relationship-sensitive-actions-title">
+    <section
+      className={referenceStyles.sensitiveActions}
+      aria-labelledby="relationship-sensitive-actions-title"
+    >
       <div className={styles.sectionHeading}>
         <div>
           <span className={styles.eyebrow}>Sensitive operations</span>
@@ -179,12 +183,12 @@ function SensitiveActions() {
             مستقیم ساخته نمی‌شود.
           </p>
         </div>
-        <span className={styles.failClosedBadge}>Fail closed</span>
+        <span className={referenceStyles.failClosedBadge}>Fail closed</span>
       </div>
-      <div className={styles.actionGrid}>
+      <div className={referenceStyles.actionGrid}>
         {actions.map((action) => (
-          <article className={styles.actionCard} key={action.title}>
-            <span className={styles.actionSymbol} aria-hidden="true">
+          <article className={referenceStyles.actionCard} key={action.title}>
+            <span className={referenceStyles.actionSymbol} aria-hidden="true">
               {action.symbol}
             </span>
             <div>
@@ -205,23 +209,33 @@ function SensitiveActions() {
 function WorkspaceTabs({ filters }: { filters: URLSearchParams }) {
   const activeKind = filters.get("kind") ?? "";
   const activeStatus = filters.get("status") ?? "";
-  const isPending = activeKind === "relationship" && activeStatus.toLowerCase() === "pending";
+  const isPending =
+    activeKind === "relationship" && activeStatus.toLowerCase() === "pending";
 
   return (
-    <nav className={styles.tabs} aria-label="بخش‌های روابط و رضایت">
+    <nav className={referenceStyles.tabs} aria-label="بخش‌های روابط و رضایت">
       <Link
         href="/relationships?kind=relationship"
         data-active={activeKind === "relationship" && !isPending ? "true" : "false"}
       >
         روابط
       </Link>
-      <Link href="/relationships?kind=relationship&status=Pending" data-active={isPending ? "true" : "false"}>
+      <Link
+        href="/relationships?kind=relationship&status=Pending"
+        data-active={isPending ? "true" : "false"}
+      >
         درخواست‌ها
       </Link>
-      <Link href="/relationships?kind=access_grant" data-active={activeKind === "access_grant" ? "true" : "false"}>
+      <Link
+        href="/relationships?kind=access_grant"
+        data-active={activeKind === "access_grant" ? "true" : "false"}
+      >
         مجوزهای دسترسی
       </Link>
-      <Link href="/relationships?kind=consent" data-active={activeKind === "consent" ? "true" : "false"}>
+      <Link
+        href="/relationships?kind=consent"
+        data-active={activeKind === "consent" ? "true" : "false"}
+      >
         رضایت‌ها
       </Link>
       <Link href="/relationships/ledger">تاریخچه و فعالیت‌ها</Link>
@@ -279,13 +293,13 @@ async function RelationshipsContent({ filters }: { filters: URLSearchParams }) {
             مدیریت رابطه، رضایت و مجوزهای دسترسی با مرزهای مستقل. Relationship هیچ‌وقت به‌تنهایی
             مجوز مشاهده اطلاعات سلامت ایجاد نمی‌کند.
           </p>
-          <div className={styles.heroChips}>
+          <div className={referenceStyles.heroChips}>
             <span>Canonical API only</span>
             <span>relationships.read</span>
             <span>حداقل‌سازی داده</span>
           </div>
         </div>
-        <div className={styles.heroVisual}>
+        <div className={referenceStyles.heroVisual}>
           <Image
             src="/design-assets/relationships-consent-hero-v1.png"
             alt="تصویر روابط، دسترسی و رضایت LifeMate"
@@ -297,16 +311,20 @@ async function RelationshipsContent({ filters }: { filters: URLSearchParams }) {
         </div>
       </section>
 
-      <section className={styles.policyGrid} aria-label="مرزهای رضایت و دسترسی">
+      <section className={referenceStyles.policyGrid} aria-label="مرزهای رضایت و دسترسی">
         <article data-tone="green">
-          <span className={styles.policyIcon} aria-hidden="true">✓</span>
+          <span className={referenceStyles.policyIcon} aria-hidden="true">
+            ✓
+          </span>
           <div>
             <strong>مجوز مشاهده اطلاعات سلامت</strong>
             <p>هرگونه مشاهده داده سلامت نیازمند رضایت صریح و Access Grant معتبر در Core است.</p>
           </div>
         </article>
         <article data-tone="blue">
-          <span className={styles.policyIcon} aria-hidden="true">○</span>
+          <span className={referenceStyles.policyIcon} aria-hidden="true">
+            ○
+          </span>
           <div>
             <strong>اشتراک تجاری ≠ دسترسی به اطلاعات سلامت</strong>
             <p>Subscription فقط قابلیت تجاری می‌دهد و هیچ مجوز پزشکی یا رضایت ایجاد نمی‌کند.</p>
@@ -316,13 +334,16 @@ async function RelationshipsContent({ filters }: { filters: URLSearchParams }) {
 
       <WorkspaceTabs filters={filters} />
 
-      <div className={styles.workspaceGrid}>
-        <main className={styles.workspaceMain}>
+      <div className={referenceStyles.workspaceGrid}>
+        <main className={referenceStyles.workspaceMain}>
           <section className={styles.filterCard} aria-labelledby="relationship-filters-title">
             <div>
               <span className={styles.eyebrow}>نمای عملیاتی</span>
               <h3 id="relationship-filters-title">فیلتر رکوردهای canonical</h3>
-              <p>فقط metadata لازم نمایش داده می‌شود؛ داده پزشکی خام یا اطلاعات تماس حساس در این نما نیست.</p>
+              <p>
+                فقط metadata لازم نمایش داده می‌شود؛ داده پزشکی خام یا اطلاعات تماس حساس در این نما
+                نیست.
+              </p>
             </div>
             <form className={styles.filters} method="get">
               <label>
@@ -364,7 +385,7 @@ async function RelationshipsContent({ filters }: { filters: URLSearchParams }) {
             </div>
 
             {data.items.length === 0 ? (
-              <div className={styles.emptyState}>
+              <div className={referenceStyles.emptyState}>
                 <Image
                   src="/design-assets/relationships-consent-hero-v1.png"
                   alt=""
@@ -399,26 +420,41 @@ async function RelationshipsContent({ filters }: { filters: URLSearchParams }) {
           <SensitiveActions />
         </main>
 
-        <aside className={styles.summaryRail} aria-label="خلاصه وضعیت روابط و رضایت">
-          <section className={styles.summaryCard}>
+        <aside className={referenceStyles.summaryRail} aria-label="خلاصه وضعیت روابط و رضایت">
+          <section className={referenceStyles.summaryCard}>
             <span className={styles.eyebrow}>خلاصه وضعیت</span>
             <h3>روابط و دسترسی</h3>
-            <div className={styles.metricGrid}>
-              <div data-tone="green"><span>روابط فعال</span><strong>{activeRelationships.toLocaleString("fa-IR")}</strong></div>
-              <div data-tone="orange"><span>درخواست‌های در انتظار</span><strong>{pendingRequests.toLocaleString("fa-IR")}</strong></div>
-              <div data-tone="blue"><span>مجوزهای فعال</span><strong>{activeGrants.toLocaleString("fa-IR")}</strong></div>
-              <div data-tone="red"><span>رضایت‌های لغوشده</span><strong>{revokedRecords.toLocaleString("fa-IR")}</strong></div>
+            <div className={referenceStyles.metricGrid}>
+              <div data-tone="green">
+                <span>روابط فعال</span>
+                <strong>{activeRelationships.toLocaleString("fa-IR")}</strong>
+              </div>
+              <div data-tone="orange">
+                <span>درخواست‌های در انتظار</span>
+                <strong>{pendingRequests.toLocaleString("fa-IR")}</strong>
+              </div>
+              <div data-tone="blue">
+                <span>مجوزهای فعال</span>
+                <strong>{activeGrants.toLocaleString("fa-IR")}</strong>
+              </div>
+              <div data-tone="red">
+                <span>رضایت‌های لغوشده</span>
+                <strong>{revokedRecords.toLocaleString("fa-IR")}</strong>
+              </div>
             </div>
           </section>
 
-          <section className={styles.summaryCard}>
+          <section className={referenceStyles.summaryCard}>
             <span className={styles.eyebrow}>سه لایه مستقل</span>
             {(Object.keys(kindMeta) as RelationshipOverviewKind[]).map((kind) => {
               const meta = kindMeta[kind];
               return (
-                <div className={styles.summaryRow} key={kind}>
+                <div className={referenceStyles.summaryRow} key={kind}>
                   <span>{meta.symbol}</span>
-                  <div><strong>{meta.short}</strong><small>{meta.description}</small></div>
+                  <div>
+                    <strong>{meta.short}</strong>
+                    <small>{meta.description}</small>
+                  </div>
                   <b>{kindTotal(data.summary, kind).toLocaleString("fa-IR")}</b>
                 </div>
               );
