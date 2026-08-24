@@ -209,8 +209,7 @@ function SensitiveActions() {
 function WorkspaceTabs({ filters }: { filters: URLSearchParams }) {
   const activeKind = filters.get("kind") ?? "";
   const activeStatus = filters.get("status") ?? "";
-  const isPending =
-    activeKind === "relationship" && activeStatus.toLowerCase() === "pending";
+  const isPending = activeKind === "relationship" && activeStatus.toLowerCase() === "pending";
 
   return (
     <nav className={referenceStyles.tabs} aria-label="بخش‌های روابط و رضایت">
