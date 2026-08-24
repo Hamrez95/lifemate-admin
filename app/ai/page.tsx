@@ -136,7 +136,9 @@ function InsightResult({ insight }: { insight: AdvisorInsight }) {
             هویتی حساس و توصیه پزشکی در این سطح مجاز نیستند.
           </p>
         </div>
-        <span>{insight.model.status === "not_configured" ? "مدل خارجی غیرفعال" : "محافظت‌شده"}</span>
+        <span>
+          {insight.model.status === "not_configured" ? "مدل خارجی غیرفعال" : "محافظت‌شده"}
+        </span>
       </aside>
 
       {insight.caveats.length > 0 ? (
