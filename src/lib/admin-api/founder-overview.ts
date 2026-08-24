@@ -1,3 +1,4 @@
+import { getAuditLog, type AuditLogEvent } from "@/src/lib/admin-api/audit-log";
 import { getKpiValues, type KpiValue } from "@/src/lib/admin-api/analytics-kpis";
 import { getCommerceOverview } from "@/src/lib/admin-api/commerce-overview";
 import {
@@ -9,7 +10,11 @@ import {
 import { getRelationshipOverview } from "@/src/lib/admin-api/relationship-overview";
 
 export type ExecutiveValueState =
-  "ready" | "partial" | "empty" | "unavailable" | "not_instrumented";
+  | "ready"
+  | "partial"
+  | "empty"
+  | "unavailable"
+  | "not_instrumented";
 
 export type ExecutiveMetric = {
   key: string;
@@ -40,6 +45,11 @@ export type ExecutiveAlertSource = {
   href: string | null;
 };
 
+export type ExecutiveActivity = Pick<
+  AuditLogEvent,
+  "id" | "action" | "resourceType" | "result" | "elevatedAccess" | "occurredAtUtc"
+>;
+
 export type ExecutiveShortcut = {
   label: string;
   href: string;
@@ -62,6 +72,17 @@ export type FounderOverviewData = {
     sources: ExecutiveAlertSource[];
     asOfUtc: string | null;
   } | null;
+  activity: {
+    state: ExecutiveValueState;
+    items: ExecutiveActivity[];
+    asOfUtc: string | null;
+  } | null;
+  services: {
+    state: "not_instrumented";
+    items: [];
+    asOfUtc: null;
+    reason: string;
+  };
   shortcuts: ExecutiveShortcut[];
 };
 
@@ -203,6 +224,9 @@ export async function getFounderOverview(
   const commercePromise = permissionSet.has("commerce.read")
     ? getCommerceOverview(new URLSearchParams({ page: "1", pageSize: "5" }))
     : Promise.resolve(null);
+  const activityPromise = permissionSet.has("security.audit.read")
+    ? getAuditLog({ limit: 5 })
+    : Promise.resolve(null);
 
   const requestedNotificationSources = (
     ["support", "security", "operations", "finance", "product"] as const
@@ -218,11 +242,12 @@ export async function getFounderOverview(
         )
       : Promise.resolve(null);
 
-  const [analytics, relationships, commerce, notifications] = await Promise.all([
+  const [analytics, relationships, commerce, notifications, audit] = await Promise.all([
     analyticsPromise,
     relationshipsPromise,
     commercePromise,
     notificationPromise,
+    activityPromise,
   ]);
 
   const metrics: ExecutiveMetric[] = [];
@@ -363,11 +388,39 @@ export async function getFounderOverview(
           }
       : null;
 
+  const activity = permissionSet.has("security.audit.read")
+    ? audit?.kind === "ok"
+      ? {
+          state: audit.data.events.length === 0 ? ("empty" as const) : ("ready" as const),
+          items: audit.data.events.slice(0, 5).map((event) => ({
+            id: event.id,
+            action: event.action,
+            resourceType: event.resourceType,
+            result: event.result,
+            elevatedAccess: event.elevatedAccess,
+            occurredAtUtc: event.occurredAtUtc,
+          })),
+          asOfUtc: audit.data.freshness?.asOfUtc ?? null,
+        }
+      : {
+          state: "unavailable" as const,
+          items: [],
+          asOfUtc: null,
+        }
+    : null;
+
   return {
     generatedAtUtc,
     metrics,
     products,
     alerts,
+    activity,
+    services: {
+      state: "not_instrumented",
+      items: [],
+      asOfUtc: null,
+      reason: "قرارداد canonical برای وضعیت سرویس‌ها در Founder Overview هنوز وجود ندارد.",
+    },
     shortcuts: buildShortcuts(permissionSet),
   };
 }
