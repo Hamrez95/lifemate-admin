@@ -1,0 +1,37 @@
+.pendingLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.spinner {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 13px;
+  contain: paint;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: support-spin 0.75s linear infinite;
+}
+
+.auditHint {
+  display: block;
+  color: var(--lm-text-muted);
+  font-size: 8px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+@keyframes support-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 1.8s;
+  }
+}

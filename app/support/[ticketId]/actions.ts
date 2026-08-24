@@ -53,32 +53,23 @@ export async function runSupportTicketAction(
   const action = text(formData, "action") as SupportTicketAction;
   const idempotencyKey = text(formData, "idempotencyKey");
 
-  if (!UUID_PATTERN.test(ticketId)) {
-    return { status: "invalid", message: "شناسه تیکت معتبر نیست." };
-  }
+  if (!UUID_PATTERN.test(ticketId)) return { status: "invalid", message: "شناسه تیکت معتبر نیست." };
   if (!["add_note", "set_status", "set_priority", "set_assignee"].includes(action)) {
     return { status: "invalid", message: "عملیات انتخاب‌شده معتبر نیست." };
   }
   const payload = payloadFor(action, formData);
-  if (!payload) {
-    return { status: "invalid", message: "مقدار واردشده برای این عملیات معتبر نیست." };
-  }
+  if (!payload) return { status: "invalid", message: "مقدار واردشده برای این عملیات معتبر نیست." };
 
-  const result = await performSupportTicketAction({
-    ticketId,
-    action,
-    payload,
-    idempotencyKey,
-  });
+  const result = await performSupportTicketAction({ ticketId, action, payload, idempotencyKey });
 
   if (result.kind === "ok") {
     revalidatePath(`/support/${ticketId}`);
     revalidatePath("/support");
     const messages: Record<SupportTicketAction, string> = {
       add_note: "یادداشت داخلی ثبت شد و رویداد audit بدون متن یادداشت ذخیره شد.",
-      set_status: "وضعیت تیکت با موفقیت تغییر کرد.",
-      set_priority: "اولویت تیکت با موفقیت تغییر کرد.",
-      set_assignee: "مسئول تیکت با موفقیت به‌روزرسانی شد.",
+      set_status: "وضعیت تیکت تغییر کرد و رویداد audit ثبت شد.",
+      set_priority: "اولویت تیکت تغییر کرد و رویداد audit ثبت شد.",
+      set_assignee: "مسئول تیکت به‌روزرسانی شد و رویداد audit ثبت شد.",
     };
     return { status: "success", message: messages[action] };
   }
@@ -96,7 +87,7 @@ export async function runSupportTicketAction(
       status: "conflict",
       message:
         result.code === "support_state_conflict"
-          ? "تیکت از قبل در همین وضعیت قرار دارد یا این گذار مجاز نیست. صفحه را تازه‌سازی کنید."
+          ? "این گذار با وضعیت فعلی تیکت سازگار نیست. صفحه را تازه‌سازی کنید."
           : (result.message ?? "عملیات با وضعیت فعلی تیکت تعارض دارد."),
     };
   }
@@ -109,7 +100,7 @@ export async function runSupportTicketAction(
   return {
     status: "unavailable",
     message: result.correlationId
-      ? `سرویس پشتیبانی فعلاً در دسترس نیست. کد پیگیری: ${result.correlationId}`
-      : "سرویس پشتیبانی فعلاً در دسترس نیست؛ دوباره تلاش کنید.",
+      ? `اتصال به Admin API برقرار نشد. کد پیگیری: ${result.correlationId}`
+      : "اتصال به Admin API برقرار نشد؛ دوباره تلاش کنید.",
   };
 }

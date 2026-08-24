@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -173,16 +174,8 @@ function SlaIndicator({ row }: { row: SupportTicketQueueItem }) {
 }
 
 const columns: readonly AdminTableColumn<SupportTicketQueueItem>[] = [
-  {
-    key: "ticket",
-    header: "تیکت",
-    render: (row) => <QueueIdentity row={row} />,
-  },
-  {
-    key: "requester",
-    header: "کاربر",
-    render: (row) => <Requester row={row} />,
-  },
+  { key: "ticket", header: "تیکت", render: (row) => <QueueIdentity row={row} /> },
+  { key: "requester", header: "کاربر", render: (row) => <Requester row={row} /> },
   {
     key: "product",
     header: "محصول",
@@ -211,11 +204,7 @@ const columns: readonly AdminTableColumn<SupportTicketQueueItem>[] = [
       </span>
     ),
   },
-  {
-    key: "sla",
-    header: "SLA",
-    render: (row) => <SlaIndicator row={row} />,
-  },
+  { key: "sla", header: "SLA", render: (row) => <SlaIndicator row={row} /> },
   {
     key: "assignee",
     header: "مسئول",
@@ -245,18 +234,28 @@ const columns: readonly AdminTableColumn<SupportTicketQueueItem>[] = [
 function SupportHero() {
   return (
     <section className="support-queue__hero" aria-labelledby="support-queue-title">
-      <div>
-        <span>LifeMate Care Operations</span>
-        <h2 id="support-queue-title">صف پشتیبانی، بدون شلوغی و افشای اضافه</h2>
+      <div className="support-queue__hero-copy">
+        <span>Support Command Center · Reference 7</span>
+        <h2 id="support-queue-title">صف پشتیبانی سریع، امن و قابل اولویت‌بندی</h2>
         <p>
-          اولویت، SLA و مسئول هر تیکت کنار هم دیده می‌شود؛ متن خام گفتگو، اطلاعات تماس و داده سلامت
-          وارد این نما نمی‌شوند.
+          SLA، اولویت و مسئول رسیدگی در یک نگاه؛ بدون نمایش متن خام گفتگو، اطلاعات تماس یا داده
+          سلامت.
         </p>
+        <div className="support-queue__hero-badges" aria-label="ویژگی‌های صف">
+          <span>Server paginated</span>
+          <span>Privacy minimized</span>
+          <span>SLA aware</span>
+        </div>
       </div>
-      <div className="support-queue__hero-badges" aria-label="ویژگی‌های صف">
-        <span>Server paginated</span>
-        <span>Privacy minimized</span>
-        <span>SLA aware</span>
+      <div className="support-queue__hero-art" aria-hidden="true">
+        <Image
+          src="/design-assets/support-hero-v1.png"
+          alt=""
+          width={1536}
+          height={1024}
+          sizes="(max-width: 680px) 42vw, (max-width: 1024px) 34vw, 360px"
+          priority
+        />
       </div>
     </section>
   );
@@ -370,7 +369,12 @@ async function SupportQueueContent({ query }: { query: SupportQuery }) {
     return (
       <AdminPageState
         state="unavailable"
-        description={result.correlationId ? `کد پیگیری: ${result.correlationId}` : undefined}
+        title="صف پشتیبانی در دسترس نیست"
+        description={
+          result.correlationId
+            ? `کد پیگیری: ${result.correlationId}`
+            : "اتصال به Admin API برقرار نشد."
+        }
       />
     );
   }

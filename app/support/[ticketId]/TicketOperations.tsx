@@ -5,6 +5,7 @@ import { useActionState, useMemo, useState } from "react";
 import type { SupportAssignee } from "@/src/lib/admin-api/support-ticket";
 
 import { initialSupportActionFormState, runSupportTicketAction } from "./actions";
+import feedbackStyles from "./operation-feedback.module.css";
 import styles from "./ticket-detail.module.css";
 
 type TicketOperationsProps = {
@@ -19,10 +20,7 @@ type TicketOperationsProps = {
 
 function useIdempotencyKey(seed: string) {
   const [key, setKey] = useState(seed);
-  return {
-    key,
-    rotate: () => setKey(crypto.randomUUID()),
-  };
+  return { key, rotate: () => setKey(crypto.randomUUID()) };
 }
 
 function Feedback({ state }: { state: typeof initialSupportActionFormState }) {
@@ -34,15 +32,25 @@ function Feedback({ state }: { state: typeof initialSupportActionFormState }) {
   );
 }
 
+function SubmitLabel({ pending, idle }: { pending: boolean; idle: string }) {
+  return pending ? (
+    <span className={feedbackStyles.pendingLabel}>
+      <span className={feedbackStyles.spinner} aria-hidden="true" />
+      در حال ارسال…
+    </span>
+  ) : (
+    idle
+  );
+}
+
 function NoteForm({ ticketId, seed }: { ticketId: string; seed: string }) {
   const [state, action, pending] = useActionState(
     runSupportTicketAction,
     initialSupportActionFormState,
   );
   const request = useIdempotencyKey(seed);
-
   return (
-    <form action={action} className={styles.operationCard}>
+    <form action={action} className={styles.operationCard} aria-busy={pending}>
       <input type="hidden" name="ticketId" value={ticketId} />
       <input type="hidden" name="action" value="add_note" />
       <input type="hidden" name="idempotencyKey" value={request.key} />
@@ -68,13 +76,12 @@ function NoteForm({ ticketId, seed }: { ticketId: string; seed: string }) {
           onChange={request.rotate}
         />
         <small>
-          متن یادداشت در Audit metadata کپی نمی‌شود؛ با این حال فقط اطلاعات حداقلی و غیرپزشکی ثبت
-          کنید.
+          متن یادداشت در Audit metadata کپی نمی‌شود؛ فقط اطلاعات حداقلی و غیرپزشکی ثبت کنید.
         </small>
       </label>
       <Feedback state={state} />
       <button className={styles.primaryButton} data-tone="violet" type="submit" disabled={pending}>
-        {pending ? "در حال ثبت امن…" : "ثبت یادداشت"}
+        <SubmitLabel pending={pending} idle="ثبت یادداشت" />
       </button>
     </form>
   );
@@ -95,7 +102,7 @@ function StatusForm({
   );
   const request = useIdempotencyKey(seed);
   return (
-    <form action={action} className={styles.operationCard}>
+    <form action={action} className={styles.operationCard} aria-busy={pending}>
       <input type="hidden" name="ticketId" value={ticketId} />
       <input type="hidden" name="action" value="set_status" />
       <input type="hidden" name="idempotencyKey" value={request.key} />
@@ -105,7 +112,7 @@ function StatusForm({
         </span>
         <div>
           <strong>وضعیت تیکت</strong>
-          <small>چرخه رسیدگی</small>
+          <small>چرخه رسیدگی audited</small>
         </div>
       </div>
       <label className={styles.field}>
@@ -118,9 +125,12 @@ function StatusForm({
           <option value="Closed">بسته</option>
         </select>
       </label>
+      <small className={feedbackStyles.auditHint}>
+        تغییر وضعیت فقط از Admin API انجام می‌شود و رویداد آن در Timeline/Audit ثبت می‌شود.
+      </small>
       <Feedback state={state} />
       <button className={styles.primaryButton} data-tone="green" type="submit" disabled={pending}>
-        {pending ? "در حال به‌روزرسانی…" : "تغییر وضعیت"}
+        <SubmitLabel pending={pending} idle="تغییر وضعیت" />
       </button>
     </form>
   );
@@ -141,7 +151,7 @@ function PriorityForm({
   );
   const request = useIdempotencyKey(seed);
   return (
-    <form action={action} className={styles.operationCard}>
+    <form action={action} className={styles.operationCard} aria-busy={pending}>
       <input type="hidden" name="ticketId" value={ticketId} />
       <input type="hidden" name="action" value="set_priority" />
       <input type="hidden" name="idempotencyKey" value={request.key} />
@@ -165,7 +175,7 @@ function PriorityForm({
       </label>
       <Feedback state={state} />
       <button className={styles.primaryButton} data-tone="orange" type="submit" disabled={pending}>
-        {pending ? "در حال به‌روزرسانی…" : "تغییر اولویت"}
+        <SubmitLabel pending={pending} idle="تغییر اولویت" />
       </button>
     </form>
   );
@@ -195,9 +205,8 @@ function AssigneeForm({
       })),
     [assignees],
   );
-
   return (
-    <form action={action} className={styles.operationCard}>
+    <form action={action} className={styles.operationCard} aria-busy={pending}>
       <input type="hidden" name="ticketId" value={ticketId} />
       <input type="hidden" name="action" value="set_assignee" />
       <input type="hidden" name="idempotencyKey" value={request.key} />
@@ -228,7 +237,7 @@ function AssigneeForm({
       </label>
       <Feedback state={state} />
       <button className={styles.primaryButton} data-tone="blue" type="submit" disabled={pending}>
-        {pending ? "در حال تخصیص…" : "به‌روزرسانی مسئول"}
+        <SubmitLabel pending={pending} idle="به‌روزرسانی مسئول" />
       </button>
     </form>
   );
@@ -262,7 +271,7 @@ export function TicketOperations({
         <div>
           <span>Audited actions</span>
           <h3 id="ticket-operations-title">عملیات تیکت</h3>
-          <p>هر تغییر idempotent، permission-checked و audit-ready است.</p>
+          <p>فقط عملیات پشتیبانی‌شده Admin API؛ idempotent، permission-checked و audit-ready.</p>
         </div>
       </header>
       <div className={styles.operationGrid}>
