@@ -30,14 +30,15 @@ describe("ADM-REL-001 Relationship Consent overview", () => {
     expect(page).toContain("relationships.read");
   });
 
-  it("uses shared server pagination and truthful page states", () => {
+  it("uses shared server pagination, truthful page states and the canonical ledger route", () => {
     const page = source("app/relationships/page.tsx");
 
     expect(page).toContain("AdminPagination");
     expect(page).toContain('state="forbidden"');
     expect(page).toContain('state="unavailable"');
     expect(page).toContain('state="empty"');
-    expect(page).toContain("Ledger کامل در ADM-REL-002");
+    expect(page).toContain('href="/relationships/ledger"');
+    expect(page).toContain("مشاهده Ledger کامل");
   });
 
   it("ships a polished responsive LifeMate trust visual language", () => {
