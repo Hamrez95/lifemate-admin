@@ -14,7 +14,7 @@ describe("Marketing references 12/13/23", () => {
     const calendarCss = source("app/marketing/content-calendar/calendar.module.css");
 
     for (const css of [studioCss, campaignsCss, calendarCss]) {
-      expect(css).toContain('/design-assets/marketing-hero-v1.png');
+      expect(css).toContain("/design-assets/marketing-hero-v1.png");
       expect(css).toContain("prefers-reduced-motion");
       expect(css).toContain(":focus-visible");
     }

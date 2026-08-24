@@ -16,8 +16,16 @@
   border: 1px solid color-mix(in srgb, var(--accent-mint) 28%, var(--border-subtle));
   border-radius: 28px;
   background:
-    radial-gradient(circle at 8% 6%, color-mix(in srgb, var(--accent-sky) 15%, transparent), transparent 32%),
-    radial-gradient(circle at 94% 94%, color-mix(in srgb, var(--accent-mint) 18%, transparent), transparent 35%),
+    radial-gradient(
+      circle at 8% 6%,
+      color-mix(in srgb, var(--accent-sky) 15%, transparent),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 94% 94%,
+      color-mix(in srgb, var(--accent-mint) 18%, transparent),
+      transparent 35%
+    ),
     linear-gradient(145deg, var(--surface-raised), var(--surface-soft));
   box-shadow: var(--shadow-card);
 }
@@ -146,7 +154,11 @@
 }
 
 .filterCard {
-  background: linear-gradient(180deg, var(--surface-raised), color-mix(in srgb, var(--surface-soft) 92%, var(--accent-mint)));
+  background: linear-gradient(
+    180deg,
+    var(--surface-raised),
+    color-mix(in srgb, var(--surface-soft) 92%, var(--accent-mint))
+  );
 }
 
 .filterForm {
@@ -433,8 +445,11 @@
   padding: 0.85rem;
   border: 1px solid var(--border-subtle);
   border-radius: 18px;
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--surface-soft) 94%, var(--accent-mint)), var(--surface-soft));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface-soft) 94%, var(--accent-mint)),
+    var(--surface-soft)
+  );
 }
 
 .dayHead {

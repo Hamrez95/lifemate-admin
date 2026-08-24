@@ -198,13 +198,18 @@ function Summary({ report }: { report: MarketingCampaignList }) {
 
 function AttributionUnavailable() {
   return (
-    <section className={styles.attributionUnavailable} aria-labelledby="attribution-unavailable-title">
+    <section
+      className={styles.attributionUnavailable}
+      aria-labelledby="attribution-unavailable-title"
+    >
       <div className={styles.unavailableIcon} aria-hidden="true">
         !
       </div>
       <div>
         <span className={styles.eyebrow}>Attribution · Unavailable</span>
-        <h3 id="attribution-unavailable-title">ROAS، CAC و conversion فقط با قرارداد canonical نمایش داده می‌شوند</h3>
+        <h3 id="attribution-unavailable-title">
+          ROAS، CAC و conversion فقط با قرارداد canonical نمایش داده می‌شوند
+        </h3>
         <p>
           قرارداد فعلی Campaigns فقط lifecycle و metadata عملیاتی کمپین را برمی‌گرداند. تا وقتی Core
           read-model معتبر برای spend، attribution، conversion و revenue نداشته باشد، این صفحه هیچ
