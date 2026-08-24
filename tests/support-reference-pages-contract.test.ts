@@ -9,8 +9,8 @@ describe("Support references 7 / 8", () => {
   it("uses the support hero asset through next/image", () => {
     const page = source("app/support/page.tsx");
     expect(page).toContain('import Image from "next/image"');
-    expect(page).toContain('/design-assets/support-hero-v1.png');
-    expect(page).toContain('sizes=');
+    expect(page).toContain("/design-assets/support-hero-v1.png");
+    expect(page).toContain("sizes=");
   });
 
   it("only exposes canonical supported ticket actions", () => {

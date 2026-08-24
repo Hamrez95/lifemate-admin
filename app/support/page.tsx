@@ -215,7 +215,11 @@ const columns: readonly AdminTableColumn<SupportTicketQueueItem>[] = [
       </div>
     ),
   },
-  { key: "activity", header: "آخرین فعالیت", render: (row) => formatDateTime(row.lastActivityAtUtc) },
+  {
+    key: "activity",
+    header: "آخرین فعالیت",
+    render: (row) => formatDateTime(row.lastActivityAtUtc),
+  },
   {
     key: "detail",
     header: "جزئیات",
@@ -234,7 +238,8 @@ function SupportHero() {
         <span>Support Command Center · Reference 7</span>
         <h2 id="support-queue-title">صف پشتیبانی سریع، امن و قابل اولویت‌بندی</h2>
         <p>
-          SLA، اولویت و مسئول رسیدگی در یک نگاه؛ بدون نمایش متن خام گفتگو، اطلاعات تماس یا داده سلامت.
+          SLA، اولویت و مسئول رسیدگی در یک نگاه؛ بدون نمایش متن خام گفتگو، اطلاعات تماس یا داده
+          سلامت.
         </p>
         <div className="support-queue__hero-badges" aria-label="ویژگی‌های صف">
           <span>Server paginated</span>
@@ -262,42 +267,85 @@ function SupportFilterBar({ query }: { query: SupportQuery }) {
       <input type="hidden" name="page" value="1" />
       <div className="admin-list-filter admin-list-filter--search">
         <label htmlFor="support-search">جست‌وجو</label>
-        <input id="support-search" name="q" type="search" minLength={2} maxLength={120} defaultValue={query.table.search ?? ""} placeholder="شماره تیکت، نام یا خلاصه امن" autoComplete="off" />
+        <input
+          id="support-search"
+          name="q"
+          type="search"
+          minLength={2}
+          maxLength={120}
+          defaultValue={query.table.search ?? ""}
+          placeholder="شماره تیکت، نام یا خلاصه امن"
+          autoComplete="off"
+        />
       </div>
       <div className="admin-list-filter">
         <label htmlFor="support-status">وضعیت</label>
-        <select id="support-status" name="filter.status" defaultValue={filterValue(query, "status") ?? ""}>
-          <option value="">همه</option><option value="Open">باز</option><option value="Pending">در انتظار بررسی</option><option value="WaitingOnUser">منتظر کاربر</option><option value="Resolved">حل‌شده</option><option value="Closed">بسته</option>
+        <select
+          id="support-status"
+          name="filter.status"
+          defaultValue={filterValue(query, "status") ?? ""}
+        >
+          <option value="">همه</option>
+          <option value="Open">باز</option>
+          <option value="Pending">در انتظار بررسی</option>
+          <option value="WaitingOnUser">منتظر کاربر</option>
+          <option value="Resolved">حل‌شده</option>
+          <option value="Closed">بسته</option>
         </select>
       </div>
       <div className="admin-list-filter">
         <label htmlFor="support-priority">اولویت</label>
-        <select id="support-priority" name="filter.priority" defaultValue={filterValue(query, "priority") ?? ""}>
-          <option value="">همه</option><option value="Urgent">فوری</option><option value="High">بالا</option><option value="Normal">عادی</option><option value="Low">پایین</option>
+        <select
+          id="support-priority"
+          name="filter.priority"
+          defaultValue={filterValue(query, "priority") ?? ""}
+        >
+          <option value="">همه</option>
+          <option value="Urgent">فوری</option>
+          <option value="High">بالا</option>
+          <option value="Normal">عادی</option>
+          <option value="Low">پایین</option>
         </select>
       </div>
       <div className="admin-list-filter">
         <label htmlFor="support-sla">SLA</label>
         <select id="support-sla" name="filter.sla" defaultValue={filterValue(query, "sla") ?? ""}>
-          <option value="">همه</option><option value="Breached">نقض‌شده</option><option value="DueSoon">نزدیک سررسید</option><option value="OnTrack">در مسیر</option><option value="Completed">تکمیل‌شده</option>
+          <option value="">همه</option>
+          <option value="Breached">نقض‌شده</option>
+          <option value="DueSoon">نزدیک سررسید</option>
+          <option value="OnTrack">در مسیر</option>
+          <option value="Completed">تکمیل‌شده</option>
         </select>
       </div>
       <div className="admin-list-filter">
         <label htmlFor="support-product">محصول</label>
-        <select id="support-product" name="filter.product" defaultValue={filterValue(query, "product") ?? ""}>
-          <option value="">همه</option><option value="wellmate">WellMate</option><option value="caremate">CareMate</option>
+        <select
+          id="support-product"
+          name="filter.product"
+          defaultValue={filterValue(query, "product") ?? ""}
+        >
+          <option value="">همه</option>
+          <option value="wellmate">WellMate</option>
+          <option value="caremate">CareMate</option>
         </select>
       </div>
       <div className="admin-list-filter">
         <label htmlFor="support-assignee">مسئول</label>
-        <select id="support-assignee" name="filter.assignee" defaultValue={filterValue(query, "assignee") ?? ""}>
-          <option value="">همه</option><option value="unassigned">فقط تخصیص‌نیافته</option>
+        <select
+          id="support-assignee"
+          name="filter.assignee"
+          defaultValue={filterValue(query, "assignee") ?? ""}
+        >
+          <option value="">همه</option>
+          <option value="unassigned">فقط تخصیص‌نیافته</option>
         </select>
       </div>
       <div className="admin-list-filter admin-list-filter--compact">
         <label htmlFor="support-page-size">تعداد در صفحه</label>
         <select id="support-page-size" name="pageSize" defaultValue={String(query.table.pageSize)}>
-          <option value="25">۲۵</option><option value="50">۵۰</option><option value="100">۱۰۰</option>
+          <option value="25">۲۵</option>
+          <option value="50">۵۰</option>
+          <option value="100">۱۰۰</option>
         </select>
       </div>
     </AdminTableFilterBar>
@@ -309,15 +357,32 @@ async function SupportQueueContent({ query }: { query: SupportQuery }) {
   if (result.kind === "unauthenticated") redirect("/login");
   if (result.kind === "forbidden") return <AdminPageState state="forbidden" />;
   if (result.kind === "invalid") {
-    return <AdminPageState state="error" title="فیلتر صف پشتیبانی معتبر نیست" description="جست‌وجو باید حداقل دو نویسه داشته باشد و فیلترها از مقادیر مجاز انتخاب شوند." />;
+    return (
+      <AdminPageState
+        state="error"
+        title="فیلتر صف پشتیبانی معتبر نیست"
+        description="جست‌وجو باید حداقل دو نویسه داشته باشد و فیلترها از مقادیر مجاز انتخاب شوند."
+      />
+    );
   }
   if (result.kind === "unavailable") {
-    return <AdminPageState state="unavailable" title="صف پشتیبانی در دسترس نیست" description={result.correlationId ? `کد پیگیری: ${result.correlationId}` : "اتصال به Admin API برقرار نشد."} />;
+    return (
+      <AdminPageState
+        state="unavailable"
+        title="صف پشتیبانی در دسترس نیست"
+        description={
+          result.correlationId
+            ? `کد پیگیری: ${result.correlationId}`
+            : "اتصال به Admin API برقرار نشد."
+        }
+      />
+    );
   }
 
   const { data } = result;
   const previousHref = data.page > 1 ? pageHref(query, data.page - 1) : undefined;
-  const nextHref = data.page * data.pageSize < data.total ? pageHref(query, data.page + 1) : undefined;
+  const nextHref =
+    data.page * data.pageSize < data.total ? pageHref(query, data.page + 1) : undefined;
 
   return (
     <AdminDataTable
@@ -327,8 +392,17 @@ async function SupportQueueContent({ query }: { query: SupportQuery }) {
       columns={columns}
       rowKey={(row) => row.ticketId}
       total={data.total}
-      freshness={{ status: data.freshness.status, label: `آخرین دریافت: ${formatDateTime(data.freshness.asOfUtc)}` }}
-      pagination={{ page: data.page, pageSize: data.pageSize, total: data.total, previousHref, nextHref }}
+      freshness={{
+        status: data.freshness.status,
+        label: `آخرین دریافت: ${formatDateTime(data.freshness.asOfUtc)}`,
+      }}
+      pagination={{
+        page: data.page,
+        pageSize: data.pageSize,
+        total: data.total,
+        previousHref,
+        nextHref,
+      }}
     />
   );
 }
@@ -340,14 +414,20 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
 
   return (
     <AdminSessionProvider admin={admin}>
-      <AdminShell activeSlug="support" title="پشتیبانی" subtitle="صف عملیاتی تیکت‌ها با اولویت، SLA و حداقل داده لازم">
+      <AdminShell
+        activeSlug="support"
+        title="پشتیبانی"
+        subtitle="صف عملیاتی تیکت‌ها با اولویت، SLA و حداقل داده لازم"
+      >
         <div className="support-queue">
           <SupportHero />
           <SupportFilterBar query={query} />
           {!canReadSupport ? (
             <AdminPageState state="forbidden" />
           ) : (
-            <Suspense fallback={<AdminPageState state="loading" title="در حال دریافت صف پشتیبانی" />}>
+            <Suspense
+              fallback={<AdminPageState state="loading" title="در حال دریافت صف پشتیبانی" />}
+            >
               <SupportQueueContent query={query} />
             </Suspense>
           )}
