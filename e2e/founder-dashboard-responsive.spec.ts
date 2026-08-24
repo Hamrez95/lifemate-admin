@@ -2,7 +2,9 @@ import { expect, test } from "@playwright/test";
 
 import { signInWithMfa } from "./helpers/sign-in";
 
-test("Founder dashboard stays concise and touch-friendly without viewport overflow", async ({ page }) => {
+test("Founder dashboard stays concise and touch-friendly without viewport overflow", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await signInWithMfa(page);
   await page.goto("/");
@@ -19,7 +21,9 @@ test("Founder dashboard stays concise and touch-friendly without viewport overfl
   );
   expect(overflow).toBe(false);
 
-  const shortcuts = page.getByRole("navigation", { name: "مسیرهای سریع مرکز فرماندهی" }).getByRole("link");
+  const shortcuts = page
+    .getByRole("navigation", { name: "مسیرهای سریع مرکز فرماندهی" })
+    .getByRole("link");
   if ((await shortcuts.count()) > 0) {
     const first = shortcuts.first();
     const box = await first.boundingBox();
