@@ -55,17 +55,20 @@ describe("ADM-SUP-001 Support Ticket Queue", () => {
     expect(page).toContain("خلاصه بازبینی‌شده");
     expect(page).toContain("خلاصه‌ها فقط در صورت redacted بودن نمایش داده می‌شوند");
     expect(page).toContain("href={`/support/${row.ticketId}`}");
-    expect(page).toContain("متن خام گفتگو، اطلاعات تماس و داده سلامت");
+    expect(page).toContain("بدون نمایش متن خام گفتگو، اطلاعات تماس یا داده");
+    expect(page).toContain("سلامت.");
   });
 
   it("keeps the visual layer responsive, keyboard visible and motion-aware", () => {
     const css = source("app/support/support.css");
+    const feedbackCss = source("app/support/[ticketId]/operation-feedback.module.css");
 
     expect(css).toContain("var(--lm-green-deep)");
-    expect(css).toContain("var(--lm-orange)");
+    expect(css).toContain("var(--lm-orange-soft)");
     expect(css).toContain("var(--lm-violet)");
     expect(css).toContain(":focus-visible");
-    expect(css).toContain("max-width: 680px");
-    expect(css).toContain("prefers-reduced-motion");
+    expect(css).toContain("max-width: 768px");
+    expect(css).toContain("max-width: 390px");
+    expect(feedbackCss).toContain("prefers-reduced-motion");
   });
 });
