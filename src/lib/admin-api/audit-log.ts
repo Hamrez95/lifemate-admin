@@ -35,7 +35,9 @@ function normalizedDate(value: string | null | undefined, boundary: "start" | "e
 
 export async function getAuditLog(query: AuditLogQuery = {}): Promise<AuditLogResult> {
   const boundedLimit = Math.min(100, Math.max(1, Math.trunc(query.limit ?? 50)));
-  const timeoutMs = Math.min(10_000, Math.max(500, Math.trunc(query.timeoutMs ?? 3_000)));
+  const customTimeoutMs = query.timeoutMs
+    ? Math.min(10_000, Math.max(500, Math.trunc(query.timeoutMs)))
+    : null;
   const supabase = await createServerSupabaseClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   if (claimsError || !claimsData?.claims?.sub) return { kind: "unauthenticated" };
@@ -59,7 +61,9 @@ export async function getAuditLog(query: AuditLogQuery = {}): Promise<AuditLogRe
     response = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
-      signal: AbortSignal.timeout(timeoutMs),
+      signal: customTimeoutMs
+        ? AbortSignal.timeout(customTimeoutMs)
+        : AbortSignal.timeout(3_000),
     });
   } catch {
     return { kind: "unavailable" };
