@@ -342,7 +342,9 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
           <section className="user-directory__intro" aria-labelledby="user-directory-intro-title">
             <div className="user-directory__intro-copy">
               <span className="user-directory__eyebrow">Users · Privacy by default</span>
-              <h2 id="user-directory-intro-title">کاربر را پیدا کن، بدون بازکردن داده‌ای که لازم نیست.</h2>
+              <h2 id="user-directory-intro-title">
+                کاربر را پیدا کن، بدون بازکردن داده‌ای که لازم نیست.
+              </h2>
               <p>
                 این workspace فقط read model پایه کاربران را از Admin API می‌خواند. هیچ جست‌وجوی
                 مستقیم روی Supabase، اطلاعات تماس خام یا داده سلامت انجام نمی‌شود.
@@ -367,8 +369,8 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
           <aside className="user-directory__privacy-note" aria-label="سیاست حداقل‌سازی داده">
             <strong>نمایش پیش‌فرض حداقلی است.</strong>
             <span>
-              فقط شناسه حساب، نام نمایشیِ مجاز، وضعیت و عضویت محصول نمایش داده می‌شود؛ این صفحه
-              مسیر میان‌بر برای داده حساس ندارد.
+              فقط شناسه حساب، نام نمایشیِ مجاز، وضعیت و عضویت محصول نمایش داده می‌شود؛ این صفحه مسیر
+              میان‌بر برای داده حساس ندارد.
             </span>
           </aside>
 
