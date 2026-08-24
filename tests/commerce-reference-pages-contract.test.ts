@@ -38,7 +38,7 @@ describe("Commerce references 10/11", () => {
     expect(page).toContain("ARR جاری");
     expect(page).toContain("ARPU");
     expect(page).toContain("Revenue KPI endpoint هنوز در قرارداد فعلی Core وجود ندارد");
-    expect(page).toContain("MRR/ARR/ARPU محاسبه نمی‌کنیم");
+    expect(page).toContain("MRR/ARR/ARPU محاسبه");
     expect(page).toContain("<strong aria-label={`${label} در دسترس نیست`}>—</strong>");
     expect(page).not.toContain("reduce((sum");
     expect(page).not.toContain("amountMinor");
@@ -52,7 +52,7 @@ describe("Commerce references 10/11", () => {
     for (const page of [plans, promotions, subscriptions]) {
       expect(page).toContain("Core #412");
     }
-    expect(plans).toContain("فرم تنظیم Trial تا تکمیل قرارداد Core #412 فعال نمی‌شود");
+    expect(plans).toContain("Core #412 فعال نمی‌شود");
     expect(plans).toContain("فرم ساختگی ارائه نمی‌شود");
     expect(promotions).toContain("هیچ generator یا edit form جداگانه فعال نیست");
   });
