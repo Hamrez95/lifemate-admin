@@ -36,7 +36,9 @@ test("AI Advisor keeps the reference hero visible while authorization stays fail
   await signInWithMfa(page);
   await page.goto("/ai");
 
-  await expect(page.getByRole("heading", { name: /از داده تأییدشده سؤال مدیریتی بپرس/ })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /از داده تأییدشده سؤال مدیریتی بپرس/ }),
+  ).toBeVisible();
   await expect(page.getByAltText(/مشاور هوشمند LifeMate/)).toBeVisible();
   await expect(page.getByText("دسترسی مشاور فعال نیست")).toBeVisible();
   await expectNoViewportOverflow(page);
