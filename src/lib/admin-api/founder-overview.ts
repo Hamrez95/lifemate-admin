@@ -10,11 +10,7 @@ import {
 import { getRelationshipOverview } from "@/src/lib/admin-api/relationship-overview";
 
 export type ExecutiveValueState =
-  | "ready"
-  | "partial"
-  | "empty"
-  | "unavailable"
-  | "not_instrumented";
+  "ready" | "partial" | "empty" | "unavailable" | "not_instrumented";
 
 export type ExecutiveMetric = {
   key: string;
