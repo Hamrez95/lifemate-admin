@@ -65,9 +65,6 @@ jobs:
       - name: Build QA artifact
         run: npm run build
 
-      - name: Format analytics sources for handoff
-        run: npm run format
-
       - name: Upload QA artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -75,13 +72,6 @@ jobs:
           path: |
             .next
             !.next/cache
-            app/analytics/page.tsx
-            app/analytics/analytics-reference.module.css
-            app/analytics/funnel/page.tsx
-            app/analytics/funnel/funnel.module.css
-            app/analytics/cohorts/page.tsx
-            app/analytics/cohorts/cohorts-reference.module.css
-            tests/analytics-reference-pages-contract.test.ts
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 3
