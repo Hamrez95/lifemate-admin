@@ -11,7 +11,9 @@ export default function FinanceError({ error, reset }: FinanceErrorProps) {
   return (
     <div className={styles.page}>
       <section className={styles.stateBanner} role="alert">
-        <span className={styles.stateIcon} aria-hidden="true">!</span>
+        <span className={styles.stateIcon} aria-hidden="true">
+          !
+        </span>
         <div>
           <strong>گزارش مالی بارگذاری نشد.</strong>
           <p>
@@ -20,7 +22,9 @@ export default function FinanceError({ error, reset }: FinanceErrorProps) {
           </p>
           {error.digest ? <p>شناسه رخداد: {error.digest}</p> : null}
           <div className={styles.filterActions}>
-            <button type="button" onClick={reset}>تلاش دوباره</button>
+            <button type="button" onClick={reset}>
+              تلاش دوباره
+            </button>
           </div>
         </div>
       </section>

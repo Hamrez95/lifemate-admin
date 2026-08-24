@@ -19,7 +19,10 @@ export default async function FinanceScenarioPage() {
         subtitle="Scenario planning فقط پس از قرارداد canonical و endpoint معتبر"
       >
         <div className={styles.page}>
-          <section className={`${styles.hero} ${styles.financeHero}`} aria-labelledby="scenario-title">
+          <section
+            className={`${styles.hero} ${styles.financeHero}`}
+            aria-labelledby="scenario-title"
+          >
             <div className={styles.heroCopy}>
               <p className="eyebrow">ADM-FIN-003 · Scenario planning</p>
               <h2 id="scenario-title">سناریوهای مالی</h2>
@@ -37,7 +40,9 @@ export default async function FinanceScenarioPage() {
           </section>
 
           <section className={styles.stateBanner} role="status" aria-live="polite">
-            <span className={styles.stateIcon} aria-hidden="true">!</span>
+            <span className={styles.stateIcon} aria-hidden="true">
+              !
+            </span>
             <div>
               <strong>Scenario API · Unavailable</strong>
               <p>
@@ -78,10 +83,21 @@ export default async function FinanceScenarioPage() {
               <span className={styles.unavailable}>Unavailable</span>
             </header>
             <div className={styles.contractChecklist}>
-              <p><strong>Read model:</strong> قرارداد canonical سناریو لازم است.</p>
-              <p><strong>Write endpoint:</strong> endpoint معتبر با permission، reason، audit و idempotency لازم است.</p>
-              <p><strong>Currency:</strong> currency و minor-unit exponent باید از Core بیاید؛ FX حدس زده نمی‌شود.</p>
-              <p><strong>Timezone:</strong> timestampهای مالی در UI با Asia/Tehran نمایش داده می‌شوند و source UTC حفظ می‌شود.</p>
+              <p>
+                <strong>Read model:</strong> قرارداد canonical سناریو لازم است.
+              </p>
+              <p>
+                <strong>Write endpoint:</strong> endpoint معتبر با permission، reason، audit و
+                idempotency لازم است.
+              </p>
+              <p>
+                <strong>Currency:</strong> currency و minor-unit exponent باید از Core بیاید؛ FX حدس
+                زده نمی‌شود.
+              </p>
+              <p>
+                <strong>Timezone:</strong> timestampهای مالی در UI با Asia/Tehran نمایش داده می‌شوند
+                و source UTC حفظ می‌شود.
+              </p>
             </div>
             <button className={styles.disabledAction} type="button" disabled>
               ذخیره سناریو — در دسترس نیست
@@ -90,7 +106,9 @@ export default async function FinanceScenarioPage() {
 
           <section className={styles.exportUnavailable} aria-label="وضعیت خروجی سناریو">
             <strong>Export · Unavailable</strong>
-            <p>برای Scenario قرارداد export وجود ندارد؛ فایل client-side از داده ناقص ساخته نمی‌شود.</p>
+            <p>
+              برای Scenario قرارداد export وجود ندارد؛ فایل client-side از داده ناقص ساخته نمی‌شود.
+            </p>
           </section>
         </div>
       </AdminShell>

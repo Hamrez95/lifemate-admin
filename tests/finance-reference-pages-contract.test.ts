@@ -10,7 +10,7 @@ function source(path: string): string {
 describe("Finance references 14-16", () => {
   it("uses the approved finance hero and keeps RTL responsive safeguards", () => {
     const css = source("app/finance/finance.module.css");
-    expect(css).toContain('/design-assets/finance-hero-v1.png');
+    expect(css).toContain("/design-assets/finance-hero-v1.png");
     expect(css).toContain("direction: rtl");
     expect(css).toContain("overflow-wrap: anywhere");
     expect(css).toContain("overflow-x: auto");
