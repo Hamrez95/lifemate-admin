@@ -29,7 +29,9 @@ export default async function AiDailyBriefPage() {
           <header className={styles.hero}>
             <div className={styles.heroCopy}>
               <p className={styles.eyebrow}>Executive Daily Brief · Safe by default</p>
-              <h2>صبح را با یک تصویر کوتاه از کسب‌وکار شروع کنید؛ فقط وقتی Core آن را تأیید کرده باشد.</h2>
+              <h2>
+                صبح را با یک تصویر کوتاه از کسب‌وکار شروع کنید؛ فقط وقتی Core آن را تأیید کرده باشد.
+              </h2>
               <p>
                 چیدمان از مرجع صفحه ۲ گرفته شده است: تغییرات کلیدی، موارد نیازمند توجه و اقدام‌های
                 پیشنهادی. تا زمانی که قرارداد canonical مخصوص Daily Brief وجود نداشته باشد، هیچ
@@ -93,16 +95,21 @@ export default async function AiDailyBriefPage() {
                 </div>
               </section>
 
-              <section className={styles.unavailablePanel} aria-labelledby="brief-unavailable-title">
+              <section
+                className={styles.unavailablePanel}
+                aria-labelledby="brief-unavailable-title"
+              >
                 <span className={styles.unavailableIcon} aria-hidden="true">
                   ✦
                 </span>
                 <div>
                   <p className={styles.eyebrow}>Core contract</p>
-                  <h3 id="brief-unavailable-title">این قابلیت هنوز به قرارداد Core متصل نشده است</h3>
+                  <h3 id="brief-unavailable-title">
+                    این قابلیت هنوز به قرارداد Core متصل نشده است
+                  </h3>
                   <p>
-                    به‌محض تعریف endpoint canonical برای Daily Brief، همین صفحه فقط داده تأییدشده
-                    را نمایش خواهد داد. فعلاً هیچ summary جایگزین یا داده حساس نشان داده نمی‌شود.
+                    به‌محض تعریف endpoint canonical برای Daily Brief، همین صفحه فقط داده تأییدشده را
+                    نمایش خواهد داد. فعلاً هیچ summary جایگزین یا داده حساس نشان داده نمی‌شود.
                   </p>
                 </div>
               </section>
