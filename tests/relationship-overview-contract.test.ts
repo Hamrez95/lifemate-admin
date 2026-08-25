@@ -30,6 +30,17 @@ describe("ADM-REL-001 Relationship Consent overview", () => {
     expect(page).toContain("relationships.read");
   });
 
+  it("accepts canonical care-role relationship labels without hard-coding family types", () => {
+    const client = source("src/lib/admin-api/relationship-overview.ts");
+    const page = source("app/relationships/page.tsx");
+
+    expect(client).toContain('(item.type === null || typeof item.type === "string")');
+    expect(page).toContain('return item.type ?? "Relationship"');
+    expect(page).not.toContain('item.type === "Parent"');
+    expect(page).not.toContain('item.type === "Spouse"');
+    expect(page).not.toContain('item.type === "Caregiver"');
+  });
+
   it("uses shared server pagination, truthful page states and the canonical ledger route", () => {
     const page = source("app/relationships/page.tsx");
 
