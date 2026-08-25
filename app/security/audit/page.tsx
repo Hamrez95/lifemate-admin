@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -90,14 +91,22 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
       >
         <div className={styles.page}>
           <section className={styles.hero} aria-labelledby="audit-title">
-            <div>
-              <p className="eyebrow">ADM-SEC-003 · READ ONLY</p>
+            <div className={styles.heroCopy}>
+              <p className="eyebrow">AUDIT · ADM-SEC-003 · READ ONLY</p>
               <h2 id="audit-title">Audit Log Explorer</h2>
               <p>
-                رویدادهای ثبت‌شده در منبع canonical را بدون دسترسی مستقیم مرورگر به دیتابیس نمایش
-                می‌دهد. payload خام، metadata محرمانه و secret در این نما نمایش داده نمی‌شود.
+                رویدادهای immutable و محدودشده‌ی قرارداد canonical؛ بدون payload خام، metadata
+                محرمانه، secret یا دسترسی مستقیم مرورگر به دیتابیس.
               </p>
             </div>
+            <Image
+              className={styles.heroImage}
+              src="/design-assets/security-audit-hero-v1.png"
+              alt="تصویر مفهومی امنیت و ممیزی LifeMate"
+              width={1536}
+              height={1024}
+              sizes="(max-width: 760px) 160px, 200px"
+            />
             <div className={styles.heroActions}>
               <span className={styles.readOnlyPill}>فقط مشاهده</span>
               <Link href="/security">بازگشت به RBAC</Link>

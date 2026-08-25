@@ -580,3 +580,39 @@
     scroll-behavior: auto !important;
   }
 }
+
+.heroCopy {
+  min-width: 0;
+  flex: 1 1 420px;
+}
+.heroImage {
+  width: 220px;
+  height: auto;
+  max-height: 150px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+.securityNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+.securityNav a {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid #cfe3d8;
+  border-radius: 999px;
+  background: #f3faf6;
+  color: #285f4b;
+  text-decoration: none;
+  font-weight: 800;
+}
+@media (max-width: 820px) {
+  .heroImage {
+    width: 180px;
+    align-self: center;
+  }
+}

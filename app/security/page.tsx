@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -156,15 +157,29 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
       >
         <div className={styles.page}>
           <section className={styles.hero} aria-labelledby="rbac-title">
-            <div>
-              <p className="eyebrow">ADM-SEC-001 · READ ONLY</p>
-              <h2 id="rbac-title">ماتریس نقش و مجوز</h2>
+            <div className={styles.heroCopy}>
+              <p className="eyebrow">SECURITY / PRIVACY · ADM-SEC-001</p>
+              <h2 id="rbac-title">امنیت، حریم خصوصی و نقش‌ها</h2>
               <p>
-                نمای canonical از نقش‌ها، permissionهای قابل‌اعطا و مرز دسترسی‌های ویژه. این صفحه
-                assignment را تغییر نمی‌دهد و هیچ دسترسی سلامت ویژه‌ای را به نقش معمولی تبدیل
-                نمی‌کند.
+                نمای canonical از Role × Permission و مرزهای دسترسی حساس. default-deny، AAL2 و
+                Break-glass خارج از این UI enforce می‌شوند و این صفحه هیچ permission فرضی نمی‌سازد.
               </p>
+              <nav className={styles.securityNav} aria-label="بخش‌های امنیت">
+                <Link href="/security" aria-current="page">
+                  Roles & Permissions
+                </Link>
+                <Link href="/security/audit">Audit Log</Link>
+              </nav>
             </div>
+            <Image
+              className={styles.heroImage}
+              src="/design-assets/security-audit-hero-v1.png"
+              alt="تصویر مفهومی امنیت و ممیزی LifeMate"
+              width={1536}
+              height={1024}
+              sizes="(max-width: 820px) 180px, 220px"
+              priority
+            />
             <div className={styles.sourceCard} aria-label="منبع و تازگی RBAC">
               <span>Canonical source</span>
               <strong>{report?.source.label ?? "—"}</strong>

@@ -84,7 +84,10 @@ export function StaffMembershipControls(props: Props) {
   if (!props.canManage) return <span className={styles.locked}>فقط مشاهده</span>;
   if (privilegedRole)
     return (
-      <span className={styles.locked} title="Founder و Super Admin از مسیر Staff management تغییر نمی‌کنند.">
+      <span
+        className={styles.locked}
+        title="Founder و Super Admin از مسیر Staff management تغییر نمی‌کنند."
+      >
         نقش محافظت‌شده
       </span>
     );

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
@@ -95,14 +96,22 @@ export default async function RoleDetailPage({ params }: RoleDetailPageProps) {
           </nav>
 
           <section className={styles.hero} aria-labelledby="role-detail-title">
-            <div>
-              <p className="eyebrow">ADM-SEC-002 · READ ONLY</p>
+            <div className={styles.heroCopy}>
+              <p className="eyebrow">ROLES / PERMISSIONS · ADM-SEC-002</p>
               <h2 id="role-detail-title">{report?.role.displayName ?? "جزئیات نقش"}</h2>
               <p>
                 نمای audit-friendly از permissionهای مستقیم، membership window و permissionهای مؤثر.
                 این صفحه امکان افزودن نقش، تغییر membership یا ارتقای دسترسی ندارد.
               </p>
             </div>
+            <Image
+              className={styles.heroImage}
+              src="/design-assets/security-audit-hero-v1.png"
+              alt="تصویر مفهومی کنترل دسترسی LifeMate"
+              width={1536}
+              height={1024}
+              sizes="(max-width: 760px) 150px, 190px"
+            />
             <div className={styles.sourceCard} aria-label="منبع و تازگی جزئیات نقش">
               <span>Canonical source</span>
               <strong>{report?.source.label ?? "—"}</strong>

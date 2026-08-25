@@ -266,3 +266,21 @@
     flex-direction: column;
   }
 }
+
+.heroCopy {
+  min-width: 0;
+  flex: 1 1 420px;
+}
+.heroImage {
+  width: 200px;
+  height: auto;
+  max-height: 140px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+@media (max-width: 760px) {
+  .heroImage {
+    width: 160px;
+    align-self: center;
+  }
+}
