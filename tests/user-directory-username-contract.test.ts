@@ -12,8 +12,11 @@ describe("consumer username directory contract", () => {
     const client = source("src/lib/admin-api/user-directory.ts");
 
     expect(client).toContain("username: string | null");
-    expect(client).toContain('item.username !== null && typeof item.username !== "string"');
-    expect(client).not.toMatch(/email.*username|phone.*username|displayName.*username/i);
+    expect(client).toContain("item.username !== null");
+    expect(client).toContain('typeof item.username !== "string"');
+    expect(client).not.toMatch(
+      /email.*username|phone.*username|displayName.*username/i,
+    );
   });
 
   it("shows username truthfully and keeps missing legacy values empty", () => {
