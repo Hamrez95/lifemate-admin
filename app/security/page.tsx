@@ -152,18 +152,22 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
       <AdminShell
         activeSlug="security"
         title="امنیت"
-        subtitle="Role × Permission Matrix و مرز دسترسی‌های حساس Command Center"
+        subtitle="مرکز امنیت، نقش‌ها، ممیزی و مرز دسترسی‌های حساس"
       >
         <div className={styles.page}>
-          <section className={styles.hero} aria-labelledby="rbac-title">
+          <section className={styles.hero} aria-labelledby="security-title">
             <div>
-              <p className="eyebrow">ADM-SEC-001 · READ ONLY</p>
-              <h2 id="rbac-title">ماتریس نقش و مجوز</h2>
+              <p className="eyebrow">ADM-SEC · References 18–20</p>
+              <h2 id="security-title">مرکز امنیت LifeMate</h2>
               <p>
-                نمای canonical از نقش‌ها، permissionهای قابل‌اعطا و مرز دسترسی‌های ویژه. این صفحه
-                assignment را تغییر نمی‌دهد و هیچ دسترسی سلامت ویژه‌ای را به نقش معمولی تبدیل
+                وضعیت نقش‌ها، permissionها و ممیزی فقط از قرارداد canonical نمایش داده می‌شود. این
+                workspace هیچ دسترسی خام سلامت، bypass بنیان‌گذار یا کنترل break-glass جعلی ایجاد
                 نمی‌کند.
               </p>
+              <div className={styles.heroLinks} aria-label="مسیرهای امنیتی">
+                <Link href="/security/audit">Audit Log Explorer</Link>
+                <span aria-disabled="true">Break-glass هنوز متصل نیست</span>
+              </div>
             </div>
             <div className={styles.sourceCard} aria-label="منبع و تازگی RBAC">
               <span>Canonical source</span>
@@ -196,6 +200,21 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
                 {elevatedCount === null ? "—" : elevatedCount.toLocaleString("fa-IR")}
               </strong>
               <small>roleAssignable=false</small>
+            </article>
+          </section>
+
+          <section className={styles.securityStrip} aria-label="مرزهای امنیتی">
+            <article>
+              <strong>RBAC سروری</strong>
+              <span>نمایش منو جایگزین authorization نیست.</span>
+            </article>
+            <article>
+              <strong>AAL2 برای عملیات حساس</strong>
+              <span>کنترل سمت سرور حفظ می‌شود.</span>
+            </article>
+            <article>
+              <strong>داده سلامت</strong>
+              <span>پیش‌فرض غیرقابل مشاهده و خارج از نقش عادی.</span>
             </article>
           </section>
 
@@ -296,7 +315,7 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
               <section className={styles.matrixPanel} aria-labelledby="matrix-heading">
                 <header className={styles.panelHeader}>
                   <div>
-                    <p className="eyebrow">Effective assignments</p>
+                    <p className="eyebrow">Reference 19 · Effective assignments</p>
                     <h3 id="matrix-heading">Role × Permission</h3>
                   </div>
                   <span className={styles.readOnlyPill}>فقط مشاهده</span>
@@ -318,7 +337,7 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
                             <strong>
                               <Link href={`/security/roles/${role.code}`}>{role.displayName}</Link>
                             </strong>
-                            <span style={{ color: "#665f58" }}>{role.code}</span>
+                            <span>{role.code}</span>
                             {role.status !== "Active" ? <em>Disabled</em> : null}
                           </th>
                         ))}
