@@ -16,7 +16,13 @@ const categories = [
   "محیط‌ها",
 ] as const;
 
-const integrations = ["پرداخت", "شبکه اجتماعی", "پیامک", "Push notifications", "دستگاه‌های پوشیدنی"] as const;
+const integrations = [
+  "پرداخت",
+  "شبکه اجتماعی",
+  "پیامک",
+  "Push notifications",
+  "دستگاه‌های پوشیدنی",
+] as const;
 
 export default async function SettingsPage() {
   const admin = await requireAdminAccess();
@@ -39,12 +45,16 @@ export default async function SettingsPage() {
               audit داشته باشد.
             </p>
             <div className={styles.settingsNav} aria-label="دسته‌بندی تنظیمات">
-              {categories.map((category) => <span key={category}>{category}</span>)}
+              {categories.map((category) => (
+                <span key={category}>{category}</span>
+              ))}
             </div>
           </section>
 
           <section className={styles.banner} role="status" aria-live="polite">
-            <span className={styles.bannerIcon} aria-hidden="true">i</span>
+            <span className={styles.bannerIcon} aria-hidden="true">
+              i
+            </span>
             <div>
               <strong>Settings write contract در این پنل در دسترس نیست.</strong>
               <p>
@@ -80,10 +90,18 @@ export default async function SettingsPage() {
                 </div>
                 <div className={styles.field}>
                   <label htmlFor="default-calendar">تقویم</label>
-                  <input id="default-calendar" value="در انتظار قرارداد canonical" readOnly aria-readonly="true" />
+                  <input
+                    id="default-calendar"
+                    value="در انتظار قرارداد canonical"
+                    readOnly
+                    aria-readonly="true"
+                  />
                 </div>
               </div>
-              <p className={styles.helper}>مقادیر ثابت UI فقط برای identity/locale غیرحساس نمایش داده شده‌اند؛ وضعیت backend از آن‌ها استنباط نمی‌شود.</p>
+              <p className={styles.helper}>
+                مقادیر ثابت UI فقط برای identity/locale غیرحساس نمایش داده شده‌اند؛ وضعیت backend از
+                آن‌ها استنباط نمی‌شود.
+              </p>
             </article>
 
             <article className={styles.panel} aria-labelledby="data-settings-title">
@@ -95,9 +113,18 @@ export default async function SettingsPage() {
                 <span className={styles.badge}>Unavailable</span>
               </header>
               <ul className={styles.list}>
-                <li><strong>Dashboard freshness</strong><p>تا زمان وجود settings read model نمایش یا ویرایش نمی‌شود.</p></li>
-                <li><strong>Operational freshness</strong><p>مقدار پیش‌فرض یا interval ساختگی ساخته نشده است.</p></li>
-                <li><strong>Analytics freshness</strong><p>هر workspace از freshness canonical خودش استفاده می‌کند.</p></li>
+                <li>
+                  <strong>Dashboard freshness</strong>
+                  <p>تا زمان وجود settings read model نمایش یا ویرایش نمی‌شود.</p>
+                </li>
+                <li>
+                  <strong>Operational freshness</strong>
+                  <p>مقدار پیش‌فرض یا interval ساختگی ساخته نشده است.</p>
+                </li>
+                <li>
+                  <strong>Analytics freshness</strong>
+                  <p>هر workspace از freshness canonical خودش استفاده می‌کند.</p>
+                </li>
               </ul>
             </article>
           </section>
@@ -117,7 +144,10 @@ export default async function SettingsPage() {
                     <h3>{name}</h3>
                     <span className={styles.badge}>Unavailable</span>
                   </div>
-                  <p>وضعیت اتصال و تنظیمات فقط از contract معتبر نمایش داده می‌شود؛ secret یا token هرگز به کلاینت ارسال نمی‌شود.</p>
+                  <p>
+                    وضعیت اتصال و تنظیمات فقط از contract معتبر نمایش داده می‌شود؛ secret یا token
+                    هرگز به کلاینت ارسال نمی‌شود.
+                  </p>
                 </article>
               ))}
             </div>
@@ -134,24 +164,29 @@ export default async function SettingsPage() {
             <div className={styles.confirmation}>
               <strong>Confirmation الزامی است</strong>
               <p>
-                هر تغییر حساس آینده باید قبل از mutation، permission مناسب، AAL2 در صورت نیاز، reason
-                روشن، confirmation صریح، idempotency و audit داشته باشد. تا قبل از وجود آن قرارداد،
-                کنترل اجرایی فعال نمی‌شود.
+                هر تغییر حساس آینده باید قبل از mutation، permission مناسب، AAL2 در صورت نیاز،
+                reason روشن، confirmation صریح، idempotency و audit داشته باشد. تا قبل از وجود آن
+                قرارداد، کنترل اجرایی فعال نمی‌شود.
               </p>
             </div>
             <div className={styles.saveState} aria-live="polite">
-              <button type="button" disabled>ذخیره تغییرات — در دسترس نیست</button>
+              <button type="button" disabled>
+                ذخیره تغییرات — در دسترس نیست
+              </button>
               <span>Save state: unavailable · هیچ درخواست write ارسال نشده است.</span>
             </div>
           </section>
 
           <section className={styles.banner} role="alert">
-            <span className={styles.bannerIcon} aria-hidden="true">!</span>
+            <span className={styles.bannerIcon} aria-hidden="true">
+              !
+            </span>
             <div>
               <strong>خطاها باید قابل‌فهم و بدون افشای اطلاعات حساس باشند.</strong>
               <p>
-                در صورت اضافه‌شدن endpoint واقعی، خطای شبکه یا validation باید پیام کوتاه کاربرپسند و
-                correlation id امن داشته باشد؛ stack trace، secret و credential نباید نمایش داده شود.
+                در صورت اضافه‌شدن endpoint واقعی، خطای شبکه یا validation باید پیام کوتاه کاربرپسند
+                و correlation id امن داشته باشد؛ stack trace، secret و credential نباید نمایش داده
+                شود.
               </p>
             </div>
           </section>
