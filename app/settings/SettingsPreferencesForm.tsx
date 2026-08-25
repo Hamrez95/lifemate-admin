@@ -5,10 +5,7 @@ import { useActionState, useState } from "react";
 import type { CommandCenterPreferences } from "@/src/lib/admin-api/settings-preferences";
 
 import styles from "../ops-settings.module.css";
-import {
-  initialSettingsActionState,
-  updateCommandCenterPreferencesAction,
-} from "./actions";
+import { initialSettingsActionState, updateCommandCenterPreferencesAction } from "./actions";
 
 export function SettingsPreferencesForm({
   preferences,
