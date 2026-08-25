@@ -53,8 +53,7 @@ async function problem(response: Response) {
             : typeof body.message === "string"
               ? body.message
               : undefined,
-      correlationId:
-        typeof body.correlationId === "string" ? body.correlationId : undefined,
+      correlationId: typeof body.correlationId === "string" ? body.correlationId : undefined,
     };
   } catch {
     return {};
@@ -88,14 +87,11 @@ export async function getCommercePlanFeatures(
 
   let response: Response;
   try {
-    response = await fetch(
-      `${config.adminApiUrl}/api/v1/commerce/plans/${planId}/features`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: "no-store",
-        signal: AbortSignal.timeout(10_000),
-      },
-    );
+    response = await fetch(`${config.adminApiUrl}/api/v1/commerce/plans/${planId}/features`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+      signal: AbortSignal.timeout(10_000),
+    });
   } catch {
     return { kind: "unavailable" };
   }
@@ -134,25 +130,22 @@ export async function configureCommercePlanFeature(input: {
 
   let response: Response;
   try {
-    response = await fetch(
-      `${config.adminApiUrl}/api/v1/commerce/plans/${input.planId}/features`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-          "Idempotency-Key": input.idempotencyKey,
-        },
-        body: JSON.stringify({
-          featureId: input.featureId,
-          assigned: input.assigned,
-          expectedVersion: input.expectedVersion,
-          reason: input.reason,
-        }),
-        cache: "no-store",
-        signal: AbortSignal.timeout(10_000),
+    response = await fetch(`${config.adminApiUrl}/api/v1/commerce/plans/${input.planId}/features`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "Idempotency-Key": input.idempotencyKey,
       },
-    );
+      body: JSON.stringify({
+        featureId: input.featureId,
+        assigned: input.assigned,
+        expectedVersion: input.expectedVersion,
+        reason: input.reason,
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(10_000),
+    });
   } catch {
     return { kind: "unavailable" };
   }
