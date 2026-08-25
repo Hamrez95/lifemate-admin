@@ -23,11 +23,7 @@ export type OperationsSnapshot = {
   freshness: { status: "fresh"; asOfUtc: string };
 };
 
-const signalStates = new Set<OperationalSignalState>([
-  "ready",
-  "unknown",
-  "unavailable",
-]);
+const signalStates = new Set<OperationalSignalState>(["ready", "unknown", "unavailable"]);
 
 function record(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" && !Array.isArray(value)
@@ -36,8 +32,7 @@ function record(value: unknown): Record<string, unknown> | null {
 }
 
 function state(value: unknown): OperationalSignalState | null {
-  return typeof value === "string" &&
-    signalStates.has(value as OperationalSignalState)
+  return typeof value === "string" && signalStates.has(value as OperationalSignalState)
     ? (value as OperationalSignalState)
     : null;
 }
@@ -48,23 +43,15 @@ function nonEmptyString(value: unknown): string | null {
 
 function nullableFiniteNumber(value: unknown): number | null | undefined {
   if (value === null) return null;
-  return typeof value === "number" && Number.isFinite(value) && value >= 0
-    ? value
-    : undefined;
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : undefined;
 }
 
-function nullableNonNegativeInteger(
-  value: unknown,
-): number | null | undefined {
+function nullableNonNegativeInteger(value: unknown): number | null | undefined {
   if (value === null) return null;
-  return Number.isInteger(value) && Number(value) >= 0
-    ? Number(value)
-    : undefined;
+  return Number.isInteger(value) && Number(value) >= 0 ? Number(value) : undefined;
 }
 
-export function parseOperationsSnapshot(
-  value: unknown,
-): OperationsSnapshot | null {
+export function parseOperationsSnapshot(value: unknown): OperationsSnapshot | null {
   const root = record(value);
   if (!root || !Array.isArray(root.services) || root.services.length === 0) {
     return null;
@@ -79,13 +66,7 @@ export function parseOperationsSnapshot(
     const source = nonEmptyString(row.source);
     const checkedAtUtc = nonEmptyString(row.checkedAtUtc);
     const latencyMs = nullableFiniteNumber(row.latencyMs);
-    if (
-      !key ||
-      !signalState ||
-      !source ||
-      !checkedAtUtc ||
-      latencyMs === undefined
-    ) {
+    if (!key || !signalState || !source || !checkedAtUtc || latencyMs === undefined) {
       return null;
     }
     services.push({ key, state: signalState, source, latencyMs, checkedAtUtc });
@@ -96,13 +77,7 @@ export function parseOperationsSnapshot(
   const providers = record(root.providers);
   const incidents = record(root.incidents);
   const freshness = record(root.freshness);
-  if (
-    !backgroundJobs ||
-    !deployments ||
-    !providers ||
-    !incidents ||
-    !freshness
-  ) {
+  if (!backgroundJobs || !deployments || !providers || !incidents || !freshness) {
     return null;
   }
 
@@ -116,9 +91,7 @@ export function parseOperationsSnapshot(
   const incidentsSource = nonEmptyString(incidents.source);
   const activeCount = nullableNonNegativeInteger(incidents.activeCount);
   const releaseReference =
-    deployments.releaseReference === null
-      ? null
-      : nonEmptyString(deployments.releaseReference);
+    deployments.releaseReference === null ? null : nonEmptyString(deployments.releaseReference);
   const asOfUtc = nonEmptyString(freshness.asOfUtc);
 
   if (
