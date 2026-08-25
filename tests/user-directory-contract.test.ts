@@ -30,7 +30,7 @@ describe("ADM-USR-001 security and UI contract", () => {
     expect(client).toContain('typeof item.username === "string" ? item.username : null');
     expect(page).toContain("row.username");
     expect(page).toContain("username canonical");
-    expect(page).not.toContain("split(\"@\")");
+    expect(page).not.toContain('split("@")');
     expect(page).not.toContain("staff_profiles");
   });
 
