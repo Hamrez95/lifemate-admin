@@ -48,7 +48,11 @@ export async function configurePlanFeatureAction(
     return { status: "invalid", message: "نسخه قابلیت معتبر نیست؛ صفحه را refresh کنید." };
   }
   const expectedVersion = Number(expectedVersionRaw);
-  if (!Number.isInteger(expectedVersion) || expectedVersion < 0 || expectedVersion > 1_000_000_000) {
+  if (
+    !Number.isInteger(expectedVersion) ||
+    expectedVersion < 0 ||
+    expectedVersion > 1_000_000_000
+  ) {
     return { status: "invalid", message: "نسخه قابلیت معتبر نیست؛ صفحه را refresh کنید." };
   }
   if (reason.length < 10 || reason.length > 1000) {
