@@ -46,11 +46,17 @@ export async function updateCommandCenterPreferencesAction(
     return { status: "invalid", message: "نام نمایشی باید بین ۱ تا ۱۲۰ نویسه باشد." };
   }
   if (!/^\d+$/.test(versionRaw)) {
-    return { status: "invalid", message: "نسخه تنظیمات معتبر نیست؛ صفحه را دوباره بارگذاری کنید." };
+    return {
+      status: "invalid",
+      message: "نسخه تنظیمات معتبر نیست؛ صفحه را دوباره بارگذاری کنید.",
+    };
   }
   const expectedVersion = Number(versionRaw);
   if (!Number.isInteger(expectedVersion) || expectedVersion < 1) {
-    return { status: "invalid", message: "نسخه تنظیمات معتبر نیست؛ صفحه را دوباره بارگذاری کنید." };
+    return {
+      status: "invalid",
+      message: "نسخه تنظیمات معتبر نیست؛ صفحه را دوباره بارگذاری کنید.",
+    };
   }
   if (reason.length < 10 || reason.length > 1000) {
     return { status: "invalid", message: "دلیل تغییر باید بین ۱۰ تا ۱۰۰۰ نویسه باشد." };
@@ -71,13 +77,17 @@ export async function updateCommandCenterPreferencesAction(
   if (result.kind === "unauthenticated" || result.kind === "forbidden") {
     return {
       status: "forbidden",
-      message: result.kind === "forbidden"
-        ? (result.message ?? "مجوز settings.write برای این تغییر وجود ندارد.")
-        : "نشست مدیریتی معتبر نیست؛ دوباره وارد شوید.",
+      message:
+        result.kind === "forbidden"
+          ? (result.message ?? "مجوز settings.write برای این تغییر وجود ندارد.")
+          : "نشست مدیریتی معتبر نیست؛ دوباره وارد شوید.",
     };
   }
   if (result.kind === "conflict") {
-    return { status: "conflict", message: result.message ?? "تنظیمات تغییر کرده‌اند؛ صفحه را تازه‌سازی کنید." };
+    return {
+      status: "conflict",
+      message: result.message ?? "تنظیمات تغییر کرده‌اند؛ صفحه را تازه‌سازی کنید.",
+    };
   }
   if (result.kind === "invalid") {
     return { status: "invalid", message: result.message ?? "مقادیر تنظیمات معتبر نیستند." };
