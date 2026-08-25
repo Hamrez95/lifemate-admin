@@ -124,6 +124,7 @@ const columns: readonly AdminTableColumn<UserDirectoryItem>[] = [
     render: (row) => (
       <div className="user-directory__identity">
         <strong>{row.displayName || "—"}</strong>
+        <span dir="ltr">{row.username ? `@${row.username}` : "—"}</span>
         <code title={row.accountId}>{shortId(row.accountId)}</code>
       </div>
     ),
@@ -180,7 +181,7 @@ function DirectoryFilterBar({ query }: { query: DirectoryQuery }) {
     <AdminTableFilterBar action="/users" clearHref="/users" ariaLabel="فیلتر کاربران">
       <input type="hidden" name="page" value="1" />
       <div className="admin-list-filter admin-list-filter--search">
-        <label htmlFor="user-directory-search">جست‌وجوی کاربر یا حساب</label>
+        <label htmlFor="user-directory-search">جست‌وجوی نام، username یا حساب</label>
         <input
           id="user-directory-search"
           name="q"
@@ -188,7 +189,7 @@ function DirectoryFilterBar({ query }: { query: DirectoryQuery }) {
           minLength={2}
           maxLength={120}
           defaultValue={query.table.search ?? ""}
-          placeholder="نام یا شناسه مجاز در قرارداد"
+          placeholder="نام، username یا شناسه مجاز"
           autoComplete="off"
         />
       </div>
@@ -306,7 +307,7 @@ async function DirectoryContent({ query }: { query: DirectoryQuery }) {
   return (
     <AdminDataTable
       title="فهرست کاربران"
-      description="فقط اطلاعات پایه حساب و عضویت محصول نمایش داده می‌شود؛ داده‌های سلامت و اطلاعات تماس حساس در این نما وجود ندارند."
+      description="نام نمایشی، username canonical، شناسه حساب، وضعیت و عضویت محصول نمایش داده می‌شود؛ داده‌های سلامت و اطلاعات تماس حساس در این نما وجود ندارند."
       rows={data.items}
       columns={columns}
       rowKey={(row) => row.accountId}
@@ -369,8 +370,8 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
           <aside className="user-directory__privacy-note" aria-label="سیاست حداقل‌سازی داده">
             <strong>نمایش پیش‌فرض حداقلی است.</strong>
             <span>
-              فقط شناسه حساب، نام نمایشیِ مجاز، وضعیت و عضویت محصول نمایش داده می‌شود؛ این صفحه مسیر
-              میان‌بر برای داده حساس ندارد.
+              فقط شناسه حساب، نام نمایشی، username canonical، وضعیت و عضویت محصول نمایش داده می‌شود؛
+              این صفحه مسیر میان‌بر برای داده حساس ندارد.
             </span>
           </aside>
 
