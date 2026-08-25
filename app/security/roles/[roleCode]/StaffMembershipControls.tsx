@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState, type MouseEvent } from "react";
 
+import { useAdminSession } from "@/src/components/auth/AdminSessionProvider";
+
 import { initialStaffActionFormState, runStaffAction } from "./actions";
 import styles from "./staff-membership-controls.module.css";
 
@@ -65,12 +67,16 @@ function actionsFor({
 }
 
 export function StaffMembershipControls(props: Props) {
+  const admin = useAdminSession();
   const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [selected, setSelected] = useState<Action | null>(null);
   const [key, setKey] = useState("");
   const [state, formAction, pending] = useActionState(runStaffAction, initialStaffActionFormState);
+  const roleCode = props.roleCode.toLocaleLowerCase("en-US");
+  const immutableRole = roleCode === "founder" || roleCode === "super_admin";
+  const selfTarget = admin.accountId.toLocaleLowerCase("en-US") === props.accountId.toLocaleLowerCase("en-US");
   const actions = actionsFor(props);
 
   useEffect(() => {
@@ -81,6 +87,9 @@ export function StaffMembershipControls(props: Props) {
   }, [router, state.status]);
 
   if (!props.canManage) return <span className={styles.locked}>فقط مشاهده</span>;
+  if (immutableRole)
+    return <span className={styles.locked}>Founder / Super Admin تغییرناپذیر است</span>;
+  if (selfTarget) return <span className={styles.locked}>تغییر دسترسی خودتان مجاز نیست</span>;
   if (actions.length === 0) return <span className={styles.locked}>عضویت لغوشده</span>;
 
   function open(action: Action, event: MouseEvent<HTMLButtonElement>) {
@@ -131,8 +140,8 @@ export function StaffMembershipControls(props: Props) {
               <p id="staff-action-copy">{selected.copy}</p>
             </header>
             <p className={styles.notice}>
-              دلیل اجباری است. تغییر نقش Founder یا Super Admin و تغییر دسترسی خودتان در API مسدود
-              می‌شود.
+              این mutation فقط از Admin API canonical انجام می‌شود. نشست AAL2، permission مدیریت Staff،
+              default-deny، reason، idempotency و audit سمت سرور الزامی‌اند.
             </p>
             <label>
               دلیل عملیات
