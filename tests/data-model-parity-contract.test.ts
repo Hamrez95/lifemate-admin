@@ -50,9 +50,7 @@ describe("Command Center canonical data-model parity", () => {
     expect(source("app/ai/daily-brief/page.tsx")).toContain(
       "این قابلیت هنوز به قرارداد Core متصل نشده است",
     );
-    expect(source("app/finance/scenario/page.tsx")).toContain(
-      "Scenario API · Unavailable",
-    );
+    expect(source("app/finance/scenario/page.tsx")).toContain("Scenario API · Unavailable");
     expect(source("app/operations/page.tsx")).toContain(
       "Operational visibility هنوز به قرارداد Core متصل نشده است",
     );
