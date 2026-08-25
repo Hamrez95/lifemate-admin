@@ -30,7 +30,8 @@ describe("Operations reference 17 and Settings reference 27", () => {
     expect(form).toContain('name="idempotencyKey"');
     expect(form).toContain('name="expectedVersion"');
     expect(form).toContain('name="reason"');
-    expect(action).toContain('confirmation !== "confirm-settings-change"');
+    expect(action).toContain('const CONFIRMATION = "confirm-settings-change"');
+    expect(action).toContain("confirmation !== CONFIRMATION");
     expect(page).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
     expect(page).not.toContain("process.env");
     expect(page).not.toContain("fetch(");
