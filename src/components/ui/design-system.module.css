@@ -124,9 +124,9 @@
 
 .stateCard {
   display: grid;
-  min-height: 220px;
+  min-height: 168px;
   place-items: center;
-  padding: clamp(24px, 5vw, 42px);
+  padding: clamp(22px, 4vw, 34px);
   text-align: center;
 }
 
@@ -169,6 +169,25 @@
   margin-top: 4px;
 }
 
+.loadingSkeleton {
+  display: grid;
+  width: min(220px, 70vw);
+  gap: 7px;
+}
+
+.loadingSkeleton span {
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--lm-border) 0%, var(--lm-surface-raised) 50%, var(--lm-border) 100%);
+  background-size: 200% 100%;
+  animation: skeletonPulse 1s ease-in-out infinite;
+}
+
+.loadingSkeleton span:last-child {
+  width: 64%;
+  justify-self: center;
+}
+
 .spinner {
   width: 25px;
   height: 25px;
@@ -176,6 +195,16 @@
   border-top-color: var(--lm-green);
   border-radius: 50%;
   animation: spin 700ms linear infinite;
+}
+
+@keyframes skeletonPulse {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 @keyframes spin {
@@ -210,14 +239,19 @@
   }
 
   .stateCard {
-    min-height: 190px;
+    min-height: 148px;
     border-radius: 15px;
-    padding: 20px 14px;
+    padding: 18px 14px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .spinner {
+  .spinner,
+  .loadingSkeleton span {
     animation: none;
+  }
+
+  .loadingSkeleton span {
+    background: var(--lm-border);
   }
 }
