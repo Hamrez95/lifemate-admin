@@ -45,18 +45,18 @@ function isEvidence(value: unknown): value is DailyBriefEvidence {
   const freshness = item.freshness;
   return Boolean(
     typeof item.id === "string" &&
-      typeof item.metric === "string" &&
-      (item.value === null || typeof item.value === "number") &&
-      (item.state === "ready" || item.state === "partial" || item.state === "unavailable") &&
-      typeof item.source === "string" &&
-      (item.caveat === null || typeof item.caveat === "string") &&
-      freshness &&
-      typeof freshness === "object" &&
-      !Array.isArray(freshness) &&
-      ["fresh", "partial", "unavailable"].includes(
-        String((freshness as Record<string, unknown>).status),
-      ) &&
-      typeof (freshness as Record<string, unknown>).asOfUtc === "string",
+    typeof item.metric === "string" &&
+    (item.value === null || typeof item.value === "number") &&
+    (item.state === "ready" || item.state === "partial" || item.state === "unavailable") &&
+    typeof item.source === "string" &&
+    (item.caveat === null || typeof item.caveat === "string") &&
+    freshness &&
+    typeof freshness === "object" &&
+    !Array.isArray(freshness) &&
+    ["fresh", "partial", "unavailable"].includes(
+      String((freshness as Record<string, unknown>).status),
+    ) &&
+    typeof (freshness as Record<string, unknown>).asOfUtc === "string",
   );
 }
 
