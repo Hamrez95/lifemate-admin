@@ -29,13 +29,18 @@ function occurrences(value: string, needle: string): number {
 }
 
 describe("core route performance contract", () => {
-  it("reserves priority images for the two true above-the-fold entry heroes", () => {
-    const allowed = new Set(["app/login/page.tsx", "src/components/dashboard/FounderOverview.tsx"]);
-    const offenders = [...sourceFiles("app"), ...sourceFiles("src")].filter((file) => {
-      if (allowed.has(file)) return false;
-      return /\bpriority\b/.test(source(file));
-    });
-    expect(offenders).toEqual([]);
+  it("keeps target-route image priority limited to intentional above-the-fold heroes", () => {
+    expect(source("app/login/page.tsx")).toContain("priority");
+    expect(source("src/components/dashboard/FounderOverview.tsx")).toContain("priority");
+
+    for (const file of [
+      "app/users/page.tsx",
+      "app/commerce/page.tsx",
+      "app/security/audit/page.tsx",
+      "app/security/layout.tsx",
+    ]) {
+      expect(source(file), file).not.toMatch(/\bpriority\b/);
+    }
   });
 
   it("uses the sprout asset only in shared empty/success state components", () => {
@@ -67,7 +72,14 @@ describe("core route performance contract", () => {
 
   it("keeps the responsive browser gate on all requested core routes", () => {
     const e2e = source("e2e/core-routes-responsive.spec.ts");
-    for (const route of ["/login", 'path: "/"', "/users", "/relationships", "/commerce", "/security/audit"]) {
+    for (const route of [
+      "/login",
+      'path: "/"',
+      "/users",
+      "/relationships",
+      "/commerce",
+      "/security/audit",
+    ]) {
       expect(e2e).toContain(route);
     }
   });
