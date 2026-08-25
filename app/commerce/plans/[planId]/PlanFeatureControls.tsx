@@ -102,8 +102,8 @@ function PlanFeatureRow({
               required
               disabled={pending}
             />{" "}
-            تأیید می‌کنم این تغییر فقط assignment پلن را تغییر می‌دهد و هیچ Entitlement کاربری را
-            مستقیم صادر یا لغو نمی‌کند.
+            تأیید می‌کنم این تغییر فقط assignment پلن را تغییر می‌دهد و{" "}
+            {"هیچ Entitlement کاربری را مستقیم صادر یا لغو نمی‌کند"}.
           </label>
           <div className={styles.feedback} data-status={state.status} aria-live="polite">
             {state.message ?? ""}
