@@ -152,27 +152,40 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
       <AdminShell
         activeSlug="security"
         title="امنیت"
-        subtitle="Role × Permission Matrix و مرز دسترسی‌های حساس Command Center"
+        subtitle="کنترل دسترسی، ممیزی و مرزهای حساس Command Center"
       >
         <div className={styles.page}>
-          <section className={styles.hero} aria-labelledby="rbac-title">
-            <div>
-              <p className="eyebrow">ADM-SEC-001 · READ ONLY</p>
-              <h2 id="rbac-title">ماتریس نقش و مجوز</h2>
+          <section className={styles.hero} aria-labelledby="security-title">
+            <div className={styles.heroCopy}>
+              <p className="eyebrow">REFERENCE 18 · SECURITY COMMAND CENTER</p>
+              <h2 id="security-title">مرکز فرمان امنیت</h2>
               <p>
-                نمای canonical از نقش‌ها، permissionهای قابل‌اعطا و مرز دسترسی‌های ویژه. این صفحه
-                assignment را تغییر نمی‌دهد و هیچ دسترسی سلامت ویژه‌ای را به نقش معمولی تبدیل
-                نمی‌کند.
+                وضعیت RBAC، ممیزی و مرزهای دسترسی حساس را از قراردادهای canonical مرور کنید. این
+                workspace هیچ permission یا Break-glass فرضی ایجاد نمی‌کند و فقط داده تأییدشده را
+                نمایش می‌دهد.
               </p>
+              <div className={styles.heroActions}>
+                <Link className={styles.primaryAction} href="/security/audit">
+                  مشاهده Audit Log
+                </Link>
+                <a className={styles.secondaryAction} href="#rbac-matrix">
+                  مرور Role × Permission
+                </a>
+              </div>
             </div>
-            <div className={styles.sourceCard} aria-label="منبع و تازگی RBAC">
-              <span>Canonical source</span>
+            <div className={styles.securitySignal} aria-label="خلاصه مرز امنیت">
+              <span>Canonical security posture</span>
               <strong>{report?.source.label ?? "—"}</strong>
-              <small>As of {formatAsOf(report?.freshness.asOfUtc ?? null)}</small>
+              <small>آخرین داده: {formatAsOf(report?.freshness.asOfUtc ?? null)}</small>
+              <div className={styles.signalPills}>
+                <span>Read-only</span>
+                <span>AAL2 / RBAC</span>
+                <span>Break-glass جدا</span>
+              </div>
             </div>
           </section>
 
-          <section className={styles.metricGrid} aria-label="خلاصه تنظیمات RBAC">
+          <section className={styles.metricGrid} aria-label="خلاصه امنیت و RBAC">
             <article className={styles.metricCard}>
               <span>نقش‌ها</span>
               <strong>{report ? report.roles.length.toLocaleString("fa-IR") : "—"}</strong>
@@ -181,14 +194,14 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
             <article className={styles.metricCard}>
               <span>Permissionها</span>
               <strong>{report ? permissions.length.toLocaleString("fa-IR") : "—"}</strong>
-              <small>از admin.permissions</small>
+              <small>از منبع canonical RBAC</small>
             </article>
             <article className={styles.metricCard}>
               <span>حساس / پرریسک</span>
               <strong>
                 {sensitiveCount === null ? "—" : sensitiveCount.toLocaleString("fa-IR")}
               </strong>
-              <small>برای review امنیتی برجسته می‌شوند</small>
+              <small>برای review امنیتی برجسته</small>
             </article>
             <article className={styles.metricCard}>
               <span>خارج از نقش عادی</span>
@@ -199,6 +212,48 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
             </article>
           </section>
 
+          <section className={styles.quickGrid} aria-label="میانبرهای امنیت">
+            <Link href="/security/audit" className={styles.quickCard}>
+              <span className={styles.quickIcon} aria-hidden="true">
+                ◫
+              </span>
+              <div>
+                <strong>Audit Log</strong>
+                <p>رویدادهای canonical، نتیجه، actor و correlation را بدون payload حساس مرور کنید.</p>
+              </div>
+              <span aria-hidden="true">←</span>
+            </Link>
+            <div className={styles.quickCard}>
+              <span className={styles.quickIcon} aria-hidden="true">
+                ◈
+              </span>
+              <div>
+                <strong>Break-glass</strong>
+                <p>Workflow دسترسی موقت هنوز از RBAC عادی جداست؛ این صفحه هیچ bypass ایجاد نمی‌کند.</p>
+              </div>
+              <span className={styles.unavailablePill}>وابسته به قرارداد</span>
+            </div>
+          </section>
+
+          <section className={styles.boundaryBanner} aria-labelledby="elevated-boundary-title">
+            <div>
+              <span className={styles.boundaryIcon} aria-hidden="true">
+                ◈
+              </span>
+            </div>
+            <div>
+              <strong id="elevated-boundary-title">مرز دسترسی حساس باید fail-closed بماند</strong>
+              <p>
+                {report?.elevatedBoundary.enforcement ??
+                  "تا زمانی که قرارداد canonical پاسخ معتبر ندهد، دسترسی ویژه در این workspace unavailable می‌ماند."}
+              </p>
+              <small>
+                {report?.inheritance.reason ??
+                  "Founder یا Super Admin نیز از این نما bypass ضمنی دریافت نمی‌کند."}
+              </small>
+            </div>
+          </section>
+
           <form
             className={styles.filters}
             method="get"
@@ -206,13 +261,13 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
             aria-label="فیلتر ماتریس RBAC"
           >
             <div className={styles.searchField}>
-              <label htmlFor="rbac-q">جست‌وجو</label>
+              <label htmlFor="rbac-q">جست‌وجوی permission</label>
               <input
                 id="rbac-q"
                 name="q"
                 type="search"
                 defaultValue={single(requested.q)}
-                placeholder="permission، توضیح یا دامنه"
+                placeholder="مثلاً security.audit.read"
                 autoComplete="off"
               />
             </div>
@@ -266,21 +321,6 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
             </section>
           ) : null}
 
-          {report ? (
-            <section className={styles.boundaryBanner} aria-labelledby="elevated-boundary-title">
-              <div>
-                <span className={styles.boundaryIcon} aria-hidden="true">
-                  ◈
-                </span>
-              </div>
-              <div>
-                <strong id="elevated-boundary-title">مرز Break-glass حفظ می‌شود</strong>
-                <p>{report.elevatedBoundary.enforcement}</p>
-                <small>{report.inheritance.reason}</small>
-              </div>
-            </section>
-          ) : null}
-
           {report?.state === "ready" && filteredPermissions.length === 0 ? (
             <section className={styles.stateBanner} role="status">
               <span aria-hidden="true">⌕</span>
@@ -293,11 +333,16 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
 
           {report?.state === "ready" && filteredPermissions.length > 0 ? (
             <>
-              <section className={styles.matrixPanel} aria-labelledby="matrix-heading">
+              <section
+                id="rbac-matrix"
+                className={styles.matrixPanel}
+                aria-labelledby="matrix-heading"
+              >
                 <header className={styles.panelHeader}>
                   <div>
-                    <p className="eyebrow">Effective assignments</p>
+                    <p className="eyebrow">REFERENCE 19 · EFFECTIVE ASSIGNMENTS</p>
                     <h3 id="matrix-heading">Role × Permission</h3>
+                    <p>نمای مستقیم از assignmentهای مؤثر؛ بدون mutation و بدون inheritance فرضی.</p>
                   </div>
                   <span className={styles.readOnlyPill}>فقط مشاهده</span>
                 </header>
@@ -318,7 +363,7 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
                             <strong>
                               <Link href={`/security/roles/${role.code}`}>{role.displayName}</Link>
                             </strong>
-                            <span style={{ color: "#665f58" }}>{role.code}</span>
+                            <span>{role.code}</span>
                             {role.status !== "Active" ? <em>Disabled</em> : null}
                           </th>
                         ))}
