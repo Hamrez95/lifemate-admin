@@ -55,7 +55,11 @@ describe("Command Center core state design/security contract", () => {
   });
 
   it("keeps primary data routes on the shared loading/forbidden/error state contract", () => {
-    for (const route of ["app/users/page.tsx", "app/relationships/page.tsx", "app/commerce/page.tsx"]) {
+    for (const route of [
+      "app/users/page.tsx",
+      "app/relationships/page.tsx",
+      "app/commerce/page.tsx",
+    ]) {
       const content = source(route);
       expect(content).toContain("AdminPageState");
       expect(content).toContain('state="loading"');
@@ -73,7 +77,9 @@ describe("Command Center core state design/security contract", () => {
 
   it("respects reduced motion and keyboard focus", () => {
     const standalone = source("app/standalone-state.module.css");
-    const tableStyles = source("src/components/admin-data-table/admin-data-table.module.css");
+    const tableStyles = source(
+      "src/components/admin-data-table/admin-data-table.module.css",
+    );
     expect(standalone).toContain("@media (prefers-reduced-motion: reduce)");
     expect(standalone).toContain(":focus-visible");
     expect(tableStyles).toContain("@media (prefers-reduced-motion: reduce)");
