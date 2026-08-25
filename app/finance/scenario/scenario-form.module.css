@@ -1,0 +1,95 @@
+.form {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 0.9rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.field,
+.textareaField {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field span,
+.textareaField span {
+  color: #625d57;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.field input,
+.field select,
+.textareaField textarea {
+  width: 100%;
+  border: 1px solid #ddd5ca;
+  border-radius: 12px;
+  background: #fff;
+  color: #332f2a;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+}
+
+.field input,
+.field select {
+  min-height: 42px;
+}
+
+.textareaField textarea {
+  resize: vertical;
+  line-height: 1.65;
+}
+
+.field input:disabled,
+.field select:disabled,
+.textareaField textarea:disabled {
+  background: #f5f1eb;
+  color: #817970;
+}
+
+.textareaField small,
+.status {
+  color: #756f68;
+  line-height: 1.7;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.actions button {
+  min-height: 42px;
+  border: 1px solid #247153;
+  border-radius: 12px;
+  background: #247153;
+  color: #fff;
+  padding: 0.45rem 0.9rem;
+  font: inherit;
+  font-weight: 800;
+}
+
+.actions button:disabled {
+  border-color: #d8d2ca;
+  background: #f2efea;
+  color: #8b857e;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
