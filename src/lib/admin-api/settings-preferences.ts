@@ -30,7 +30,9 @@ async function accessToken(): Promise<string | null> {
   const supabase = await createServerSupabaseClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   if (claimsError || !claimsData?.claims?.sub) return null;
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   return session?.access_token ?? null;
 }
 
@@ -38,13 +40,14 @@ async function problem(response: Response) {
   try {
     const body = (await response.json()) as Record<string, unknown>;
     return {
-      message: typeof body.title === "string"
-        ? body.title
-        : typeof body.detail === "string"
-          ? body.detail
-          : typeof body.message === "string"
-            ? body.message
-            : undefined,
+      message:
+        typeof body.title === "string"
+          ? body.title
+          : typeof body.detail === "string"
+            ? body.detail
+            : typeof body.message === "string"
+              ? body.message
+              : undefined,
       correlationId: typeof body.correlationId === "string" ? body.correlationId : undefined,
     };
   } catch {
