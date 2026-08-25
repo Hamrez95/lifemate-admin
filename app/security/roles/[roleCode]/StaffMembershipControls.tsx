@@ -71,7 +71,8 @@ export function StaffMembershipControls(props: Props) {
   const [selected, setSelected] = useState<Action | null>(null);
   const [key, setKey] = useState("");
   const [state, formAction, pending] = useActionState(runStaffAction, initialStaffActionFormState);
-  const actions = actionsFor(props);
+  const privilegedRole = props.roleCode === "founder" || props.roleCode === "super_admin";
+  const actions = privilegedRole ? [] : actionsFor(props);
 
   useEffect(() => {
     if (state.status !== "success") return;
@@ -81,6 +82,12 @@ export function StaffMembershipControls(props: Props) {
   }, [router, state.status]);
 
   if (!props.canManage) return <span className={styles.locked}>فقط مشاهده</span>;
+  if (privilegedRole)
+    return (
+      <span className={styles.locked} title="Founder و Super Admin از مسیر Staff management تغییر نمی‌کنند.">
+        نقش محافظت‌شده
+      </span>
+    );
   if (actions.length === 0) return <span className={styles.locked}>عضویت لغوشده</span>;
 
   function open(action: Action, event: MouseEvent<HTMLButtonElement>) {
@@ -132,7 +139,7 @@ export function StaffMembershipControls(props: Props) {
             </header>
             <p className={styles.notice}>
               دلیل اجباری است. تغییر نقش Founder یا Super Admin و تغییر دسترسی خودتان در API مسدود
-              می‌شود.
+              می‌شود. نشست AAL2، permission و audit در قرارداد server-side enforce می‌شوند.
             </p>
             <label>
               دلیل عملیات
