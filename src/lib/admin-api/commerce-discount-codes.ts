@@ -72,7 +72,10 @@ function parseItem(value: unknown): CommerceDiscountCode | null {
     typeof item.code !== "string" ||
     !CODE_PATTERN.test(item.code) ||
     (item.status !== "Active" && item.status !== "Disabled") ||
-    !(item.maxRedemptions === null || (Number.isInteger(item.maxRedemptions) && Number(item.maxRedemptions) > 0)) ||
+    !(
+      item.maxRedemptions === null ||
+      (Number.isInteger(item.maxRedemptions) && Number(item.maxRedemptions) > 0)
+    ) ||
     !Number.isInteger(item.version) ||
     Number(item.version) < 1 ||
     typeof item.createdAtUtc !== "string" ||
@@ -184,7 +187,10 @@ export function issueCommerceDiscountCodes(input: {
       new Set(normalized).size !== normalized.length ||
       input.generateCount !== null
     ) {
-      return Promise.resolve({ kind: "invalid", message: "کدهای تخفیف معتبر نیستند." } as DiscountCodeMutationResult);
+      return Promise.resolve({
+        kind: "invalid",
+        message: "کدهای تخفیف معتبر نیستند.",
+      } as DiscountCodeMutationResult);
     }
   } else if (
     !Number.isInteger(input.generateCount) ||
@@ -192,12 +198,15 @@ export function issueCommerceDiscountCodes(input: {
     Number(input.generateCount) > 50 ||
     (input.prefix !== null && !PREFIX_PATTERN.test(input.prefix))
   ) {
-    return Promise.resolve({ kind: "invalid", message: "تنظیمات تولید کد معتبر نیست." } as DiscountCodeMutationResult);
+    return Promise.resolve({
+      kind: "invalid",
+      message: "تنظیمات تولید کد معتبر نیست.",
+    } as DiscountCodeMutationResult);
   }
   return mutate(
     `/api/v1/commerce/promotions/${input.promotionId}/discount-codes`,
     {
-      codes: input.codes,
+      explicitCodes: input.codes,
       generateCount: input.generateCount,
       prefix: input.prefix,
       maxRedemptions: input.maxRedemptions,
