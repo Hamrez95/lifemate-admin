@@ -1,16 +1,19 @@
 .page {
+  min-width: 0;
   display: grid;
-  gap: 20px;
+  gap: 1rem;
 }
 
 .hero,
 .panel,
 .boundary,
 .state,
-.toolbar {
+.toolbar,
+.metricCard {
   border: 1px solid var(--border-soft, #e3ddd6);
-  background: var(--surface, #fff);
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 22px;
+  box-shadow: 0 12px 36px rgba(65, 54, 44, 0.055);
 }
 
 .hero {
@@ -19,6 +22,10 @@
   justify-content: space-between;
   gap: 24px;
   padding: 24px;
+  background:
+    radial-gradient(circle at 12% 22%, rgba(121, 208, 174, 0.13), transparent 32%),
+    radial-gradient(circle at 88% 18%, rgba(149, 169, 235, 0.13), transparent 32%),
+    rgba(255, 255, 255, 0.97);
 }
 
 .hero h2,
@@ -72,12 +79,38 @@
 }
 
 .readOnlyPill {
+  border: 1px solid #c9ddd4;
   border-radius: 999px;
   background: #eef6f2;
   color: #24594f;
   padding: 7px 11px;
   font-size: 0.8rem;
   font-weight: 800;
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.metricCard {
+  min-width: 0;
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.metricCard span,
+.metricCard small {
+  color: #766f68;
+  font-size: 0.78rem;
+}
+
+.metricCard strong {
+  display: block;
+  margin: 0.7rem 0 0.3rem;
+  color: #302c28;
+  font-size: clamp(1.65rem, 3.5vw, 2.25rem);
 }
 
 .boundary {
@@ -119,6 +152,12 @@
   color: #2f2925;
   padding-inline: 12px;
   font: inherit;
+}
+
+.toolbar input:disabled {
+  background: #f2efeb;
+  color: #918a83;
+  cursor: not-allowed;
 }
 
 .clearLink {
@@ -235,6 +274,12 @@
   color: #24594f;
 }
 
+@media (max-width: 1050px) {
+  .metricGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 760px) {
   .hero {
     flex-direction: column;
@@ -244,6 +289,10 @@
   .heroActions,
   .toolbar {
     width: 100%;
+  }
+
+  .metricGrid {
+    grid-template-columns: 1fr;
   }
 
   .toolbar {
@@ -264,5 +313,14 @@
   .panelHeader {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .hero,
+  .panel,
+  .boundary,
+  .state,
+  .toolbar,
+  .metricCard {
+    border-radius: 16px;
   }
 }
