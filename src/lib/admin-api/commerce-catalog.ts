@@ -26,6 +26,14 @@ export type ScheduleCommercePricePayload = {
   reason: string;
 };
 
+export type ConfigureCommerceTrialPayload = {
+  durationDays: number;
+  eligibilityRule: "NoPriorTrialForProduct";
+  status: "Active" | "Disabled";
+  expectedVersion: number;
+  reason: string;
+};
+
 export type CommerceCatalogMutationResult =
   | { kind: "ok"; data: Record<string, unknown> }
   | { kind: "unauthenticated" }
@@ -63,7 +71,8 @@ async function problem(
             : typeof body.message === "string"
               ? body.message
               : undefined,
-      correlationId: typeof body.correlationId === "string" ? body.correlationId : undefined,
+      correlationId:
+        typeof body.correlationId === "string" ? body.correlationId : undefined,
     };
   } catch {
     return {};
@@ -110,8 +119,12 @@ async function mutateCatalog(
 
   const issue = await problem(response);
   if (response.status === 401) return { kind: "unauthenticated" };
-  if (response.status === 403) return { kind: "forbidden", message: issue.message };
-  if (response.status === 404) return { kind: "not_found", message: issue.message };
+  if (response.status === 403) {
+    return { kind: "forbidden", message: issue.message };
+  }
+  if (response.status === 404) {
+    return { kind: "not_found", message: issue.message };
+  }
   if (response.status === 409) {
     return { kind: "conflict", code: issue.code, message: issue.message };
   }
@@ -121,8 +134,16 @@ async function mutateCatalog(
   return { kind: "unavailable", correlationId: issue.correlationId };
 }
 
-export function createCommercePlan(payload: CreateCommercePlanPayload, idempotencyKey: string) {
-  return mutateCatalog("/api/v1/commerce/plans", "POST", payload, idempotencyKey);
+export function createCommercePlan(
+  payload: CreateCommercePlanPayload,
+  idempotencyKey: string,
+) {
+  return mutateCatalog(
+    "/api/v1/commerce/plans",
+    "POST",
+    payload,
+    idempotencyKey,
+  );
 }
 
 export function updateCommercePlan(
@@ -131,9 +152,16 @@ export function updateCommercePlan(
   idempotencyKey: string,
 ) {
   if (!UUID_PATTERN.test(planId)) {
-    return Promise.resolve({ kind: "not_found" } as CommerceCatalogMutationResult);
+    return Promise.resolve({
+      kind: "not_found",
+    } as CommerceCatalogMutationResult);
   }
-  return mutateCatalog(`/api/v1/commerce/plans/${planId}`, "PUT", payload, idempotencyKey);
+  return mutateCatalog(
+    `/api/v1/commerce/plans/${planId}`,
+    "PUT",
+    payload,
+    idempotencyKey,
+  );
 }
 
 export function scheduleCommercePrice(
@@ -142,7 +170,32 @@ export function scheduleCommercePrice(
   idempotencyKey: string,
 ) {
   if (!UUID_PATTERN.test(planId)) {
-    return Promise.resolve({ kind: "not_found" } as CommerceCatalogMutationResult);
+    return Promise.resolve({
+      kind: "not_found",
+    } as CommerceCatalogMutationResult);
   }
-  return mutateCatalog(`/api/v1/commerce/plans/${planId}/prices`, "POST", payload, idempotencyKey);
+  return mutateCatalog(
+    `/api/v1/commerce/plans/${planId}/prices`,
+    "POST",
+    payload,
+    idempotencyKey,
+  );
+}
+
+export function configureCommerceTrial(
+  planId: string,
+  payload: ConfigureCommerceTrialPayload,
+  idempotencyKey: string,
+) {
+  if (!UUID_PATTERN.test(planId)) {
+    return Promise.resolve({
+      kind: "not_found",
+    } as CommerceCatalogMutationResult);
+  }
+  return mutateCatalog(
+    `/api/v1/commerce/plans/${planId}/trial-policy`,
+    "PUT",
+    payload,
+    idempotencyKey,
+  );
 }
