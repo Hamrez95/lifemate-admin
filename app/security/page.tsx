@@ -185,7 +185,7 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
             </div>
           </section>
 
-          <section className={styles.metricGrid} aria-label="خلاصه امنیت و RBAC">
+          <section className={styles.metricGrid} aria-label="خلاصه تنظیمات RBAC">
             <article className={styles.metricCard}>
               <span>نقش‌ها</span>
               <strong>{report ? report.roles.length.toLocaleString("fa-IR") : "—"}</strong>
@@ -246,7 +246,7 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
               </span>
             </div>
             <div>
-              <strong id="elevated-boundary-title">مرز دسترسی حساس باید fail-closed بماند</strong>
+              <strong id="elevated-boundary-title">مرز Break-glass حفظ می‌شود</strong>
               <p>
                 {report?.elevatedBoundary.enforcement ??
                   "تا زمانی که قرارداد canonical پاسخ معتبر ندهد، دسترسی ویژه در این workspace unavailable می‌ماند."}
@@ -265,7 +265,7 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
             aria-label="فیلتر ماتریس RBAC"
           >
             <div className={styles.searchField}>
-              <label htmlFor="rbac-q">جست‌وجوی permission</label>
+              <label htmlFor="rbac-q">جست‌وجو</label>
               <input
                 id="rbac-q"
                 name="q"
@@ -345,7 +345,7 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
                 <header className={styles.panelHeader}>
                   <div>
                     <p className="eyebrow">REFERENCE 19 · EFFECTIVE ASSIGNMENTS</p>
-                    <h3 id="matrix-heading">Role × Permission</h3>
+                    <h3 id="matrix-heading">ماتریس نقش و مجوز</h3>
                     <p>نمای مستقیم از assignmentهای مؤثر؛ بدون mutation و بدون inheritance فرضی.</p>
                   </div>
                   <span className={styles.readOnlyPill}>فقط مشاهده</span>
