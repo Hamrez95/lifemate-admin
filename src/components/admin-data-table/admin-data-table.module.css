@@ -120,13 +120,17 @@
 .statePanel {
   display: grid;
   place-items: center;
-  gap: 6px;
-  min-height: 180px;
-  padding: 24px;
+  gap: 8px;
+  min-height: 156px;
+  padding: 22px;
   border: 1px dashed var(--lm-border-strong);
   border-radius: var(--lm-radius-md);
   background: var(--lm-surface-soft);
   text-align: center;
+}
+
+.statePanel[data-state="loading"] {
+  min-height: 112px;
 }
 
 .statePanel strong {
@@ -134,11 +138,42 @@
 }
 
 .statePanel p {
-  max-width: 560px;
+  max-width: 520px;
   margin: 0;
   color: var(--lm-text-muted);
-  font-size: 0.875rem;
-  line-height: 1.9;
+  font-size: 0.8125rem;
+  line-height: 1.75;
+}
+
+.stateArtwork {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+}
+
+.stateSkeleton {
+  display: grid;
+  width: min(220px, 72vw);
+  gap: 7px;
+}
+
+.stateSkeleton span {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--lm-border) 0%, var(--lm-surface-raised) 50%, var(--lm-border) 100%);
+  background-size: 200% 100%;
+  animation: adminStatePulse 1s ease-in-out infinite;
+}
+
+.stateSkeleton span:last-child {
+  width: 62%;
+  justify-self: center;
+}
+
+.statePanel[data-state="success"] {
+  border-color: #cdebdc;
+  background: var(--lm-green-soft);
 }
 
 .statePanel[data-state="error"],
@@ -150,6 +185,16 @@
 .statePanel[data-state="stale"] {
   border-color: #f2d7ba;
   background: var(--lm-orange-soft);
+}
+
+@keyframes adminStatePulse {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .desktopTable {
@@ -342,5 +387,12 @@
   .pageStatus {
     grid-column: 1 / -1;
     grid-row: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stateSkeleton span {
+    animation: none;
+    background: var(--lm-border);
   }
 }
