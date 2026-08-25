@@ -28,16 +28,10 @@ async function ManagementContent({
   canTrialWrite: boolean;
 }) {
   const [planResult, trialResult] = await Promise.all([
-    getCommercePlanDetail(
-      planId,
-      new URLSearchParams({ page: "1", pageSize: "1" }),
-    ),
+    getCommercePlanDetail(planId, new URLSearchParams({ page: "1", pageSize: "1" })),
     getCommerceTrialPolicy(planId),
   ]);
-  if (
-    planResult.kind === "unauthenticated" ||
-    trialResult.kind === "unauthenticated"
-  ) {
+  if (planResult.kind === "unauthenticated" || trialResult.kind === "unauthenticated") {
     redirect("/login");
   }
   if (planResult.kind === "not_found" || trialResult.kind === "not_found") {
