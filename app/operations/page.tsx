@@ -22,9 +22,7 @@ function stateLabel(state: "ready" | "unknown" | "unavailable") {
 }
 
 function sourceLabel(source: string) {
-  return source === "not-instrumented"
-    ? "منبع هنوز instrument نشده است."
-    : `منبع: ${source}`;
+  return source === "not-instrumented" ? "منبع هنوز instrument نشده است." : `منبع: ${source}`;
 }
 
 export default async function OperationsPage() {
@@ -47,46 +45,33 @@ export default async function OperationsPage() {
             <p className="eyebrow">ADM-OPS · Reference 17</p>
             <h2 id="operations-title">مرکز عملیات LifeMate</h2>
             <p>
-              وضعیت سلامت، latency، job، deploy، provider و incident فقط از read
-              model canonical Core نمایش داده می‌شود. هر بخشی که instrumentation
-              معتبر ندارد صریحاً Unknown باقی می‌ماند.
+              وضعیت سلامت، latency، job، deploy، provider و incident فقط از read model canonical
+              Core نمایش داده می‌شود. هر بخشی که instrumentation معتبر ندارد صریحاً Unknown باقی
+              می‌ماند.
             </p>
           </section>
 
           {result.kind === "unavailable" ? (
-            <section
-              className={styles.banner}
-              role="status"
-              aria-live="polite"
-            >
+            <section className={styles.banner} role="status" aria-live="polite">
               <span className={styles.bannerIcon} aria-hidden="true">
                 i
               </span>
               <div>
                 <strong>Operational visibility فعلاً در دسترس نیست.</strong>
                 <p>
-                  هیچ health، latency، deploy، provider یا incident جایگزین ساخته
-                  نمی‌شود.
-                  {result.correlationId
-                    ? ` کد پیگیری: ${result.correlationId}`
-                    : ""}
+                  هیچ health، latency، deploy، provider یا incident جایگزین ساخته نمی‌شود.
+                  {result.correlationId ? ` کد پیگیری: ${result.correlationId}` : ""}
                 </p>
               </div>
             </section>
           ) : (
             <>
-              <section
-                className={styles.banner}
-                role="status"
-                aria-live="polite"
-              >
+              <section className={styles.banner} role="status" aria-live="polite">
                 <span className={styles.bannerIcon} aria-hidden="true">
                   i
                 </span>
                 <div>
-                  <strong>
-                    Telemetry فقط در حد شواهد موجود نمایش داده می‌شود.
-                  </strong>
+                  <strong>Telemetry فقط در حد شواهد موجود نمایش داده می‌شود.</strong>
                   <p>
                     آخرین snapshot در{" "}
                     {new Intl.DateTimeFormat("fa-IR", {
@@ -99,17 +84,12 @@ export default async function OperationsPage() {
                 </div>
               </section>
 
-              <section
-                className={styles.grid3}
-                aria-label="وضعیت قابلیت‌های عملیاتی"
-              >
+              <section className={styles.grid3} aria-label="وضعیت قابلیت‌های عملیاتی">
                 {result.snapshot.services.map((service) => (
                   <article key={service.key} className={styles.card}>
                     <header className={styles.cardHeader}>
                       <h3>سلامت سرویس</h3>
-                      <span className={styles.badge}>
-                        {stateLabel(service.state)}
-                      </span>
+                      <span className={styles.badge}>{stateLabel(service.state)}</span>
                     </header>
                     <p>
                       <strong className={styles.codeSafe}>{service.key}</strong>
@@ -117,9 +97,7 @@ export default async function OperationsPage() {
                     <p>{sourceLabel(service.source)}</p>
                     <p>
                       latency probe:{" "}
-                      {service.latencyMs === null
-                        ? "Unknown"
-                        : `${service.latencyMs} ms`}
+                      {service.latencyMs === null ? "Unknown" : `${service.latencyMs} ms`}
                     </p>
                   </article>
                 ))}
@@ -143,8 +121,7 @@ export default async function OperationsPage() {
                   </header>
                   <p>{sourceLabel(result.snapshot.deployments.source)}</p>
                   <p>
-                    release reference:{" "}
-                    {result.snapshot.deployments.releaseReference ?? "Unknown"}
+                    release reference: {result.snapshot.deployments.releaseReference ?? "Unknown"}
                   </p>
                 </article>
 
@@ -180,31 +157,25 @@ export default async function OperationsPage() {
                     <span className={styles.badge}>Canonical only</span>
                   </header>
                   <p>
-                    UI مستقیماً provider یا health endpoint عمومی را probe نمی‌کند
-                    و هیچ uptime، error-rate یا success-rate را از داده‌های ناقص
-                    استنتاج نمی‌کند.
+                    UI مستقیماً provider یا health endpoint عمومی را probe نمی‌کند و هیچ uptime،
+                    error-rate یا success-rate را از داده‌های ناقص استنتاج نمی‌کند.
                   </p>
                 </article>
               </section>
             </>
           )}
 
-          <section
-            className={styles.panel}
-            aria-labelledby="operations-paths-title"
-          >
+          <section className={styles.panel} aria-labelledby="operations-paths-title">
             <header className={styles.panelHeader}>
               <div>
                 <p className="eyebrow">Canonical paths</p>
-                <h3 id="operations-paths-title">
-                  مسیرهای واقعی موجود در Command Center
-                </h3>
+                <h3 id="operations-paths-title">مسیرهای واقعی موجود در Command Center</h3>
               </div>
               <span className={styles.badge}>Server-authorized</span>
             </header>
             <p>
-              این لینک‌ها فقط به workspaceهای موجود می‌روند؛ هیچ endpoint عملیاتی
-              bypass یا direct browser probe ایجاد نشده است.
+              این لینک‌ها فقط به workspaceهای موجود می‌روند؛ هیچ endpoint عملیاتی bypass یا direct
+              browser probe ایجاد نشده است.
             </p>
             <div className={styles.linkList}>
               {canonicalPaths.map((item) => (
