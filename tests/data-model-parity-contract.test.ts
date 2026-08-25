@@ -36,7 +36,9 @@ describe("Command Center canonical data-model parity", () => {
       ["src/lib/admin-api/analytics-kpis.ts", "/api/v1/analytics/kpis"],
       ["src/lib/admin-api/support-queue.ts", "/api/v1/support/tickets"],
       ["src/lib/admin-api/commerce-overview.ts", "/api/v1/commerce/overview"],
-      ["src/lib/admin-api/finance-overview.ts", "/api/v1/finance/overview"],
+      ["src/lib/admin-api/finance-profit-loss.ts", "/api/v1/finance/profit-loss"],
+      ["src/lib/admin-api/finance-budget.ts", "/api/v1/finance/budget-vs-actual"],
+      ["src/lib/admin-api/finance-cash.ts", "/api/v1/finance/cash-planning"],
     ] as const;
 
     for (const [path, endpoint] of contracts) {
