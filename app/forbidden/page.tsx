@@ -11,7 +11,7 @@ export default function ForbiddenPage() {
         actions={
           <>
             <Link className={styles.primary} href="/">
-              مرکز فرماندهی
+              بازگشت به مرکز فرماندهی
             </Link>
             <Link className={styles.secondary} href="/profile">
               وضعیت امنیت حساب
