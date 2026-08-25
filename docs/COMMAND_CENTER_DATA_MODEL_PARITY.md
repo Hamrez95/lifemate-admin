@@ -4,18 +4,18 @@ This document is the Admin-side source map for schema-migration safety. The brow
 
 ## Canonical surfaces
 
-| Command Center surface | Canonical Admin API | Core source boundary |
-| --- | --- | --- |
-| Users directory | `/api/v1/users` | `admin.user_directory_v2` |
-| User 360 | `/api/v1/users/{accountId}` | bounded identity/core/ecosystem/commerce/relationship read stores |
-| Relationships overview | `/api/v1/relationships/overview` | `network.person_relationships`, `admin.care_relationship_directory_v1`, `consent.consent_records`, `security.access_grants` |
-| Relationship ledger | `/api/v1/relationships/ledger` | canonical relationship/consent/access audit read model |
-| Analytics KPIs | `/api/v1/analytics/kpis` | canonical analytics KPI stores |
-| Support queue | `/api/v1/support/tickets` | `admin.support_ticket_queue_v1` |
-| Commerce overview | `/api/v1/commerce/overview` | canonical `commerce.*` read models |
-| Finance P&L | `/api/v1/finance/profit-loss` | canonical finance read model |
-| Finance Budget vs Actual | `/api/v1/finance/budget-vs-actual` | canonical finance read model |
-| Finance Cash Planning | `/api/v1/finance/cash-planning` | canonical finance read model |
+| Command Center surface   | Canonical Admin API                | Core source boundary                                                                                                        |
+| ------------------------ | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Users directory          | `/api/v1/users`                    | `admin.user_directory_v2`                                                                                                   |
+| User 360                 | `/api/v1/users/{accountId}`        | bounded identity/core/ecosystem/commerce/relationship read stores                                                           |
+| Relationships overview   | `/api/v1/relationships/overview`   | `network.person_relationships`, `admin.care_relationship_directory_v1`, `consent.consent_records`, `security.access_grants` |
+| Relationship ledger      | `/api/v1/relationships/ledger`     | canonical relationship/consent/access audit read model                                                                      |
+| Analytics KPIs           | `/api/v1/analytics/kpis`           | canonical analytics KPI stores                                                                                              |
+| Support queue            | `/api/v1/support/tickets`          | `admin.support_ticket_queue_v1`                                                                                             |
+| Commerce overview        | `/api/v1/commerce/overview`        | canonical `commerce.*` read models                                                                                          |
+| Finance P&L              | `/api/v1/finance/profit-loss`      | canonical finance read model                                                                                                |
+| Finance Budget vs Actual | `/api/v1/finance/budget-vs-actual` | canonical finance read model                                                                                                |
+| Finance Cash Planning    | `/api/v1/finance/cash-planning`    | canonical finance read model                                                                                                |
 
 Care relationships are intentionally distinct from natural/family relationships. `admin.care_relationship_directory_v1` is a compatibility read boundary and must not be converted into `network.person_relationships` by inventing a natural relationship type.
 
