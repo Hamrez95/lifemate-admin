@@ -49,10 +49,17 @@ async function interactiveControlFindings(page: Page): Promise<ControlFinding[]>
       const html = element as HTMLElement;
       const style = window.getComputedStyle(html);
       const rect = html.getBoundingClientRect();
-      return style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
+      return (
+        style.display !== "none" &&
+        style.visibility !== "hidden" &&
+        rect.width > 0 &&
+        rect.height > 0
+      );
     };
     const label = (element: Element) =>
-      (element.getAttribute("aria-label") ?? element.textContent ?? "").replace(/\s+/g, " ").trim();
+      (element.getAttribute("aria-label") ?? element.textContent ?? "")
+        .replace(/\s+/g, " ")
+        .trim();
 
     for (const anchor of document.querySelectorAll<HTMLAnchorElement>("a[href]")) {
       if (!visible(anchor)) continue;
@@ -89,7 +96,11 @@ async function interactiveControlFindings(page: Page): Promise<ControlFinding[]>
         : "";
       const nearby = button.parentElement?.textContent?.replace(/\s+/g, " ").trim() ?? "";
       const reason = [button.title, describedText, nearby].filter(Boolean).join(" ");
-      if (!/(غیرفعال|در دسترس نیست|موجود نیست|endpoint|contract|Core|مجوز|permission|unavailable|disabled)/i.test(reason)) {
+      if (
+        !/(غیرفعال|در دسترس نیست|موجود نیست|endpoint|contract|Core|مجوز|permission|unavailable|disabled)/i.test(
+          reason,
+        )
+      ) {
         findings.push({
           kind: "disabled-button",
           text,
@@ -98,9 +109,9 @@ async function interactiveControlFindings(page: Page): Promise<ControlFinding[]>
       }
     }
 
-    for (const control of document.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
-      "input:not([type='hidden']), select, textarea",
-    )) {
+    for (const control of document.querySelectorAll<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >("input:not([type='hidden']), select, textarea")) {
       if (!visible(control) || control.disabled) continue;
       const id = control.id;
       const hasLabel =
