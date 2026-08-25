@@ -170,7 +170,11 @@ export async function configureTrialAction(
   if (!Number.isInteger(durationDays) || durationDays < 1 || durationDays > 365) {
     return { status: "invalid", message: "مدت Trial باید بین ۱ تا ۳۶۵ روز باشد." };
   }
-  if (!Number.isInteger(expectedVersion) || expectedVersion < 0 || expectedVersion > 1_000_000_000) {
+  if (
+    !Number.isInteger(expectedVersion) ||
+    expectedVersion < 0 ||
+    expectedVersion > 1_000_000_000
+  ) {
     return { status: "invalid", message: "نسخه Trial معتبر نیست؛ صفحه را دوباره بارگذاری کنید." };
   }
   if (status !== "Active" && status !== "Disabled") {
