@@ -46,7 +46,7 @@ export function DiscountCodeControls({
       ) : (
         <form
           action={issueAction}
-          className={styles.operationForm}
+          className={styles.promotionForm}
           onChange={() => setIssueKey(crypto.randomUUID())}
         >
           <input type="hidden" name="promotionId" value={promotionId} />
@@ -136,7 +136,7 @@ export function DiscountCodeControls({
           <div className={styles.feedback} data-status={issueState.status} aria-live="polite">
             {issueState.message ?? ""}
           </div>
-          <button type="submit" className={styles.primaryAction} disabled={issuePending}>
+          <button type="submit" className={styles.primaryButton} disabled={issuePending}>
             {issuePending ? "در حال صدور…" : "صدور Audit‌شده کد"}
           </button>
         </form>
@@ -184,7 +184,11 @@ function DiscountCodeRow({
         {item.version.toLocaleString("fa-IR")}
       </p>
       {canWrite ? (
-        <form action={action} onChange={() => setKey(crypto.randomUUID())}>
+        <form
+          action={action}
+          className={styles.lifecycleForm}
+          onChange={() => setKey(crypto.randomUUID())}
+        >
           <input type="hidden" name="promotionId" value={promotionId} />
           <input type="hidden" name="codeId" value={item.codeId} />
           <input type="hidden" name="expectedVersion" value={String(item.version)} />
@@ -213,7 +217,7 @@ function DiscountCodeRow({
           <div className={styles.feedback} data-status={state.status} aria-live="polite">
             {state.message ?? ""}
           </div>
-          <button type="submit" className={styles.secondaryAction} disabled={pending}>
+          <button type="submit" className={styles.lifecycleButton} disabled={pending}>
             {pending ? "در حال ثبت…" : "ثبت وضعیت"}
           </button>
         </form>
