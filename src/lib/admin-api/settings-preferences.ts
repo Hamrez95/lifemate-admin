@@ -3,13 +3,12 @@ import "server-only";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
-export type CommandCenterPreferences = {
-  locale: string;
-  timeZone: string;
-  displayName: string;
-  version: number;
-  updatedAtUtc: string | null;
-};
+import {
+  type CommandCenterPreferences,
+  parseCommandCenterPreferencesResponse,
+} from "./settings-preferences-contract";
+
+export type { CommandCenterPreferences } from "./settings-preferences-contract";
 
 export type CommandCenterPreferencesResult =
   | { kind: "ok"; preferences: CommandCenterPreferences; supportedLocales: string[] }
@@ -53,20 +52,6 @@ async function problem(response: Response) {
   }
 }
 
-function parsePreferences(value: unknown): CommandCenterPreferences | null {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  const item = value as Record<string, unknown>;
-  if (
-    typeof item.locale !== "string" ||
-    typeof item.timeZone !== "string" ||
-    typeof item.displayName !== "string" ||
-    !Number.isInteger(item.version) ||
-    Number(item.version) < 1 ||
-    (item.updatedAtUtc !== null && typeof item.updatedAtUtc !== "string")
-  ) return null;
-  return item as CommandCenterPreferences;
-}
-
 export async function getCommandCenterPreferences(): Promise<CommandCenterPreferencesResult> {
   const token = await accessToken();
   if (!token) return { kind: "unauthenticated" };
@@ -82,17 +67,10 @@ export async function getCommandCenterPreferences(): Promise<CommandCenterPrefer
     return { kind: "unavailable" };
   }
   if (response.ok) {
-    const body = (await response.json()) as Record<string, unknown>;
-    const preferences = parsePreferences(body.preferences);
-    const capabilities = body.capabilities;
-    if (!preferences || !capabilities || typeof capabilities !== "object" || Array.isArray(capabilities)) {
-      return { kind: "unavailable" };
-    }
-    const supportedLocales = (capabilities as Record<string, unknown>).supportedLocales;
-    if (!Array.isArray(supportedLocales) || !supportedLocales.every((value) => typeof value === "string")) {
-      return { kind: "unavailable" };
-    }
-    return { kind: "ok", preferences, supportedLocales };
+    const parsed = parseCommandCenterPreferencesResponse(await response.json());
+    return parsed
+      ? { kind: "ok", preferences: parsed.preferences, supportedLocales: parsed.supportedLocales }
+      : { kind: "unavailable" };
   }
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden" };
