@@ -12,7 +12,9 @@ async function expectNoViewportOverflow(page: Page) {
 test("login stays usable without horizontal overflow", async ({ page }) => {
   const response = await page.goto("/login");
   expect(response?.status() ?? 500).toBeLessThan(500);
-  await expect(page.getByRole("heading", { name: "ورود امن به مرکز فرماندهی LifeMate" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "ورود امن به مرکز فرماندهی LifeMate" }),
+  ).toBeVisible();
   await expect(page.getByRole("button", { name: "ورود با نام کاربری" })).toBeVisible();
   await expectNoViewportOverflow(page);
 });
