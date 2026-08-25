@@ -11,13 +11,21 @@ export type CommandCenterPreferencesResponse = {
   supportedLocales: string[];
 };
 
-export function parseCommandCenterPreferencesResponse(value: unknown): CommandCenterPreferencesResponse | null {
+export function parseCommandCenterPreferencesResponse(
+  value: unknown,
+): CommandCenterPreferencesResponse | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const body = value as Record<string, unknown>;
   const preferencesValue = body.preferences;
   const capabilitiesValue = body.capabilities;
-  if (!preferencesValue || typeof preferencesValue !== "object" || Array.isArray(preferencesValue)) return null;
-  if (!capabilitiesValue || typeof capabilitiesValue !== "object" || Array.isArray(capabilitiesValue)) return null;
+  if (!preferencesValue || typeof preferencesValue !== "object" || Array.isArray(preferencesValue))
+    return null;
+  if (
+    !capabilitiesValue ||
+    typeof capabilitiesValue !== "object" ||
+    Array.isArray(capabilitiesValue)
+  )
+    return null;
 
   const preferences = preferencesValue as Record<string, unknown>;
   const capabilities = capabilitiesValue as Record<string, unknown>;
@@ -28,7 +36,8 @@ export function parseCommandCenterPreferencesResponse(value: unknown): CommandCe
     !Number.isInteger(preferences.version) ||
     Number(preferences.version) < 1 ||
     (preferences.updatedAtUtc !== null && typeof preferences.updatedAtUtc !== "string")
-  ) return null;
+  )
+    return null;
 
   const supportedLocales = capabilities.supportedLocales;
   const mutableFields = capabilities.mutableFields;
@@ -38,7 +47,8 @@ export function parseCommandCenterPreferencesResponse(value: unknown): CommandCe
     !Array.isArray(mutableFields) ||
     !mutableFields.every((item) => typeof item === "string") ||
     capabilities.secretsEditable !== false
-  ) return null;
+  )
+    return null;
 
   const requiredFields = ["locale", "timeZone", "displayName"];
   if (!requiredFields.every((field) => mutableFields.includes(field))) return null;
