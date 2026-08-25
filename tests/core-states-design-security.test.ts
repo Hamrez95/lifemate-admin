@@ -77,9 +77,7 @@ describe("Command Center core state design/security contract", () => {
 
   it("respects reduced motion and keyboard focus", () => {
     const standalone = source("app/standalone-state.module.css");
-    const tableStyles = source(
-      "src/components/admin-data-table/admin-data-table.module.css",
-    );
+    const tableStyles = source("src/components/admin-data-table/admin-data-table.module.css");
     expect(standalone).toContain("@media (prefers-reduced-motion: reduce)");
     expect(standalone).toContain(":focus-visible");
     expect(tableStyles).toContain("@media (prefers-reduced-motion: reduce)");
