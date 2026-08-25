@@ -75,9 +75,7 @@ async function assertDisabledReasons(page: Page, route: string) {
     const title = (await button.getAttribute("title"))?.trim();
     const describedBy = (await button.getAttribute("aria-describedby"))?.trim();
     const text = (await button.innerText()).trim().toLowerCase();
-    const hasTextReason = disabledReasonTokens.some((token) =>
-      text.includes(token),
-    );
+    const hasTextReason = disabledReasonTokens.some((token) => text.includes(token));
     const hasReason = Boolean(title || describedBy || hasTextReason);
     const message = `${route}: disabled button needs an explicit reason`;
     expect(hasReason, message).toBe(true);
@@ -104,11 +102,7 @@ async function assertLabelledFormControls(page: Page, route: string) {
   }
 }
 
-async function assertInternalLinks(
-  page: Page,
-  route: string,
-  checked: Set<string>,
-) {
+async function assertInternalLinks(page: Page, route: string, checked: Set<string>) {
   const hrefs = await page.locator("a[href^='/']:visible").evaluateAll((links) => {
     return links.flatMap((link) => {
       const href = link.getAttribute("href");
