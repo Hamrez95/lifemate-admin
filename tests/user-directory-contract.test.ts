@@ -25,9 +25,10 @@ describe("ADM-USR-001 security and UI contract", () => {
     const page = source("app/users/page.tsx");
 
     expect(client).toContain("username: string | null");
-    expect(client).toContain("item.username !== null");
-    expect(client).toContain('typeof item.username !== "string"');
-    expect(client).toContain('typeof item.username === "string" ? item.username : null');
+    expect(client).toContain('typeof item.username !== "string" && item.username != null');
+    expect(client).toContain(
+      'typeof item.username === "string" ? item.username : null',
+    );
     expect(page).toContain("row.username");
     expect(page).toContain("username canonical");
     expect(page).not.toContain('split("@")');
