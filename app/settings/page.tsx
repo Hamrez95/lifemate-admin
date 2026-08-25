@@ -59,7 +59,9 @@ export default async function SettingsPage() {
 
           {result.kind === "unavailable" ? (
             <section className={styles.banner} role="status" aria-live="polite">
-              <span className={styles.bannerIcon} aria-hidden="true">!</span>
+              <span className={styles.bannerIcon} aria-hidden="true">
+                !
+              </span>
               <div>
                 <strong>Settings API فعلاً در دسترس نیست.</strong>
                 <p>
@@ -85,7 +87,8 @@ export default async function SettingsPage() {
                 canWrite={canWrite}
               />
               <p className={styles.helper}>
-                آخرین بروزرسانی canonical: {result.preferences.updatedAtUtc
+                آخرین بروزرسانی canonical:{" "}
+                {result.preferences.updatedAtUtc
                   ? new Intl.DateTimeFormat("fa-IR", {
                       dateStyle: "medium",
                       timeStyle: "short",
@@ -106,9 +109,18 @@ export default async function SettingsPage() {
                 <span className={styles.badge}>Workspace-owned</span>
               </header>
               <ul className={styles.list}>
-                <li><strong>Dashboard freshness</strong><p>از قرارداد canonical همان workspace خوانده می‌شود.</p></li>
-                <li><strong>Operational freshness</strong><p>مقدار یا interval ساختگی در Settings ایجاد نمی‌شود.</p></li>
-                <li><strong>Analytics freshness</strong><p>Analytics از freshness canonical خودش استفاده می‌کند.</p></li>
+                <li>
+                  <strong>Dashboard freshness</strong>
+                  <p>از قرارداد canonical همان workspace خوانده می‌شود.</p>
+                </li>
+                <li>
+                  <strong>Operational freshness</strong>
+                  <p>مقدار یا interval ساختگی در Settings ایجاد نمی‌شود.</p>
+                </li>
+                <li>
+                  <strong>Analytics freshness</strong>
+                  <p>Analytics از freshness canonical خودش استفاده می‌کند.</p>
+                </li>
               </ul>
             </article>
 
@@ -121,9 +133,18 @@ export default async function SettingsPage() {
                 <span className={styles.badge}>Allow-listed</span>
               </header>
               <ul className={styles.list}>
-                <li><strong>قابل تغییر</strong><p>نام نمایشی، locale و IANA timezone.</p></li>
-                <li><strong>غیرقابل تغییر از این مسیر</strong><p>Auth، permission، provider config، endpoint و credential.</p></li>
-                <li><strong>Mutation safety</strong><p>AAL2، settings.write، reason، confirmation، idempotency، version و audit.</p></li>
+                <li>
+                  <strong>قابل تغییر</strong>
+                  <p>نام نمایشی، locale و IANA timezone.</p>
+                </li>
+                <li>
+                  <strong>غیرقابل تغییر از این مسیر</strong>
+                  <p>Auth، permission، provider config، endpoint و credential.</p>
+                </li>
+                <li>
+                  <strong>Mutation safety</strong>
+                  <p>AAL2، settings.write، reason، confirmation، idempotency، version و audit.</p>
+                </li>
               </ul>
             </article>
           </section>
@@ -153,7 +174,9 @@ export default async function SettingsPage() {
           </section>
 
           <section className={styles.banner} role="alert">
-            <span className={styles.bannerIcon} aria-hidden="true">i</span>
+            <span className={styles.bannerIcon} aria-hidden="true">
+              i
+            </span>
             <div>
               <strong>خطاها privacy-safe باقی می‌مانند.</strong>
               <p>
