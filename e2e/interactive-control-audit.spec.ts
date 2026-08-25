@@ -74,7 +74,11 @@ async function interactiveControlFindings(page: Page): Promise<ControlFinding[]>
         findings.push({ kind: "link", text: label(anchor), detail: `invalid href: ${raw}` });
       }
       if (!label(anchor)) {
-        findings.push({ kind: "link", text: "", detail: `missing accessible label for ${raw}` });
+        findings.push({
+          kind: "link",
+          text: "",
+          detail: `missing accessible label for ${raw}`,
+        });
       }
     }
 
@@ -94,7 +98,8 @@ async function interactiveControlFindings(page: Page): Promise<ControlFinding[]>
             .join(" ")
             .trim()
         : "";
-      const nearby = button.parentElement?.textContent?.replace(/\s+/g, " ").trim() ?? "";
+      const nearby =
+        button.parentElement?.textContent?.replace(/\s+/g, " ").trim() ?? "";
       const reason = [button.title, describedText, nearby].filter(Boolean).join(" ");
       if (
         !/(غیرفعال|در دسترس نیست|موجود نیست|endpoint|contract|Core|مجوز|permission|unavailable|disabled)/i.test(
@@ -117,7 +122,9 @@ async function interactiveControlFindings(page: Page): Promise<ControlFinding[]>
       const hasLabel =
         Boolean(control.getAttribute("aria-label")) ||
         Boolean(control.getAttribute("aria-labelledby")) ||
-        Boolean(id && document.querySelector(`label[for=${JSON.stringify(id)}]`)) ||
+        Boolean(
+          id && document.querySelector(`label[for=${JSON.stringify(id)}]`),
+        ) ||
         Boolean(control.closest("label"));
       if (!hasLabel) {
         findings.push({
