@@ -54,8 +54,12 @@ test("primary routes expose only valid interactive navigation", async ({ page })
     await expect(page.locator("body"), route).toBeVisible();
     await expect(page.locator(invalidHrefSelector), `${route}: invalid href`).toHaveCount(0);
 
-    const unnamedLinks = page.locator("a[href]:visible").filter({ hasText: /^\s*$/ });
-    const unnamedButtons = page.locator("button:visible").filter({ hasText: /^\s*$/ });
+    const unnamedLinks = page
+      .locator('a[href]:visible:not([aria-label]):not([title])')
+      .filter({ hasText: /^\s*$/ });
+    const unnamedButtons = page
+      .locator('button:visible:not([aria-label]):not([title])')
+      .filter({ hasText: /^\s*$/ });
     expect(await unnamedLinks.count(), `${route}: unnamed links`).toBe(0);
     expect(await unnamedButtons.count(), `${route}: unnamed buttons`).toBe(0);
   }
