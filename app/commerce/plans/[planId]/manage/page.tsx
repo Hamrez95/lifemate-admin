@@ -119,9 +119,9 @@ async function ManagementContent({
       <PlanFeatureControls planId={planId} items={featureResult.items} canWrite={canFeatureWrite} />
 
       <p className={styles.safetyNote}>
-        این صفحه عمداً Subscription موجود را reprice یا migrate نمی‌کند و assignment قابلیت پلن را
-        با Entitlement یک کاربر یکی نمی‌گیرد. Discount-code issuance فقط از قرارداد canonical مستقل
-        خودش فعال می‌شود.
+        Entitlement assignment کاربر در این صفحه انجام نمی‌شود. این صفحه عمداً Subscription موجود را
+        reprice یا migrate نمی‌کند و assignment قابلیت پلن را با Entitlement یک کاربر یکی نمی‌گیرد.
+        Discount-code issuance فقط از قرارداد canonical مستقل خودش فعال می‌شود.
       </p>
     </div>
   );
