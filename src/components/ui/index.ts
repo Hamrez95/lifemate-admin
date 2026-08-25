@@ -6,3 +6,4 @@ export { ForbiddenState } from "./ForbiddenState";
 export { LoadingState } from "./LoadingState";
 export { MetricCard } from "./MetricCard";
 export { PageHeader } from "./PageHeader";
+export { SuccessState } from "./SuccessState";

@@ -3,13 +3,17 @@ import type { ReactNode } from "react";
 
 import { StateCard } from "./StateCard";
 
-type EmptyStateProps = {
-  title: string;
-  description: string;
+type SuccessStateProps = {
+  title?: string;
+  description?: string;
   actions?: ReactNode;
 };
 
-export function EmptyState({ title, description, actions }: EmptyStateProps) {
+export function SuccessState({
+  title = "انجام شد",
+  description = "تغییر با موفقیت ثبت شد.",
+  actions,
+}: SuccessStateProps) {
   return (
     <StateCard
       icon={

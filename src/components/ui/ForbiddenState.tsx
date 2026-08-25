@@ -11,7 +11,7 @@ export function ForbiddenState({ actions }: ForbiddenStateProps) {
     <StateCard
       icon="403"
       title="برای این بخش دسترسی ندارید."
-      description="دسترسی فقط با عضویت فعال، permission لازم و کنترل‌های امنیتی سمت سرور برقرار می‌شود. دیده‌شدن منو یا ورود موفق به‌تنهایی مجوز ایجاد نمی‌کند."
+      description="عضویت فعال، سطح دسترسی لازم و مجوز این بخش باید سمت سرور تأیید شود."
       actions={actions}
       role="status"
     />
