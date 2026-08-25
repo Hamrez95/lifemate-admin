@@ -34,6 +34,23 @@ export type ConfigureCommerceTrialPayload = {
   reason: string;
 };
 
+export type CommerceTrialPolicy = {
+  planId: string;
+  durationDays: number;
+  eligibilityRule: "NoPriorTrialForProduct";
+  status: "Active" | "Disabled";
+  version: number;
+  createdAtUtc: string;
+  updatedAtUtc: string;
+};
+
+export type CommerceTrialPolicyResult =
+  | { kind: "ok"; policy: CommerceTrialPolicy | null }
+  | { kind: "unauthenticated" }
+  | { kind: "forbidden" }
+  | { kind: "not_found" }
+  | { kind: "unavailable"; correlationId?: string };
+
 export type CommerceCatalogMutationResult =
   | { kind: "ok"; data: Record<string, unknown> }
   | { kind: "unauthenticated" }
@@ -132,6 +149,58 @@ async function mutateCatalog(
     return { kind: "invalid", code: issue.code, message: issue.message };
   }
   return { kind: "unavailable", correlationId: issue.correlationId };
+}
+
+function parseTrialPolicy(value: unknown): CommerceTrialPolicy | null | undefined {
+  if (value === null) return null;
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const policy = value as Record<string, unknown>;
+  if (
+    typeof policy.planId !== "string" ||
+    !UUID_PATTERN.test(policy.planId) ||
+    !Number.isInteger(policy.durationDays) ||
+    policy.eligibilityRule !== "NoPriorTrialForProduct" ||
+    (policy.status !== "Active" && policy.status !== "Disabled") ||
+    !Number.isInteger(policy.version) ||
+    typeof policy.createdAtUtc !== "string" ||
+    typeof policy.updatedAtUtc !== "string"
+  ) {
+    return undefined;
+  }
+  return policy as CommerceTrialPolicy;
+}
+
+export async function getCommerceTrialPolicy(
+  planId: string,
+): Promise<CommerceTrialPolicyResult> {
+  if (!UUID_PATTERN.test(planId)) return { kind: "not_found" };
+  const token = await accessToken();
+  if (!token) return { kind: "unauthenticated" };
+  const config = getPublicRuntimeConfig();
+
+  let response: Response;
+  try {
+    response = await fetch(
+      `${config.adminApiUrl}/api/v1/commerce/plans/${planId}/trial-policy`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+        signal: AbortSignal.timeout(10_000),
+      },
+    );
+  } catch {
+    return { kind: "unavailable" };
+  }
+
+  if (response.ok) {
+    const body = (await response.json()) as Record<string, unknown>;
+    const policy = parseTrialPolicy(body.policy);
+    return policy !== undefined ? { kind: "ok", policy } : { kind: "unavailable" };
+  }
+  if (response.status === 401) return { kind: "unauthenticated" };
+  if (response.status === 403) return { kind: "forbidden" };
+  if (response.status === 404) return { kind: "not_found" };
+  return { kind: "unavailable", correlationId: (await problem(response)).correlationId };
 }
 
 export function createCommercePlan(
