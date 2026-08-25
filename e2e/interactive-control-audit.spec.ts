@@ -37,11 +37,11 @@ const primaryRoutes = [
 ] as const;
 
 const invalidHrefSelector = [
-  'a[href=""]',
-  'a[href="#"]',
-  'a[href^="javascript:"]',
-  'a[href*="/undefined"]',
-  'a[href*="/null"]',
+  "a[href=\"\"]",
+  "a[href=\"#\"]",
+  "a[href^=\"javascript:\"]",
+  "a[href*=\"/undefined\"]",
+  "a[href*=\"/null\"]",
 ].join(", ");
 
 test("primary routes expose only valid interactive navigation", async ({ page }) => {
@@ -55,10 +55,10 @@ test("primary routes expose only valid interactive navigation", async ({ page })
     await expect(page.locator(invalidHrefSelector), `${route}: invalid href`).toHaveCount(0);
 
     const unnamedLinks = page
-      .locator('a[href]:visible:not([aria-label]):not([title])')
+      .locator("a[href]:visible:not([aria-label]):not([title])")
       .filter({ hasText: /^\s*$/ });
     const unnamedButtons = page
-      .locator('button:visible:not([aria-label]):not([title])')
+      .locator("button:visible:not([aria-label]):not([title])")
       .filter({ hasText: /^\s*$/ });
     expect(await unnamedLinks.count(), `${route}: unnamed links`).toBe(0);
     expect(await unnamedButtons.count(), `${route}: unnamed buttons`).toBe(0);
