@@ -47,11 +47,9 @@ test("active staff completes username/password then TOTP MFA before an authorize
   ).toBe(true);
 
   await page.goto("/operations");
-  await expect(page.getByRole("heading", { name: "عملیات" })).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "دسترسی این فضا از سمت سرور تأیید شد." }),
-  ).toBeVisible();
-  await expect(page.getByText(/نمایش منو صرفاً UX است/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "عملیات", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "مرکز عملیات LifeMate" })).toBeVisible();
+  await expect(page.getByText(/Operational visibility هنوز به قرارداد Core متصل نشده است/)).toBeVisible();
 
   const a11y = await new AxeBuilder({ page }).analyze();
   expect(
