@@ -98,7 +98,7 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
           <section className={styles.hero} aria-labelledby="audit-title">
             <div>
               <p className="eyebrow">REFERENCE 20 · AUDIT LOG EXPLORER</p>
-              <h2 id="audit-title">ردپای مدیریتی، بدون نمایش payload حساس</h2>
+              <h2 id="audit-title">Audit Log Explorer</h2>
               <p>
                 هر رویداد canonical را با زمان، نتیجه، مرجع، actor و correlation مرور کنید. این نما
                 read-only است و raw metadata، secret یا health payload را نمایش نمی‌دهد.
