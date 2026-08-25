@@ -138,9 +138,7 @@ export function PlanCatalogControls({
         {!canTrialWrite ? (
           <p className={styles.safetyNote}>مجوز تغییر Trial policy این پلن را ندارید.</p>
         ) : saleBlocked ? (
-          <p className={styles.safetyNote}>
-            Trial فقط برای Plan و Product فعال قابل پیکربندی است.
-          </p>
+          <p className={styles.safetyNote}>Trial فقط برای Plan و Product فعال قابل پیکربندی است.</p>
         ) : (
           <form
             action={trialAction}
@@ -149,11 +147,7 @@ export function PlanCatalogControls({
           >
             <input type="hidden" name="planId" value={plan.id} />
             <input type="hidden" name="idempotencyKey" value={trialKey} />
-            <input
-              type="hidden"
-              name="expectedVersion"
-              value={String(trialPolicy?.version ?? 0)}
-            />
+            <input type="hidden" name="expectedVersion" value={String(trialPolicy?.version ?? 0)} />
             <label className={styles.field}>
               <span>مدت Trial · روز</span>
               <input
@@ -181,8 +175,8 @@ export function PlanCatalogControls({
               <span>قانون eligibility</span>
               <code>NoPriorTrialForProduct</code>
               <small>
-                این policy اجازه تعریف eligibility دلخواه در UI را نمی‌دهد؛ rule از contract canonical
-                می‌آید.
+                این policy اجازه تعریف eligibility دلخواه در UI را نمی‌دهد؛ rule از contract
+                canonical می‌آید.
               </small>
             </div>
             <label className={styles.wideField}>
@@ -198,8 +192,8 @@ export function PlanCatalogControls({
             </label>
             <p className={styles.safetyNote}>
               نسخه فعلی: {(trialPolicy?.version ?? 0).toLocaleString("fa-IR")}. اگر شخص دیگری این
-              policy را تغییر داده باشد، Core درخواست را با conflict رد می‌کند و باید صفحه را refresh
-              کنید.
+              policy را تغییر داده باشد، Core درخواست را با conflict رد می‌کند و باید صفحه را
+              refresh کنید.
             </p>
             <label className={styles.safetyNote}>
               <input
