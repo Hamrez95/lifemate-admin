@@ -130,8 +130,8 @@ export function DiscountCodeControls({
               required
               disabled={issuePending}
             />{" "}
-            تعداد، سقف استفاده و Rule این Promotion را بررسی کرده‌ام؛ این عملیات فقط کد صادر می‌کند و
-            Subscription یا Entitlement موجود را تغییر نمی‌دهد.
+            تعداد، سقف استفاده و Rule این Promotion را بررسی کرده‌ام؛ این عملیات فقط کد صادر می‌کند
+            و Subscription یا Entitlement موجود را تغییر نمی‌دهد.
           </label>
           <div className={styles.feedback} data-status={issueState.status} aria-live="polite">
             {issueState.message ?? ""}
