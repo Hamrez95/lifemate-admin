@@ -47,7 +47,10 @@ const invalidHrefSelector = [
 function isSameOriginHttpLink(rawHref: string, origin: string): boolean {
   try {
     const url = new URL(rawHref, origin);
-    return (url.protocol === "http:" || url.protocol === "https:") && url.origin === origin;
+    return (
+      (url.protocol === "http:" || url.protocol === "https:") &&
+      url.origin === origin
+    );
   } catch {
     return false;
   }
@@ -94,10 +97,15 @@ test("primary routes expose only valid interactive controls and navigation", asy
           "endpoint",
         ].some((token) => text.includes(token));
       });
-      expect(hasReason, `${route}: disabled button without dependency/permission reason`).toBe(true);
+      expect(
+        hasReason,
+        `${route}: disabled button without dependency/permission reason`,
+      ).toBe(true);
     }
 
-    const formControls = page.locator("input:visible, select:visible, textarea:visible");
+    const formControls = page.locator(
+      "input:visible, select:visible, textarea:visible",
+    );
     for (let index = 0; index < (await formControls.count()); index += 1) {
       const control = formControls.nth(index);
       const hasAccessibleLabel = await control.evaluate((element) => {
@@ -107,9 +115,15 @@ test("primary routes expose only valid interactive controls and navigation", asy
         const id = element.getAttribute("id")?.trim();
         if (ariaLabel || ariaLabelledBy || title) return true;
         if (!id) return Boolean(element.closest("label"));
-        return Boolean(element.closest("label") || document.querySelector(`label[for="${CSS.escape(id)}"]`));
+        return Boolean(
+          element.closest("label") ||
+            document.querySelector(`label[for="${CSS.escape(id)}"]`),
+        );
       });
-      expect(hasAccessibleLabel, `${route}: visible form control without accessible label`).toBe(true);
+      expect(
+        hasAccessibleLabel,
+        `${route}: visible form control without accessible label`,
+      ).toBe(true);
     }
 
     const hrefs = await page.locator("a[href]:visible").evaluateAll((links) =>
@@ -126,9 +140,17 @@ test("primary routes expose only valid interactive controls and navigation", asy
       if (checkedInternalLinks.has(normalized)) continue;
       checkedInternalLinks.add(normalized);
 
-      const linkResponse = await page.context().request.get(normalized, { maxRedirects: 5 });
-      expect(linkResponse.status(), `${route}: dead internal link ${url.pathname}`).not.toBe(404);
-      expect(linkResponse.status(), `${route}: failing internal link ${url.pathname}`).toBeLessThan(500);
+      const linkResponse = await page.context().request.get(normalized, {
+        maxRedirects: 5,
+      });
+      expect(
+        linkResponse.status(),
+        `${route}: dead internal link ${url.pathname}`,
+      ).not.toBe(404);
+      expect(
+        linkResponse.status(),
+        `${route}: failing internal link ${url.pathname}`,
+      ).toBeLessThan(500);
     }
   }
 });
