@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { SecurityContextHeader } from "@/src/components/security/SecurityContextHeader";
 import { Sidebar } from "@/src/components/shell/Sidebar";
 import { Topbar } from "@/src/components/shell/Topbar";
 import { AppShell } from "@/src/components/ui/AppShell";
@@ -25,6 +26,7 @@ export function AdminShell({ activeSlug, title, subtitle, children }: AdminShell
       header={<Topbar title={title} subtitle={subtitle} />}
     >
       <main id="main-content" className="main-content" tabIndex={-1}>
+        {activeSlug === "security" ? <SecurityContextHeader /> : null}
         {children}
       </main>
     </AppShell>
