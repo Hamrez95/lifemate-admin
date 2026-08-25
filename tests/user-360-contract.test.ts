@@ -36,6 +36,15 @@ describe("ADM-USR-002 / ADM-USR-004 User 360 detail", () => {
     expect(page).toContain("data.adminActivity.state");
   });
 
+  it("renders canonical relationship types generically so care roles survive schema migration", () => {
+    const page = source("app/users/[accountId]/page.tsx");
+
+    expect(page).toContain("relationship.relationshipType");
+    expect(page).toContain("relationship.status");
+    expect(page).not.toContain('relationship.relationshipType === "Parent"');
+    expect(page).not.toContain('relationship.relationshipType === "Caregiver"');
+  });
+
   it("provides deep-linkable Persian-first tabs without fabricating unavailable support data", () => {
     const page = source("app/users/[accountId]/page.tsx");
 
