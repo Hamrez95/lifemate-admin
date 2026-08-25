@@ -23,8 +23,8 @@ const copy: Record<AdminPageStateKind, { title: string; description: string }> =
     description: "دوباره تلاش کنید.",
   },
   forbidden: {
-    title: "دسترسی ندارید",
-    description: "مجوز لازم برای این بخش وجود ندارد.",
+    title: "دسترسی مجاز نیست",
+    description: "برای مشاهده این بخش مجوز لازم را ندارید.",
   },
   stale: {
     title: "اطلاعات ممکن است به‌روز نباشد",
