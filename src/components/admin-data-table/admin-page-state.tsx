@@ -1,32 +1,44 @@
+import Image from "next/image";
+
 import styles from "./admin-data-table.module.css";
 
 export type AdminPageStateKind =
-  "loading" | "empty" | "error" | "forbidden" | "stale" | "unavailable";
+  | "loading"
+  | "empty"
+  | "success"
+  | "error"
+  | "forbidden"
+  | "stale"
+  | "unavailable";
 
 const copy: Record<AdminPageStateKind, { title: string; description: string }> = {
   loading: {
-    title: "در حال دریافت اطلاعات",
-    description: "اطلاعات این بخش در حال بارگذاری است.",
+    title: "در حال بارگذاری…",
+    description: "",
   },
   empty: {
-    title: "موردی پیدا نشد",
-    description: "با فیلترهای فعلی داده‌ای برای نمایش وجود ندارد.",
+    title: "موردی برای نمایش نیست",
+    description: "با فیلترهای فعلی داده‌ای پیدا نشد.",
+  },
+  success: {
+    title: "انجام شد",
+    description: "تغییر با موفقیت ثبت شد.",
   },
   error: {
-    title: "دریافت اطلاعات ناموفق بود",
-    description: "در حال حاضر نمی‌توانیم این داده را نمایش دهیم. دوباره تلاش کنید.",
+    title: "این بخش بارگذاری نشد",
+    description: "دوباره تلاش کنید.",
   },
   forbidden: {
-    title: "دسترسی مجاز نیست",
-    description: "برای مشاهده این بخش مجوز لازم را ندارید.",
+    title: "دسترسی ندارید",
+    description: "مجوز لازم برای این بخش وجود ندارد.",
   },
   stale: {
     title: "اطلاعات ممکن است به‌روز نباشد",
     description: "آخرین نسخه قابل اعتماد نمایش داده شده است.",
   },
   unavailable: {
-    title: "اطلاعات در دسترس نیست",
-    description: "منبع این داده در حال حاضر در دسترس یا متصل نیست.",
+    title: "منبع در دسترس نیست",
+    description: "اتصال canonical فعلاً پاسخ نمی‌دهد.",
   },
 };
 
@@ -40,7 +52,9 @@ export function AdminPageState({
   description?: string;
 }) {
   const content = copy[state];
+  const resolvedDescription = description ?? content.description;
   const isAlert = state === "error" || state === "forbidden";
+  const showArtwork = state === "empty" || state === "success";
 
   return (
     <section
@@ -50,8 +64,24 @@ export function AdminPageState({
       aria-live={isAlert ? "assertive" : "polite"}
       aria-busy={state === "loading"}
     >
+      {showArtwork ? (
+        <Image
+          className={styles.stateArtwork}
+          src="/design-assets/empty-success-sprout-v1.png"
+          alt=""
+          width={112}
+          height={112}
+          sizes="112px"
+        />
+      ) : null}
+      {state === "loading" ? (
+        <div className={styles.stateSkeleton} aria-hidden="true">
+          <span />
+          <span />
+        </div>
+      ) : null}
       <strong>{title ?? content.title}</strong>
-      <p>{description ?? content.description}</p>
+      {resolvedDescription ? <p>{resolvedDescription}</p> : null}
     </section>
   );
 }
