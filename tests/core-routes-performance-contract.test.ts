@@ -31,7 +31,9 @@ function occurrences(value: string, needle: string): number {
 describe("core route performance contract", () => {
   it("keeps target-route image priority limited to intentional above-the-fold heroes", () => {
     expect(source("app/login/page.tsx")).toContain("priority");
-    expect(source("src/components/dashboard/FounderOverview.tsx")).toContain("priority");
+    expect(source("src/components/dashboard/FounderOverview.tsx")).toContain(
+      "priority",
+    );
 
     for (const file of [
       "app/users/page.tsx",
@@ -49,10 +51,12 @@ describe("core route performance contract", () => {
       "src/components/ui/EmptyState.tsx",
       "src/components/ui/SuccessState.tsx",
     ]);
-    const offenders = [...sourceFiles("app"), ...sourceFiles("src")].filter((file) => {
-      if (allowed.has(file)) return false;
-      return source(file).includes("/design-assets/empty-success-sprout-v1.png");
-    });
+    const offenders = [...sourceFiles("app"), ...sourceFiles("src")].filter(
+      (file) => {
+        if (allowed.has(file)) return false;
+        return source(file).includes("/design-assets/empty-success-sprout-v1.png");
+      },
+    );
     expect(offenders).toEqual([]);
   });
 
