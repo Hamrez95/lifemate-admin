@@ -12,9 +12,9 @@ describe("security references 18-20", () => {
     const shell = await source("src/components/shell/AdminShell.tsx");
 
     expect(header).toContain('from "next/image"');
-    expect(header).toContain('/design-assets/security-audit-hero-v1.png');
-    expect(header).toContain('width={1536}');
-    expect(header).toContain('height={1024}');
+    expect(header).toContain("/design-assets/security-audit-hero-v1.png");
+    expect(header).toContain("width={1536}");
+    expect(header).toContain("height={1024}");
     expect(header).toContain('href="/security"');
     expect(header).toContain('href="/security/audit"');
     expect(shell).toContain('activeSlug === "security"');
