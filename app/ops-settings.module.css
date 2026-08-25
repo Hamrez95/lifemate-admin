@@ -1,0 +1,289 @@
+.page {
+  min-width: 0;
+  display: grid;
+  gap: 1rem;
+  direction: rtl;
+}
+
+.hero,
+.panel,
+.card,
+.banner {
+  border: 1px solid var(--line, #e8e2d8);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 12px 34px rgba(65, 54, 44, 0.06);
+}
+
+.hero {
+  padding: 1.25rem 1.4rem;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(116, 214, 178, 0.16), transparent 30%),
+    radial-gradient(circle at 84% 24%, rgba(149, 169, 235, 0.14), transparent 34%),
+    rgba(255, 255, 255, 0.96);
+}
+
+.hero h2,
+.panel h3,
+.card h3 {
+  margin: 0.25rem 0 0.4rem;
+}
+
+.hero p,
+.panel p,
+.card p,
+.banner p,
+.helper {
+  margin: 0;
+  color: #6e6861;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.actions a,
+.actions button {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  padding: 0.45rem 0.9rem;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.actions a {
+  border: 1px solid #d9d2c7;
+  background: #faf7f1;
+  color: #4f4942;
+}
+
+.actions button {
+  border: 1px solid #d8d2ca;
+  background: #f2efea;
+  color: #8b857e;
+  cursor: not-allowed;
+}
+
+.banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 1rem 1.1rem;
+  background: #fffaf0;
+  border-color: #f1dfb3;
+}
+
+.bannerIcon {
+  inline-size: 30px;
+  block-size: 30px;
+  flex: 0 0 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffe9b8;
+  color: #805f15;
+  font-weight: 900;
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.card,
+.panel {
+  min-width: 0;
+  padding: 1rem 1.1rem;
+}
+
+.cardHeader,
+.panelHeader,
+.row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0.2rem 0.58rem;
+  border-radius: 999px;
+  border: 1px solid #ded7cc;
+  background: #faf7f1;
+  color: #6d665f;
+  font-size: 0.74rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0.85rem 0 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.list li,
+.row {
+  padding: 0.75rem 0.8rem;
+  border-radius: 14px;
+  background: #fbfaf7;
+}
+
+.list strong,
+.row strong,
+.row span {
+  overflow-wrap: anywhere;
+}
+
+.linkList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+.linkList a {
+  min-width: 0;
+  padding: 0.85rem;
+  border-radius: 14px;
+  border: 1px solid #e6e0d7;
+  background: #fbfaf7;
+  color: #3f5f50;
+  text-decoration: none;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.settingsNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.settingsNav span {
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid #e1dad0;
+  background: #fff;
+  color: #655f58;
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-top: 0.8rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field label {
+  color: #5f5952;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.field input,
+.field select {
+  min-height: 42px;
+  width: 100%;
+  border: 1px solid #ddd5ca;
+  border-radius: 12px;
+  background: #f7f4ef;
+  color: #807970;
+  padding: 0.45rem 0.7rem;
+  font: inherit;
+}
+
+.confirmation {
+  margin-top: 0.9rem;
+  padding: 0.85rem;
+  border-radius: 14px;
+  border: 1px solid #f0c9c4;
+  background: #fff7f6;
+}
+
+.confirmation strong {
+  color: #8b3d35;
+}
+
+.saveState {
+  margin-top: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.saveState span {
+  color: #6e6861;
+  font-size: 0.84rem;
+}
+
+.codeSafe {
+  direction: ltr;
+  unicode-bidi: plaintext;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1024px) {
+  .grid3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .grid3,
+  .grid2,
+  .fieldGrid,
+  .linkList {
+    grid-template-columns: 1fr;
+  }
+
+  .cardHeader,
+  .panelHeader,
+  .row {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero,
+  .panel,
+  .card,
+  .banner {
+    border-radius: 16px;
+  }
+
+  .hero,
+  .panel,
+  .card {
+    padding: 0.9rem;
+  }
+}
