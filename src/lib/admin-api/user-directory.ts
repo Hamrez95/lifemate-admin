@@ -55,7 +55,7 @@ function parseDirectoryResponse(value: unknown): UserDirectoryResponse | null {
     if (typeof item.accountId !== "string" || typeof item.status !== "string") return null;
     if (item.personId !== null && typeof item.personId !== "string") return null;
     if (item.displayName !== null && typeof item.displayName !== "string") return null;
-    if (item.username !== null && typeof item.username !== "string") return null;
+    if (item.username != null && typeof item.username !== "string") return null;
     if (!isStringArray(item.applicationCodes)) return null;
     if (typeof item.createdAtUtc !== "string") return null;
     if (item.lastActiveAtUtc !== null && typeof item.lastActiveAtUtc !== "string") return null;
@@ -64,7 +64,7 @@ function parseDirectoryResponse(value: unknown): UserDirectoryResponse | null {
       accountId: item.accountId,
       personId: item.personId,
       displayName: item.displayName,
-      username: item.username,
+      username: typeof item.username === "string" ? item.username : null,
       status: item.status,
       applicationCodes: item.applicationCodes,
       createdAtUtc: item.createdAtUtc,
