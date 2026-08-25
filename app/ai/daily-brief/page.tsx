@@ -1,15 +1,49 @@
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
 import { AdminShell } from "@/src/components/shell/AdminShell";
+import { getDailyBrief } from "@/src/lib/admin-api/ai-daily-brief";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
 import styles from "../advisor.module.css";
 
+function BriefColumn({
+  label,
+  items,
+  empty,
+}: {
+  label: string;
+  items: { id: string; title: string; detail: string }[];
+  empty: string;
+}) {
+  return (
+    <article className={styles.briefCard}>
+      <span>{label}</span>
+      {items.length === 0 ? (
+        <>
+          <h4>موردی ثبت نشده است</h4>
+          <p>{empty}</p>
+        </>
+      ) : (
+        items.map((item) => (
+          <div key={item.id}>
+            <h4>{item.title}</h4>
+            <p>{item.detail}</p>
+          </div>
+        ))
+      )}
+    </article>
+  );
+}
+
 export default async function AiDailyBriefPage() {
   const admin = await requireAdminAccess();
-  const canReadBusinessAi = admin.permissions.includes("ai.business.read");
+  if (!admin.permissions.includes("ai.business.read")) redirect("/forbidden");
+  const result = await getDailyBrief();
+  if (result.kind === "unauthenticated") redirect("/login");
+  if (result.kind === "forbidden") redirect("/forbidden");
 
   return (
     <AdminSessionProvider admin={admin}>
@@ -28,14 +62,11 @@ export default async function AiDailyBriefPage() {
 
           <header className={styles.hero}>
             <div className={styles.heroCopy}>
-              <p className={styles.eyebrow}>Executive Daily Brief · Safe by default</p>
-              <h2>
-                صبح را با یک تصویر کوتاه از کسب‌وکار شروع کنید؛ فقط وقتی Core آن را تأیید کرده باشد.
-              </h2>
+              <p className={styles.eyebrow}>Executive Daily Brief · Evidence first</p>
+              <h2>تصویر کوتاه کسب‌وکار، فقط بر پایه شواهد canonical و freshness قابل مشاهده.</h2>
               <p>
-                چیدمان از مرجع صفحه ۲ گرفته شده است: تغییرات کلیدی، موارد نیازمند توجه و اقدام‌های
-                پیشنهادی. تا زمانی که قرارداد canonical مخصوص Daily Brief وجود نداشته باشد، هیچ
-                خلاصه، KPI یا توصیه‌ای از سمت UI ساخته نمی‌شود.
+                تغییرات، موارد نیازمند توجه و اقدام‌های پیشنهادی مستقیماً از قرارداد read-only Core
+                می‌آیند. UI هیچ KPI، trend، خلاصه یا توصیه جایگزینی تولید نمی‌کند.
               </p>
               <div className={styles.heroBadges}>
                 <span>Canonical API only</span>
@@ -54,15 +85,18 @@ export default async function AiDailyBriefPage() {
             </div>
           </header>
 
-          {!canReadBusinessAi ? (
-            <section className={styles.unavailablePanel} aria-labelledby="brief-permission-title">
+          {result.kind === "unavailable" ? (
+            <section className={styles.unavailablePanel} aria-labelledby="brief-unavailable-title">
               <span className={styles.unavailableIcon} aria-hidden="true">
                 ◇
               </span>
               <div>
-                <p className={styles.eyebrow}>دسترسی محدود</p>
-                <h3 id="brief-permission-title">گزارش روزانه برای این نقش قابل مشاهده نیست</h3>
-                <p>مجوز ai.business.read برای مشاهده این سطح از داده کسب‌وکاری لازم است.</p>
+                <p className={styles.eyebrow}>Core contract</p>
+                <h3 id="brief-unavailable-title">Daily Brief فعلاً در دسترس نیست</h3>
+                <p>
+                  هیچ summary جایگزین ساخته نمی‌شود.
+                  {result.correlationId ? ` کد پیگیری: ${result.correlationId}` : ""}
+                </p>
               </div>
             </section>
           ) : (
@@ -70,46 +104,46 @@ export default async function AiDailyBriefPage() {
               <section className={styles.briefPanel} aria-labelledby="daily-pulse-title">
                 <div className={styles.briefHead}>
                   <div>
-                    <span className={styles.eyebrow}>صبح امروز</span>
+                    <span className={styles.eyebrow}>Canonical daily pulse</span>
                     <h3 id="daily-pulse-title">پالس اجرایی</h3>
                   </div>
-                  <span className={styles.safeBadge}>هیچ مقدار ساختگی نیست</span>
+                  <span className={styles.safeBadge}>وضعیت: {result.brief.state}</span>
                 </div>
 
                 <div className={styles.briefGrid}>
-                  <article className={styles.briefCard}>
-                    <span>تغییرات کلیدی</span>
-                    <h4>داده‌ای برای نمایش نداریم</h4>
-                    <p>خلاصه روزانه فقط پس از اتصال قرارداد canonical نمایش داده می‌شود.</p>
-                  </article>
-                  <article className={styles.briefCard}>
-                    <span>نیازمند توجه</span>
-                    <h4>هشداری تولید نشده است</h4>
-                    <p>UI از KPI یا رویدادهای دیگر هشدار استنتاج نمی‌کند.</p>
-                  </article>
-                  <article className={styles.briefCard}>
-                    <span>اقدام‌های پیشنهادی</span>
-                    <h4>پیشنهادی در دسترس نیست</h4>
-                    <p>تا قرارداد Core وجود نداشته باشد، توصیه مدیریتی یا پزشکی ساخته نمی‌شود.</p>
-                  </article>
+                  <BriefColumn
+                    label="تغییرات کلیدی"
+                    items={result.brief.changes}
+                    empty="Core شواهد مقایسه‌ای کافی برای اعلام تغییر برنگردانده است."
+                  />
+                  <BriefColumn
+                    label="نیازمند توجه"
+                    items={result.brief.attention}
+                    empty="مورد نیازمند توجه در شواهد canonical فعلی ثبت نشده است."
+                  />
+                  <BriefColumn
+                    label="اقدام‌های پیشنهادی"
+                    items={result.brief.actions}
+                    empty="اقدام پیشنهادی مبتنی بر شواهد در دسترس نیست."
+                  />
                 </div>
               </section>
 
-              <section
-                className={styles.unavailablePanel}
-                aria-labelledby="brief-unavailable-title"
-              >
+              <section className={styles.unavailablePanel} aria-labelledby="brief-evidence-title">
                 <span className={styles.unavailableIcon} aria-hidden="true">
                   ✦
                 </span>
                 <div>
-                  <p className={styles.eyebrow}>Core contract</p>
-                  <h3 id="brief-unavailable-title">
-                    این قابلیت هنوز به قرارداد Core متصل نشده است
-                  </h3>
+                  <p className={styles.eyebrow}>Evidence & freshness</p>
+                  <h3 id="brief-evidence-title">{result.brief.evidence.length} منبع قابل ردیابی</h3>
                   <p>
-                    به‌محض تعریف endpoint canonical برای Daily Brief، همین صفحه فقط داده تأییدشده را
-                    نمایش خواهد داد. فعلاً هیچ summary جایگزین یا داده حساس نشان داده نمی‌شود.
+                    تولید در{" "}
+                    {new Intl.DateTimeFormat("fa-IR", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                      timeZone: "Asia/Tehran",
+                    }).format(new Date(result.brief.generatedAtUtc))}
+                    . هر caveat منبع در contract حفظ می‌شود و UI آن را با داده فرضی جایگزین نمی‌کند.
                   </p>
                 </div>
               </section>
