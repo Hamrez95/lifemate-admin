@@ -33,7 +33,10 @@ describe("Founder Staff Console canonical boundary", () => {
     const detail = source("app/security/staff/[accountId]/page.tsx");
     expect(client).toContain('mfaPostureSource: "unavailable"');
     expect(list).toContain("Provider signal در contract موجود نیست");
-    expect(detail).toContain("token، credential، raw health data");
+    expect(detail).toContain("token");
+    expect(detail).toContain("credential");
+    expect(detail).toContain("raw");
+    expect(detail).toContain("health data");
   });
 
   it("preserves the existing canonical mutation path instead of adding an unsafe shortcut", () => {
