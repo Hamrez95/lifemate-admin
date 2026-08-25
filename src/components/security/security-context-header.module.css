@@ -1,0 +1,138 @@
+.hero {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  gap: 1rem;
+  align-items: center;
+  margin-block-end: 1rem;
+  padding: 1.2rem 1.3rem;
+  border: 1px solid #e6dfd5;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 12% 16%, rgba(239, 182, 153, 0.18), transparent 34%),
+    radial-gradient(circle at 88% 18%, rgba(124, 142, 208, 0.16), transparent 36%),
+    linear-gradient(145deg, #fffdfa, #f9f7f3);
+  box-shadow: 0 12px 36px rgba(61, 52, 45, 0.06);
+  overflow: hidden;
+}
+
+.copy {
+  min-width: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.copy h2,
+.copy p {
+  margin: 0;
+}
+
+.copy h2 {
+  font-size: clamp(1.35rem, 2.3vw, 2rem);
+  color: #2f2b27;
+}
+
+.copy > p:not(:global(.eyebrow)) {
+  max-width: 72ch;
+  color: #69635c;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+
+.nav,
+.guardrails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.nav a {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid #d9d1c8;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #423c36;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.nav a:focus-visible {
+  outline: 3px solid rgba(82, 103, 199, 0.32);
+  outline-offset: 2px;
+}
+
+.guardrails span {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.58rem;
+  border: 1px solid #e4d8cf;
+  border-radius: 999px;
+  background: #fff8f3;
+  color: #744c3e;
+  font-size: 0.72rem;
+  font-weight: 800;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.art {
+  min-width: 0;
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+}
+
+.art img {
+  width: min(100%, 300px);
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) 180px;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) 110px;
+    gap: 0.65rem;
+    border-radius: 20px;
+  }
+
+  .copy > p:not(:global(.eyebrow)) {
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .nav a {
+    min-height: 44px;
+    flex: 1 1 120px;
+  }
+
+  .guardrails {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 390px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .art {
+    grid-row: 1;
+    justify-items: end;
+  }
+
+  .art img {
+    width: 118px;
+  }
+}
