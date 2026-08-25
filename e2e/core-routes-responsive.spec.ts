@@ -23,7 +23,7 @@ test("core authenticated routes stay responsive and fail closed", async ({ page 
   await signInWithMfa(page);
 
   const routes = [
-    { path: "/", marker: "مرکز فرماندهی" },
+    { path: "/", marker: "پالس اجرایی LifeMate" },
     { path: "/users", marker: "کاربران و حساب‌ها" },
     { path: "/relationships", marker: "روابط، دسترسی و رضایت" },
     { path: "/commerce", marker: "فروش و تجارت" },
