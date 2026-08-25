@@ -18,6 +18,7 @@ export type UserAdminActivityItem = {
 export type UserDetailResponse = {
   account: UserDetailSection<{
     id: string;
+    username: string | null;
     status: string;
     createdAtUtc: string;
   }>;
@@ -129,6 +130,7 @@ function parseResponse(value: unknown): UserDetailResponse | null {
   const account = body.account as UserDetailResponse["account"];
   if (account.state !== "ready" || !account.data) return null;
   if (!UUID_PATTERN.test(account.data.id) || typeof account.data.status !== "string") return null;
+  if (typeof account.data.username !== "string" && account.data.username !== null) return null;
   if (typeof account.data.createdAtUtc !== "string") return null;
 
   return body as unknown as UserDetailResponse;
