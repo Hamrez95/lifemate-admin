@@ -38,9 +38,7 @@ export default async function StaffDirectoryPage({ searchParams }: Props) {
 
   const data = result.kind === "ok" ? result : null;
   const active = data?.items.filter((item) => item.membershipStatus === "Active").length ?? 0;
-  const roles = new Set(
-    data?.items.flatMap((item) => item.roles.map((role) => role.code)) ?? [],
-  );
+  const roles = new Set(data?.items.flatMap((item) => item.roles.map((role) => role.code)) ?? []);
 
   return (
     <AdminSessionProvider admin={admin}>
