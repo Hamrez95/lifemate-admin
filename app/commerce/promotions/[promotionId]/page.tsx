@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { AdminPageState } from "@/src/components/admin-data-table";
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
 import { AdminShell } from "@/src/components/shell/AdminShell";
+import { getCommerceDiscountCodes } from "@/src/lib/admin-api/commerce-discount-codes";
 import {
   getCommercePromotionDetail,
   getCommercePromotions,
@@ -12,6 +13,7 @@ import {
 } from "@/src/lib/admin-api/commerce-promotions";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
+import { DiscountCodeControls } from "./DiscountCodeControls";
 import { PromotionOperations } from "./PromotionOperations";
 import styles from "../promotions.module.css";
 
@@ -206,33 +208,50 @@ function AuditEvidence({ data }: { data: CommercePromotionDetail }) {
 async function PromotionDetailContent({
   promotionId,
   canWrite,
+  canDiscountCodeWrite,
 }: {
   promotionId: string;
   canWrite: boolean;
+  canDiscountCodeWrite: boolean;
 }) {
-  const [detailResult, listResult] = await Promise.all([
+  const [detailResult, listResult, discountCodeResult] = await Promise.all([
     getCommercePromotionDetail(promotionId),
     getCommercePromotions(new URLSearchParams({ page: "1", pageSize: "1" })),
+    getCommerceDiscountCodes(promotionId),
   ]);
-  if (detailResult.kind === "unauthenticated" || listResult.kind === "unauthenticated") {
+  if (
+    detailResult.kind === "unauthenticated" ||
+    listResult.kind === "unauthenticated" ||
+    discountCodeResult.kind === "unauthenticated"
+  ) {
     redirect("/login");
   }
-  if (detailResult.kind === "forbidden" || listResult.kind === "forbidden") {
+  if (
+    detailResult.kind === "forbidden" ||
+    listResult.kind === "forbidden" ||
+    discountCodeResult.kind === "forbidden"
+  ) {
     return <AdminPageState state="forbidden" />;
   }
-  if (detailResult.kind === "not_found") {
+  if (detailResult.kind === "not_found" || discountCodeResult.kind === "not_found") {
     return <AdminPageState state="empty" title="پروموشن پیدا نشد" />;
   }
   if (detailResult.kind === "invalid" || listResult.kind === "invalid") {
     return <AdminPageState state="error" title="پاسخ پروموشن معتبر نیست" />;
   }
-  if (detailResult.kind === "unavailable" || listResult.kind === "unavailable") {
+  if (
+    detailResult.kind === "unavailable" ||
+    listResult.kind === "unavailable" ||
+    discountCodeResult.kind === "unavailable"
+  ) {
     const correlationId =
       detailResult.kind === "unavailable"
         ? detailResult.correlationId
         : listResult.kind === "unavailable"
           ? listResult.correlationId
-          : undefined;
+          : discountCodeResult.kind === "unavailable"
+            ? discountCodeResult.correlationId
+            : undefined;
     return (
       <AdminPageState
         state="unavailable"
@@ -255,6 +274,11 @@ async function PromotionDetailContent({
       </div>
       <Facts data={data} />
       <Codes data={data} />
+      <DiscountCodeControls
+        promotionId={promotionId}
+        items={discountCodeResult.items}
+        canWrite={canDiscountCodeWrite}
+      />
       <PromotionOperations data={data} products={listResult.data.products} canWrite={canWrite} />
       <AuditEvidence data={data} />
     </div>
@@ -266,6 +290,7 @@ export default async function CommercePromotionDetailPage({ params }: PromotionD
   const { promotionId } = await params;
   const canRead = admin.permissions.includes("commerce.read");
   const canWrite = admin.permissions.includes("commerce.promo.write");
+  const canDiscountCodeWrite = admin.permissions.includes("commerce.discount_code.write");
 
   return (
     <AdminSessionProvider admin={admin}>
@@ -277,7 +302,11 @@ export default async function CommercePromotionDetailPage({ params }: PromotionD
         {!canRead ? (
           <AdminPageState state="forbidden" />
         ) : (
-          <PromotionDetailContent promotionId={promotionId} canWrite={canWrite} />
+          <PromotionDetailContent
+            promotionId={promotionId}
+            canWrite={canWrite}
+            canDiscountCodeWrite={canDiscountCodeWrite}
+          />
         )}
       </AdminShell>
     </AdminSessionProvider>
