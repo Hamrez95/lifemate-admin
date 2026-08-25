@@ -20,6 +20,19 @@ describe("ADM-USR-001 security and UI contract", () => {
     expect(client).not.toContain("medications");
   });
 
+  it("renders only the canonical nullable consumer username", () => {
+    const client = source("src/lib/admin-api/user-directory.ts");
+    const page = source("app/users/page.tsx");
+
+    expect(client).toContain("username: string | null");
+    expect(client).toContain('typeof item.username !== "string" && item.username != null');
+    expect(client).toContain('typeof item.username === "string" ? item.username : null');
+    expect(page).toContain("row.username");
+    expect(page).toContain("username canonical");
+    expect(page).not.toContain('split("@")');
+    expect(page).not.toContain("staff_profiles");
+  });
+
   it("keeps the route permission-aware and implements all required page states", () => {
     const page = source("app/users/page.tsx");
 
