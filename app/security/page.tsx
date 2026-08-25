@@ -219,7 +219,9 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
               </span>
               <div>
                 <strong>Audit Log</strong>
-                <p>رویدادهای canonical، نتیجه، actor و correlation را بدون payload حساس مرور کنید.</p>
+                <p>
+                  رویدادهای canonical، نتیجه، actor و correlation را بدون payload حساس مرور کنید.
+                </p>
               </div>
               <span aria-hidden="true">←</span>
             </Link>
@@ -229,7 +231,9 @@ export default async function SecurityPage({ searchParams }: SecurityPageProps) 
               </span>
               <div>
                 <strong>Break-glass</strong>
-                <p>Workflow دسترسی موقت هنوز از RBAC عادی جداست؛ این صفحه هیچ bypass ایجاد نمی‌کند.</p>
+                <p>
+                  Workflow دسترسی موقت هنوز از RBAC عادی جداست؛ این صفحه هیچ bypass ایجاد نمی‌کند.
+                </p>
               </div>
               <span className={styles.unavailablePill}>وابسته به قرارداد</span>
             </div>
