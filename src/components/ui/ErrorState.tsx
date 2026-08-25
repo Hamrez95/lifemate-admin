@@ -10,7 +10,7 @@ type ErrorStateProps = {
 
 export function ErrorState({
   title = "این بخش بارگذاری نشد",
-  description = "دوباره تلاش کنید.",
+  description = "دوباره تلاش کنید؛ fallback مستقیم نداریم.",
   actions,
 }: ErrorStateProps) {
   return (
