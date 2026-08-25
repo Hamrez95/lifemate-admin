@@ -84,9 +84,7 @@ test("primary routes expose only valid interactive navigation", async ({ page })
       const title = (await button.getAttribute("title"))?.trim();
       const describedBy = (await button.getAttribute("aria-describedby"))?.trim();
       const text = (await button.innerText()).trim().toLowerCase();
-      const hasTextReason = disabledReasonTokens.some((token) =>
-        text.includes(token),
-      );
+      const hasTextReason = disabledReasonTokens.some((token) => text.includes(token));
       expect(
         Boolean(title || describedBy || hasTextReason),
         `${route}: disabled button needs an explicit reason`,
@@ -111,12 +109,14 @@ test("primary routes expose only valid interactive navigation", async ({ page })
       );
     }
 
-    const hrefs = await page.locator("a[href^='/']:visible").evaluateAll((links) =>
-      links.flatMap((link) => {
-        const href = link.getAttribute("href");
-        return href ? [href] : [];
-      }),
-    );
+    const hrefs = await page
+      .locator("a[href^='/']:visible")
+      .evaluateAll((links) =>
+        links.flatMap((link) => {
+          const href = link.getAttribute("href");
+          return href ? [href] : [];
+        }),
+      );
     for (const href of hrefs) {
       if (checkedInternalLinks.has(href)) continue;
       checkedInternalLinks.add(href);
