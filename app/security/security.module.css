@@ -10,7 +10,8 @@
 .stateBanner,
 .boundaryBanner,
 .matrixPanel,
-.roleCard {
+.roleCard,
+.securityStrip {
   border: 1px solid var(--line, #e8e2d8);
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.94);
@@ -43,6 +44,37 @@
   margin: 0;
   color: #6e6963;
   line-height: 1.8;
+}
+
+.heroLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.95rem;
+}
+
+.heroLinks a,
+.heroLinks span {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.3rem 0.72rem;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.heroLinks a {
+  border: 1px solid #c9ddd4;
+  background: #f0f8f4;
+  color: #285d4e;
+  text-decoration: none;
+}
+
+.heroLinks span {
+  border: 1px solid #ead8cc;
+  background: #fff8f3;
+  color: #7b5b43;
 }
 
 .sourceCard {
@@ -89,6 +121,36 @@
   margin: 0.8rem 0 0.35rem;
   font-size: clamp(1.8rem, 4vw, 2.45rem);
   color: #302d29;
+}
+
+.securityStrip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  overflow: hidden;
+}
+
+.securityStrip article {
+  min-width: 0;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.9rem 1rem;
+  background: linear-gradient(145deg, #fffdf9, #fbf8f3);
+}
+
+.securityStrip article + article {
+  border-inline-start: 1px solid #ece4da;
+}
+
+.securityStrip strong {
+  color: #3a352f;
+  font-size: 0.82rem;
+}
+
+.securityStrip span {
+  color: #746d65;
+  font-size: 0.76rem;
+  line-height: 1.65;
 }
 
 .filters {
@@ -163,6 +225,7 @@
 .filterField select:focus-visible,
 .filterActions button:focus-visible,
 .filterActions a:focus-visible,
+.heroLinks a:focus-visible,
 .tableRegion:focus-visible {
   outline: 3px solid rgba(90, 104, 214, 0.3);
   outline-offset: 2px;
@@ -530,6 +593,15 @@
     min-width: 0;
   }
 
+  .securityStrip {
+    grid-template-columns: 1fr;
+  }
+
+  .securityStrip article + article {
+    border-inline-start: 0;
+    border-block-start: 1px solid #ece4da;
+  }
+
   .filters {
     grid-template-columns: 1fr;
   }
@@ -549,7 +621,8 @@
   .stateBanner,
   .boundaryBanner,
   .matrixPanel,
-  .roleCard {
+  .roleCard,
+  .securityStrip {
     border-radius: 16px;
   }
 
