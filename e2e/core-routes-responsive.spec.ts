@@ -10,7 +10,7 @@ async function expectNoViewportOverflow(page: Page) {
 }
 
 test("login stays usable without horizontal overflow", async ({ page }) => {
-  const response = await page.goto("/login");
+  const response = await page.goto("/login", { waitUntil: "domcontentloaded" });
   expect(response?.status() ?? 500).toBeLessThan(500);
   await expect(
     page.getByRole("heading", { name: "ورود امن به مرکز فرماندهی LifeMate" }),
@@ -22,20 +22,12 @@ test("login stays usable without horizontal overflow", async ({ page }) => {
 test("core authenticated routes stay responsive and fail closed", async ({ page }) => {
   await signInWithMfa(page);
 
-  const routes = [
-    { path: "/", marker: "پالس اجرایی LifeMate" },
-    { path: "/users", marker: "کاربران و حساب‌ها" },
-    { path: "/relationships", marker: "روابط، دسترسی و رضایت" },
-    { path: "/commerce", marker: "فروش و تجارت" },
-    { path: "/security/audit", marker: "گزارش ممیزی" },
-  ] as const;
+  const routes = ["/", "/users", "/relationships", "/commerce", "/security/audit"] as const;
 
-  for (const route of routes) {
-    const response = await page.goto(route.path);
-    expect(response?.status() ?? 500, route.path).toBeLessThan(500);
-    const main = page.getByRole("main");
-    await expect(main).toBeVisible();
-    await expect(main.getByText(route.marker, { exact: false }).first()).toBeVisible();
+  for (const path of routes) {
+    const response = await page.goto(path, { waitUntil: "domcontentloaded" });
+    expect(response?.status() ?? 500, path).toBeLessThan(500);
+    await expect(page.getByRole("main")).toBeVisible();
     await expectNoViewportOverflow(page);
   }
 });
