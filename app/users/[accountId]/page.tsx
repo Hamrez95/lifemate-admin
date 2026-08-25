@@ -175,6 +175,10 @@ function AccountCard({ data }: { data: UserDetailResponse }) {
           </dd>
         </div>
         <div className={styles.definitionRow}>
+          <dt>نام کاربری</dt>
+          <dd dir="ltr">{account.username ? `@${account.username}` : "—"}</dd>
+        </div>
+        <div className={styles.definitionRow}>
           <dt>وضعیت</dt>
           <dd>{labelStatus(account.status)}</dd>
         </div>
