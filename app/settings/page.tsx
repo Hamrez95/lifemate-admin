@@ -47,8 +47,8 @@ export default async function SettingsPage() {
             <p className="eyebrow">ADM-SET · Reference 27</p>
             <h2 id="settings-title">تنظیمات مرکز فرماندهی</h2>
             <p>
-              تنظیمات عمومی قابل‌تغییر فقط از Admin API canonical خوانده و ذخیره می‌شوند. هیچ secret،
-              API key، token، credential یا connection string به مرورگر ارسال نمی‌شود.
+              تنظیمات عمومی قابل‌تغییر فقط از Admin API canonical خوانده و ذخیره می‌شوند. هیچ
+              secret، API key، token، credential یا connection string به مرورگر ارسال نمی‌شود.
             </p>
             <div className={styles.settingsNav} aria-label="دسته‌بندی تنظیمات">
               {categories.map((category) => (
@@ -165,8 +165,8 @@ export default async function SettingsPage() {
                     <span className={styles.badge}>Unavailable</span>
                   </div>
                   <p>
-                    وضعیت اتصال فقط زمانی نمایش داده می‌شود که contract canonical مخصوص همان provider
-                    وجود داشته باشد؛ secret یا token هرگز به client ارسال نمی‌شود.
+                    وضعیت اتصال فقط زمانی نمایش داده می‌شود که contract canonical مخصوص همان
+                    provider وجود داشته باشد؛ secret یا token هرگز به client ارسال نمی‌شود.
                   </p>
                 </article>
               ))}
