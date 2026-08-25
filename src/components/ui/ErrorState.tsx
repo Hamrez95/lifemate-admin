@@ -9,8 +9,8 @@ type ErrorStateProps = {
 };
 
 export function ErrorState({
-  title = "این بخش موقتاً در دسترس نیست.",
-  description = "برای حفظ امنیت، در صورت خطای Auth یا Admin API به داده مستقیم دیتابیس fallback نمی‌کنیم.",
+  title = "این بخش بارگذاری نشد",
+  description = "دوباره تلاش کنید.",
   actions,
 }: ErrorStateProps) {
   return (
