@@ -3,10 +3,7 @@ import "server-only";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
-import {
-  type OperationsSnapshot,
-  parseOperationsSnapshot,
-} from "./operations-contract";
+import { type OperationsSnapshot, parseOperationsSnapshot } from "./operations-contract";
 
 export type { OperationsSnapshot } from "./operations-contract";
 
@@ -18,8 +15,7 @@ export type OperationsSnapshotResult =
 
 async function accessToken(): Promise<string | null> {
   const supabase = await createServerSupabaseClient();
-  const { data: claimsData, error: claimsError } =
-    await supabase.auth.getClaims();
+  const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   if (claimsError || !claimsData?.claims?.sub) return null;
   const {
     data: { session },
@@ -34,14 +30,11 @@ export async function getOperationsSnapshot(): Promise<OperationsSnapshotResult>
   const config = getPublicRuntimeConfig();
   let response: Response;
   try {
-    response = await fetch(
-      `${config.adminApiUrl}/api/v1/operations/snapshot`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: "no-store",
-        signal: AbortSignal.timeout(10_000),
-      },
-    );
+    response = await fetch(`${config.adminApiUrl}/api/v1/operations/snapshot`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+      signal: AbortSignal.timeout(10_000),
+    });
   } catch {
     return { kind: "unavailable" };
   }
@@ -57,10 +50,7 @@ export async function getOperationsSnapshot(): Promise<OperationsSnapshotResult>
     const body = (await response.json()) as Record<string, unknown>;
     return {
       kind: "unavailable",
-      correlationId:
-        typeof body.correlationId === "string"
-          ? body.correlationId
-          : undefined,
+      correlationId: typeof body.correlationId === "string" ? body.correlationId : undefined,
     };
   } catch {
     return { kind: "unavailable" };
