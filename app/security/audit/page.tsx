@@ -80,6 +80,16 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
   );
   const events = result?.kind === "ok" && !contractUnavailable ? result.data.events : null;
   const nextCursor = serverPagingAvailable ? result.data.nextCursor : null;
+  const deniedCount = events
+    ? events.filter((event) => event.result.toLocaleLowerCase("en-US") === "denied").length
+    : null;
+  const failedCount = events
+    ? events.filter((event) => {
+        const normalized = event.result.toLocaleLowerCase("en-US");
+        return normalized === "failed" || normalized === "failure";
+      }).length
+    : null;
+  const elevatedCount = events ? events.filter((event) => event.elevatedAccess).length : null;
 
   return (
     <AdminSessionProvider admin={admin}>
@@ -91,7 +101,7 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
         <div className={styles.page}>
           <section className={styles.hero} aria-labelledby="audit-title">
             <div>
-              <p className="eyebrow">ADM-SEC-003 · READ ONLY</p>
+              <p className="eyebrow">ADM-SEC-003 · Reference 20 · READ ONLY</p>
               <h2 id="audit-title">Audit Log Explorer</h2>
               <p>
                 رویدادهای ثبت‌شده در منبع canonical را بدون دسترسی مستقیم مرورگر به دیتابیس نمایش
@@ -100,8 +110,31 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
             </div>
             <div className={styles.heroActions}>
               <span className={styles.readOnlyPill}>فقط مشاهده</span>
-              <Link href="/security">بازگشت به RBAC</Link>
+              <Link href="/security">بازگشت به مرکز امنیت</Link>
             </div>
+          </section>
+
+          <section className={styles.metricGrid} aria-label="خلاصه صفحه ممیزی فعلی">
+            <article className={styles.metricCard}>
+              <span>رویدادهای این صفحه</span>
+              <strong>{events ? events.length.toLocaleString("fa-IR") : "—"}</strong>
+              <small>فقط داده canonical فعلی</small>
+            </article>
+            <article className={styles.metricCard}>
+              <span>ردشده</span>
+              <strong>{deniedCount === null ? "—" : deniedCount.toLocaleString("fa-IR")}</strong>
+              <small>بدون تفسیر یا severity ساختگی</small>
+            </article>
+            <article className={styles.metricCard}>
+              <span>ناموفق</span>
+              <strong>{failedCount === null ? "—" : failedCount.toLocaleString("fa-IR")}</strong>
+              <small>بر اساس result canonical</small>
+            </article>
+            <article className={styles.metricCard}>
+              <span>Elevated metadata</span>
+              <strong>{elevatedCount === null ? "—" : elevatedCount.toLocaleString("fa-IR")}</strong>
+              <small>بدون نمایش payload سلامت</small>
+            </article>
           </section>
 
           <section className={styles.boundary} aria-labelledby="audit-boundary-title">
