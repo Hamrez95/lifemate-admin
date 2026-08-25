@@ -70,7 +70,9 @@ async function accessToken(): Promise<string | null> {
 async function issue(response: Response): Promise<{ correlationId?: string }> {
   try {
     const body = (await response.json()) as Record<string, unknown>;
-    return { correlationId: typeof body.correlationId === "string" ? body.correlationId : undefined };
+    return {
+      correlationId: typeof body.correlationId === "string" ? body.correlationId : undefined,
+    };
   } catch {
     return {};
   }
@@ -99,13 +101,19 @@ function directoryItem(value: unknown): StaffDirectoryItem | null {
   const item = value as Record<string, unknown>;
   const parsedRoles = roles(item.roles);
   const createdAtUtc = iso(item.createdAtUtc);
-  const lastAccessChangeAtUtc = item.lastAccessChangeAtUtc === null ? null : iso(item.lastAccessChangeAtUtc);
+  const lastAccessChangeAtUtc =
+    item.lastAccessChangeAtUtc === null ? null : iso(item.lastAccessChangeAtUtc);
   let lastAdminActivity: StaffActivity | null = null;
   if (item.lastAdminActivity !== null) {
     if (!item.lastAdminActivity || typeof item.lastAdminActivity !== "object") return null;
     const activity = item.lastAdminActivity as Record<string, unknown>;
     const occurredAtUtc = iso(activity.occurredAtUtc);
-    if (typeof activity.action !== "string" || typeof activity.result !== "string" || !occurredAtUtc) return null;
+    if (
+      typeof activity.action !== "string" ||
+      typeof activity.result !== "string" ||
+      !occurredAtUtc
+    )
+      return null;
     lastAdminActivity = { action: activity.action, result: activity.result, occurredAtUtc };
   }
   if (
@@ -119,7 +127,8 @@ function directoryItem(value: unknown): StaffDirectoryItem | null {
     !createdAtUtc ||
     (item.lastAccessChangeAtUtc !== null && !lastAccessChangeAtUtc) ||
     item.mfaPosture !== "unknown"
-  ) return null;
+  )
+    return null;
   return {
     accountId: item.accountId,
     username: text(item.username),
@@ -159,14 +168,20 @@ export async function getStaffDirectory(params: URLSearchParams): Promise<StaffD
   }
   if (response.ok) {
     const body = (await response.json()) as Record<string, unknown>;
-    if (!Array.isArray(body.items) || typeof body.pageSize !== "number" || body.mfaPostureSource !== "unavailable") {
+    if (
+      !Array.isArray(body.items) ||
+      typeof body.pageSize !== "number" ||
+      body.mfaPostureSource !== "unavailable"
+    ) {
       return { kind: "unavailable" };
     }
     const items = body.items.map(directoryItem);
     const freshness = body.freshness as Record<string, unknown> | undefined;
     const asOfUtc = iso(freshness?.asOfUtc);
-    if (!items.every((entry): entry is StaffDirectoryItem => entry !== null) || !asOfUtc) return { kind: "unavailable" };
-    if (body.nextCursor !== null && typeof body.nextCursor !== "string") return { kind: "unavailable" };
+    if (!items.every((entry): entry is StaffDirectoryItem => entry !== null) || !asOfUtc)
+      return { kind: "unavailable" };
+    if (body.nextCursor !== null && typeof body.nextCursor !== "string")
+      return { kind: "unavailable" };
     return {
       kind: "ok",
       items,
@@ -199,23 +214,48 @@ export async function getStaffDetail(accountId: string): Promise<StaffDetailResu
   if (response.ok) {
     const body = (await response.json()) as Record<string, unknown>;
     const base = directoryItem(body.staff);
-    if (!base || !body.staff || typeof body.staff !== "object" || body.mfaPostureSource !== "unavailable") return { kind: "unavailable" };
+    if (
+      !base ||
+      !body.staff ||
+      typeof body.staff !== "object" ||
+      body.mfaPostureSource !== "unavailable"
+    )
+      return { kind: "unavailable" };
     const raw = body.staff as Record<string, unknown>;
-    if (!Array.isArray(raw.roleHistory) || !Array.isArray(raw.effectivePermissions) || !Array.isArray(raw.activity)) return { kind: "unavailable" };
+    if (
+      !Array.isArray(raw.roleHistory) ||
+      !Array.isArray(raw.effectivePermissions) ||
+      !Array.isArray(raw.activity)
+    )
+      return { kind: "unavailable" };
     const roleHistory = raw.roleHistory.flatMap((entry) => {
       if (!entry || typeof entry !== "object") return [];
       const row = entry as Record<string, unknown>;
       const startsAtUtc = iso(row.startsAtUtc);
       const expiresAtUtc = row.expiresAtUtc === null ? null : iso(row.expiresAtUtc);
       const revokedAtUtc = row.revokedAtUtc === null ? null : iso(row.revokedAtUtc);
-      return typeof row.roleCode === "string" && typeof row.roleDisplayName === "string" && startsAtUtc && (row.expiresAtUtc === null || expiresAtUtc) && (row.revokedAtUtc === null || revokedAtUtc)
-        ? [{ roleCode: row.roleCode, roleDisplayName: row.roleDisplayName, startsAtUtc, expiresAtUtc, revokedAtUtc }]
+      return typeof row.roleCode === "string" &&
+        typeof row.roleDisplayName === "string" &&
+        startsAtUtc &&
+        (row.expiresAtUtc === null || expiresAtUtc) &&
+        (row.revokedAtUtc === null || revokedAtUtc)
+        ? [
+            {
+              roleCode: row.roleCode,
+              roleDisplayName: row.roleDisplayName,
+              startsAtUtc,
+              expiresAtUtc,
+              revokedAtUtc,
+            },
+          ]
         : [];
     });
     const effectivePermissions = raw.effectivePermissions.flatMap((entry) => {
       if (!entry || typeof entry !== "object") return [];
       const row = entry as Record<string, unknown>;
-      return typeof row.code === "string" && typeof row.domain === "string" && typeof row.riskLevel === "string"
+      return typeof row.code === "string" &&
+        typeof row.domain === "string" &&
+        typeof row.riskLevel === "string"
         ? [{ code: row.code, domain: row.domain, riskLevel: row.riskLevel }]
         : [];
     });
@@ -223,14 +263,31 @@ export async function getStaffDetail(accountId: string): Promise<StaffDetailResu
       if (!entry || typeof entry !== "object") return [];
       const row = entry as Record<string, unknown>;
       const occurredAtUtc = iso(row.occurredAtUtc);
-      return typeof row.id === "string" && typeof row.action === "string" && typeof row.result === "string" && typeof row.resourceType === "string" && occurredAtUtc
-        ? [{ id: row.id, action: row.action, result: row.result, resourceType: row.resourceType, occurredAtUtc }]
+      return typeof row.id === "string" &&
+        typeof row.action === "string" &&
+        typeof row.result === "string" &&
+        typeof row.resourceType === "string" &&
+        occurredAtUtc
+        ? [
+            {
+              id: row.id,
+              action: row.action,
+              result: row.result,
+              resourceType: row.resourceType,
+              occurredAtUtc,
+            },
+          ]
         : [];
     });
     const freshness = body.freshness as Record<string, unknown> | undefined;
     const asOfUtc = iso(freshness?.asOfUtc);
     if (!asOfUtc) return { kind: "unavailable" };
-    return { kind: "ok", staff: { ...base, roleHistory, effectivePermissions, activity }, mfaPostureSource: "unavailable", asOfUtc };
+    return {
+      kind: "ok",
+      staff: { ...base, roleHistory, effectivePermissions, activity },
+      mfaPostureSource: "unavailable",
+      asOfUtc,
+    };
   }
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden" };
