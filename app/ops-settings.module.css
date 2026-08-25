@@ -210,15 +210,29 @@
 }
 
 .field input,
-.field select {
+.field select,
+.field textarea {
   min-height: 42px;
   width: 100%;
   border: 1px solid #ddd5ca;
   border-radius: 12px;
-  background: #f7f4ef;
-  color: #807970;
+  background: #fff;
+  color: #514b45;
   padding: 0.45rem 0.7rem;
   font: inherit;
+}
+
+.field textarea {
+  resize: vertical;
+  line-height: 1.7;
+}
+
+.field input:disabled,
+.field select:disabled,
+.field textarea:disabled,
+.field input[readonly] {
+  background: #f7f4ef;
+  color: #807970;
 }
 
 .confirmation {
@@ -241,6 +255,25 @@
   align-items: center;
 }
 
+.saveState button {
+  min-height: 42px;
+  border: 1px solid #315e4a;
+  border-radius: 12px;
+  background: #315e4a;
+  color: #fff;
+  padding: 0.45rem 0.95rem;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.saveState button:disabled {
+  border-color: #d8d2ca;
+  background: #f2efea;
+  color: #8b857e;
+  cursor: not-allowed;
+}
+
 .saveState span {
   color: #6e6861;
   font-size: 0.84rem;
@@ -258,32 +291,15 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 720px) {
   .grid3,
   .grid2,
-  .fieldGrid,
-  .linkList {
+  .fieldGrid {
     grid-template-columns: 1fr;
   }
 
-  .cardHeader,
   .panelHeader,
-  .row {
-    flex-wrap: wrap;
-  }
-}
-
-@media (max-width: 520px) {
-  .hero,
-  .panel,
-  .card,
-  .banner {
-    border-radius: 16px;
-  }
-
-  .hero,
-  .panel,
-  .card {
-    padding: 0.9rem;
+  .cardHeader {
+    flex-direction: column;
   }
 }
