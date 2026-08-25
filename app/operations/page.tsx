@@ -17,27 +17,33 @@ const canonicalPaths = [
 const unavailableCards = [
   {
     title: "سلامت سرویس‌ها",
-    description: "قرارداد canonical برای health، uptime، p95 یا error-rate سرویس‌ها در Admin API موجود نیست.",
+    description:
+      "قرارداد canonical برای health، uptime، p95 یا error-rate سرویس‌ها در Admin API موجود نیست.",
   },
   {
     title: "وظایف پس‌زمینه",
-    description: "قرارداد canonical برای job status، retry count یا last-run هنوز در دسترس این پنل نیست.",
+    description:
+      "قرارداد canonical برای job status، retry count یا last-run هنوز در دسترس این پنل نیست.",
   },
   {
     title: "انتشار و نسخه‌ها",
-    description: "وضعیت deploy، rollout و rollback از UI حدس زده نمی‌شود تا operational visibility معتبر فراهم شود.",
+    description:
+      "وضعیت deploy، rollout و rollback از UI حدس زده نمی‌شود تا operational visibility معتبر فراهم شود.",
   },
   {
     title: "یکپارچه‌سازی‌های خارجی",
-    description: "وضعیت providerها، gatewayها یا سرویس‌های ثالث بدون endpoint قابل‌ردیابی نمایش داده نمی‌شود.",
+    description:
+      "وضعیت providerها، gatewayها یا سرویس‌های ثالث بدون endpoint قابل‌ردیابی نمایش داده نمی‌شود.",
   },
   {
     title: "رخداد فعال",
-    description: "incident فعال یا severity ساختگی تولید نمی‌شود؛ تنها رخداد canonical پس از قرارداد مناسب نمایش داده خواهد شد.",
+    description:
+      "incident فعال یا severity ساختگی تولید نمی‌شود؛ تنها رخداد canonical پس از قرارداد مناسب نمایش داده خواهد شد.",
   },
   {
     title: "شاخص‌های عملیاتی",
-    description: "availability، latency و success-rate تا زمان وجود read model واقعی با مقدار «در دسترس نیست» باقی می‌مانند.",
+    description:
+      "availability، latency و success-rate تا زمان وجود read model واقعی با مقدار «در دسترس نیست» باقی می‌مانند.",
   },
 ] as const;
 
@@ -64,7 +70,9 @@ export default async function OperationsPage() {
           </section>
 
           <section className={styles.banner} role="status" aria-live="polite">
-            <span className={styles.bannerIcon} aria-hidden="true">i</span>
+            <span className={styles.bannerIcon} aria-hidden="true">
+              i
+            </span>
             <div>
               <strong>Operational visibility هنوز به قرارداد Core متصل نشده است.</strong>
               <p>
@@ -100,7 +108,9 @@ export default async function OperationsPage() {
             </p>
             <div className={styles.linkList}>
               {canonicalPaths.map((item) => (
-                <Link key={item.href} href={item.href}>{item.label}</Link>
+                <Link key={item.href} href={item.href}>
+                  {item.label}
+                </Link>
               ))}
             </div>
           </section>
