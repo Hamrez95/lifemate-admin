@@ -116,11 +116,7 @@ async function ManagementContent({
         canTrialWrite={canTrialWrite}
       />
 
-      <PlanFeatureControls
-        planId={planId}
-        items={featureResult.items}
-        canWrite={canFeatureWrite}
-      />
+      <PlanFeatureControls planId={planId} items={featureResult.items} canWrite={canFeatureWrite} />
 
       <p className={styles.safetyNote}>
         این صفحه عمداً Subscription موجود را reprice یا migrate نمی‌کند و assignment قابلیت پلن را
