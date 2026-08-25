@@ -89,19 +89,43 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
         subtitle="رویدادهای واقعی و فقط‌خواندنی Admin API"
       >
         <div className={styles.page}>
+          <nav className={styles.breadcrumbs} aria-label="مسیر صفحه">
+            <Link href="/security">امنیت</Link>
+            <span aria-hidden="true">/</span>
+            <span>Audit Log</span>
+          </nav>
+
           <section className={styles.hero} aria-labelledby="audit-title">
             <div>
-              <p className="eyebrow">ADM-SEC-003 · READ ONLY</p>
-              <h2 id="audit-title">Audit Log Explorer</h2>
+              <p className="eyebrow">REFERENCE 20 · AUDIT LOG EXPLORER</p>
+              <h2 id="audit-title">ردپای مدیریتی، بدون نمایش payload حساس</h2>
               <p>
-                رویدادهای ثبت‌شده در منبع canonical را بدون دسترسی مستقیم مرورگر به دیتابیس نمایش
-                می‌دهد. payload خام، metadata محرمانه و secret در این نما نمایش داده نمی‌شود.
+                هر رویداد canonical را با زمان، نتیجه، مرجع، actor و correlation مرور کنید. این نما
+                read-only است و raw metadata، secret یا health payload را نمایش نمی‌دهد.
               </p>
             </div>
             <div className={styles.heroActions}>
               <span className={styles.readOnlyPill}>فقط مشاهده</span>
-              <Link href="/security">بازگشت به RBAC</Link>
+              <Link href="/security">بازگشت به مرکز امنیت</Link>
             </div>
+          </section>
+
+          <section className={styles.summaryGrid} aria-label="خلاصه ممیزی">
+            <article className={styles.summaryCard}>
+              <span>رویدادهای این صفحه</span>
+              <strong>{events ? events.length.toLocaleString("fa-IR") : "—"}</strong>
+              <small>فقط داده canonical دریافت‌شده</small>
+            </article>
+            <article className={styles.summaryCard}>
+              <span>صفحه‌بندی سروری</span>
+              <strong>{serverPagingAvailable ? "فعال" : "—"}</strong>
+              <small>{serverPagingAvailable ? "stable cursor contract" : "هنوز unavailable"}</small>
+            </article>
+            <article className={styles.summaryCard}>
+              <span>نمایش حساس</span>
+              <strong>خاموش</strong>
+              <small>payload و secret در UI نمایش داده نمی‌شود</small>
+            </article>
           </section>
 
           <section className={styles.boundary} aria-labelledby="audit-boundary-title">
@@ -110,14 +134,12 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
               {serverPagingAvailable ? (
                 <p>
                   فیلتر تاریخ و صفحه‌بندی روی Admin API اجرا می‌شود و ترتیب رویدادها با cursor
-                  پایدار حفظ می‌شود. مرورگر فقط داده ممیزی محدودشده را می‌گیرد و به جدول‌های دیتابیس
-                  دسترسی مستقیم ندارد.
+                  پایدار حفظ می‌شود. مرورگر فقط داده ممیزی محدودشده را دریافت می‌کند.
                 </p>
               ) : (
                 <p>
-                  API فعلی هنوز قرارداد فیلتر و صفحه‌بندی پایدار را اعلام نکرده است. تا زمان فعال
-                  شدن نسخه canonical جدید، فقط آخرین رویدادهای read-only نمایش داده می‌شوند و نتیجه
-                  فیلترشده جعل نمی‌شود.
+                  API فعلی هنوز قرارداد فیلتر و صفحه‌بندی پایدار را اعلام نکرده است. تا زمان rollout
+                  canonical، کنترل‌های وابسته غیرفعال می‌مانند و نتیجه فیلترشده جعل نمی‌شود.
                 </p>
               )}
             </div>
@@ -162,7 +184,7 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
 
           <p className={styles.utcHint}>
             {serverPagingAvailable
-              ? "مرز روزها برای query سرور بر اساس UTC محاسبه می‌شود؛ زمان رویدادها در جدول به وقت تهران نمایش داده می‌شود."
+              ? "مرز روزها برای query سرور بر اساس UTC است؛ زمان رویدادها در جدول به وقت تهران نمایش داده می‌شود."
               : "فیلتر تاریخ تا زمانی که Admin API قرارداد جدید را اعلام نکند غیرفعال می‌ماند."}
           </p>
 
@@ -204,7 +226,7 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
             <section className={styles.panel} aria-labelledby="events-heading">
               <header className={styles.panelHeader}>
                 <div>
-                  <p className="eyebrow">Canonical events</p>
+                  <p className="eyebrow">CANONICAL EVENTS</p>
                   <h3 id="events-heading">رویدادهای ممیزی</h3>
                 </div>
                 <span>{events.length.toLocaleString("fa-IR")} رویداد در این صفحه</span>
