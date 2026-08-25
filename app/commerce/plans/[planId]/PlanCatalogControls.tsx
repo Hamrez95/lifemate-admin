@@ -2,7 +2,12 @@
 
 import { useActionState, useState } from "react";
 
-import { initialCatalogActionState, schedulePriceAction, updatePlanAction } from "../actions";
+import {
+  configureTrialAction,
+  initialCatalogActionState,
+  schedulePriceAction,
+  updatePlanAction,
+} from "../actions";
 import styles from "../catalog.module.css";
 
 type Props = {
@@ -13,11 +18,24 @@ type Props = {
     status: string;
   };
   productStatus: string;
+  trialPolicy: {
+    durationDays: number;
+    status: "Active" | "Disabled";
+    version: number;
+  } | null;
   canPlanWrite: boolean;
   canPriceWrite: boolean;
+  canTrialWrite: boolean;
 };
 
-export function PlanCatalogControls({ plan, productStatus, canPlanWrite, canPriceWrite }: Props) {
+export function PlanCatalogControls({
+  plan,
+  productStatus,
+  trialPolicy,
+  canPlanWrite,
+  canPriceWrite,
+  canTrialWrite,
+}: Props) {
   const [planState, planAction, planPending] = useActionState(
     updatePlanAction,
     initialCatalogActionState,
@@ -26,8 +44,13 @@ export function PlanCatalogControls({ plan, productStatus, canPlanWrite, canPric
     schedulePriceAction,
     initialCatalogActionState,
   );
+  const [trialState, trialAction, trialPending] = useActionState(
+    configureTrialAction,
+    initialCatalogActionState,
+  );
   const [planKey, setPlanKey] = useState(() => crypto.randomUUID());
   const [priceKey, setPriceKey] = useState(() => crypto.randomUUID());
+  const [trialKey, setTrialKey] = useState(() => crypto.randomUUID());
   const saleBlocked = plan.status !== "Active" || productStatus !== "Active";
 
   return (
@@ -98,6 +121,96 @@ export function PlanCatalogControls({ plan, productStatus, canPlanWrite, canPric
             </div>
             <button className={styles.secondaryButton} type="submit" disabled={planPending}>
               {planPending ? "در حال ثبت…" : "ثبت تغییر Audit‌شده"}
+            </button>
+          </form>
+        )}
+      </article>
+
+      <article className={styles.controlPanel}>
+        <header>
+          <span className={styles.permissionBadge}>commerce.trial.write</span>
+          <h3>Trial policy نسخه‌دار</h3>
+          <p>
+            Trial فقط برای حسابی مجاز است که قبلاً برای همین Product از Trial استفاده نکرده باشد.
+            نسخه فعلی برای جلوگیری از overwrite همزمان به Core ارسال می‌شود.
+          </p>
+        </header>
+        {!canTrialWrite ? (
+          <p className={styles.safetyNote}>مجوز تغییر Trial policy این پلن را ندارید.</p>
+        ) : saleBlocked ? (
+          <p className={styles.safetyNote}>Trial فقط برای Plan و Product فعال قابل پیکربندی است.</p>
+        ) : (
+          <form
+            action={trialAction}
+            className={styles.form}
+            onChange={() => setTrialKey(crypto.randomUUID())}
+          >
+            <input type="hidden" name="planId" value={plan.id} />
+            <input type="hidden" name="idempotencyKey" value={trialKey} />
+            <input type="hidden" name="expectedVersion" value={String(trialPolicy?.version ?? 0)} />
+            <label className={styles.field}>
+              <span>مدت Trial · روز</span>
+              <input
+                name="durationDays"
+                type="number"
+                min="1"
+                max="365"
+                defaultValue={String(trialPolicy?.durationDays ?? 14)}
+                required
+                disabled={trialPending}
+              />
+            </label>
+            <label className={styles.field}>
+              <span>وضعیت Trial</span>
+              <select
+                name="status"
+                defaultValue={trialPolicy?.status ?? "Disabled"}
+                disabled={trialPending}
+              >
+                <option value="Disabled">Disabled · غیرفعال</option>
+                <option value="Active">Active · فعال</option>
+              </select>
+            </label>
+            <div className={styles.wideField}>
+              <span>قانون eligibility</span>
+              <code>NoPriorTrialForProduct</code>
+              <small>
+                این policy اجازه تعریف eligibility دلخواه در UI را نمی‌دهد؛ rule از contract
+                canonical می‌آید.
+              </small>
+            </div>
+            <label className={styles.wideField}>
+              <span>دلیل تغییر</span>
+              <textarea
+                name="reason"
+                required
+                minLength={10}
+                maxLength={1000}
+                rows={3}
+                disabled={trialPending}
+              />
+            </label>
+            <p className={styles.safetyNote}>
+              نسخه فعلی: {(trialPolicy?.version ?? 0).toLocaleString("fa-IR")}. اگر شخص دیگری این
+              policy را تغییر داده باشد، Core درخواست را با conflict رد می‌کند و باید صفحه را
+              refresh کنید.
+            </p>
+            <label className={styles.safetyNote}>
+              <input
+                name="confirmation"
+                type="checkbox"
+                value="confirm-trial-policy"
+                required
+                disabled={trialPending}
+              />{" "}
+              مدت، وضعیت و اثر eligibility را بررسی کرده‌ام و این تغییر هیچ Subscription موجود را
+              جابه‌جا یا reprice نمی‌کند.
+            </label>
+            <div className={styles.feedback} data-status={trialState.status} aria-live="polite">
+              {trialState.message ?? ""}
+            </div>
+            <button className={styles.primaryButton} type="submit" disabled={trialPending}>
+              {trialPending ? "در حال ثبت…" : "ثبت Trial policy"}
             </button>
           </form>
         )}

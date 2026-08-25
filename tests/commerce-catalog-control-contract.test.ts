@@ -7,13 +7,14 @@ function source(path: string): string {
   return readFileSync(resolve(process.cwd(), path), "utf8");
 }
 
-describe("P0 Monetization Control Plane — plan and pricing batch", () => {
+describe("P0 Monetization Control Plane — plan pricing and trial batch", () => {
   it("keeps catalog writes behind the authenticated server Admin API", () => {
     const client = source("src/lib/admin-api/commerce-catalog.ts");
 
     expect(client).toContain('import "server-only"');
     expect(client).toContain("/api/v1/commerce/plans");
     expect(client).toContain("/prices");
+    expect(client).toContain("/trial-policy");
     expect(client).toContain('"Idempotency-Key": idempotencyKey');
     expect(client).toContain('cache: "no-store"');
     expect(client).toContain("AbortSignal.timeout(10_000)");
@@ -23,7 +24,7 @@ describe("P0 Monetization Control Plane — plan and pricing batch", () => {
     expect(client).not.toContain("db_password");
   });
 
-  it("uses independent least-privilege permissions for plan and price writes", () => {
+  it("uses independent least-privilege permissions for plan price and trial writes", () => {
     const page = source("app/commerce/plans/page.tsx");
     const manage = source("app/commerce/plans/[planId]/manage/page.tsx");
     const controls = source("app/commerce/plans/[planId]/PlanCatalogControls.tsx");
@@ -32,22 +33,42 @@ describe("P0 Monetization Control Plane — plan and pricing batch", () => {
     expect(page).toContain('admin.permissions.includes("commerce.plan.write")');
     expect(manage).toContain('admin.permissions.includes("commerce.plan.write")');
     expect(manage).toContain('admin.permissions.includes("commerce.price.write")');
+    expect(manage).toContain('admin.permissions.includes("commerce.trial.write")');
     expect(controls).toContain("commerce.plan.write");
     expect(controls).toContain("commerce.price.write");
+    expect(controls).toContain("commerce.trial.write");
   });
 
-  it("requires explicit operator confirmation for lifecycle and price changes", () => {
+  it("requires explicit operator confirmation for lifecycle price and trial changes", () => {
     const actions = source("app/commerce/plans/actions.ts");
     const controls = source("app/commerce/plans/[planId]/PlanCatalogControls.tsx");
 
     expect(actions).toContain('PLAN_CHANGE_CONFIRMATION = "confirm-plan-change"');
     expect(actions).toContain('PRICE_CHANGE_CONFIRMATION = "confirm-price-version"');
+    expect(actions).toContain('TRIAL_CHANGE_CONFIRMATION = "confirm-trial-policy"');
     expect(actions).toContain("confirmation !== PLAN_CHANGE_CONFIRMATION");
     expect(actions).toContain("confirmation !== PRICE_CHANGE_CONFIRMATION");
+    expect(actions).toContain("confirmation !== TRIAL_CHANGE_CONFIRMATION");
     expect(controls).toContain('value="confirm-plan-change"');
     expect(controls).toContain('value="confirm-price-version"');
+    expect(controls).toContain('value="confirm-trial-policy"');
     expect(controls).toContain('name="confirmation"');
     expect(controls).toContain("required");
+  });
+
+  it("keeps trial edits versioned and restricted to the canonical eligibility rule", () => {
+    const actions = source("app/commerce/plans/actions.ts");
+    const controls = source("app/commerce/plans/[planId]/PlanCatalogControls.tsx");
+    const client = source("src/lib/admin-api/commerce-catalog.ts");
+
+    expect(actions).toContain('eligibilityRule: "NoPriorTrialForProduct"');
+    expect(actions).toContain("expectedVersion");
+    expect(actions).toContain("durationDays < 1");
+    expect(actions).toContain("durationDays > 365");
+    expect(controls).toContain('name="expectedVersion"');
+    expect(controls).toContain("trialPolicy?.version ?? 0");
+    expect(client).toContain("getCommerceTrialPolicy");
+    expect(client).toContain("configureCommerceTrial");
   });
 
   it("keeps price history append-only and never claims existing subscriptions are repriced", () => {
@@ -73,15 +94,15 @@ describe("P0 Monetization Control Plane — plan and pricing batch", () => {
     expect(actions).toContain("idempotencyKey");
   });
 
-  it("blocks trial entitlement and independent discount-code controls on Core 412", () => {
+  it("keeps entitlement and discount-code controls blocked on the remaining Core 412 work", () => {
     const page = source("app/commerce/plans/page.tsx");
     const manage = source("app/commerce/plans/[planId]/manage/page.tsx");
 
-    expect(page).toContain("Trial configuration · Core #412");
     expect(page).toContain("Entitlement assignment · Core #412");
     expect(page).toContain("Discount-code issuance جداگانه و bulk");
     expect(page).toContain("Core #412 فعال نمی‌شود");
-    expect(manage).toContain("Trial policy و Entitlement assignment");
+    expect(manage).toContain("Entitlement assignment");
+    expect(manage).toContain("Discount-code issuance");
   });
 
   it("keeps Persian RTL UI responsive keyboard visible and motion aware", () => {

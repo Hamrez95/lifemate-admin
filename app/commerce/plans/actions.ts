@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import {
+  configureCommerceTrial,
   createCommercePlan,
   scheduleCommercePrice,
   updateCommercePlan,
@@ -27,6 +28,7 @@ const AMOUNT_PATTERN = /^\d+$/;
 const POSTGRES_BIGINT_MAX = 9_223_372_036_854_775_807n;
 const PLAN_CHANGE_CONFIRMATION = "confirm-plan-change";
 const PRICE_CHANGE_CONFIRMATION = "confirm-price-version";
+const TRIAL_CHANGE_CONFIRMATION = "confirm-trial-policy";
 
 function text(formData: FormData, key: string): string {
   const value = formData.get(key);
@@ -139,6 +141,66 @@ export async function updatePlanAction(
     revalidatePath("/commerce");
     revalidatePath("/commerce/plans");
     revalidatePath(`/commerce/plans/${planId}`);
+  }
+  return state;
+}
+
+export async function configureTrialAction(
+  _previous: CatalogActionState,
+  formData: FormData,
+): Promise<CatalogActionState> {
+  const idempotencyKey = validIdempotency(formData);
+  const planId = text(formData, "planId");
+  const durationRaw = text(formData, "durationDays");
+  const expectedVersionRaw = text(formData, "expectedVersion");
+  const status = text(formData, "status");
+  const reason = text(formData, "reason");
+  const confirmation = text(formData, "confirmation");
+
+  if (!idempotencyKey) return { status: "invalid", message: "شناسه امن درخواست معتبر نیست." };
+  if (!UUID_PATTERN.test(planId)) return { status: "invalid", message: "شناسه پلن معتبر نیست." };
+  if (confirmation !== TRIAL_CHANGE_CONFIRMATION) {
+    return { status: "invalid", message: "تأیید صریح تغییر Trial policy لازم است." };
+  }
+  if (!/^\d+$/.test(durationRaw) || !/^\d+$/.test(expectedVersionRaw)) {
+    return { status: "invalid", message: "مدت یا نسخه Trial معتبر نیست." };
+  }
+  const durationDays = Number(durationRaw);
+  const expectedVersion = Number(expectedVersionRaw);
+  if (!Number.isInteger(durationDays) || durationDays < 1 || durationDays > 365) {
+    return { status: "invalid", message: "مدت Trial باید بین ۱ تا ۳۶۵ روز باشد." };
+  }
+  if (
+    !Number.isInteger(expectedVersion) ||
+    expectedVersion < 0 ||
+    expectedVersion > 1_000_000_000
+  ) {
+    return { status: "invalid", message: "نسخه Trial معتبر نیست؛ صفحه را دوباره بارگذاری کنید." };
+  }
+  if (status !== "Active" && status !== "Disabled") {
+    return { status: "invalid", message: "وضعیت Trial معتبر نیست." };
+  }
+  if (reason.length < 10 || reason.length > 1000) {
+    return { status: "invalid", message: "دلیل تغییر باید بین ۱۰ تا ۱۰۰۰ نویسه باشد." };
+  }
+
+  const state = mutationState(
+    await configureCommerceTrial(
+      planId,
+      {
+        durationDays,
+        eligibilityRule: "NoPriorTrialForProduct",
+        status,
+        expectedVersion,
+        reason,
+      },
+      idempotencyKey,
+    ),
+    "سیاست Trial با نسخه‌بندی و Audit ثبت شد.",
+  );
+  if (state.status === "success") {
+    revalidatePath(`/commerce/plans/${planId}`);
+    revalidatePath(`/commerce/plans/${planId}/manage`);
   }
   return state;
 }
