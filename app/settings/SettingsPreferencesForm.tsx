@@ -4,11 +4,11 @@ import { useActionState, useState } from "react";
 
 import type { CommandCenterPreferences } from "@/src/lib/admin-api/settings-preferences";
 
+import styles from "../ops-settings.module.css";
 import {
   initialSettingsActionState,
   updateCommandCenterPreferencesAction,
 } from "./actions";
-import styles from "../ops-settings.module.css";
 
 export function SettingsPreferencesForm({
   preferences,
@@ -58,7 +58,11 @@ export function SettingsPreferencesForm({
           >
             {supportedLocales.map((locale) => (
               <option key={locale} value={locale}>
-                {locale === "fa-IR" ? "فارسی (fa-IR)" : locale === "en-US" ? "English (en-US)" : locale}
+                {locale === "fa-IR"
+                  ? "فارسی (fa-IR)"
+                  : locale === "en-US"
+                    ? "English (en-US)"
+                    : locale}
               </option>
             ))}
           </select>
