@@ -10,19 +10,19 @@ describe("security references 18-20", () => {
   it("uses the shared security audit hero through next/image", () => {
     const layout = read("app/security/layout.tsx");
     expect(layout).toContain('import Image from "next/image"');
-    expect(layout).toContain('/design-assets/security-audit-hero-v1.png');
-    expect(layout).toContain('width={1536}');
-    expect(layout).toContain('height={1024}');
-    expect(layout).toContain('sizes=');
+    expect(layout).toContain("/design-assets/security-audit-hero-v1.png");
+    expect(layout).toContain("width={1536}");
+    expect(layout).toContain("height={1024}");
+    expect(layout).toContain("sizes=");
   });
 
   it("keeps roles and audit on canonical server-side contracts", () => {
     const roles = read("app/security/page.tsx");
     const audit = read("app/security/audit/page.tsx");
     expect(roles).toContain("getSecurityRbacMatrix");
-    expect(roles).toContain('security.audit.read');
+    expect(roles).toContain("security.audit.read");
     expect(audit).toContain("getAuditLog");
-    expect(audit).toContain('security.audit.read');
+    expect(audit).toContain("security.audit.read");
     expect(audit).toContain("payload خام، metadata محرمانه و secret");
   });
 
@@ -33,7 +33,7 @@ describe("security references 18-20", () => {
     expect(serverAction).toContain('"use server"');
     expect(action).toContain('roleCode === "founder" || roleCode === "super_admin"');
     expect(action).toContain('"Idempotency-Key": input.idempotencyKey');
-    expect(action).toContain('reason.length < 10');
+    expect(action).toContain("reason.length < 10");
     expect(controls).toContain("تغییر دسترسی خودتان در API مسدود");
     expect(controls).toContain("تأیید تغییر");
   });
