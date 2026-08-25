@@ -178,7 +178,12 @@
 .loadingSkeleton span {
   height: 10px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--lm-border) 0%, var(--lm-surface-raised) 50%, var(--lm-border) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--lm-border) 0%,
+    var(--lm-surface-raised) 50%,
+    var(--lm-border) 100%
+  );
   background-size: 200% 100%;
   animation: skeletonPulse 1s ease-in-out infinite;
 }
