@@ -90,7 +90,12 @@ export function StaffMembershipControls(props: Props) {
   if (!props.canManage) return <span className={styles.locked}>فقط مشاهده</span>;
   if (immutableRole)
     return <span className={styles.locked}>Founder / Super Admin تغییرناپذیر است</span>;
-  if (selfTarget) return <span className={styles.locked}>تغییر دسترسی خودتان در API مسدود</span>;
+  if (selfTarget)
+    return (
+      <span className={styles.locked} title="تغییر دسترسی خودتان در API مسدود">
+        تغییر دسترسی خودتان مجاز نیست
+      </span>
+    );
   if (actions.length === 0) return <span className={styles.locked}>عضویت لغوشده</span>;
 
   function open(action: Action, event: MouseEvent<HTMLButtonElement>) {
