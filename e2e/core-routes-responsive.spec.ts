@@ -33,8 +33,9 @@ test("core authenticated routes stay responsive and fail closed", async ({ page 
   for (const route of routes) {
     const response = await page.goto(route.path);
     expect(response?.status() ?? 500, route.path).toBeLessThan(500);
-    await expect(page.getByRole("main")).toBeVisible();
-    await expect(page.getByText(route.marker, { exact: false }).first()).toBeVisible();
+    const main = page.getByRole("main");
+    await expect(main).toBeVisible();
+    await expect(main.getByText(route.marker, { exact: false }).first()).toBeVisible();
     await expectNoViewportOverflow(page);
   }
 });
