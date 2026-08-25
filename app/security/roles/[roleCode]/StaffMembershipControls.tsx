@@ -76,7 +76,8 @@ export function StaffMembershipControls(props: Props) {
   const [state, formAction, pending] = useActionState(runStaffAction, initialStaffActionFormState);
   const roleCode = props.roleCode.toLocaleLowerCase("en-US");
   const immutableRole = roleCode === "founder" || roleCode === "super_admin";
-  const selfTarget = admin.accountId.toLocaleLowerCase("en-US") === props.accountId.toLocaleLowerCase("en-US");
+  const selfTarget =
+    admin.accountId.toLocaleLowerCase("en-US") === props.accountId.toLocaleLowerCase("en-US");
   const actions = actionsFor(props);
 
   useEffect(() => {
@@ -140,8 +141,8 @@ export function StaffMembershipControls(props: Props) {
               <p id="staff-action-copy">{selected.copy}</p>
             </header>
             <p className={styles.notice}>
-              این mutation فقط از Admin API canonical انجام می‌شود. نشست AAL2، permission مدیریت Staff،
-              default-deny، reason، idempotency و audit سمت سرور الزامی‌اند.
+              این mutation فقط از Admin API canonical انجام می‌شود. نشست AAL2، permission مدیریت
+              Staff، default-deny، reason، idempotency و audit سمت سرور الزامی‌اند.
             </p>
             <label>
               دلیل عملیات
