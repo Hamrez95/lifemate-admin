@@ -41,7 +41,7 @@ describe("P1 safe Access Grant lifecycle controls", () => {
     const client = source("src/lib/admin-api/relationship-access-grant-actions.ts");
 
     expect(controls).toContain("افزودن scope جدید از این پنل ممکن نیست");
-    expect(page).toContain("ایجاد Grant جدید، افزایش scope");
+    expect(page).toContain("اضافه‌کردن scope جدید ممنوع است");
     expect(client).not.toContain("/create");
     expect(client).not.toContain("relationshipId");
     expect(client).not.toContain("consentId");
