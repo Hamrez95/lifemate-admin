@@ -74,7 +74,7 @@ function nullableString(value: unknown): value is string | null {
   return value === null || typeof value === "string";
 }
 
-function parseResponse(value: unknown): CommerceRevenueResponse | null {
+export function parseCommerceRevenueResponse(value: unknown): CommerceRevenueResponse | null {
   if (!value || typeof value !== "object") return null;
   const body = value as Record<string, unknown>;
   if (!body.query || typeof body.query !== "object") return null;
@@ -177,7 +177,7 @@ export async function getCommerceRevenue(
   }
 
   if (response.ok) {
-    const parsed = parseResponse(await response.json());
+    const parsed = parseCommerceRevenueResponse(await response.json());
     return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
   }
   if (response.status === 401) return { kind: "unauthenticated" };
