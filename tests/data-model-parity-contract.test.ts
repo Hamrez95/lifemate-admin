@@ -51,11 +51,18 @@ describe("Command Center canonical data-model parity gate", () => {
     expect(page).not.toContain(".from(");
   });
 
-  it("keeps Finance Scenario persistence disabled until a canonical contract exists", () => {
+  it("pins Finance Scenario persistence to the canonical server-only contract", () => {
     const page = source("app/finance/scenario/page.tsx");
+    const client = source("src/lib/admin-api/finance-scenarios.ts");
 
+    expect(page).toContain("getFinanceScenarios");
     expect(page).toContain("Scenario API · Unavailable");
-    expect(page).toContain("ذخیره سناریو — در دسترس نیست");
+    expect(client).toContain("/api/v1/finance/scenarios");
+    expect(client).toContain('cache: "no-store"');
+    expect(client).toContain('import "server-only"');
+    for (const forbidden of forbiddenBrowserDataPaths) {
+      expect(client).not.toContain(forbidden);
+    }
     expect(page).not.toContain(".from(");
   });
 
