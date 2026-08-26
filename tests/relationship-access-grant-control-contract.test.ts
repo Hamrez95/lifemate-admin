@@ -12,7 +12,9 @@ describe("P1 safe Access Grant lifecycle controls", () => {
     const client = source("src/lib/admin-api/relationship-access-grant-actions.ts");
 
     expect(client).toContain('import "server-only"');
-    expect(client).toContain("/api/v1/relationships/access-grants/${input.grantId}/actions/${input.action}");
+    expect(client).toContain(
+      "/api/v1/relationships/access-grants/${input.grantId}/actions/${input.action}",
+    );
     expect(client).toContain('"Idempotency-Key": input.idempotencyKey');
     expect(client).toContain('cache: "no-store"');
     expect(client).not.toContain(".from(");
