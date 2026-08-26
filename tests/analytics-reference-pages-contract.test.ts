@@ -6,7 +6,6 @@ import { describe, expect, it } from "vitest";
 function source(path: string): string {
   return readFileSync(resolve(process.cwd(), path), "utf8");
 }
-
 describe("Analytics references 6 / 9 / 24", () => {
   it("keeps all charts on canonical analytics sources", () => {
     const overview = source("app/analytics/page.tsx");
@@ -25,19 +24,22 @@ describe("Analytics references 6 / 9 / 24", () => {
     expect(cohorts).not.toContain("Math.random");
   });
 
-  it("fails closed for unsupported export and drill-down actions", () => {
-    for (const path of [
-      "app/analytics/page.tsx",
-      "app/analytics/funnel/page.tsx",
-      "app/analytics/cohorts/page.tsx",
-    ]) {
-      const page = source(path);
+  it("fails closed for unsupported export while allowing canonical aggregate drill-down", () => {
+    const overview = source("app/analytics/page.tsx");
+    const funnel = source("app/analytics/funnel/page.tsx");
+    const cohorts = source("app/analytics/cohorts/page.tsx");
+
+    for (const page of [overview, cohorts]) {
       expect(page).toContain("disabled");
       expect(page).toContain("endpoint canonical");
     }
-    expect(source("app/analytics/funnel/page.tsx")).toContain(
-      "endpoint اختصاصی funnel هنوز در Core وجود ندارد",
-    );
+
+    expect(funnel).toContain("disabled");
+    expect(funnel).toContain("قرارداد canonical برای فایل export هنوز تعریف نشده است");
+    expect(funnel).toContain('href="#aggregate-drilldown"');
+    expect(funnel).toContain('id="aggregate-drilldown"');
+    expect(funnel).toContain("فقط aggregate روزانه نمایش داده می‌شود");
+    expect(funnel).not.toContain("endpoint اختصاصی funnel هنوز در Core وجود ندارد");
   });
 
   it("supports loading, unavailable, forbidden and error states", () => {
