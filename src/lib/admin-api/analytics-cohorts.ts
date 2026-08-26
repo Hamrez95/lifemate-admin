@@ -185,7 +185,10 @@ export function buildCohortReport(
       : "app_opened history is not instrumented, so D1/D7/D30 retention cannot be reconstructed truthfully.";
 
   const cohorts: CohortRow[] = acquisitionSeries.map((point) => {
-    const suppressed = point.value > 0 && point.value < COHORT_SUPPRESSION_THRESHOLD;
+    const suppressed =
+      point.suppressed === true ||
+      point.value === null ||
+      (point.value > 0 && point.value < COHORT_SUPPRESSION_THRESHOLD);
     return {
       cohortDate: point.date,
       size: suppressed ? null : point.value,
