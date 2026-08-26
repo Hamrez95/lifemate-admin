@@ -105,7 +105,9 @@ export default async function FinanceScenarioPage({ searchParams }: FinanceScena
                           )
                           .join(" · ")}
                       </p>
-                      <Link href={`/finance/scenario?scenario=${encodeURIComponent(item.scenarioId)}`}>
+                      <Link
+                        href={`/finance/scenario?scenario=${encodeURIComponent(item.scenarioId)}`}
+                      >
                         ویرایش نسخه
                       </Link>
                     </article>
@@ -145,7 +147,9 @@ export default async function FinanceScenarioPage({ searchParams }: FinanceScena
 
           <section className={styles.exportUnavailable} aria-label="وضعیت خروجی سناریو">
             <strong>Export · Unavailable</strong>
-            <p>تا وقتی contract canonical export وجود نداشته باشد فایل client-side تولید نمی‌شود.</p>
+            <p>
+              تا وقتی contract canonical export وجود نداشته باشد فایل client-side تولید نمی‌شود.
+            </p>
           </section>
         </div>
       </AdminShell>
