@@ -80,7 +80,11 @@ export function parseCommerceRevenueResponse(value: unknown): CommerceRevenueRes
   if (!body.query || typeof body.query !== "object") return null;
   if (!body.source || typeof body.source !== "object") return null;
   if (!body.freshness || typeof body.freshness !== "object") return null;
-  if (!Array.isArray(body.kpis) || !Array.isArray(body.actualByCurrency) || !Array.isArray(body.series)) {
+  if (
+    !Array.isArray(body.kpis) ||
+    !Array.isArray(body.actualByCurrency) ||
+    !Array.isArray(body.series)
+  ) {
     return null;
   }
 
@@ -156,9 +160,7 @@ async function correlationId(response: Response): Promise<string | undefined> {
   }
 }
 
-export async function getCommerceRevenue(
-  params: URLSearchParams,
-): Promise<CommerceRevenueResult> {
+export async function getCommerceRevenue(params: URLSearchParams): Promise<CommerceRevenueResult> {
   const token = await getServerAdminAccessToken();
   if (!token) return { kind: "unauthenticated" };
 
