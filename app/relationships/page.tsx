@@ -198,7 +198,8 @@ function SensitiveActions({ canWriteAccessGrants }: { canWriteAccessGrants: bool
           <h3 id="relationship-sensitive-actions-title">اقدامات حساس Access Grant</h3>
           <p>
             عملیات فقط روی Access Grant موجود انجام می‌شود: تمدید محدود، کاهش scope یا revoke. ایجاد
-            Grant جدید، افزایش scope و استنتاج دسترسی از Relationship یا Consent در این پنل مجاز نیست.
+            Grant جدید، افزایش scope و استنتاج دسترسی از Relationship یا Consent در این پنل مجاز
+            نیست.
           </p>
         </div>
         <span className={referenceStyles.failClosedBadge}>
@@ -207,21 +208,27 @@ function SensitiveActions({ canWriteAccessGrants }: { canWriteAccessGrants: bool
       </div>
       <div className={referenceStyles.actionGrid}>
         <article className={referenceStyles.actionCard}>
-          <span className={referenceStyles.actionSymbol} aria-hidden="true">＋</span>
+          <span className={referenceStyles.actionSymbol} aria-hidden="true">
+            ＋
+          </span>
           <div>
             <strong>تمدید محدود</strong>
             <p>حداکثر ۹۰ روز؛ Health/Highly Sensitive از این مسیر قابل تمدید نیست.</p>
           </div>
         </article>
         <article className={referenceStyles.actionCard}>
-          <span className={referenceStyles.actionSymbol} aria-hidden="true">✎</span>
+          <span className={referenceStyles.actionSymbol} aria-hidden="true">
+            ✎
+          </span>
           <div>
             <strong>کاهش دامنه</strong>
             <p>فقط scopeهای فعلی قابل حذف‌اند؛ اضافه‌کردن scope جدید ممنوع است.</p>
           </div>
         </article>
         <article className={referenceStyles.actionCard}>
-          <span className={referenceStyles.actionSymbol} aria-hidden="true">⊘</span>
+          <span className={referenceStyles.actionSymbol} aria-hidden="true">
+            ⊘
+          </span>
           <div>
             <strong>لغو دسترسی</strong>
             <p>با reason، confirmation، idempotency، version check و immutable audit.</p>
@@ -344,14 +351,18 @@ async function RelationshipsContent({
 
       <section className={referenceStyles.policyGrid} aria-label="مرزهای رضایت و دسترسی">
         <article data-tone="green">
-          <span className={referenceStyles.policyIcon} aria-hidden="true">✓</span>
+          <span className={referenceStyles.policyIcon} aria-hidden="true">
+            ✓
+          </span>
           <div>
             <strong>مجوز مشاهده اطلاعات سلامت</strong>
             <p>هرگونه مشاهده داده سلامت نیازمند رضایت صریح و Access Grant معتبر در Core است.</p>
           </div>
         </article>
         <article data-tone="blue">
-          <span className={referenceStyles.policyIcon} aria-hidden="true">○</span>
+          <span className={referenceStyles.policyIcon} aria-hidden="true">
+            ○
+          </span>
           <div>
             <strong>اشتراک تجاری ≠ دسترسی به اطلاعات سلامت</strong>
             <p>Subscription فقط قابلیت تجاری می‌دهد و هیچ مجوز پزشکی یا رضایت ایجاد نمی‌کند.</p>
@@ -368,7 +379,8 @@ async function RelationshipsContent({
               <span className={styles.eyebrow}>نمای عملیاتی</span>
               <h3 id="relationship-filters-title">فیلتر رکوردهای canonical</h3>
               <p>
-                فقط metadata لازم نمایش داده می‌شود؛ داده پزشکی خام یا اطلاعات تماس حساس در این نما نیست.
+                فقط metadata لازم نمایش داده می‌شود؛ داده پزشکی خام یا اطلاعات تماس حساس در این نما
+                نیست.
               </p>
             </div>
             <form className={styles.filters} method="get">
@@ -525,10 +537,7 @@ export default async function RelationshipsPage({ searchParams }: RelationshipsP
               />
             }
           >
-            <RelationshipsContent
-              filters={filters}
-              canWriteAccessGrants={canWriteAccessGrants}
-            />
+            <RelationshipsContent filters={filters} canWriteAccessGrants={canWriteAccessGrants} />
           </Suspense>
         )}
       </AdminShell>
