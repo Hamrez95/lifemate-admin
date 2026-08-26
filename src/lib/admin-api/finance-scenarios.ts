@@ -81,7 +81,12 @@ export async function configureFinanceScenario(input: {
   currency: string;
   validFrom: string;
   validTo: string;
-  assumptions: { code: string; label: string; amountMinor: string; classification: "BUDGET" | "FORECAST" }[];
+  assumptions: {
+    code: string;
+    label: string;
+    amountMinor: string;
+    classification: "BUDGET" | "FORECAST";
+  }[];
   expectedVersion: number | null;
   reason: string;
   idempotencyKey: string;
