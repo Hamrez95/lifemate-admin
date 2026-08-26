@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const client = readFileSync("src/lib/admin-api/ai-advisor.ts", "utf8");
+const briefClient = readFileSync("src/lib/admin-api/ai-daily-brief.ts", "utf8");
 const advisorPage = readFileSync("app/ai/page.tsx", "utf8");
 const briefPage = readFileSync("app/ai/daily-brief/page.tsx", "utf8");
 const loading = readFileSync("app/ai/loading.tsx", "utf8");
@@ -30,11 +31,15 @@ describe("ADM-AI-001 canonical AI surfaces", () => {
     expect(workspaces).toContain('"ai.advisor.read"');
   });
 
-  it("does not invent a Daily Brief before a canonical Core contract exists", () => {
+  it("consumes Daily Brief only through the canonical server-side Core contract", () => {
     expect(briefPage).toContain('admin.permissions.includes("ai.business.read")');
-    expect(briefPage).toContain("این قابلیت هنوز به قرارداد Core متصل نشده است");
-    expect(briefPage).toContain("هیچ مقدار ساختگی نیست");
-    expect(briefPage).not.toMatch(/\/api\/v1\/ai\/.*brief/);
+    expect(briefPage).toContain("getDailyBrief()");
+    expect(briefPage).toContain("هیچ summary جایگزین ساخته نمی‌شود");
+    expect(briefClient).toContain('import "server-only"');
+    expect(briefClient).toContain("/api/v1/ai/daily-brief");
+    expect(briefClient).toContain('cache: "no-store"');
+    expect(briefClient).toContain("AbortSignal.timeout(10_000)");
+    expect(briefPage).not.toMatch(/fetch\s*\(/);
   });
 
   it("keeps raw health, medical advice and sensitive input outside the AI UI", () => {
