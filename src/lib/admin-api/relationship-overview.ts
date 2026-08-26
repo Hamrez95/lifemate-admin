@@ -12,6 +12,8 @@ export type RelationshipOverviewItem = {
   purpose: string | null;
   context: string | null;
   scopeCount: number | null;
+  version: number | null;
+  scopes: string[] | null;
   startedAtUtc: string | null;
   endedAtUtc: string | null;
   occurredAtUtc: string;
@@ -60,6 +62,9 @@ function validItem(value: unknown): value is RelationshipOverviewItem {
     (item.purpose === null || typeof item.purpose === "string") &&
     (item.context === null || typeof item.context === "string") &&
     (item.scopeCount === null || typeof item.scopeCount === "number") &&
+    (item.version === null || (Number.isInteger(item.version) && Number(item.version) >= 1)) &&
+    (item.scopes === null ||
+      (Array.isArray(item.scopes) && item.scopes.every((scope) => typeof scope === "string"))) &&
     (item.startedAtUtc === null || typeof item.startedAtUtc === "string") &&
     (item.endedAtUtc === null || typeof item.endedAtUtc === "string") &&
     typeof item.occurredAtUtc === "string"

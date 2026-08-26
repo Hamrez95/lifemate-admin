@@ -37,15 +37,20 @@ describe("Relationships / Consent reference contract", () => {
     expect(page).toContain("حداقل‌سازی داده");
   });
 
-  it("makes sensitive actions fail closed until a canonical mutation contract exists", () => {
+  it("keeps sensitive mutations permission-gated, canonical and fail closed", () => {
     const page = source("app/relationships/page.tsx");
+    const client = source("src/lib/admin-api/relationship-access-grant-actions.ts");
+    const actions = source("app/relationships/actions.ts");
 
-    expect(page).toContain("Permission:");
-    expect(page).toContain("Confirmation:");
-    expect(page).toContain("mutation canonical");
-    expect(page).toContain('type="button" disabled');
-    expect(page).toContain("endpoint موجود نیست");
-    expect(page).not.toMatch(/fetch\([^)]*relationships[^)]*(revoke|extend|update)/i);
+    expect(page).toContain("relationships.access_grant.write");
+    expect(page).toContain("AAL2 · Audited");
+    expect(page).toContain("immutable audit");
+    expect(client).toContain('import "server-only"');
+    expect(client).toContain("/api/v1/relationships/access-grants/");
+    expect(client).toContain('"Idempotency-Key": input.idempotencyKey');
+    expect(actions).toContain('"confirm-access-grant-change"');
+    expect(client).not.toContain(".from(");
+    expect(client).not.toContain("service_role");
   });
 
   it("covers loading, empty, error, unavailable and forbidden states", () => {
