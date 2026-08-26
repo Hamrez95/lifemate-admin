@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
@@ -6,9 +5,10 @@ import { AdminPageState } from "@/src/components/admin-data-table";
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
 import { AdminShell } from "@/src/components/shell/AdminShell";
 import {
-  getCommerceOverview,
-  type CommerceOverviewResponse,
-} from "@/src/lib/admin-api/commerce-overview";
+  getCommerceRevenue,
+  type CommerceRevenueResponse,
+  type RevenueMetric,
+} from "@/src/lib/admin-api/commerce-revenue";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
 import {
@@ -18,99 +18,95 @@ import {
 } from "../CommerceWorkspaceHeader";
 import styles from "../commerce-reference.module.css";
 
-const dateTimeFormatter = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
-  timeZone: "Asia/Tehran",
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-});
+const number = new Intl.NumberFormat("fa-IR");
+const metricLabels: Record<RevenueMetric["name"], string> = {
+  mrr: "MRR جاری",
+  arr: "ARR جاری",
+  arpu: "ARPU",
+  paid_conversion: "Paid conversion",
+  revenue_churn: "Churn درآمدی",
+  refund_amount: "Refund amount",
+};
 
-function formatDateTime(value: string): string {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "—" : dateTimeFormatter.format(date);
+function one(value: string | string[] | undefined): string {
+  return typeof value === "string" ? value.trim() : "";
 }
 
-function RevenueMetricsUnavailable() {
-  const metrics = [
-    ["MRR جاری", "تعریف/endpoint درآمد ماهانه موجود نیست", "green"],
-    ["ARR جاری", "بدون منبع canonical محاسبه نمی‌شود", "blue"],
-    ["ARPU", "نیازمند درآمد و کاربر پرداخت‌کننده canonical", "violet"],
-    ["Paid conversion", "قیف پرداخت canonical در Commerce Overview نیست", "blue"],
-    ["Churn درآمدی", "تعریف revenue churn موجود نیست", "orange"],
-    ["Refund amount", "تعداد وضعیت Refund با مبلغ بازپرداخت یکی نیست", "orange"],
-  ] as const;
+function revenueParams(values: Record<string, string | string[] | undefined>): URLSearchParams {
+  const params = new URLSearchParams();
+  for (const key of ["from", "to", "currency", "product", "plan"] as const) {
+    const value = one(values[key]);
+    if (value) params.set(key, value);
+  }
+  return params;
+}
 
+function metricValue(metric: RevenueMetric): string {
+  if (metric.state === "unavailable" || metric.value === null) return "—";
+  if (typeof metric.value === "number") return number.format(metric.value);
+  return `${metric.value} minor-unit${metric.currency ? ` · ${metric.currency}` : ""}`;
+}
+
+function RevenueMetrics({ metrics }: { metrics: RevenueMetric[] }) {
   return (
-    <section className={styles.metricGrid} aria-label="شاخص‌های درآمد تکرارشونده">
-      {metrics.map(([label, hint, tone]) => (
-        <article className={styles.metricCard} data-tone={tone} key={label}>
-          <span>{label}</span>
-          <strong aria-label={`${label} در دسترس نیست`}>—</strong>
-          <small>{hint}</small>
+    <section className={styles.metricGrid} aria-label="شاخص‌های درآمد canonical">
+      {metrics.map((metric) => (
+        <article className={styles.metricCard} data-tone="blue" key={metric.name}>
+          <span>{metricLabels[metric.name]}</span>
+          <strong aria-label={`${metricLabels[metric.name]} ${metric.state}`}>
+            {metricValue(metric)}
+          </strong>
+          <small>
+            {metric.state.toUpperCase()} · {metric.reason}
+          </small>
         </article>
       ))}
     </section>
   );
 }
 
-function SubscriptionContext({ data }: { data: CommerceOverviewResponse }) {
-  const summary = data.summary.subscriptions;
-  const rows = [
-    ["اشتراک فعال", summary.active],
-    ["Trial", summary.trial],
-    ["Past due", summary.pastDue],
-    ["Refunded status", summary.refunded],
-  ] as const;
-
+function ActualCurrencyBreakdown({ data }: { data: CommerceRevenueResponse }) {
   return (
-    <section className={styles.panel} aria-labelledby="revenue-context-title">
+    <section className={styles.panel} aria-labelledby="actual-revenue-title">
       <header className={styles.panelHeader}>
         <div>
-          <span>CANONICAL CONTEXT</span>
-          <h3 id="revenue-context-title">زمینه عملیاتی موجود برای درآمد</h3>
-          <p>این اعداد revenue نیستند؛ فقط وضعیت Subscription در read-model Core هستند.</p>
+          <span>ACTUAL · NO FX</span>
+          <h3 id="actual-revenue-title">Actual transaction facts به تفکیک ارز</h3>
+          <p>
+            این اعداد فقط succeeded transaction/refund fact هستند. واحد نمایش integer minor-unit است
+            و تا زمانی که currency exponent canonical نباشد به major-unit تبدیل نمی‌شوند.
+          </p>
         </div>
       </header>
-      <ul className={styles.list}>
-        {rows.map(([label, value]) => (
-          <li key={label}>
-            <strong>{label}</strong>
-            <span>{value.toLocaleString("fa-IR")}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-function PlanContext({ data }: { data: CommerceOverviewResponse }) {
-  return (
-    <section className={styles.panel} aria-labelledby="revenue-plan-title">
-      <header className={styles.panelHeader}>
-        <div>
-          <span>PLAN DISTRIBUTION</span>
-          <h3 id="revenue-plan-title">توزیع اشتراک روی پلن‌ها</h3>
-          <p>برای تحلیل mix استفاده می‌شود؛ قیمت یا درآمد از این تعدادها استنتاج نمی‌شود.</p>
-        </div>
-      </header>
-      {data.planDistribution.length === 0 ? (
-        <AdminPageState state="empty" title="پلنی برای نمایش وجود ندارد" />
+      {data.actualByCurrency.length === 0 ? (
+        <AdminPageState
+          state={data.source.state === "unavailable" ? "unavailable" : "empty"}
+          title={
+            data.source.state === "unavailable"
+              ? "ledger مالی canonical در این محیط deploy نشده است"
+              : "Actual transaction در فیلتر فعلی وجود ندارد"
+          }
+          description={data.source.note}
+        />
       ) : (
         <ul className={styles.list}>
-          {data.planDistribution.slice(0, 8).map((row) => (
-            <li key={row.planId}>
+          {data.actualByCurrency.map((row) => (
+            <li key={row.currency}>
               <div>
-                <Link href={`/commerce/plans/${row.planId}`}>
-                  <strong>{row.planName}</strong>
-                </Link>
+                <strong>{row.currency}</strong>
                 <br />
                 <span>
-                  {row.productName} · {row.planCode}
+                  succeeded: {row.succeededAmountMinor} minor-unit ·{" "}
+                  {number.format(row.succeededTransactions)} transaction ·{" "}
+                  {number.format(row.payingAccounts)} payer
                 </span>
               </div>
-              <span>{row.subscriptions.toLocaleString("fa-IR")} اشتراک</span>
+              <span>
+                refund:{" "}
+                {row.refundedAmountMinor === null
+                  ? "Unavailable"
+                  : `${row.refundedAmountMinor} minor-unit`}
+              </span>
             </li>
           ))}
         </ul>
@@ -119,78 +115,146 @@ function PlanContext({ data }: { data: CommerceOverviewResponse }) {
   );
 }
 
-async function RevenueContent() {
-  const result = await getCommerceOverview(new URLSearchParams({ page: "1", pageSize: "25" }));
+function ActualTrend({ data }: { data: CommerceRevenueResponse }) {
+  return (
+    <section className={styles.panel} aria-labelledby="actual-trend-title">
+      <header className={styles.panelHeader}>
+        <div>
+          <span>DAILY ACTUAL SERIES</span>
+          <h3 id="actual-trend-title">روند روزانه بدون تبدیل ارز</h3>
+          <p>هر ارز یک سری مستقل دارد؛ هیچ FX یا جمع چندارزی در مرورگر انجام نمی‌شود.</p>
+        </div>
+      </header>
+      {data.series.length === 0 ? (
+        <AdminPageState state="empty" title="سری روزانه قابل نمایش وجود ندارد" />
+      ) : (
+        <ul className={styles.list}>
+          {data.series.slice(-60).map((point) => (
+            <li key={`${point.date}-${point.currency}`}>
+              <strong>
+                {point.date} · {point.currency}
+              </strong>
+              <span>
+                succeeded {point.succeededAmountMinor} · refund{" "}
+                {point.refundedAmountMinor ?? "Unavailable"} minor-unit
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+async function RevenueContent({
+  filters,
+}: {
+  filters: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = revenueParams(await filters);
+  const result = await getCommerceRevenue(params);
   if (result.kind === "unauthenticated") redirect("/login");
   if (result.kind === "forbidden") return <AdminPageState state="forbidden" />;
-  if (result.kind === "invalid")
-    return <AdminPageState state="error" title="درخواست Commerce معتبر نیست" />;
+  if (result.kind === "invalid") {
+    return (
+      <AdminPageState
+        state="error"
+        title="فیلتر Revenue معتبر نیست"
+        description={result.correlationId ? `کد پیگیری: ${result.correlationId}` : undefined}
+      />
+    );
+  }
   if (result.kind === "unavailable") {
     return (
       <AdminPageState
         state="unavailable"
+        title="Revenue API در دسترس نیست"
         description={result.correlationId ? `کد پیگیری: ${result.correlationId}` : undefined}
       />
     );
   }
 
   const { data } = result;
-
   return (
     <div className={styles.page} dir="rtl">
       <CommerceWorkspaceHeader
         active="revenue"
-        eyebrow="Commerce · Reference 11"
-        title="درآمد تکرارشونده، بدون KPI ساختگی"
-        description="طرح مرجع MRR، ARR، ARPU، conversion و churn را نشان می‌دهد؛ اما Command Center فقط زمانی عدد می‌دهد که Core تعریف و endpoint canonical همان KPI را برگرداند."
+        eyebrow="Commerce · Reference 11 · Canonical revenue"
+        title="درآمد واقعی، با مرزهای صریح داده"
+        description="Actual transaction/refund فقط از ledger canonical می‌آید. MRR، ARR، ARPU، conversion و churn تا وقتی semantics واقعی billing/cohort ندارند صریحاً Unavailable می‌مانند."
       />
-      <RevenueMetricsUnavailable />
-      <section className={styles.unavailablePanel} aria-labelledby="revenue-dependency-title">
-        <div className={styles.unavailableIcon} aria-hidden="true">
-          !
-        </div>
-        <div>
-          <h3 id="revenue-dependency-title">
-            Revenue KPI endpoint هنوز در قرارداد فعلی Core وجود ندارد
-          </h3>
-          <p>
-            از تعداد Subscription، قیمت فعلی Plan یا Transactionهای ناقص، MRR/ARR/ARPU محاسبه
-            نمی‌کنیم؛ چون grandfathered pricing، refund، currency، billing period و migration
-            semantics می‌توانند نتیجه را غلط کنند.
-          </p>
-          <p>
-            <code>Required: canonical recurring-revenue read model + KPI definitions</code>
-          </p>
-        </div>
-      </section>
-      <CommerceDependencyGrid>
-        <CoreDependencyNotice title="Price source" tone="available">
-          قیمت فقط در صفحه مدیریت Plan از قرارداد versioned pricing Core نمایش داده و زمان‌بندی
-          می‌شود؛ این صفحه قیمت را از تعداد اشتراک حدس نمی‌زند.
-        </CoreDependencyNotice>
-        <CoreDependencyNotice title="Trial · Entitlement · Discount · Core #412">
-          mutationهای باقی‌مانده Monetization تا تکمیل Core #412 در UI درآمد یا برنامه‌های فروش فعال
-          نمی‌شوند.
-        </CoreDependencyNotice>
-        <CoreDependencyNotice title="Revenue mutation" tone="info">
-          صفحه درآمد read-only است. هیچ action برای reprice، migrate یا دست‌کاری Subscription فعال
-          ندارد.
-        </CoreDependencyNotice>
-      </CommerceDependencyGrid>
-      <div className={styles.sectionGrid}>
-        <SubscriptionContext data={data} />
-        <PlanContext data={data} />
-      </div>
-      <section className={styles.panel} aria-labelledby="revenue-freshness-title">
+
+      <section className={styles.panel} aria-labelledby="revenue-filter-title">
         <header className={styles.panelHeader}>
           <div>
-            <span>FRESHNESS</span>
-            <h3 id="revenue-freshness-title">منبع snapshot عملیاتی</h3>
+            <span>BOUNDED FILTERS</span>
+            <h3 id="revenue-filter-title">فیلتر دوره و dimension</h3>
+          </div>
+        </header>
+        <form method="get" className={styles.filterGrid}>
+          <label>
+            از
+            <input type="date" name="from" defaultValue={params.get("from") ?? ""} />
+          </label>
+          <label>
+            تا
+            <input type="date" name="to" defaultValue={params.get("to") ?? ""} />
+          </label>
+          <label>
+            Currency
+            <input
+              name="currency"
+              dir="ltr"
+              maxLength={3}
+              pattern="[A-Za-z]{3}"
+              defaultValue={params.get("currency") ?? ""}
+              placeholder="IRR"
+            />
+          </label>
+          <label>
+            Product
+            <input name="product" dir="ltr" defaultValue={params.get("product") ?? ""} />
+          </label>
+          <label>
+            Plan
+            <input name="plan" dir="ltr" defaultValue={params.get("plan") ?? ""} />
+          </label>
+          <button type="submit">اعمال فیلتر</button>
+        </form>
+      </section>
+
+      <RevenueMetrics metrics={data.kpis} />
+      <div className={styles.sectionGrid}>
+        <ActualCurrencyBreakdown data={data} />
+        <ActualTrend data={data} />
+      </div>
+
+      <CommerceDependencyGrid>
+        <CoreDependencyNotice title="Amount semantics" tone="info">
+          تمام مبلغ‌ها raw integer minor-unit هستند. Currency exponent در قرارداد فعلی instrument
+          نشده و UI هیچ تبدیل major-unit انجام نمی‌دهد.
+        </CoreDependencyNotice>
+        <CoreDependencyNotice title="Actual vs Forecast" tone="available">
+          این endpoint فقط Actual transaction/refund fact می‌دهد. Budget/Forecast همچنان در Finance
+          Scenario و خارج از این ledger نگه داشته می‌شوند.
+        </CoreDependencyNotice>
+        <CoreDependencyNotice title="No implicit FX" tone="available">
+          aggregate چندارزی ساخته نمی‌شود. برای Refund KPI عدد مستقیم فقط با فیلتر یک Currency نمایش
+          داده می‌شود.
+        </CoreDependencyNotice>
+      </CommerceDependencyGrid>
+
+      <section className={styles.panel} aria-labelledby="revenue-source-title">
+        <header className={styles.panelHeader}>
+          <div>
+            <span>SOURCE · FRESHNESS</span>
+            <h3 id="revenue-source-title">وضعیت منبع canonical</h3>
             <p>
-              Commerce Overview: {data.freshness.status === "fresh" ? "تازه" : "قدیمی"} ·{" "}
-              {formatDateTime(data.freshness.asOfUtc)}. این timestamp فقط وضعیت داده عملیاتی را نشان
-              می‌دهد، نه freshness یک KPI درآمدی که هنوز وجود ندارد.
+              {data.source.state.toUpperCase()} · ledger: {data.source.ledger} · refund ledger:{" "}
+              {data.source.refundLedger ?? "Unavailable"}
             </p>
+            <p>{data.source.note}</p>
+            <small>as of {data.freshness.asOfUtc}</small>
           </div>
         </header>
       </section>
@@ -198,7 +262,11 @@ async function RevenueContent() {
   );
 }
 
-export default async function CommerceRevenuePage() {
+type CommerceRevenuePageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function CommerceRevenuePage({ searchParams }: CommerceRevenuePageProps) {
   const admin = await requireAdminAccess();
   const canRead = admin.permissions.includes("commerce.read");
 
@@ -206,16 +274,16 @@ export default async function CommerceRevenuePage() {
     <AdminSessionProvider admin={admin}>
       <AdminShell
         activeSlug="commerce"
-        title="درآمد تکرارشونده"
-        subtitle="Reference 11 با KPIهای fail-closed تا آماده‌شدن قرارداد Core"
+        title="درآمد"
+        subtitle="Actual revenue evidence · recurring KPIها fail-closed"
       >
         {!canRead ? (
           <AdminPageState state="forbidden" />
         ) : (
           <Suspense
-            fallback={<AdminPageState state="loading" title="در حال دریافت snapshot تجارت" />}
+            fallback={<AdminPageState state="loading" title="در حال دریافت Revenue canonical" />}
           >
-            <RevenueContent />
+            <RevenueContent filters={searchParams} />
           </Suspense>
         )}
       </AdminShell>
