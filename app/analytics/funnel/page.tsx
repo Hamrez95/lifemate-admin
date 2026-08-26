@@ -198,7 +198,11 @@ async function FunnelContent({ filters }: { filters: URLSearchParams }) {
           <button type="submit">اعمال فیلتر</button>
         </form>
         <div className={styles.actions}>
-          <button type="button" disabled title="قرارداد canonical برای فایل export هنوز تعریف نشده است">
+          <button
+            type="button"
+            disabled
+            title="قرارداد canonical برای فایل export هنوز تعریف نشده است"
+          >
             خروجی
           </button>
           <a href="#aggregate-drilldown">Drill-down تجمیعی</a>
@@ -211,7 +215,9 @@ async function FunnelContent({ filters }: { filters: URLSearchParams }) {
             <span className={styles.eyebrow}>Canonical activation cohort</span>
             <h3 id="canonical-funnel-title">نمای قیف مرحله‌ای</h3>
           </div>
-          <span className={styles.unavailableBadge}>{hasCanonicalFunnel ? "Partial" : "Unavailable"}</span>
+          <span className={styles.unavailableBadge}>
+            {hasCanonicalFunnel ? "Partial" : "Unavailable"}
+          </span>
         </div>
         {!hasCanonicalFunnel ? (
           <AdminPageState
@@ -226,32 +232,46 @@ async function FunnelContent({ filters }: { filters: URLSearchParams }) {
                 <div className={styles.metricHeader}>
                   <div>
                     <strong>
-                      مرحله {definition.funnel?.stageOrder.toLocaleString("fa-IR")}: {definition.displayNameFa}
+                      مرحله {definition.funnel?.stageOrder.toLocaleString("fa-IR")}: {" "}
+                      {definition.displayNameFa}
                     </strong>
                     <span>{value.source}</span>
                   </div>
                   <b>{value.suppressed ? "Suppressed" : formatValue(definition, value)}</b>
                 </div>
                 {definition.funnel?.stageOrder === 1 ? (
-                  <small>cohort پایه · حداقل نمایش {definition.funnel.privacyThreshold.toLocaleString("fa-IR")} حساب</small>
+                  <small>
+                    cohort پایه · حداقل نمایش {" "}
+                    {definition.funnel.privacyThreshold.toLocaleString("fa-IR")} حساب
+                  </small>
                 ) : (
                   <small>
-                    Conversion {formatRate(value.funnel?.conversionFromPrevious ?? null)} · Drop-off {formatRate(value.funnel?.dropOffFromPrevious ?? null)}
+                    Conversion {formatRate(value.funnel?.conversionFromPrevious ?? null)} · Drop-off{" "}
+                    {formatRate(value.funnel?.dropOffFromPrevious ?? null)}
                   </small>
                 )}
-                {value.reason ? <div className={styles.metricUnavailable}>{value.reason}</div> : null}
+                {value.reason ? (
+                  <div className={styles.metricUnavailable}>{value.reason}</div>
+                ) : null}
               </article>
             ))}
           </div>
         )}
       </section>
 
-      <section className={styles.metricsCard} id="aggregate-drilldown" aria-labelledby="aggregate-drilldown-title">
+      <section
+        className={styles.metricsCard}
+        id="aggregate-drilldown"
+        aria-labelledby="aggregate-drilldown-title"
+      >
         <div className={styles.sectionHeading}>
           <div>
             <span className={styles.eyebrow}>Approved aggregate drill-down</span>
             <h3 id="aggregate-drilldown-title">شکست روزانه cohort</h3>
-            <p>فقط aggregate روزانه نمایش داده می‌شود؛ هیچ شناسه حساب، پروفایل یا payload سلامت وجود ندارد.</p>
+            <p>
+              فقط aggregate روزانه نمایش داده می‌شود؛ هیچ شناسه حساب، پروفایل یا payload سلامت وجود
+              ندارد.
+            </p>
           </div>
         </div>
         {!hasCanonicalFunnel || drilldownDates.length === 0 ? (
