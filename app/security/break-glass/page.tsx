@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { AdminPageState } from "@/src/components/admin-data-table";
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
-import { AdminPageState } from "@/src/components/states/AdminPageState";
 import { AdminShell } from "@/src/components/shell/AdminShell";
 import { getBreakGlassRequests } from "@/src/lib/admin-api/break-glass";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
