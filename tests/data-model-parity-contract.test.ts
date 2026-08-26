@@ -43,11 +43,18 @@ describe("Command Center canonical data-model parity gate", () => {
     expect(client).not.toContain(".from(");
   });
 
-  it("keeps Operations explicit unavailable until Core owns a canonical read model", () => {
+  it("pins Operations to the canonical server-only snapshot contract", () => {
     const page = source("app/operations/page.tsx");
+    const client = source("src/lib/admin-api/operations.ts");
 
-    expect(page).toContain("Operational visibility هنوز به قرارداد Core متصل نشده است");
-    expect(page).toContain("Unavailable");
+    expect(page).toContain("getOperationsSnapshot");
+    expect(page).toContain("Operational visibility فعلاً در دسترس نیست");
+    expect(client).toContain("/api/v1/operations/snapshot");
+    expect(client).toContain('cache: "no-store"');
+    expect(client).toContain('import "server-only"');
+    for (const forbidden of forbiddenBrowserDataPaths) {
+      expect(client).not.toContain(forbidden);
+    }
     expect(page).not.toContain(".from(");
   });
 
