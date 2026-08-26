@@ -65,7 +65,8 @@ function parseResponse(value: unknown): MarketingAttributionResponse | null {
     !Array.isArray(taxonomy.supportedFacts) ||
     !Array.isArray(taxonomy.unsupportedFacts) ||
     typeof taxonomy.note !== "string"
-  ) return null;
+  )
+    return null;
 
   for (const item of body.items) {
     if (!item || typeof item !== "object") return null;
@@ -76,7 +77,8 @@ function parseResponse(value: unknown): MarketingAttributionResponse | null {
       !finiteCount(row.campaignCount) ||
       !finiteCount(row.activeCampaignCount) ||
       !finiteCount(row.completedCampaignCount)
-    ) return null;
+    )
+      return null;
   }
 
   for (const metric of body.performanceMetrics) {
@@ -87,7 +89,8 @@ function parseResponse(value: unknown): MarketingAttributionResponse | null {
       row.state !== "unavailable" ||
       row.value !== null ||
       typeof row.reason !== "string"
-    ) return null;
+    )
+      return null;
   }
 
   const freshness = body.freshness as Record<string, unknown>;
@@ -96,7 +99,8 @@ function parseResponse(value: unknown): MarketingAttributionResponse | null {
     typeof freshness.asOfUtc !== "string" ||
     typeof freshness.source !== "string" ||
     typeof freshness.note !== "string"
-  ) return null;
+  )
+    return null;
 
   return body as unknown as MarketingAttributionResponse;
 }
@@ -136,6 +140,7 @@ export async function getMarketingAttribution(
   }
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden" };
-  if (response.status === 400) return { kind: "invalid", correlationId: await correlationId(response) };
+  if (response.status === 400)
+    return { kind: "invalid", correlationId: await correlationId(response) };
   return { kind: "unavailable", correlationId: await correlationId(response) };
 }
