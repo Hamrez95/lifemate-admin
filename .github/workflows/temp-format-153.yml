@@ -1,0 +1,48 @@
+name: temp-format-153
+
+on:
+  push:
+    branches: [feat/153-commerce-revenue-kpis]
+    paths:
+      - .github/workflows/temp-format-153.yml
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          show-progress: false
+          ref: feat/153-commerce-revenue-kpis
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Format revenue slice
+        run: ./node_modules/.bin/prettier --write app/commerce/revenue/page.tsx src/lib/admin-api/commerce-revenue.ts
+
+      - name: Commit formatter output
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add app/commerce/revenue/page.tsx src/lib/admin-api/commerce-revenue.ts
+          if git diff --cached --quiet; then
+            echo "No formatter changes needed"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "style(commerce): apply canonical formatter (#153)"
+          git push origin HEAD:feat/153-commerce-revenue-kpis
