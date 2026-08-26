@@ -1,7 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { mutateAccessGrant, type AccessGrantAction } from "@/src/lib/admin-api/relationship-access-grant-actions";
+import {
+  mutateAccessGrant,
+  type AccessGrantAction,
+} from "@/src/lib/admin-api/relationship-access-grant-actions";
 
 export type AccessGrantActionState = {
   status: "idle" | "success" | "invalid" | "forbidden" | "conflict" | "unavailable";
@@ -86,7 +89,10 @@ export async function mutateAccessGrantAction(
     };
   }
   if (result.kind === "conflict") {
-    return { status: "conflict", message: result.message ?? "نسخه Access Grant تغییر کرده؛ صفحه را تازه کنید." };
+    return {
+      status: "conflict",
+      message: result.message ?? "نسخه Access Grant تغییر کرده؛ صفحه را تازه کنید.",
+    };
   }
   if (result.kind === "invalid") {
     return { status: "invalid", message: result.message ?? "درخواست Access Grant معتبر نیست." };
@@ -94,7 +100,10 @@ export async function mutateAccessGrantAction(
   if (result.kind === "forbidden" || result.kind === "unauthenticated") {
     return {
       status: "forbidden",
-      message: result.kind === "forbidden" ? result.message ?? "مجوز این عملیات وجود ندارد." : "نشست معتبر نیست.",
+      message:
+        result.kind === "forbidden"
+          ? (result.message ?? "مجوز این عملیات وجود ندارد.")
+          : "نشست معتبر نیست.",
     };
   }
   return {
