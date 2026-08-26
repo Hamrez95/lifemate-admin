@@ -34,6 +34,9 @@ const valid = {
   generatedAtUtc: "2026-08-25T22:30:00.000Z",
 };
 
+const firstItem = valid.items[0]!;
+const firstAssumption = firstItem.assumptions[0]!;
+
 describe("parseFinanceScenariosResponse", () => {
   it("accepts explicit scenario semantics", () => {
     expect(parseFinanceScenariosResponse(valid)).toEqual(valid);
@@ -60,8 +63,8 @@ describe("parseFinanceScenariosResponse", () => {
         ...valid,
         items: [
           {
-            ...valid.items[0],
-            assumptions: [{ ...valid.items[0].assumptions[0], amountMinor: "12.5" }],
+            ...firstItem,
+            assumptions: [{ ...firstAssumption, amountMinor: "12.5" }],
           },
         ],
       }),
@@ -71,8 +74,8 @@ describe("parseFinanceScenariosResponse", () => {
         ...valid,
         items: [
           {
-            ...valid.items[0],
-            assumptions: [{ ...valid.items[0].assumptions[0], classification: "ACTUAL" }],
+            ...firstItem,
+            assumptions: [{ ...firstAssumption, classification: "ACTUAL" }],
           },
         ],
       }),
