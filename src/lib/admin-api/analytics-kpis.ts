@@ -103,7 +103,8 @@ function parseValue(value: unknown): KpiValue | null {
       if (!point || typeof point !== "object") return null;
       const candidate = point as Record<string, unknown>;
       if (typeof candidate.date !== "string" || !finiteNullable(candidate.value)) return null;
-      if (candidate.suppressed !== undefined && typeof candidate.suppressed !== "boolean") return null;
+      if (candidate.suppressed !== undefined && typeof candidate.suppressed !== "boolean")
+        return null;
     }
   }
 
