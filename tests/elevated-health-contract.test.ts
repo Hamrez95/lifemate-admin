@@ -20,7 +20,7 @@ describe("Elevated Health Viewer security contract", () => {
 
   it("requires the break-glass request boundary and exact capabilities", () => {
     const page = source("app/security/elevated-health/page.tsx");
-    expect(page).toContain('security.break_glass.request');
+    expect(page).toContain("security.break_glass.request");
     expect(page).toContain("health.read.elevated");
     expect(page).toContain("women_health.read.elevated");
     expect(page).toContain("Founder role");
@@ -30,7 +30,13 @@ describe("Elevated Health Viewer security contract", () => {
   it("does not expose export or sensitive free-text fields", () => {
     const page = source("app/security/elevated-health/page.tsx");
     const client = source("src/lib/admin-api/elevated-health.ts");
-    for (const forbidden of ["privateNotes", "note:", "instructions:", "metadataJson", "sourceExternalId"]) {
+    for (const forbidden of [
+      "privateNotes",
+      "note:",
+      "instructions:",
+      "metadataJson",
+      "sourceExternalId",
+    ]) {
       expect(page).not.toContain(forbidden);
       expect(client).not.toContain(forbidden);
     }

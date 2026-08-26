@@ -3,9 +3,7 @@ import "server-only";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
-export type ElevatedHealthCapability =
-  | "health.read.elevated"
-  | "women_health.read.elevated";
+export type ElevatedHealthCapability = "health.read.elevated" | "women_health.read.elevated";
 
 export type ElevatedHealthData = {
   subjectPersonId: string;
@@ -56,7 +54,10 @@ function capability(value: string): value is ElevatedHealthCapability {
 }
 
 function array(value: unknown): value is Array<Record<string, unknown>> {
-  return Array.isArray(value) && value.every((item) => item && typeof item === "object" && !Array.isArray(item));
+  return (
+    Array.isArray(value) &&
+    value.every((item) => item && typeof item === "object" && !Array.isArray(item))
+  );
 }
 
 function parse(value: unknown): ElevatedHealthData | null {
@@ -70,9 +71,11 @@ function parse(value: unknown): ElevatedHealthData | null {
     !capability(body.capability) ||
     freshness?.status !== "fresh" ||
     typeof freshness.asOfUtc !== "string"
-  ) return null;
+  )
+    return null;
   if (body.capability === "health.read.elevated") {
-    if (!array(body.observations) || !array(body.medications) || !array(body.treatmentPlans)) return null;
+    if (!array(body.observations) || !array(body.medications) || !array(body.treatmentPlans))
+      return null;
   } else if (!array(body.episodes)) return null;
   return body as unknown as ElevatedHealthData;
 }
@@ -81,7 +84,12 @@ async function problem(response: Response): Promise<{ message?: string; correlat
   try {
     const body = (await response.json()) as Record<string, unknown>;
     return {
-      message: typeof body.detail === "string" ? body.detail : typeof body.message === "string" ? body.message : undefined,
+      message:
+        typeof body.detail === "string"
+          ? body.detail
+          : typeof body.message === "string"
+            ? body.message
+            : undefined,
       correlationId: typeof body.correlationId === "string" ? body.correlationId : undefined,
     };
   } catch {

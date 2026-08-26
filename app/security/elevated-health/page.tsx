@@ -58,8 +58,9 @@ export default async function ElevatedHealthPage({ searchParams }: Props) {
               <p className="eyebrow">ADM-USR-005 · Sensitive · No export</p>
               <h2>نمای محدود داده سلامت</h2>
               <p>
-                این صفحه هیچ دسترسی مستقلی ایجاد نمی‌کند. Core در هر درخواست exact Person و Capability
-                را با Break-glass فعال دوباره بررسی می‌کند؛ expiry یا revoke در درخواست بعدی فوراً اثر می‌گذارد.
+                این صفحه هیچ دسترسی مستقلی ایجاد نمی‌کند. Core در هر درخواست exact Person و
+                Capability را با Break-glass فعال دوباره بررسی می‌کند؛ expiry یا revoke در درخواست
+                بعدی فوراً اثر می‌گذارد.
               </p>
             </div>
             <Link href="/security/break-glass">مدیریت Break-glass</Link>
@@ -68,7 +69,12 @@ export default async function ElevatedHealthPage({ searchParams }: Props) {
           <form className={styles.filters} method="get" action="/security/elevated-health">
             <label>
               <span>Person ID دقیق</span>
-              <input name="subjectPersonId" defaultValue={subjectPersonId} required autoComplete="off" />
+              <input
+                name="subjectPersonId"
+                defaultValue={subjectPersonId}
+                required
+                autoComplete="off"
+              />
             </label>
             <label>
               <span>Capability دقیق</span>
@@ -109,9 +115,13 @@ export default async function ElevatedHealthPage({ searchParams }: Props) {
                         <strong>{item.observationType}</strong>
                         <span>
                           {item.valuePrimary ?? "—"} {item.unitPrimary ?? ""}
-                          {item.valueSecondary !== null ? ` / ${item.valueSecondary} ${item.unitSecondary ?? ""}` : ""}
+                          {item.valueSecondary !== null
+                            ? ` / ${item.valueSecondary} ${item.unitSecondary ?? ""}`
+                            : ""}
                         </span>
-                        <small>{formatDate(item.observedAtUtc)} · {item.sourceCategory ?? "—"}</small>
+                        <small>
+                          {formatDate(item.observedAtUtc)} · {item.sourceCategory ?? "—"}
+                        </small>
                       </article>
                     ))}
                   </div>
@@ -123,7 +133,9 @@ export default async function ElevatedHealthPage({ searchParams }: Props) {
                   {(result.data.medications ?? []).map((item, index) => (
                     <article key={`${item.name}-${item.updatedAtUtc}-${index}`}>
                       <strong>{item.name}</strong>
-                      <span>{item.strengthText ?? "—"} · {item.form ?? "—"}</span>
+                      <span>
+                        {item.strengthText ?? "—"} · {item.form ?? "—"}
+                      </span>
                       <small>{formatDate(item.updatedAtUtc)}</small>
                     </article>
                   ))}
@@ -136,7 +148,9 @@ export default async function ElevatedHealthPage({ searchParams }: Props) {
                     <article key={`${item.updatedAtUtc}-${index}`}>
                       <strong>{item.status}</strong>
                       <span>{item.doseText}</span>
-                      <small>{item.startDate} → {item.endDate ?? "—"}</small>
+                      <small>
+                        {item.startDate} → {item.endDate ?? "—"}
+                      </small>
                     </article>
                   ))}
                 </div>
@@ -145,7 +159,9 @@ export default async function ElevatedHealthPage({ searchParams }: Props) {
           ) : result?.kind === "ok" ? (
             <section className={styles.panel}>
               <h3>Women Health episodes</h3>
-              <p className={styles.notice}>Private notes و free-text در این projection عمداً برگردانده نمی‌شوند.</p>
+              <p className={styles.notice}>
+                Private notes و free-text در این projection عمداً برگردانده نمی‌شوند.
+              </p>
               {(result.data.episodes ?? []).length === 0 ? (
                 <AdminPageState state="empty" title="Episode ثبت نشده است" />
               ) : (
