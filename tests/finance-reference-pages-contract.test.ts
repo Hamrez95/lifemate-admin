@@ -29,10 +29,13 @@ describe("Finance references 14-16", () => {
     expect(budget).not.toContain("parseFloat(amountMinor)");
   });
 
-  it("does not invent scenario persistence or client-side financial export", () => {
+  it("uses canonical scenario persistence without inventing client-side financial export", () => {
     const scenario = source("app/finance/scenario/page.tsx");
+    const client = source("src/lib/admin-api/finance-scenarios.ts");
     expect(scenario).toContain("Scenario API · Unavailable");
-    expect(scenario).toContain("ذخیره سناریو — در دسترس نیست");
+    expect(scenario).toContain("finance.scenario.write");
+    expect(client).toContain("/api/v1/finance/scenarios");
+    expect(client).toContain('import "server-only"');
     expect(scenario).toContain("Export · Unavailable");
     expect(scenario).not.toContain("fetch(");
     expect(scenario).not.toContain("form action=");
