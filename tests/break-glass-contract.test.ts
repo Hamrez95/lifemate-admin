@@ -41,6 +41,6 @@ describe("Break-glass console security contract", () => {
       expect(page).not.toContain(forbidden);
       expect(client).not.toContain(forbidden);
     }
-    expect(page).toContain("Relationship یا Founder role");
+    expect(page).toMatch(/Relationship یا Founder\s+role/);
   });
 });
