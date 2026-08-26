@@ -76,10 +76,16 @@ function validSuccess(value: unknown): value is {
   );
 }
 
-export async function mutateAccessGrant(input: AccessGrantActionInput): Promise<AccessGrantActionResult> {
+export async function mutateAccessGrant(
+  input: AccessGrantActionInput,
+): Promise<AccessGrantActionResult> {
   const token = await getServerAdminAccessToken();
   if (!token) return { kind: "unauthenticated" };
-  if (!uuid(input.grantId) || !Number.isInteger(input.expectedVersion) || input.expectedVersion < 1) {
+  if (
+    !uuid(input.grantId) ||
+    !Number.isInteger(input.expectedVersion) ||
+    input.expectedVersion < 1
+  ) {
     return { kind: "invalid", message: "شناسه یا نسخه Access Grant معتبر نیست." };
   }
 
