@@ -64,7 +64,8 @@ export async function saveScenarioAction(
         typeof row.amountMinor !== "string" ||
         !/^-?\d+$/.test(row.amountMinor) ||
         (row.classification !== "BUDGET" && row.classification !== "FORECAST")
-      ) throw new Error();
+      )
+        throw new Error();
       return {
         code: row.code,
         label: row.label,
@@ -101,7 +102,10 @@ export async function saveScenarioAction(
   if (result.kind === "conflict") return { status: "conflict", message: result.message };
   if (result.kind === "invalid") return { status: "invalid", message: result.message };
   if (result.kind === "forbidden" || result.kind === "unauthenticated") {
-    return { status: "forbidden", message: result.kind === "forbidden" ? result.message : "نشست معتبر نیست." };
+    return {
+      status: "forbidden",
+      message: result.kind === "forbidden" ? result.message : "نشست معتبر نیست.",
+    };
   }
   return {
     status: "unavailable",
