@@ -50,7 +50,7 @@ test("active staff completes username/password then TOTP MFA before an authorize
   await expect(page.getByRole("heading", { name: "عملیات", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "مرکز عملیات LifeMate" })).toBeVisible();
   await expect(
-    page.getByText(/Operational visibility هنوز به قرارداد Core متصل نشده است/),
+    page.getByText(/Operational visibility فعلاً در دسترس نیست/),
   ).toBeVisible();
 
   const a11y = await new AxeBuilder({ page }).analyze();
