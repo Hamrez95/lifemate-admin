@@ -47,7 +47,9 @@ function isScenario(value: unknown): value is FinanceScenario {
   const row = value as Record<string, unknown>;
   return (
     typeof row.scenarioId === "string" &&
-    (row.scenarioKind === "BASE" || row.scenarioKind === "UPSIDE" || row.scenarioKind === "DOWNSIDE") &&
+    (row.scenarioKind === "BASE" ||
+      row.scenarioKind === "UPSIDE" ||
+      row.scenarioKind === "DOWNSIDE") &&
     typeof row.name === "string" &&
     typeof row.currency === "string" &&
     /^[A-Z]{3}$/.test(row.currency) &&
@@ -76,6 +78,7 @@ export function parseFinanceScenariosResponse(value: unknown): FinanceScenariosR
     JSON.stringify(policy.scenarioClassifications) !== JSON.stringify(["BUDGET", "FORECAST"]) ||
     JSON.stringify(policy.scenarioKinds) !== JSON.stringify(["BASE", "UPSIDE", "DOWNSIDE"]) ||
     typeof body.generatedAtUtc !== "string"
-  ) return null;
+  )
+    return null;
   return body as FinanceScenariosResponse;
 }
