@@ -18,8 +18,12 @@ test("AI Daily Brief is truthful, safe and touch-friendly on mobile", async ({ p
     page.getByRole("heading", { name: /تصویر کوتاه کسب‌وکار، فقط بر پایه شواهد canonical/ }),
   ).toBeVisible();
   await expect(page.getByAltText(/گزارش روزانه هوشمند LifeMate/)).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Daily Brief فعلاً در دسترس نیست" })).toBeVisible();
-  await expect(page.getByText("هیچ summary جایگزین ساخته نمی‌شود.", { exact: false })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Daily Brief فعلاً در دسترس نیست" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("هیچ summary جایگزین ساخته نمی‌شود.", { exact: false }),
+  ).toBeVisible();
   await expectNoViewportOverflow(page);
 
   const tabs = page.getByRole("navigation", { name: "بخش‌های هوش مصنوعی" }).getByRole("link");
