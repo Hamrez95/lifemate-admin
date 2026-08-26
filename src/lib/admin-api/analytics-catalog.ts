@@ -11,6 +11,13 @@ export type AnalyticsEventDefinition = {
   privacyPolicy: string;
 };
 
+export type AnalyticsFunnelMetadata = {
+  id: "activation";
+  stageOrder: number;
+  previousStage: string | null;
+  privacyThreshold: number;
+};
+
 export type AnalyticsKpiDefinition = {
   name: string;
   displayNameFa: string;
@@ -25,6 +32,7 @@ export type AnalyticsKpiDefinition = {
   eventSources: string[];
   freshnessRule: string;
   availability: "available" | "partial" | "unavailable";
+  funnel?: AnalyticsFunnelMetadata;
 };
 
 export type AnalyticsCatalog = {
@@ -61,6 +69,21 @@ function eventDefinition(value: unknown): value is AnalyticsEventDefinition {
   );
 }
 
+function funnelMetadata(value: unknown): value is AnalyticsFunnelMetadata {
+  if (!value || typeof value !== "object") return false;
+  const item = value as Record<string, unknown>;
+  return (
+    item.id === "activation" &&
+    typeof item.stageOrder === "number" &&
+    Number.isInteger(item.stageOrder) &&
+    item.stageOrder >= 1 &&
+    (item.previousStage === null || typeof item.previousStage === "string") &&
+    typeof item.privacyThreshold === "number" &&
+    Number.isInteger(item.privacyThreshold) &&
+    item.privacyThreshold >= 1
+  );
+}
+
 function kpiDefinition(value: unknown): value is AnalyticsKpiDefinition {
   if (!value || typeof value !== "object") return false;
   const item = value as Record<string, unknown>;
@@ -79,7 +102,8 @@ function kpiDefinition(value: unknown): value is AnalyticsKpiDefinition {
     typeof item.freshnessRule === "string" &&
     (item.availability === "available" ||
       item.availability === "partial" ||
-      item.availability === "unavailable")
+      item.availability === "unavailable") &&
+    (item.funnel === undefined || funnelMetadata(item.funnel))
   );
 }
 
