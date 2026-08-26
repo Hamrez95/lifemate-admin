@@ -3,11 +3,7 @@
 import { useActionState, useMemo } from "react";
 
 import type { BreakGlassItem } from "@/src/lib/admin-api/break-glass";
-import {
-  initialBreakGlassActionState,
-  requestBreakGlass,
-  reviewBreakGlass,
-} from "./actions";
+import { initialBreakGlassActionState, requestBreakGlass, reviewBreakGlass } from "./actions";
 
 function randomKey(prefix: string): string {
   return `${prefix}:${crypto.randomUUID()}`;
@@ -43,7 +39,9 @@ export function BreakGlassRequestForm() {
         <input type="checkbox" name="confirmation" value="confirm-break-glass-request" required />
         <span>تأیید می‌کنم درخواست برای هدف، Person و Capability مشخص و زمان محدود است.</span>
       </label>
-      <button type="submit" disabled={pending}>{pending ? "در حال ثبت…" : "ثبت درخواست"}</button>
+      <button type="submit" disabled={pending}>
+        {pending ? "در حال ثبت…" : "ثبت درخواست"}
+      </button>
       {state.status !== "idle" ? <p role="status">{state.message}</p> : null}
     </form>
   );
@@ -86,7 +84,9 @@ export function BreakGlassReviewForm({
         <input type="checkbox" name="confirmation" value="confirm-break-glass-change" required />
         <span>تأیید می‌کنم target/scope/TTL را بررسی کرده‌ام و این تصمیم Audit می‌شود.</span>
       </label>
-      <button type="submit" disabled={pending}>{pending ? "در حال ثبت…" : "ثبت تصمیم"}</button>
+      <button type="submit" disabled={pending}>
+        {pending ? "در حال ثبت…" : "ثبت تصمیم"}
+      </button>
       {state.status !== "idle" ? <p role="status">{state.message}</p> : null}
     </form>
   );

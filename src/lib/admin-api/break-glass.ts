@@ -39,7 +39,10 @@ export type BreakGlassMutationResult =
   | { kind: "unavailable"; correlationId?: string };
 
 function isUuid(value: unknown): value is string {
-  return typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+  return (
+    typeof value === "string" &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+  );
 }
 
 function isCapability(value: unknown): value is BreakGlassCapability {
@@ -47,7 +50,13 @@ function isCapability(value: unknown): value is BreakGlassCapability {
 }
 
 function isStatus(value: unknown): value is BreakGlassStatus {
-  return value === "Pending" || value === "Approved" || value === "Denied" || value === "Expired" || value === "Revoked";
+  return (
+    value === "Pending" ||
+    value === "Approved" ||
+    value === "Denied" ||
+    value === "Expired" ||
+    value === "Revoked"
+  );
 }
 
 function parseItem(value: unknown): BreakGlassItem | null {
@@ -65,8 +74,15 @@ function parseItem(value: unknown): BreakGlassItem | null {
     typeof row.requestedAtUtc !== "string" ||
     !Number.isInteger(row.version) ||
     Number(row.version) < 1
-  ) return null;
-  for (const key of ["reviewedByAccountId", "reviewedAtUtc", "expiresAtUtc", "revokedAtUtc", "reviewReason"] as const) {
+  )
+    return null;
+  for (const key of [
+    "reviewedByAccountId",
+    "reviewedAtUtc",
+    "expiresAtUtc",
+    "revokedAtUtc",
+    "reviewReason",
+  ] as const) {
     if (row[key] !== null && typeof row[key] !== "string") return null;
   }
   return row as unknown as BreakGlassItem;
@@ -76,7 +92,12 @@ async function problem(response: Response): Promise<{ message?: string; correlat
   try {
     const body = (await response.json()) as Record<string, unknown>;
     return {
-      message: typeof body.detail === "string" ? body.detail : typeof body.message === "string" ? body.message : undefined,
+      message:
+        typeof body.detail === "string"
+          ? body.detail
+          : typeof body.message === "string"
+            ? body.message
+            : undefined,
       correlationId: typeof body.correlationId === "string" ? body.correlationId : undefined,
     };
   } catch {
@@ -114,13 +135,18 @@ export async function getBreakGlassRequests(): Promise<BreakGlassListResult> {
   }
   const body = (await response.json()) as Record<string, unknown>;
   const freshness = body.freshness as Record<string, unknown> | undefined;
-  if (!Array.isArray(body.items) || typeof freshness?.asOfUtc !== "string") return { kind: "unavailable" };
+  if (!Array.isArray(body.items) || typeof freshness?.asOfUtc !== "string")
+    return { kind: "unavailable" };
   const items = body.items.map(parseItem);
   if (items.some((item) => item === null)) return { kind: "unavailable" };
   return { kind: "ok", items: items as BreakGlassItem[], asOfUtc: freshness.asOfUtc };
 }
 
-async function mutation(path: string, payload: Record<string, unknown>, idempotencyKey: string): Promise<BreakGlassMutationResult> {
+async function mutation(
+  path: string,
+  payload: Record<string, unknown>,
+  idempotencyKey: string,
+): Promise<BreakGlassMutationResult> {
   const response = await call(path, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Idempotency-Key": idempotencyKey },
@@ -131,13 +157,25 @@ async function mutation(path: string, payload: Record<string, unknown>, idempote
   const details = response.ok ? {} : await problem(response);
   if (response.status === 403) return { kind: "forbidden", message: details.message };
   if (response.status === 409) return { kind: "conflict", ...details };
-  if (response.status === 400 || response.status === 404 || response.status === 422) return { kind: "invalid", ...details };
+  if (response.status === 400 || response.status === 404 || response.status === 422)
+    return { kind: "invalid", ...details };
   if (!response.ok) return { kind: "unavailable", correlationId: details.correlationId };
   const body = (await response.json()) as Record<string, unknown>;
-  if (!isUuid(body.requestId) || !isStatus(body.status) || !Number.isInteger(body.version) || typeof body.replayed !== "boolean") {
+  if (
+    !isUuid(body.requestId) ||
+    !isStatus(body.status) ||
+    !Number.isInteger(body.version) ||
+    typeof body.replayed !== "boolean"
+  ) {
     return { kind: "unavailable" };
   }
-  return { kind: "ok", requestId: body.requestId, status: body.status, version: Number(body.version), replayed: body.replayed };
+  return {
+    kind: "ok",
+    requestId: body.requestId,
+    status: body.status,
+    version: Number(body.version),
+    replayed: body.replayed,
+  };
 }
 
 export function createBreakGlassRequest(input: {
@@ -149,7 +187,12 @@ export function createBreakGlassRequest(input: {
 }) {
   return mutation(
     "/api/v1/security/break-glass/requests",
-    { subjectPersonId: input.subjectPersonId, capability: input.capability, ttlMinutes: input.ttlMinutes, reason: input.reason },
+    {
+      subjectPersonId: input.subjectPersonId,
+      capability: input.capability,
+      ttlMinutes: input.ttlMinutes,
+      reason: input.reason,
+    },
     input.idempotencyKey,
   );
 }

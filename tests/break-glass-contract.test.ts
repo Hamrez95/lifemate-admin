@@ -21,8 +21,8 @@ describe("Break-glass console security contract", () => {
   it("keeps request and approval authorities separate and explicit", () => {
     const page = source("app/security/break-glass/page.tsx");
     const actions = source("app/security/break-glass/actions.ts");
-    expect(page).toContain('security.break_glass.request');
-    expect(page).toContain('security.break_glass.approve');
+    expect(page).toContain("security.break_glass.request");
+    expect(page).toContain("security.break_glass.approve");
     expect(actions).toContain("confirm-break-glass-request");
     expect(actions).toContain("confirm-break-glass-change");
     expect(actions).toContain("idempotencyKey");
@@ -31,7 +31,13 @@ describe("Break-glass console security contract", () => {
   it("does not render raw health fields or infer access from relationships", () => {
     const page = source("app/security/break-glass/page.tsx");
     const client = source("src/lib/admin-api/break-glass.ts");
-    for (const forbidden of ["medications", "diagnosis", "women_calendar", "health_observations", "service_role"]) {
+    for (const forbidden of [
+      "medications",
+      "diagnosis",
+      "women_calendar",
+      "health_observations",
+      "service_role",
+    ]) {
       expect(page).not.toContain(forbidden);
       expect(client).not.toContain(forbidden);
     }

@@ -39,10 +39,18 @@ function mapResult(
     };
   }
   if (result.kind === "forbidden" || result.kind === "unauthenticated") {
-    return { status: "forbidden", message: result.kind === "forbidden" ? result.message : "نشست معتبر نیست." };
+    return {
+      status: "forbidden",
+      message: result.kind === "forbidden" ? result.message : "نشست معتبر نیست.",
+    };
   }
-  if (result.kind === "conflict") return { status: "conflict", message: result.message ?? "رکورد از زمان مشاهده تغییر کرده است." };
-  if (result.kind === "invalid") return { status: "invalid", message: result.message ?? "درخواست معتبر نیست." };
+  if (result.kind === "conflict")
+    return {
+      status: "conflict",
+      message: result.message ?? "رکورد از زمان مشاهده تغییر کرده است.",
+    };
+  if (result.kind === "invalid")
+    return { status: "invalid", message: result.message ?? "درخواست معتبر نیست." };
   return { status: "unavailable", message: "سرویس Break-glass در دسترس نیست." };
 }
 
@@ -61,7 +69,8 @@ export async function requestBreakGlass(
   const ttlMinutes = /^\d+$/.test(ttlRaw) ? Number(ttlRaw) : 0;
   const reason = text(data, "reason");
   const key = idempotencyKey(data);
-  if (!key || reason.length < 10) return { status: "invalid", message: "دلیل و شناسه درخواست معتبر نیست." };
+  if (!key || reason.length < 10)
+    return { status: "invalid", message: "دلیل و شناسه درخواست معتبر نیست." };
 
   return mapResult(
     await createBreakGlassRequest({

@@ -44,8 +44,8 @@ export default async function BreakGlassPage() {
               <p className="eyebrow">Sensitive access · AAL2 · Default deny</p>
               <h2>Break-glass Sensitive Access</h2>
               <p>
-                درخواست، تأیید و لغو فقط از قرارداد canonical انجام می‌شود. Relationship یا Founder role
-                به‌تنهایی هیچ دسترسی health ایجاد نمی‌کند.
+                درخواست، تأیید و لغو فقط از قرارداد canonical انجام می‌شود. Relationship یا Founder
+                role به‌تنهایی هیچ دسترسی health ایجاد نمی‌کند.
               </p>
             </div>
             <Link href="/security">بازگشت به Security</Link>
@@ -55,7 +55,8 @@ export default async function BreakGlassPage() {
             <strong>مرزهای اجباری</strong>
             <p>
               Self-approval ممنوع است؛ Women Health حداکثر ۳۰ دقیقه و Health حداکثر ۶۰ دقیقه؛
-              expiration/revoke در هر elevated read دوباره بررسی می‌شود؛ هیچ payload سلامت در این صفحه یا Audit نمایش داده نمی‌شود.
+              expiration/revoke در هر elevated read دوباره بررسی می‌شود؛ هیچ payload سلامت در این
+              صفحه یا Audit نمایش داده نمی‌شود.
             </p>
           </section>
 
@@ -101,15 +102,36 @@ export default async function BreakGlassPage() {
                       <span>{item.status}</span>
                     </header>
                     <dl>
-                      <div><dt>Person</dt><dd><code>{item.subjectPersonId}</code></dd></div>
-                      <div><dt>TTL</dt><dd>{item.ttlMinutes.toLocaleString("fa-IR")} دقیقه</dd></div>
-                      <div><dt>Requested</dt><dd>{formatDate(item.requestedAtUtc)}</dd></div>
-                      <div><dt>Expires</dt><dd>{formatDate(item.expiresAtUtc)}</dd></div>
-                      <div><dt>Version</dt><dd>{item.version.toLocaleString("fa-IR")}</dd></div>
+                      <div>
+                        <dt>Person</dt>
+                        <dd>
+                          <code>{item.subjectPersonId}</code>
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>TTL</dt>
+                        <dd>{item.ttlMinutes.toLocaleString("fa-IR")} دقیقه</dd>
+                      </div>
+                      <div>
+                        <dt>Requested</dt>
+                        <dd>{formatDate(item.requestedAtUtc)}</dd>
+                      </div>
+                      <div>
+                        <dt>Expires</dt>
+                        <dd>{formatDate(item.expiresAtUtc)}</dd>
+                      </div>
+                      <div>
+                        <dt>Version</dt>
+                        <dd>{item.version.toLocaleString("fa-IR")}</dd>
+                      </div>
                     </dl>
                     <p>{item.reason}</p>
                     {item.reviewReason ? <small>Review: {item.reviewReason}</small> : null}
-                    <BreakGlassReviewForm item={item} canApprove={canApprove} canRequest={canRequest} />
+                    <BreakGlassReviewForm
+                      item={item}
+                      canApprove={canApprove}
+                      canRequest={canRequest}
+                    />
                   </article>
                 ))}
               </div>
