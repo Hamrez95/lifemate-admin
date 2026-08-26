@@ -1,0 +1,31 @@
+.page { display: grid; gap: 1rem; }
+.hero, .panel, .boundary, .card { border: 1px solid var(--border-subtle, rgba(148,163,184,.28)); border-radius: 1rem; background: var(--surface, #fff); }
+.hero { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; padding: 1.25rem; }
+.hero h2, .heading h3 { margin: .2rem 0 .45rem; }
+.hero p, .boundary p, .card p, .card small { margin: 0; line-height: 1.8; }
+.boundary { padding: 1rem 1.25rem; }
+.panel { padding: 1.1rem; }
+.heading { display: flex; justify-content: space-between; align-items: flex-start; gap: .75rem; margin-bottom: 1rem; }
+.panel form { display: grid; gap: .75rem; }
+.panel form label { display: grid; gap: .35rem; }
+.panel form input, .panel form select, .panel form textarea { width: 100%; min-width: 0; }
+.panel form textarea { min-height: 5rem; resize: vertical; }
+.panel form label:has(input[type="checkbox"]) { display: flex; align-items: flex-start; gap: .5rem; }
+.panel form input[type="checkbox"] { width: auto; margin-top: .25rem; }
+.panel button { justify-self: start; }
+.list { display: grid; gap: .85rem; }
+.card { padding: 1rem; }
+.card header { display: flex; justify-content: space-between; gap: .75rem; margin-bottom: .75rem; }
+.card header div { display: grid; gap: .25rem; }
+.card dl { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: .65rem; margin: 0 0 .75rem; }
+.card dl div { min-width: 0; }
+.card dt { font-size: .78rem; opacity: .65; }
+.card dd { margin: .15rem 0 0; overflow-wrap: anywhere; }
+.card form { margin-top: .9rem; padding-top: .9rem; border-top: 1px solid var(--border-subtle, rgba(148,163,184,.2)); }
+.card[data-status="Approved"] { border-inline-start-width: 4px; }
+.card[data-status="Denied"], .card[data-status="Revoked"], .card[data-status="Expired"] { opacity: .88; }
+@media (max-width: 850px) {
+  .hero, .heading, .card header { flex-direction: column; }
+  .card dl { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 520px) { .card dl { grid-template-columns: 1fr; } }
