@@ -1,10 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import {
-  initialAccessGrantActionState,
-  mutateAccessGrantAction,
-} from "./actions";
+import { initialAccessGrantActionState, mutateAccessGrantAction } from "./actions";
 import styles from "./access-grant-actions.module.css";
 
 export function AccessGrantActions({
@@ -22,7 +19,9 @@ export function AccessGrantActions({
     mutateAccessGrantAction,
     initialAccessGrantActionState,
   );
-  const [selectedAction, setSelectedAction] = useState<"extend" | "replace-scopes" | "revoke">("extend");
+  const [selectedAction, setSelectedAction] = useState<"extend" | "replace-scopes" | "revoke">(
+    "extend",
+  );
   const [idempotencyKey] = useState(() => crypto.randomUUID());
   const defaultExpiry = expiresAtUtc ? new Date(expiresAtUtc).toISOString().slice(0, 16) : "";
 
@@ -79,16 +78,15 @@ export function AccessGrantActions({
       </label>
 
       <label className={styles.confirmation}>
-        <input
-          type="checkbox"
-          name="confirmation"
-          value="confirm-access-grant-change"
-          required
-        />
+        <input type="checkbox" name="confirmation" value="confirm-access-grant-change" required />
         <span>تأیید می‌کنم این تغییر محدود، هدفمند و قابل Audit است.</span>
       </label>
 
-      <button type="submit" disabled={pending} data-danger={selectedAction === "revoke" ? "true" : "false"}>
+      <button
+        type="submit"
+        disabled={pending}
+        data-danger={selectedAction === "revoke" ? "true" : "false"}
+      >
         {pending ? "در حال ثبت…" : "ثبت عملیات"}
       </button>
 
