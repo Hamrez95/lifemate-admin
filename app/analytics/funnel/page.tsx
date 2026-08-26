@@ -51,6 +51,10 @@ function formatValue(definition: AnalyticsKpiDefinition, value: KpiValue): strin
     : number.format(value.value);
 }
 
+function formatRate(value: number | null): string {
+  return value === null ? "—" : `${number.format(value * 100)}٪`;
+}
+
 function CanonicalMetric({
   definition,
   value,
@@ -133,11 +137,25 @@ async function FunnelContent({ filters }: { filters: URLSearchParams }) {
   const catalog = catalogResult.data;
   const values = valuesResult.data;
   const byName = new Map(values.values.map((item) => [item.name, item]));
-  const measurable = catalog.kpis
+  const funnelStages = catalog.kpis
+    .filter((definition) => definition.funnel?.id === "activation")
+    .sort((left, right) => (left.funnel?.stageOrder ?? 0) - (right.funnel?.stageOrder ?? 0))
     .map((definition) => ({ definition, value: byName.get(definition.name) }))
     .filter((item): item is { definition: AnalyticsKpiDefinition; value: KpiValue } =>
       Boolean(item.value),
     );
+  const hasCanonicalFunnel =
+    funnelStages.length >= 2 &&
+    funnelStages.every((item) => item.value.funnel?.id === "activation");
+  const measurable = catalog.kpis
+    .filter((definition) => definition.funnel === undefined)
+    .map((definition) => ({ definition, value: byName.get(definition.name) }))
+    .filter((item): item is { definition: AnalyticsKpiDefinition; value: KpiValue } =>
+      Boolean(item.value),
+    );
+  const drilldownDates = Array.from(
+    new Set(funnelStages.flatMap((stage) => stage.value.series?.map((point) => point.date) ?? [])),
+  ).sort();
 
   return (
     <div className={styles.page}>
@@ -146,9 +164,8 @@ async function FunnelContent({ filters }: { filters: URLSearchParams }) {
           <span className={styles.eyebrow}>Activation Funnel · Canonical evidence</span>
           <h2>قیف فعال‌سازی و تبدیل</h2>
           <p>
-            این صفحه با الگوی مرجع ۹ طراحی شده، اما فقط داده‌ای را به‌عنوان «قیف» نشان می‌دهد که از
-            قرارداد canonical قابل اثبات باشد. KPIهای مستقل به‌جای تبدیل مرحله‌به‌مرحله جعل
-            نمی‌شوند.
+            شمارش مراحل، conversion و drop-off فقط از cohort canonical Core خوانده می‌شوند؛ هیچ نرخ
+            تبدیلی از KPIهای مستقل یا داده سطح کاربر استنتاج نمی‌شود.
           </p>
         </div>
         <div className={styles.heroMeta}>
@@ -181,36 +198,96 @@ async function FunnelContent({ filters }: { filters: URLSearchParams }) {
           <button type="submit">اعمال فیلتر</button>
         </form>
         <div className={styles.actions}>
-          <button type="button" disabled title="endpoint canonical برای export قیف وجود ندارد">
+          <button type="button" disabled title="قرارداد canonical برای فایل export هنوز تعریف نشده است">
             خروجی
           </button>
-          <button type="button" disabled title="endpoint canonical برای drill-down قیف وجود ندارد">
-            Drill-down
-          </button>
+          <a href="#aggregate-drilldown">Drill-down تجمیعی</a>
         </div>
       </section>
 
       <section className={styles.funnelCard} aria-labelledby="canonical-funnel-title">
         <div className={styles.sectionHeading}>
           <div>
-            <span className={styles.eyebrow}>Truthful funnel state</span>
+            <span className={styles.eyebrow}>Canonical activation cohort</span>
             <h3 id="canonical-funnel-title">نمای قیف مرحله‌ای</h3>
           </div>
-          <span className={styles.unavailableBadge}>Unavailable</span>
+          <span className={styles.unavailableBadge}>{hasCanonicalFunnel ? "Partial" : "Unavailable"}</span>
         </div>
-        <AdminPageState
-          state="unavailable"
-          title="endpoint اختصاصی funnel هنوز در Core وجود ندارد"
-          description="تا وقتی شمارش ترتیبی مراحل و conversion بین مراحل از API canonical نیاید، شکل funnel یا نرخ ریزش مرحله‌ای ساخته نمی‌شود."
-        />
+        {!hasCanonicalFunnel ? (
+          <AdminPageState
+            state="unavailable"
+            title="قرارداد مرحله‌ای canonical کامل نیست"
+            description="تا وقتی metadata ترتیب مراحل و conversion خود Core حاضر نباشد، قیف ساخته نمی‌شود."
+          />
+        ) : (
+          <div className={styles.metricList}>
+            {funnelStages.map(({ definition, value }) => (
+              <article className={styles.metricRow} data-state={value.state} key={definition.name}>
+                <div className={styles.metricHeader}>
+                  <div>
+                    <strong>
+                      مرحله {definition.funnel?.stageOrder.toLocaleString("fa-IR")}: {definition.displayNameFa}
+                    </strong>
+                    <span>{value.source}</span>
+                  </div>
+                  <b>{value.suppressed ? "Suppressed" : formatValue(definition, value)}</b>
+                </div>
+                {definition.funnel?.stageOrder === 1 ? (
+                  <small>cohort پایه · حداقل نمایش {definition.funnel.privacyThreshold.toLocaleString("fa-IR")} حساب</small>
+                ) : (
+                  <small>
+                    Conversion {formatRate(value.funnel?.conversionFromPrevious ?? null)} · Drop-off {formatRate(value.funnel?.dropOffFromPrevious ?? null)}
+                  </small>
+                )}
+                {value.reason ? <div className={styles.metricUnavailable}>{value.reason}</div> : null}
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className={styles.metricsCard} id="aggregate-drilldown" aria-labelledby="aggregate-drilldown-title">
+        <div className={styles.sectionHeading}>
+          <div>
+            <span className={styles.eyebrow}>Approved aggregate drill-down</span>
+            <h3 id="aggregate-drilldown-title">شکست روزانه cohort</h3>
+            <p>فقط aggregate روزانه نمایش داده می‌شود؛ هیچ شناسه حساب، پروفایل یا payload سلامت وجود ندارد.</p>
+          </div>
+        </div>
+        {!hasCanonicalFunnel || drilldownDates.length === 0 ? (
+          <AdminPageState state="empty" title="داده aggregate برای drill-down وجود ندارد" />
+        ) : (
+          <div className={styles.metricList}>
+            {drilldownDates.map((date) => (
+              <article className={styles.metricRow} key={date}>
+                <div className={styles.metricHeader}>
+                  <strong>{date}</strong>
+                  <span>
+                    {funnelStages
+                      .map(({ definition, value }) => {
+                        const point = value.series?.find((candidate) => candidate.date === date);
+                        const rendered = point?.suppressed
+                          ? "Suppressed"
+                          : point?.value == null
+                            ? "—"
+                            : number.format(point.value);
+                        return `${definition.displayNameFa}: ${rendered}`;
+                      })
+                      .join(" · ")}
+                  </span>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className={styles.metricsCard} aria-labelledby="canonical-evidence-title">
         <div className={styles.sectionHeading}>
           <div>
-            <span className={styles.eyebrow}>Canonical KPI evidence</span>
-            <h3 id="canonical-evidence-title">شاخص‌های واقعی مرتبط با فعال‌سازی</h3>
-            <p>این نوارها KPIهای مستقل هستند، نه conversion بین مراحل.</p>
+            <span className={styles.eyebrow}>Other canonical KPI evidence</span>
+            <h3 id="canonical-evidence-title">شاخص‌های مستقل Analytics</h3>
+            <p>این بخش جدا از funnel است و برای ساخت conversion مرحله‌ای استفاده نمی‌شود.</p>
           </div>
         </div>
         <div className={styles.metricList}>
