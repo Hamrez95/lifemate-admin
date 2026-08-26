@@ -13,6 +13,7 @@ import {
 } from "@/src/lib/admin-api/relationship-overview";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
+import { AccessGrantActions } from "./AccessGrantActions";
 import referenceStyles from "./relationships-reference.module.css";
 import styles from "./relationships.module.css";
 
@@ -131,8 +132,20 @@ function itemDetail(item: RelationshipOverviewItem): string {
   return "مجوز دسترسی scoped";
 }
 
-function OverviewItem({ item }: { item: RelationshipOverviewItem }) {
+function OverviewItem({
+  item,
+  canWriteAccessGrants,
+}: {
+  item: RelationshipOverviewItem;
+  canWriteAccessGrants: boolean;
+}) {
   const meta = kindMeta[item.kind];
+  const actionable =
+    item.kind === "access_grant" &&
+    (item.status.toLowerCase() === "active" || item.status.toLowerCase() === "granted") &&
+    item.version !== null &&
+    item.scopes !== null;
+
   return (
     <article className={styles.activityItem} data-kind={item.kind}>
       <div className={styles.activityIcon} aria-hidden="true">
@@ -153,22 +166,27 @@ function OverviewItem({ item }: { item: RelationshipOverviewItem }) {
           <span>ثبت: {formatDateTime(item.occurredAtUtc)}</span>
           <span>شروع: {formatDateTime(item.startedAtUtc)}</span>
           <span>پایان: {formatDateTime(item.endedAtUtc)}</span>
+          {item.version !== null ? <span>نسخه: {item.version.toLocaleString("fa-IR")}</span> : null}
           {item.subjectPersonId ? (
             <code title="شناسه Person موضوع رکورد">{item.subjectPersonId}</code>
           ) : null}
         </div>
+        {actionable && canWriteAccessGrants ? (
+          <AccessGrantActions
+            grantId={item.id}
+            version={item.version ?? 1}
+            scopes={item.scopes ?? []}
+            expiresAtUtc={item.endedAtUtc}
+          />
+        ) : actionable ? (
+          <p>برای تغییر این Access Grant مجوز relationships.access_grant.write لازم است.</p>
+        ) : null}
       </div>
     </article>
   );
 }
 
-function SensitiveActions() {
-  const actions = [
-    { title: "تمدید دسترسی", symbol: "＋" },
-    { title: "ویرایش دامنه مجوز", symbol: "✎" },
-    { title: "لغو دسترسی", symbol: "⊘" },
-  ];
-
+function SensitiveActions({ canWriteAccessGrants }: { canWriteAccessGrants: boolean }) {
   return (
     <section
       className={referenceStyles.sensitiveActions}
@@ -177,30 +195,38 @@ function SensitiveActions() {
       <div className={styles.sectionHeading}>
         <div>
           <span className={styles.eyebrow}>Sensitive operations</span>
-          <h3 id="relationship-sensitive-actions-title">اقدامات حساس</h3>
+          <h3 id="relationship-sensitive-actions-title">اقدامات حساس Access Grant</h3>
           <p>
-            Core هنوز mutation canonical این عملیات را ارائه نمی‌کند؛ هیچ مسیر جایگزین یا دسترسی
-            مستقیم ساخته نمی‌شود.
+            عملیات فقط روی Access Grant موجود انجام می‌شود: تمدید محدود، کاهش scope یا revoke. ایجاد
+            Grant جدید، افزایش scope و استنتاج دسترسی از Relationship یا Consent در این پنل مجاز نیست.
           </p>
         </div>
-        <span className={referenceStyles.failClosedBadge}>Fail closed</span>
+        <span className={referenceStyles.failClosedBadge}>
+          {canWriteAccessGrants ? "AAL2 · Audited" : "Read only"}
+        </span>
       </div>
       <div className={referenceStyles.actionGrid}>
-        {actions.map((action) => (
-          <article className={referenceStyles.actionCard} key={action.title}>
-            <span className={referenceStyles.actionSymbol} aria-hidden="true">
-              {action.symbol}
-            </span>
-            <div>
-              <strong>{action.title}</strong>
-              <p>Permission: باید در قرارداد canonical Core تعریف و برای اپراتور احراز شود.</p>
-              <p>Confirmation: تأیید صریح و دوباره قبل از اجرای mutation الزامی است.</p>
-            </div>
-            <button type="button" disabled title="endpoint canonical برای این اقدام وجود ندارد">
-              غیرفعال؛ endpoint موجود نیست
-            </button>
-          </article>
-        ))}
+        <article className={referenceStyles.actionCard}>
+          <span className={referenceStyles.actionSymbol} aria-hidden="true">＋</span>
+          <div>
+            <strong>تمدید محدود</strong>
+            <p>حداکثر ۹۰ روز؛ Health/Highly Sensitive از این مسیر قابل تمدید نیست.</p>
+          </div>
+        </article>
+        <article className={referenceStyles.actionCard}>
+          <span className={referenceStyles.actionSymbol} aria-hidden="true">✎</span>
+          <div>
+            <strong>کاهش دامنه</strong>
+            <p>فقط scopeهای فعلی قابل حذف‌اند؛ اضافه‌کردن scope جدید ممنوع است.</p>
+          </div>
+        </article>
+        <article className={referenceStyles.actionCard}>
+          <span className={referenceStyles.actionSymbol} aria-hidden="true">⊘</span>
+          <div>
+            <strong>لغو دسترسی</strong>
+            <p>با reason، confirmation، idempotency، version check و immutable audit.</p>
+          </div>
+        </article>
       </div>
     </section>
   );
@@ -242,7 +268,13 @@ function WorkspaceTabs({ filters }: { filters: URLSearchParams }) {
   );
 }
 
-async function RelationshipsContent({ filters }: { filters: URLSearchParams }) {
+async function RelationshipsContent({
+  filters,
+  canWriteAccessGrants,
+}: {
+  filters: URLSearchParams;
+  canWriteAccessGrants: boolean;
+}) {
   const result = await getRelationshipOverview(filters);
   if (result.kind === "unauthenticated") redirect("/login");
   if (result.kind === "forbidden") {
@@ -312,18 +344,14 @@ async function RelationshipsContent({ filters }: { filters: URLSearchParams }) {
 
       <section className={referenceStyles.policyGrid} aria-label="مرزهای رضایت و دسترسی">
         <article data-tone="green">
-          <span className={referenceStyles.policyIcon} aria-hidden="true">
-            ✓
-          </span>
+          <span className={referenceStyles.policyIcon} aria-hidden="true">✓</span>
           <div>
             <strong>مجوز مشاهده اطلاعات سلامت</strong>
             <p>هرگونه مشاهده داده سلامت نیازمند رضایت صریح و Access Grant معتبر در Core است.</p>
           </div>
         </article>
         <article data-tone="blue">
-          <span className={referenceStyles.policyIcon} aria-hidden="true">
-            ○
-          </span>
+          <span className={referenceStyles.policyIcon} aria-hidden="true">○</span>
           <div>
             <strong>اشتراک تجاری ≠ دسترسی به اطلاعات سلامت</strong>
             <p>Subscription فقط قابلیت تجاری می‌دهد و هیچ مجوز پزشکی یا رضایت ایجاد نمی‌کند.</p>
@@ -340,8 +368,7 @@ async function RelationshipsContent({ filters }: { filters: URLSearchParams }) {
               <span className={styles.eyebrow}>نمای عملیاتی</span>
               <h3 id="relationship-filters-title">فیلتر رکوردهای canonical</h3>
               <p>
-                فقط metadata لازم نمایش داده می‌شود؛ داده پزشکی خام یا اطلاعات تماس حساس در این نما
-                نیست.
+                فقط metadata لازم نمایش داده می‌شود؛ داده پزشکی خام یا اطلاعات تماس حساس در این نما نیست.
               </p>
             </div>
             <form className={styles.filters} method="get">
@@ -401,7 +428,11 @@ async function RelationshipsContent({ filters }: { filters: URLSearchParams }) {
             ) : (
               <div className={styles.activityList}>
                 {data.items.map((item) => (
-                  <OverviewItem key={`${item.kind}-${item.id}`} item={item} />
+                  <OverviewItem
+                    key={`${item.kind}-${item.id}`}
+                    item={item}
+                    canWriteAccessGrants={canWriteAccessGrants}
+                  />
                 ))}
               </div>
             )}
@@ -416,7 +447,7 @@ async function RelationshipsContent({ filters }: { filters: URLSearchParams }) {
             />
           </section>
 
-          <SensitiveActions />
+          <SensitiveActions canWriteAccessGrants={canWriteAccessGrants} />
         </main>
 
         <aside className={referenceStyles.summaryRail} aria-label="خلاصه وضعیت روابط و رضایت">
@@ -468,6 +499,7 @@ async function RelationshipsContent({ filters }: { filters: URLSearchParams }) {
 export default async function RelationshipsPage({ searchParams }: RelationshipsPageProps) {
   const admin = await requireAdminAccess();
   const canReadRelationships = admin.permissions.includes("relationships.read");
+  const canWriteAccessGrants = admin.permissions.includes("relationships.access_grant.write");
   const filters = filtersFrom(await searchParams);
 
   return (
@@ -493,7 +525,10 @@ export default async function RelationshipsPage({ searchParams }: RelationshipsP
               />
             }
           >
-            <RelationshipsContent filters={filters} />
+            <RelationshipsContent
+              filters={filters}
+              canWriteAccessGrants={canWriteAccessGrants}
+            />
           </Suspense>
         )}
       </AdminShell>
