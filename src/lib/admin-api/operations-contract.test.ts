@@ -30,7 +30,7 @@ const validSnapshot = {
 describe("parseOperationsSnapshot", () => {
   it("accepts observed readiness while preserving unknown telemetry", () => {
     const parsed = parseOperationsSnapshot(validSnapshot);
-    expect(parsed?.services[0].state).toBe("ready");
+    expect(parsed?.services[0]?.state).toBe("ready");
     expect(parsed?.backgroundJobs.state).toBe("unknown");
     expect(parsed?.deployments.releaseReference).toBeNull();
     expect(parsed?.incidents.activeCount).toBeNull();
