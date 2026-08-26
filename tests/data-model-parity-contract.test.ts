@@ -34,13 +34,18 @@ describe("Command Center canonical data-model parity gate", () => {
     }
   });
 
-  it("keeps marketing attribution explicitly not instrumented instead of inventing joins", () => {
-    const client = source("src/lib/admin-api/marketing-overview.ts");
+  it("pins marketing attribution to the canonical server-only contract without inferred joins", () => {
+    const overview = source("src/lib/admin-api/marketing-overview.ts");
+    const client = source("src/lib/admin-api/marketing-attribution.ts");
 
-    expect(client).toContain('state: "not_instrumented"');
-    expect(client).toContain("getKpiValues");
-    expect(client).toContain("attribution هنوز source canonical ندارند");
-    expect(client).not.toContain(".from(");
+    expect(overview).toContain("getMarketingAttribution");
+    expect(client).toContain("/api/v1/marketing/attribution");
+    expect(client).toContain('cache: "no-store"');
+    expect(client).toContain('import "server-only"');
+    for (const forbidden of forbiddenBrowserDataPaths) {
+      expect(client).not.toContain(forbidden);
+      expect(overview).not.toContain(forbidden);
+    }
   });
 
   it("pins Operations to the canonical server-only snapshot contract", () => {
