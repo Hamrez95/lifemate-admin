@@ -31,17 +31,27 @@ describe("Commerce references 10/11", () => {
     expect(page).not.toContain(".from(");
   });
 
-  it("fails recurring-revenue KPIs closed instead of deriving fake money", () => {
+  it("uses the canonical Revenue read model while keeping unsupported recurring KPIs fail-closed", () => {
     const page = source("app/commerce/revenue/page.tsx");
+    const client = source("src/lib/admin-api/commerce-revenue.ts");
 
+    expect(page).toContain("getCommerceRevenue");
     expect(page).toContain("MRR جاری");
     expect(page).toContain("ARR جاری");
     expect(page).toContain("ARPU");
-    expect(page).toContain("Revenue KPI endpoint هنوز در قرارداد فعلی Core وجود ندارد");
-    expect(page).toContain("MRR/ARR/ARPU محاسبه");
-    expect(page).toContain("<strong aria-label={`${label} در دسترس نیست`}>—</strong>");
-    expect(page).not.toContain("reduce((sum");
-    expect(page).not.toContain("amountMinor");
+    expect(page).toContain("Actual transaction facts به تفکیک ارز");
+    expect(page).toContain("هیچ FX یا جمع چندارزی در مرورگر انجام نمی‌شود");
+    expect(page).toContain('metric.state === "unavailable"');
+    expect(page).not.toContain("price × subscriber");
+    expect(page).not.toContain("getCommerceOverview");
+    expect(page).not.toContain(".from(");
+
+    expect(client).toContain('import "server-only"');
+    expect(client).toContain("/api/v1/commerce/revenue");
+    expect(client).toContain('cache: "no-store"');
+    expect(client).toContain("getServerAdminAccessToken");
+    expect(client).not.toContain(".from(");
+    expect(client).not.toContain("createClient");
   });
 
   it("makes Core 412 dependencies explicit and never enables missing control forms", () => {
