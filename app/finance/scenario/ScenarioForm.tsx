@@ -38,7 +38,11 @@ export function ScenarioForm({
       <div className={styles.grid}>
         <label className={styles.field}>
           <span>نوع سناریو</span>
-          <select name="scenarioKind" defaultValue={scenario?.scenarioKind ?? "BASE"} disabled={!canWrite || pending}>
+          <select
+            name="scenarioKind"
+            defaultValue={scenario?.scenarioKind ?? "BASE"}
+            disabled={!canWrite || pending}
+          >
             <option value="BASE">BASE</option>
             <option value="UPSIDE">UPSIDE</option>
             <option value="DOWNSIDE">DOWNSIDE</option>
@@ -46,7 +50,13 @@ export function ScenarioForm({
         </label>
         <label className={styles.field}>
           <span>نام</span>
-          <input name="name" defaultValue={scenario?.name ?? ""} required maxLength={120} disabled={!canWrite || pending} />
+          <input
+            name="name"
+            defaultValue={scenario?.name ?? ""}
+            required
+            maxLength={120}
+            disabled={!canWrite || pending}
+          />
         </label>
         <label className={styles.field}>
           <span>Currency</span>
@@ -63,11 +73,23 @@ export function ScenarioForm({
         </label>
         <label className={styles.field}>
           <span>شروع</span>
-          <input name="validFrom" type="date" defaultValue={scenario?.validFrom ?? ""} required disabled={!canWrite || pending} />
+          <input
+            name="validFrom"
+            type="date"
+            defaultValue={scenario?.validFrom ?? ""}
+            required
+            disabled={!canWrite || pending}
+          />
         </label>
         <label className={styles.field}>
           <span>پایان</span>
-          <input name="validTo" type="date" defaultValue={scenario?.validTo ?? ""} required disabled={!canWrite || pending} />
+          <input
+            name="validTo"
+            type="date"
+            defaultValue={scenario?.validTo ?? ""}
+            required
+            disabled={!canWrite || pending}
+          />
         </label>
       </div>
 
@@ -81,19 +103,31 @@ export function ScenarioForm({
           name="assumptions"
           dir="ltr"
           rows={10}
-          defaultValue={JSON.stringify(scenario?.assumptions ?? JSON.parse(defaultAssumptions), null, 2)}
+          defaultValue={JSON.stringify(
+            scenario?.assumptions ?? JSON.parse(defaultAssumptions),
+            null,
+            2,
+          )}
           required
           disabled={!canWrite || pending}
           spellCheck={false}
         />
         <small>
-          هر ردیف فقط code، label، amountMinor به‌صورت integer string و classification از نوع BUDGET یا FORECAST دارد.
+          هر ردیف فقط code، label، amountMinor به‌صورت integer string و classification از نوع BUDGET
+          یا FORECAST دارد.
         </small>
       </label>
 
       <label className={styles.textareaField}>
         <span>دلیل تغییر</span>
-        <textarea name="reason" rows={3} required minLength={10} maxLength={1000} disabled={!canWrite || pending} />
+        <textarea
+          name="reason"
+          rows={3}
+          required
+          minLength={10}
+          maxLength={1000}
+          disabled={!canWrite || pending}
+        />
       </label>
 
       <div className={styles.actions} aria-live="polite">
@@ -101,7 +135,8 @@ export function ScenarioForm({
           {pending ? "در حال ثبت امن…" : scenario ? "ثبت نسخه جدید" : "ایجاد سناریو"}
         </button>
         <span className={styles.status}>
-          {state.message ?? (canWrite ? "ثبت با reason، idempotency، version و audit" : "فقط خواندنی")}
+          {state.message ??
+            (canWrite ? "ثبت با reason، idempotency، version و audit" : "فقط خواندنی")}
         </span>
       </div>
     </form>
