@@ -18,6 +18,7 @@ export default function SecurityLayout({ children }: { children: ReactNode }) {
           <nav className={styles.nav} aria-label="ناوبری امنیت و ممیزی">
             <Link href="/security">Roles &amp; Permissions</Link>
             <Link href="/security/staff">Staff Console</Link>
+            <Link href="/security/break-glass">Break-glass</Link>
             <Link href="/security/audit">Audit</Link>
           </nav>
         </div>
