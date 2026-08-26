@@ -1,5 +1,0 @@
-
-> lifemate-admin@0.2.0 typecheck
-> tsc --noEmit
-
-app/security/break-glass/page.tsx(5,32): error TS2307: Cannot find module '@/src/components/states/AdminPageState' or its corresponding type declarations.
