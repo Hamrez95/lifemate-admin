@@ -31,16 +31,19 @@ describe("ADM-AI-001 canonical AI surfaces", () => {
     expect(workspaces).toContain('"ai.advisor.read"');
   });
 
-  it("consumes Daily Brief only through the canonical server-side Core contract", () => {
-    expect(briefPage).toContain('admin.permissions.includes("ai.business.read")');
-    expect(briefPage).toContain("getDailyBrief()");
-    expect(briefPage).toContain("هیچ summary جایگزین ساخته نمی‌شود");
-    expect(briefClient).toContain('import "server-only"');
-    expect(briefClient).toContain("/api/v1/ai/daily-brief");
-    expect(briefClient).toContain('cache: "no-store"');
-    expect(briefClient).toContain("AbortSignal.timeout(10_000)");
-    expect(briefPage).not.toMatch(/fetch\s*\(/);
-  });
+  it(
+    "consumes Daily Brief only through the canonical server-side Core contract",
+    () => {
+      expect(briefPage).toContain('admin.permissions.includes("ai.business.read")');
+      expect(briefPage).toContain("getDailyBrief()");
+      expect(briefPage).toContain("هیچ summary جایگزین ساخته نمی‌شود");
+      expect(briefClient).toContain('import "server-only"');
+      expect(briefClient).toContain("/api/v1/ai/daily-brief");
+      expect(briefClient).toContain('cache: "no-store"');
+      expect(briefClient).toContain("AbortSignal.timeout(10_000)");
+      expect(briefPage).not.toMatch(/fetch\s*\(/);
+    },
+  );
 
   it("keeps raw health, medical advice and sensitive input outside the AI UI", () => {
     expect(advisorPage).toContain("بدون داده سلامت خام");
