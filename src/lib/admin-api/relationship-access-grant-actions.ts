@@ -1,3 +1,5 @@
+import "server-only";
+
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 
