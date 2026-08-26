@@ -127,7 +127,15 @@ export async function getMarketingOverview(
                   ? "partial"
                   : "unavailable",
             total: value.state === "unavailable" ? null : value.value,
-            series: value.state === "unavailable" ? [] : (value.series ?? []),
+            series:
+              value.state === "unavailable"
+                ? []
+                : (value.series ?? [])
+                    .filter(
+                      (point): point is { date: string; value: number; suppressed?: boolean } =>
+                        point.value !== null && point.suppressed !== true,
+                    )
+                    .map(({ date, value: pointValue }) => ({ date, value: pointValue })),
             source: value.source,
             asOfUtc: value.freshness.asOfUtc,
             reason: value.reason ?? null,

@@ -17,9 +17,18 @@ export type KpiValue = {
   };
   series?: Array<{
     date: string;
-    value: number;
+    value: number | null;
+    suppressed?: boolean;
   }>;
   reason?: string;
+  suppressed?: boolean;
+  funnel?: {
+    id: "activation";
+    stageOrder: number;
+    previousStage: string | null;
+    conversionFromPrevious: number | null;
+    dropOffFromPrevious: number | null;
+  };
 };
 
 export type AnalyticsKpiValuesResponse = {
@@ -41,6 +50,24 @@ export type AnalyticsKpiValuesResult =
 
 function finiteNullable(value: unknown): value is number | null {
   return value === null || (typeof value === "number" && Number.isFinite(value));
+}
+
+function parseFunnel(value: unknown): KpiValue["funnel"] | undefined | null {
+  if (value === undefined) return undefined;
+  if (!value || typeof value !== "object") return null;
+  const item = value as Record<string, unknown>;
+  if (
+    item.id !== "activation" ||
+    typeof item.stageOrder !== "number" ||
+    !Number.isInteger(item.stageOrder) ||
+    item.stageOrder < 1 ||
+    (item.previousStage !== null && typeof item.previousStage !== "string") ||
+    !finiteNullable(item.conversionFromPrevious) ||
+    !finiteNullable(item.dropOffFromPrevious)
+  ) {
+    return null;
+  }
+  return item as KpiValue["funnel"];
 }
 
 function parseValue(value: unknown): KpiValue | null {
@@ -75,11 +102,16 @@ function parseValue(value: unknown): KpiValue | null {
     for (const point of item.series) {
       if (!point || typeof point !== "object") return null;
       const candidate = point as Record<string, unknown>;
-      if (typeof candidate.date !== "string" || typeof candidate.value !== "number") return null;
+      if (typeof candidate.date !== "string" || !finiteNullable(candidate.value)) return null;
+      if (candidate.suppressed !== undefined && typeof candidate.suppressed !== "boolean")
+        return null;
     }
   }
 
   if (item.reason !== undefined && typeof item.reason !== "string") return null;
+  if (item.suppressed !== undefined && typeof item.suppressed !== "boolean") return null;
+  const funnel = parseFunnel(item.funnel);
+  if (funnel === null) return null;
   return item as unknown as KpiValue;
 }
 

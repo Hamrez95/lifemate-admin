@@ -73,7 +73,10 @@ function KpiCard({ definition, value }: { definition: AnalyticsKpiDefinition; va
 }
 
 function Trend({ value }: { value: KpiValue | undefined }) {
-  const points = value?.series ?? [];
+  const points = (value?.series ?? []).filter(
+    (point): point is { date: string; value: number; suppressed?: boolean } =>
+      point.value !== null && point.suppressed !== true,
+  );
   if (!value || value.state === "unavailable" || points.length === 0) {
     return (
       <section className={styles.chartCard}>
