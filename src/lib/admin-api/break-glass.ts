@@ -109,13 +109,12 @@ async function call(path: string, init?: RequestInit): Promise<Response | null> 
   const token = await getServerAdminAccessToken();
   if (!token) return null;
   const config = getPublicRuntimeConfig();
+  const headers = new Headers(init?.headers);
+  headers.set("Authorization", `Bearer ${token}`);
   try {
     return await fetch(`${config.adminApiUrl}${path}`, {
       ...init,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        ...(init?.headers ?? {}),
-      },
+      headers,
       cache: "no-store",
       signal: AbortSignal.timeout(10_000),
     });
