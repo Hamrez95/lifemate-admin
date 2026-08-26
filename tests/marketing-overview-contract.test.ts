@@ -2,10 +2,15 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   getKpiValues: vi.fn(),
+  getMarketingAttribution: vi.fn(),
 }));
 
 vi.mock("../src/lib/admin-api/analytics-kpis", () => ({
   getKpiValues: mocks.getKpiValues,
+}));
+
+vi.mock("../src/lib/admin-api/marketing-attribution", () => ({
+  getMarketingAttribution: mocks.getMarketingAttribution,
 }));
 
 import {
@@ -14,7 +19,10 @@ import {
 } from "../src/lib/admin-api/marketing-overview";
 
 describe("ADM-MKT-001 Marketing Overview contract", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.getMarketingAttribution.mockResolvedValue({ kind: "unavailable" });
+  });
 
   it("does not query Analytics when the marketing admin lacks analytics.read", async () => {
     const result = await getMarketingOverview(
@@ -24,6 +32,7 @@ describe("ADM-MKT-001 Marketing Overview contract", () => {
     );
 
     expect(mocks.getKpiValues).not.toHaveBeenCalled();
+    expect(mocks.getMarketingAttribution).toHaveBeenCalledTimes(1);
     expect(result.kind).toBe("ok");
     if (result.kind !== "ok") return;
     expect(result.data.acquisition).toMatchObject({
@@ -31,12 +40,8 @@ describe("ADM-MKT-001 Marketing Overview contract", () => {
       total: null,
       series: [],
     });
-    expect(result.data.channels).toMatchObject({ state: "not_instrumented", items: [] });
-    expect(result.data.campaigns).toMatchObject({
-      state: "not_instrumented",
-      activeCount: null,
-      attributedAccounts: null,
-    });
+    expect(result.data.attribution).toBeNull();
+    expect(result.data.attributionReason).toMatch(/هیچ مقدار جایگزین یا تخمینی/);
   });
 
   it("uses only the canonical accounts_created KPI when analytics.read is available", async () => {
@@ -72,6 +77,7 @@ describe("ADM-MKT-001 Marketing Overview contract", () => {
     );
 
     expect(mocks.getKpiValues).toHaveBeenCalledTimes(1);
+    expect(mocks.getMarketingAttribution).toHaveBeenCalledTimes(1);
     expect(result.kind).toBe("ok");
     if (result.kind !== "ok") return;
     expect(result.data.acquisition).toMatchObject({
@@ -80,8 +86,8 @@ describe("ADM-MKT-001 Marketing Overview contract", () => {
       source: "identity.accounts.created_at_utc",
     });
     expect(result.data.acquisition.series).toHaveLength(2);
-    expect(result.data.channels.items).toEqual([]);
-    expect(result.data.campaigns.activeCount).toBeNull();
+    expect(result.data.attribution).toBeNull();
+    expect(result.data.attributionReason).not.toBeNull();
   });
 
   it("bounds marketing filters to 180 Tehran calendar days", () => {

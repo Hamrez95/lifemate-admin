@@ -52,6 +52,15 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
   const acquisitionValue =
     report.acquisition.total === null ? "—" : numberFormat.format(report.acquisition.total);
   const maximum = Math.max(...report.acquisition.series.map((point) => point.value), 1);
+  const attribution = report.attribution;
+  const lifecycleTotals = attribution?.items.reduce(
+    (total, item) => ({
+      campaigns: total.campaigns + item.campaignCount,
+      active: total.active + item.activeCampaignCount,
+      completed: total.completed + item.completedCampaignCount,
+    }),
+    { campaigns: 0, active: 0, completed: 0 },
+  ) ?? { campaigns: 0, active: 0, completed: 0 };
 
   return (
     <div className={styles.page}>
@@ -59,24 +68,19 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
         <div>
           <p className={styles.eyebrow}>Marketing intelligence</p>
           <h2 id="marketing-hero-title">
-            جذب را از داده واقعی می‌خوانیم؛ attribution را حدس نمی‌زنیم.
+            عملکرد lifecycle را می‌بینیم؛ attribution تجاری را حدس نمی‌زنیم.
           </h2>
           <p>
-            تعداد حساب‌های ایجادشده فقط از KPI canonical خوانده می‌شود. تا زمانی که
-            UTM/referral/channel و lifecycle کمپین instrument نشوند، سهم کانال و conversion با «—»
-            نمایش داده می‌شود.
+            Campaign، product و channel از مدل canonical Core خوانده می‌شوند. Spend، revenue،
+            conversion، CAC و ROAS تا زمان instrument شدن fact واقعی صریحاً unavailable می‌مانند.
           </p>
         </div>
         <div className={styles.heroMeta}>
-          <span className={styles.stateBadge} data-state={report.acquisition.state}>
-            {report.acquisition.state === "ready"
-              ? "آماده"
-              : report.acquisition.state === "partial"
-                ? "داده محدود اما واقعی"
-                : "در دسترس نیست"}
+          <span className={styles.stateBadge} data-state={attribution ? "partial" : "unavailable"}>
+            {attribution ? "Lifecycle واقعی · Attribution ناقص" : "Attribution unavailable"}
           </span>
-          <strong>آخرین منبع Acquisition</strong>
-          <span>{formatAsOf(report.acquisition.asOfUtc)}</span>
+          <strong>آخرین منبع Marketing</strong>
+          <span>{formatAsOf(attribution?.freshness.asOfUtc ?? report.acquisition.asOfUtc)}</span>
           <Link href="/marketing/campaigns" className={styles.campaignLink}>
             مدیریت کمپین‌ها
           </Link>
@@ -90,7 +94,7 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
         <div>
           <p className={styles.eyebrow}>Bounded filters</p>
           <h3 id="marketing-filter-title">بازه و محصول</h3>
-          <p>حداکثر ۱۸۰ روز؛ محاسبات روزانه با مرز تقویمی Asia/Tehran.</p>
+          <p>حداکثر ۱۸۰ روز؛ تمام داده‌ها از قراردادهای server-side canonical خوانده می‌شوند.</p>
         </div>
         <form className={styles.filters} method="get">
           <label>
@@ -123,14 +127,18 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
           <small>منبع: {report.acquisition.source}</small>
         </article>
         <article className={styles.summaryCard} data-tone="blue">
-          <span>Channel attribution</span>
-          <strong>—</strong>
-          <p>{report.channels.reason}</p>
+          <span>Campaign lifecycle</span>
+          <strong>{attribution ? numberFormat.format(lifecycleTotals.campaigns) : "—"}</strong>
+          <p>
+            {attribution
+              ? `${numberFormat.format(lifecycleTotals.active)} فعال · ${numberFormat.format(lifecycleTotals.completed)} تکمیل‌شده`
+              : report.attributionReason}
+          </p>
         </article>
         <article className={styles.summaryCard} data-tone="orange">
-          <span>Campaign conversion</span>
+          <span>Commercial attribution</span>
           <strong>—</strong>
-          <p>{report.campaigns.reason}</p>
+          <p>{attribution?.taxonomy.note ?? report.attributionReason}</p>
         </article>
       </section>
 
@@ -177,35 +185,81 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
         <section className={styles.sectionCard} aria-labelledby="channels-title">
           <div className={styles.sectionHeading}>
             <div>
-              <p className={styles.eyebrow}>Attribution readiness</p>
-              <h3 id="channels-title">سهم کانال‌های جذب</h3>
+              <p className={styles.eyebrow}>Canonical lifecycle dimensions</p>
+              <h3 id="channels-title">Product / Channel</h3>
             </div>
-            <span className={styles.stateBadge} data-state="not_instrumented">
-              Not instrumented
+            <span
+              className={styles.stateBadge}
+              data-state={attribution ? "partial" : "unavailable"}
+            >
+              {attribution ? "Partial" : "Unavailable"}
             </span>
           </div>
-          <div className={styles.unavailableBox}>
-            <strong>—</strong>
-            <p>{report.channels.reason}</p>
-          </div>
+          {!attribution ? (
+            <div className={styles.unavailableBox}>
+              <strong>—</strong>
+              <p>{report.attributionReason}</p>
+            </div>
+          ) : attribution.items.length === 0 ? (
+            <AdminPageState state="empty" title="کمپینی در این بازه ثبت نشده است" />
+          ) : (
+            <div className={styles.metricList}>
+              {attribution.items.map((item, index) => (
+                <article
+                  className={styles.metricRow}
+                  key={`${item.productCode ?? "all"}-${item.channelCode ?? "unknown"}-${index}`}
+                >
+                  <div>
+                    <strong>
+                      {item.productCode ?? "بدون محصول"} · {item.channelCode ?? "بدون کانال"}
+                    </strong>
+                    <span>{numberFormat.format(item.campaignCount)} کمپین</span>
+                  </div>
+                  <small>
+                    {numberFormat.format(item.activeCampaignCount)} فعال ·{" "}
+                    {numberFormat.format(item.completedCampaignCount)} تکمیل‌شده
+                  </small>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
 
         <section className={styles.sectionCard} aria-labelledby="campaign-title">
           <div className={styles.sectionHeading}>
             <div>
-              <p className={styles.eyebrow}>Campaign readiness</p>
-              <h3 id="campaign-title">کمپین‌ها و conversion</h3>
+              <p className={styles.eyebrow}>Explicit unknowns</p>
+              <h3 id="campaign-title">Performance attribution</h3>
             </div>
             <span className={styles.stateBadge} data-state="not_instrumented">
               Not instrumented
             </span>
           </div>
-          <div className={styles.unavailableBox}>
-            <strong>—</strong>
-            <p>{report.campaigns.reason}</p>
+          <div className={styles.metricList}>
+            {(attribution?.performanceMetrics ?? []).map((metric) => (
+              <article className={styles.metricRow} key={metric.name}>
+                <div>
+                  <strong>{metric.name.toUpperCase()}</strong>
+                  <span>—</span>
+                </div>
+                <small>{metric.reason}</small>
+              </article>
+            ))}
+            {!attribution ? (
+              <div className={styles.unavailableBox}>
+                <strong>—</strong>
+                <p>{report.attributionReason}</p>
+              </div>
+            ) : null}
           </div>
         </section>
       </div>
+
+      {attribution ? (
+        <p>
+          منبع: {attribution.freshness.source} · {attribution.freshness.note}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -217,16 +271,15 @@ export default async function MarketingPage({ searchParams }: MarketingPageProps
     ? await getMarketingOverview(filters(await searchParams), admin.permissions)
     : null;
 
-  if (result?.kind === "unavailable" && result.correlationId === "unauthenticated") {
+  if (result?.kind === "unavailable" && result.correlationId === "unauthenticated")
     redirect("/login");
-  }
 
   return (
     <AdminSessionProvider admin={admin}>
       <AdminShell
         activeSlug="marketing"
         title="Marketing"
-        subtitle="Acquisition واقعی، attribution صریح و بدون عدد نمایشی"
+        subtitle="Lifecycle واقعی، attribution صریح و بدون عدد نمایشی"
       >
         {!canReadMarketing ? (
           <AdminPageState state="forbidden" />

@@ -22,14 +22,20 @@ describe("ADM-MKT-001 Marketing workspace routing and privacy", () => {
     expect(workspaces).toContain('return workspace.slug ? `/${workspace.slug}` : "/"');
   });
 
-  it("does not add direct browser database access or fake attribution fields", () => {
+  it("uses the canonical aggregate-only attribution client without browser database access", () => {
     const page = source("app/marketing/page.tsx");
-    const contract = source("src/lib/admin-api/marketing-overview.ts");
+    const overview = source("src/lib/admin-api/marketing-overview.ts");
+    const attribution = source("src/lib/admin-api/marketing-attribution.ts");
 
     expect(page).not.toMatch(/\.from\(|service_role|SUPABASE_SERVICE/i);
-    expect(contract).not.toMatch(/accountId|personId|phone|email|providerPayload/i);
-    expect(contract).toContain('state: "not_instrumented"');
-    expect(contract).toContain("activeCount: null");
-    expect(contract).toContain("attributedAccounts: null");
+    expect(overview).not.toMatch(/accountId|personId|phone|email|providerPayload/i);
+    expect(overview).toContain("getMarketingAttribution");
+    expect(attribution).toContain("/api/v1/marketing/attribution");
+    expect(attribution).toContain('import "server-only"');
+    expect(attribution).toContain('attributionState: "not_instrumented"');
+    expect(attribution).toContain('name: "spend" | "revenue" | "conversions" | "cac" | "roas"');
+    expect(attribution).toContain('state: "unavailable"');
+    expect(attribution).not.toMatch(/accountId|personId|phone|email|providerPayload/i);
+    expect(attribution).not.toContain(".from(");
   });
 });

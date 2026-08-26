@@ -1,4 +1,8 @@
 import { getKpiValues, type KpiValue } from "./analytics-kpis";
+import {
+  getMarketingAttribution,
+  type MarketingAttributionResponse,
+} from "./marketing-attribution";
 
 export type MarketingOverviewState = "ready" | "partial" | "unavailable" | "not_instrumented";
 
@@ -12,17 +16,8 @@ export type MarketingOverviewReport = {
     asOfUtc: string | null;
     reason: string | null;
   };
-  channels: {
-    state: "not_instrumented";
-    items: [];
-    reason: string;
-  };
-  campaigns: {
-    state: "not_instrumented";
-    activeCount: null;
-    attributedAccounts: null;
-    reason: string;
-  };
+  attribution: MarketingAttributionResponse | null;
+  attributionReason: string | null;
   generatedAtUtc: string;
 };
 
@@ -101,6 +96,9 @@ export async function getMarketingOverview(
   }
 
   const generatedAtUtc = now.toISOString();
+  const upstream = new URLSearchParams({ from: query.from, to: query.to });
+  if (query.product) upstream.set("product", query.product);
+
   const hasAnalytics = permissions.includes("analytics.read");
   let acquisition: MarketingOverviewReport["acquisition"] = {
     state: "unavailable",
@@ -113,8 +111,6 @@ export async function getMarketingOverview(
   };
 
   if (hasAnalytics) {
-    const upstream = new URLSearchParams({ from: query.from, to: query.to });
-    if (query.product) upstream.set("product", query.product);
     const result = await getKpiValues(upstream);
     if (result.kind === "ok") {
       const value = accountsCreated(result.data.values);
@@ -153,24 +149,28 @@ export async function getMarketingOverview(
     }
   }
 
+  const attributionResult = await getMarketingAttribution(upstream);
+  if (attributionResult.kind === "unauthenticated") {
+    return { kind: "unavailable", correlationId: "unauthenticated" };
+  }
+  if (attributionResult.kind === "invalid") {
+    return { kind: "invalid", message: "Marketing attribution filter is invalid." };
+  }
+
+  const attribution = attributionResult.kind === "ok" ? attributionResult.data : null;
+  const attributionReason = attribution
+    ? null
+    : attributionResult.kind === "forbidden"
+      ? "دسترسی marketing.read برای attribution مجاز نیست."
+      : "مدل canonical attribution در حال حاضر قابل دسترسی نیست؛ هیچ مقدار جایگزین یا تخمینی ساخته نمی‌شود.";
+
   return {
     kind: "ok",
     data: {
       query,
       acquisition,
-      channels: {
-        state: "not_instrumented",
-        items: [],
-        reason:
-          "Taxonomy فعلی account_created را به UTM/referral/channel نسبت نمی‌دهد؛ سهم کانال‌ها عمداً محاسبه نمی‌شود.",
-      },
-      campaigns: {
-        state: "not_instrumented",
-        activeCount: null,
-        attributedAccounts: null,
-        reason:
-          "Campaign lifecycle و attribution هنوز source canonical ندارند؛ تعداد کمپین یا conversion ساختگی نمایش داده نمی‌شود.",
-      },
+      attribution,
+      attributionReason,
       generatedAtUtc,
     },
   };
