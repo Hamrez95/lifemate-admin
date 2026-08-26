@@ -232,7 +232,7 @@ async function FunnelContent({ filters }: { filters: URLSearchParams }) {
                 <div className={styles.metricHeader}>
                   <div>
                     <strong>
-                      مرحله {definition.funnel?.stageOrder.toLocaleString("fa-IR")}: {" "}
+                      مرحله {definition.funnel?.stageOrder.toLocaleString("fa-IR")}:{" "}
                       {definition.displayNameFa}
                     </strong>
                     <span>{value.source}</span>
@@ -241,7 +241,7 @@ async function FunnelContent({ filters }: { filters: URLSearchParams }) {
                 </div>
                 {definition.funnel?.stageOrder === 1 ? (
                   <small>
-                    cohort پایه · حداقل نمایش {" "}
+                    cohort پایه · حداقل نمایش{" "}
                     {definition.funnel.privacyThreshold.toLocaleString("fa-IR")} حساب
                   </small>
                 ) : (
