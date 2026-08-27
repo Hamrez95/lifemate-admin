@@ -50,9 +50,9 @@ export default async function RetentionOperationsPage() {
               <p className="eyebrow">P0 · Core #502</p>
               <h2 id="retention-title">Retention policy با مرز روشن از Subscription</h2>
               <p>
-                پایان subscription فقط entitlement را تغییر می‌دهد و به معنی حذف داده نیست. این workspace
-                policy و hold را مدیریت می‌کند؛ purge واقعی فقط توسط workflow canonical و قابل‌بازیابی backend
-                انجام می‌شود.
+                پایان subscription فقط entitlement را تغییر می‌دهد و به معنی حذف داده نیست. این
+                workspace policy و hold را مدیریت می‌کند؛ purge واقعی فقط توسط workflow canonical و
+                قابل‌بازیابی backend انجام می‌شود.
               </p>
             </div>
             <div className={styles.sourceCard}>
@@ -68,7 +68,8 @@ export default async function RetentionOperationsPage() {
             <section className={styles.unavailable} role="status" aria-live="polite">
               <strong>قرارداد retention در دسترس نیست.</strong>
               <p>
-                هیچ policy، delete count یا hold محلی ساخته نمی‌شود و browser به دیتابیس fallback نمی‌کند.
+                هیچ policy، delete count یا hold محلی ساخته نمی‌شود و browser به دیتابیس fallback
+                نمی‌کند.
               </p>
             </section>
           ) : (
@@ -95,8 +96,8 @@ export default async function RetentionOperationsPage() {
               <section className={styles.notice} role="note">
                 <strong>Dry-run only</strong>
                 <p>
-                  این صفحه دکمه حذف مستقیم row ندارد. Preview فقط impact را می‌خواند؛ حذف/ناشناس‌سازی باید از
-                  worker canonical، idempotent و fail-closed عبور کند.
+                  این صفحه دکمه حذف مستقیم row ندارد. Preview فقط impact را می‌خواند؛
+                  حذف/ناشناس‌سازی باید از worker canonical، idempotent و fail-closed عبور کند.
                 </p>
               </section>
 
