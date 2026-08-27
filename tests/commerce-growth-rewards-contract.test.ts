@@ -31,8 +31,8 @@ describe("Commerce growth rewards workspace", () => {
 
   it("does not invent social evidence or bypass reward fulfillment approvals", async () => {
     const page = await source("app/commerce/rewards/page.tsx");
-    expect(page).toContain("private profile scraping وجود ندارد");
-    expect(page).toContain("approval/abuse policy را در Core enforce می‌کند");
+    expect(page).toMatch(/private profile scraping\s+وجود\s+ندارد/);
+    expect(page).toMatch(/approval\/abuse policy را\s+در Core enforce می‌کند/);
     expect(page).toContain("growth.rewards.read");
     expect(page).toContain("growth.rewards.write");
     expect(page).not.toContain("fulfillment-requests");
