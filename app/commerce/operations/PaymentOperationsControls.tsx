@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 
 import {
   initialCommerceOperationsActionState,
@@ -15,20 +15,31 @@ function key(prefix: string) {
   return `${prefix}-${crypto.randomUUID()}`;
 }
 
-function useIdempotencyKey(prefix: string, state: CommerceOperationsActionState) {
-  const [idempotencyKey, setIdempotencyKey] = useState("");
+function useIdempotencyInput(prefix: string, state: CommerceOperationsActionState) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const handledSuccessRef = useRef<CommerceOperationsActionState | null>(null);
 
   useEffect(() => {
-    setIdempotencyKey(key(prefix));
-  }, [prefix]);
+    const input = inputRef.current;
+    if (!input) return;
 
-  useEffect(() => {
-    if (state.status === "success") {
-      setIdempotencyKey(key(prefix));
+    if (!input.value) {
+      input.value = key(prefix);
+    }
+
+    if (state.status === "success" && handledSuccessRef.current !== state) {
+      input.value = key(prefix);
+      handledSuccessRef.current = state;
     }
   }, [prefix, state]);
 
-  return idempotencyKey;
+  return inputRef;
+}
+
+function ensureIdempotencyKey(ref: React.RefObject<HTMLInputElement | null>, prefix: string) {
+  if (ref.current && !ref.current.value) {
+    ref.current.value = key(prefix);
+  }
 }
 
 function Status({ state }: { state: CommerceOperationsActionState }) {
@@ -45,10 +56,14 @@ export function RefundRequestForm() {
     requestRefundAction,
     initialCommerceOperationsActionState,
   );
-  const idempotencyKey = useIdempotencyKey("refund-request", state);
+  const idempotencyRef = useIdempotencyInput("refund-request", state);
   return (
-    <form action={action} className={styles.form}>
-      <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
+    <form
+      action={action}
+      className={styles.form}
+      onSubmit={() => ensureIdempotencyKey(idempotencyRef, "refund-request")}
+    >
+      <input ref={idempotencyRef} type="hidden" name="idempotencyKey" />
       <label>
         Transaction ID
         <input name="transactionId" required autoComplete="off" />
@@ -65,7 +80,7 @@ export function RefundRequestForm() {
         <input type="checkbox" name="confirmation" value="confirm-refund-request" required />
         درخواست refund را بررسی و تأیید می‌کنم.
       </label>
-      <button type="submit" disabled={pending || !idempotencyKey}>
+      <button type="submit" disabled={pending}>
         {pending ? "در حال ثبت…" : "ثبت Refund Request"}
       </button>
       <Status state={state} />
@@ -78,10 +93,14 @@ export function ReconciliationForm() {
     openReconciliationAction,
     initialCommerceOperationsActionState,
   );
-  const idempotencyKey = useIdempotencyKey("reconciliation", state);
+  const idempotencyRef = useIdempotencyInput("reconciliation", state);
   return (
-    <form action={action} className={styles.form}>
-      <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
+    <form
+      action={action}
+      className={styles.form}
+      onSubmit={() => ensureIdempotencyKey(idempotencyRef, "reconciliation")}
+    >
+      <input ref={idempotencyRef} type="hidden" name="idempotencyKey" />
       <label>
         Transaction ID (اختیاری)
         <input name="transactionId" autoComplete="off" />
@@ -104,7 +123,7 @@ export function ReconciliationForm() {
         <input type="checkbox" name="confirmation" value="confirm-reconciliation-open" required />
         Provider facts را تغییر نمی‌دهم و فقط case می‌سازم.
       </label>
-      <button type="submit" disabled={pending || !idempotencyKey}>
+      <button type="submit" disabled={pending}>
         {pending ? "در حال ثبت…" : "باز کردن Reconciliation Case"}
       </button>
       <Status state={state} />
@@ -117,10 +136,14 @@ export function RenewalIntentForm() {
     renewalIntentAction,
     initialCommerceOperationsActionState,
   );
-  const idempotencyKey = useIdempotencyKey("renewal-intent", state);
+  const idempotencyRef = useIdempotencyInput("renewal-intent", state);
   return (
-    <form action={action} className={styles.form}>
-      <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
+    <form
+      action={action}
+      className={styles.form}
+      onSubmit={() => ensureIdempotencyKey(idempotencyRef, "renewal-intent")}
+    >
+      <input ref={idempotencyRef} type="hidden" name="idempotencyKey" />
       <label>
         Subscription ID
         <input name="subscriptionId" required autoComplete="off" />
@@ -144,7 +167,7 @@ export function RenewalIntentForm() {
         <input type="checkbox" name="confirmation" value="confirm-renewal-intent" required />
         اثر این تغییر روی renewal را تأیید می‌کنم.
       </label>
-      <button type="submit" disabled={pending || !idempotencyKey}>
+      <button type="submit" disabled={pending}>
         {pending ? "در حال ثبت…" : "ثبت Renewal Intent"}
       </button>
       <Status state={state} />
