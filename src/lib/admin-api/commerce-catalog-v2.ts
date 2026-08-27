@@ -84,7 +84,14 @@ function parsePrice(value: unknown): CommerceCatalogPrice | null | undefined {
   const currency = string(row.currency);
   const provider = string(row.storeProvider);
   const amountMinor = string(row.amountMinor);
-  if (!id || !UUID.test(id) || !currency || !CURRENCY.test(currency) || !provider || !amountMinor) {
+  if (
+    !id ||
+    !UUID.test(id) ||
+    !currency ||
+    !CURRENCY.test(currency) ||
+    !provider ||
+    !amountMinor
+  ) {
     return undefined;
   }
   if (!/^-?[0-9]+$/.test(amountMinor)) return undefined;
@@ -126,7 +133,16 @@ function parseOffer(value: unknown): CommerceCatalogOffer | null {
   ) {
     return null;
   }
-  return { id, code, name, durationMonths, version, status, giftEligible: row.giftEligible, price };
+  return {
+    id,
+    code,
+    name,
+    durationMonths,
+    version,
+    status,
+    giftEligible: row.giftEligible,
+    price,
+  };
 }
 
 function parsePolicy(value: unknown): CommerceCatalogPolicy | null {
@@ -170,7 +186,20 @@ function parseBundle(value: unknown): CommerceCatalogBundle | null {
   const name = string(row.name);
   const status = string(row.status);
   const version = integer(row.version);
-  if (!id || !UUID.test(id) || !code || !CODE.test(code) || !name || !status || version === null || version < 1 || typeof row.giftEligible !== "boolean" || !Array.isArray(row.items)) return null;
+  if (
+    !id ||
+    !UUID.test(id) ||
+    !code ||
+    !CODE.test(code) ||
+    !name ||
+    !status ||
+    version === null ||
+    version < 1 ||
+    typeof row.giftEligible !== "boolean" ||
+    !Array.isArray(row.items)
+  ) {
+    return null;
+  }
   const items: CommerceCatalogBundle["items"] = [];
   for (const item of row.items) {
     if (!item || typeof item !== "object" || Array.isArray(item)) return null;
@@ -178,7 +207,16 @@ function parseBundle(value: unknown): CommerceCatalogBundle | null {
     const offerId = string(entry.offerId);
     const offerCode = string(entry.offerCode);
     const productId = string(entry.productId);
-    if (!offerId || !UUID.test(offerId) || !offerCode || !CODE.test(offerCode) || !productId || !UUID.test(productId)) return null;
+    if (
+      !offerId ||
+      !UUID.test(offerId) ||
+      !offerCode ||
+      !CODE.test(offerCode) ||
+      !productId ||
+      !UUID.test(productId)
+    ) {
+      return null;
+    }
     items.push({ offerId, offerCode, productId });
   }
   return { id, code, name, status, version, giftEligible: row.giftEligible, items };
@@ -189,7 +227,9 @@ function parseCatalog(value: unknown): CommerceCatalogV2 | null {
   const row = value as Record<string, unknown>;
   const version = string(row.version);
   if (!version || !Array.isArray(row.products) || !Array.isArray(row.bundles)) return null;
-  if (!row.freshness || typeof row.freshness !== "object" || Array.isArray(row.freshness)) return null;
+  if (!row.freshness || typeof row.freshness !== "object" || Array.isArray(row.freshness)) {
+    return null;
+  }
   const freshness = row.freshness as Record<string, unknown>;
   const status = freshness.status;
   const asOfUtc = string(freshness.asOfUtc);
@@ -219,11 +259,14 @@ export async function getCommerceCatalogV2(input?: {
   if (input?.includeHidden) search.set("includeHidden", "true");
   const suffix = search.size ? `?${search.toString()}` : "";
   try {
-    const response = await fetch(`${config.adminApiUrl}/api/v1/commerce/catalog-v2${suffix}`, {
-      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-      cache: "no-store",
-      signal: AbortSignal.timeout(10_000),
-    });
+    const response = await fetch(
+      `${config.adminApiUrl}/api/v1/commerce/catalog-v2${suffix}`,
+      {
+        headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+        cache: "no-store",
+        signal: AbortSignal.timeout(10_000),
+      },
+    );
     if (response.status === 401) return { kind: "unauthenticated" };
     if (response.status === 403) return { kind: "forbidden" };
     if (response.status === 400) return { kind: "invalid" };
