@@ -46,8 +46,8 @@ export default async function CustomRolesPage() {
               <p className="eyebrow">P0 · Core #490</p>
               <h2 id="custom-roles-title">مدیریت نقش سفارشی بدون دورزدن RBAC</h2>
               <p>
-                فقط permissionهای role-assignable و در محدوده اختیار actor قابل واگذاری هستند. Founder
-                و permissionهای Elevated از این workflow عادی قابل ساخت یا واگذاری نیستند.
+                فقط permissionهای role-assignable و در محدوده اختیار actor قابل واگذاری هستند.
+                Founder و permissionهای Elevated از این workflow عادی قابل ساخت یا واگذاری نیستند.
               </p>
             </div>
             <div className={styles.sourceCard}>
@@ -65,14 +65,30 @@ export default async function CustomRolesPage() {
           ) : (
             <>
               <section className={styles.metrics} aria-label="خلاصه نقش‌های سفارشی">
-                <article><span>Custom Role</span><strong>{data.roles.length.toLocaleString("fa-IR")}</strong></article>
-                <article><span>Permission قابل بررسی</span><strong>{data.permissionCatalog.length.toLocaleString("fa-IR")}</strong></article>
-                <article><span>قابل واگذاری توسط شما</span><strong>{data.permissionCatalog.filter((item) => item.delegable).length.toLocaleString("fa-IR")}</strong></article>
+                <article>
+                  <span>Custom Role</span>
+                  <strong>{data.roles.length.toLocaleString("fa-IR")}</strong>
+                </article>
+                <article>
+                  <span>Permission قابل بررسی</span>
+                  <strong>{data.permissionCatalog.length.toLocaleString("fa-IR")}</strong>
+                </article>
+                <article>
+                  <span>قابل واگذاری توسط شما</span>
+                  <strong>
+                    {data.permissionCatalog
+                      .filter((item) => item.delegable)
+                      .length.toLocaleString("fa-IR")}
+                  </strong>
+                </article>
               </section>
 
               <section className={styles.panel} aria-labelledby="create-role-title">
                 <header>
-                  <div><p className="eyebrow">Create</p><h3 id="create-role-title">نقش سفارشی جدید</h3></div>
+                  <div>
+                    <p className="eyebrow">Create</p>
+                    <h3 id="create-role-title">نقش سفارشی جدید</h3>
+                  </div>
                   <span>{canWrite ? "security.roles.write" : "Read only"}</span>
                 </header>
                 <CreateCustomRoleForm canWrite={canWrite} />
@@ -83,20 +99,34 @@ export default async function CustomRolesPage() {
                   <div className={styles.empty}>هنوز نقش سفارشی ساخته نشده است.</div>
                 ) : (
                   data.roles.map((role) => (
-                    <CustomRoleCard key={role.code} role={role} catalog={data.permissionCatalog} canWrite={canWrite} />
+                    <CustomRoleCard
+                      key={role.code}
+                      role={role}
+                      catalog={data.permissionCatalog}
+                      canWrite={canWrite}
+                    />
                   ))
                 )}
               </section>
 
               <section className={styles.catalog} aria-labelledby="permission-catalog-title">
-                <header><div><p className="eyebrow">Allow-listed catalog</p><h3 id="permission-catalog-title">Permission Catalog</h3></div></header>
+                <header>
+                  <div>
+                    <p className="eyebrow">Allow-listed catalog</p>
+                    <h3 id="permission-catalog-title">Permission Catalog</h3>
+                  </div>
+                </header>
                 <div className={styles.permissionCatalog}>
                   {data.permissionCatalog.map((permission) => (
                     <article key={permission.code} data-delegable={permission.delegable}>
                       <code>{permission.code}</code>
-                      <span>{permission.domain} · {permission.riskLevel}</span>
+                      <span>
+                        {permission.domain} · {permission.riskLevel}
+                      </span>
                       <p>{permission.description}</p>
-                      <strong>{permission.delegable ? "قابل واگذاری توسط actor" : "خارج از اختیار actor"}</strong>
+                      <strong>
+                        {permission.delegable ? "قابل واگذاری توسط actor" : "خارج از اختیار actor"}
+                      </strong>
                     </article>
                   ))}
                 </div>
