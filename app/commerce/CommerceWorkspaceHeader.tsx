@@ -5,13 +5,7 @@ import type { ReactNode } from "react";
 import styles from "./commerce-reference.module.css";
 
 export type CommerceWorkspaceTab =
-  | "catalog"
-  | "plans"
-  | "promotions"
-  | "subscriptions"
-  | "operations"
-  | "revenue"
-  | "adjustments";
+  "catalog" | "plans" | "promotions" | "subscriptions" | "operations" | "revenue" | "adjustments";
 
 type CommerceWorkspaceHeaderProps = {
   active: CommerceWorkspaceTab;
