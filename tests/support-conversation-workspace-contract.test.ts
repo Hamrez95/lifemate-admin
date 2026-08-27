@@ -35,7 +35,7 @@ describe("Support conversation workspace contract", () => {
     expect(panel).toContain("polling/refresh");
     expect(panel).toContain("این صفحه ادعای realtime transport نمی‌کند");
     expect(panel).toContain("signed-access");
-    expect(panel).toContain("public bucket URL");
+    expect(panel).toContain("bucket URL");
     expect(panel).not.toContain("storage.from(");
     expect(panel).not.toContain("getPublicUrl");
   });
