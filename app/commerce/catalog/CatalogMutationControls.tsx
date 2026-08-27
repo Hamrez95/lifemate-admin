@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState, type ReactNode } from "react";
+import { useActionState, useState, type ReactNode } from "react";
 
 import type {
   CommerceCatalogBundle,
@@ -35,14 +35,6 @@ function MutationForm({
 }) {
   const [state, formAction, pending] = useActionState(action, initialCatalogActionState);
   const [key, setKey] = useState("");
-
-  useEffect(() => {
-    setKey(crypto.randomUUID());
-  }, []);
-
-  useEffect(() => {
-    if (state.status === "success") setKey(crypto.randomUUID());
-  }, [state.status]);
 
   return (
     <form action={formAction} className={styles.form} onInput={() => setKey(crypto.randomUUID())}>
