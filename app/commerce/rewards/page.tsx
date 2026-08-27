@@ -63,7 +63,10 @@ export default async function GrowthRewardsPage() {
               <header>
                 <span>Rule management</span>
                 <h3>تعریف یا ویرایش Reward Rule</h3>
-                <p>برای update، version فعلی rule را وارد کنید؛ create با expectedVersion=0 انجام می‌شود.</p>
+                <p>
+                  برای update، version فعلی rule را وارد کنید؛ create با expectedVersion=0 انجام
+                  می‌شود.
+                </p>
               </header>
               <RewardRuleForm />
             </section>
@@ -83,7 +86,9 @@ export default async function GrowthRewardsPage() {
                         <div className={styles.item} key={rule.id}>
                           <div>
                             <strong>{rule.code}</strong>
-                            <small>{rule.triggerKind} → {rule.rewardKind}</small>
+                            <small>
+                              {rule.triggerKind} → {rule.rewardKind}
+                            </small>
                           </div>
                           <div className={styles.meta}>
                             <span>{rule.status}</span>
@@ -108,7 +113,9 @@ export default async function GrowthRewardsPage() {
                         <div className={styles.item} key={event.id}>
                           <div>
                             <strong>{event.rewardKind}</strong>
-                            <small>{event.sourceKind} · {date(event.createdAtUtc)}</small>
+                            <small>
+                              {event.sourceKind} · {date(event.createdAtUtc)}
+                            </small>
                           </div>
                           <div className={styles.meta}>
                             <span>{event.status}</span>
@@ -131,7 +138,10 @@ export default async function GrowthRewardsPage() {
                       <header>
                         <span>Review queue</span>
                         <h3>{kind}</h3>
-                        <p>فقط evidence ثبت‌شده در Core review می‌شود؛ private profile scraping وجود ندارد.</p>
+                        <p>
+                          فقط evidence ثبت‌شده در Core review می‌شود؛ private profile scraping وجود
+                          ندارد.
+                        </p>
                       </header>
                       {items?.length ? (
                         <div className={styles.list}>
@@ -141,7 +151,11 @@ export default async function GrowthRewardsPage() {
                                 <div>
                                   <strong>{item.status}</strong>
                                   <small>{date(item.occurredAtUtc)}</small>
-                                  {item.platformCode ? <small>{item.platformCode} · {item.evidenceType}</small> : null}
+                                  {item.platformCode ? (
+                                    <small>
+                                      {item.platformCode} · {item.evidenceType}
+                                    </small>
+                                  ) : null}
                                 </div>
                                 <span className={styles.version}>v{item.version}</span>
                               </div>
@@ -163,7 +177,10 @@ export default async function GrowthRewardsPage() {
                 })}
               </section>
 
-              <footer className={styles.footer}>As of {date(snapshot.asOfUtc)} · reward fulfillment همچنان approval/abuse policy را در Core enforce می‌کند.</footer>
+              <footer className={styles.footer}>
+                As of {date(snapshot.asOfUtc)} · reward fulfillment همچنان approval/abuse policy را
+                در Core enforce می‌کند.
+              </footer>
             </>
           ) : null}
         </main>
