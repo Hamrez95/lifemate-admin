@@ -1,0 +1,262 @@
+.page {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.hero,
+.panel {
+  border: 1px solid var(--lm-border);
+  border-radius: 1.25rem;
+  background: var(--lm-surface-raised);
+  box-shadow: var(--lm-shadow);
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.hero h1,
+.panel h2,
+.history h2 {
+  margin: 0.35rem 0;
+}
+
+.hero p,
+.panel header p,
+.history header p {
+  margin: 0;
+  color: var(--lm-text-muted);
+  line-height: 1.9;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.heroActions a,
+.actions button {
+  min-height: 2.6rem;
+  border: 1px solid var(--lm-border-strong);
+  border-radius: 0.75rem;
+  background: var(--lm-surface);
+  color: var(--lm-text);
+  padding: 0.65rem 0.9rem;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.panel,
+.history {
+  padding: 1.1rem;
+}
+
+.panel header > span,
+.history header > span {
+  color: var(--lm-blue);
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.form {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.form label {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.form label > span {
+  color: var(--lm-text-muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.form input,
+.form select,
+.form textarea,
+.lookup input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--lm-border-strong);
+  border-radius: 0.75rem;
+  background: var(--lm-surface);
+  color: var(--lm-text);
+  padding: 0.7rem 0.8rem;
+  font: inherit;
+}
+
+.confirmRow {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 0.55rem !important;
+}
+
+.confirmRow input {
+  width: auto;
+  margin-top: 0.25rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.actions button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.dangerAction {
+  border-color: rgba(196, 58, 58, 0.35) !important;
+  background: rgba(196, 58, 58, 0.08) !important;
+  color: #a52e2e !important;
+}
+
+.result {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  border: 1px solid var(--lm-border);
+  border-radius: 0.9rem;
+  background: var(--lm-surface);
+  padding: 0.9rem;
+}
+
+.result[data-status="success"],
+.result[data-status="preview"] {
+  border-color: rgba(23, 173, 104, 0.35);
+}
+
+.result[data-status="invalid"],
+.result[data-status="conflict"],
+.result[data-status="forbidden"] {
+  border-color: rgba(221, 139, 42, 0.4);
+}
+
+.previewGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.previewGrid > div {
+  min-width: 0;
+  border: 1px solid var(--lm-border);
+  border-radius: 0.75rem;
+  padding: 0.65rem;
+}
+
+.previewGrid span {
+  color: var(--lm-text-muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.previewJson {
+  max-height: 16rem;
+  overflow: auto;
+  direction: ltr;
+  margin: 0.5rem 0 0;
+  font-size: 0.72rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.lookup {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+
+.lookup button {
+  border: 0;
+  border-radius: 0.75rem;
+  background: var(--lm-blue);
+  color: white;
+  padding: 0.65rem 1rem;
+  font: inherit;
+  font-weight: 900;
+}
+
+.history {
+  border: 1px solid var(--lm-border);
+  border-radius: 1.25rem;
+  background: var(--lm-surface-raised);
+  box-shadow: var(--lm-shadow);
+}
+
+.historyList {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.9rem;
+}
+
+.historyItem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  border: 1px solid var(--lm-border);
+  border-radius: 0.9rem;
+  padding: 0.8rem;
+}
+
+.historyItem strong,
+.historyItem code,
+.historyItem small {
+  overflow-wrap: anywhere;
+}
+
+.historyItem code {
+  direction: ltr;
+  font-size: 0.72rem;
+}
+
+.historyMeta {
+  display: grid;
+  justify-items: end;
+  gap: 0.3rem;
+  color: var(--lm-text-muted);
+  font-size: 0.75rem;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column;
+  }
+
+  .grid2,
+  .previewGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .lookup,
+  .historyItem {
+    grid-template-columns: 1fr;
+  }
+
+  .historyMeta {
+    justify-items: start;
+  }
+}
