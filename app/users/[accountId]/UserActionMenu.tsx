@@ -72,8 +72,9 @@ function CommerceAdjustmentAction({ accountId }: { accountId: string }) {
         <span className={styles.kicker}>Commerce actions</span>
         <strong>Subscription / Entitlement Adjustment</strong>
         <p>
-          Account context همین User 360 به workflow canonical منتقل می‌شود؛ Grant/Extend/Reduce/Revoke
-          همچنان approval، abuse policy و audit را در Core enforce می‌کنند.
+          Account context همین User 360 به workflow canonical منتقل می‌شود؛
+          Grant/Extend/Reduce/Revoke همچنان approval، abuse policy و audit را در Core enforce
+          می‌کنند.
         </p>
       </div>
       <a
