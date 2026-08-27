@@ -28,7 +28,12 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
 const OPERATIONS = new Set<ManualEntitlementOperation>(["Grant", "Extend", "Reduce", "Revoke"]);
 const TARGETS = new Set<ManualEntitlementTarget>(["Product", "Offer"]);
-const SCHEDULES = new Set<ManualEntitlementSchedule>(["ExactExpiry", "AddDays", "AddMonths", "Immediate"]);
+const SCHEDULES = new Set<ManualEntitlementSchedule>([
+  "ExactExpiry",
+  "AddDays",
+  "AddMonths",
+  "Immediate",
+]);
 
 function text(formData: FormData, key: string): string {
   const value = formData.get(key);
@@ -41,7 +46,11 @@ function optionalUuid(formData: FormData, key: string): string | null | undefine
   return UUID_PATTERN.test(value) ? value : undefined;
 }
 
-function optionalPositiveInt(formData: FormData, key: string, max: number): number | null | undefined {
+function optionalPositiveInt(
+  formData: FormData,
+  key: string,
+  max: number,
+): number | null | undefined {
   const raw = text(formData, key);
   if (!raw) return null;
   if (!/^\d+$/.test(raw)) return undefined;
@@ -94,7 +103,9 @@ function actionState(
   };
 }
 
-function buildInput(formData: FormData):
+function buildInput(
+  formData: FormData,
+):
   | { ok: true; input: ManualEntitlementAdjustmentInput; idempotencyKey: string }
   | { ok: false; state: EntitlementAdjustmentActionState } {
   const idempotencyKey = text(formData, "idempotencyKey");
@@ -128,43 +139,85 @@ function buildInput(formData: FormData):
     return { ok: false, state: { status: "invalid", message: "شناسه امن درخواست معتبر نیست." } };
   }
   if (!UUID_PATTERN.test(subjectAccountId) || !UUID_PATTERN.test(targetId)) {
-    return { ok: false, state: { status: "invalid", message: "Account و Target ID باید UUID معتبر باشند." } };
+    return {
+      ok: false,
+      state: { status: "invalid", message: "Account و Target ID باید UUID معتبر باشند." },
+    };
   }
   if (!TARGETS.has(targetTypeRaw) || !OPERATIONS.has(operation) || !SCHEDULES.has(scheduleMode)) {
-    return { ok: false, state: { status: "invalid", message: "نوع هدف، عملیات یا مدل زمان‌بندی معتبر نیست." } };
+    return {
+      ok: false,
+      state: { status: "invalid", message: "نوع هدف، عملیات یا مدل زمان‌بندی معتبر نیست." },
+    };
   }
   if (entitlementId === undefined || expectedEntitlementVersion === undefined) {
-    return { ok: false, state: { status: "invalid", message: "Entitlement ID یا نسخه آن معتبر نیست." } };
+    return {
+      ok: false,
+      state: { status: "invalid", message: "Entitlement ID یا نسخه آن معتبر نیست." },
+    };
   }
   if (approvalRequestId === undefined || approvalExpectedVersion === undefined) {
-    return { ok: false, state: { status: "invalid", message: "Approval ID یا نسخه آن معتبر نیست." } };
+    return {
+      ok: false,
+      state: { status: "invalid", message: "Approval ID یا نسخه آن معتبر نیست." },
+    };
   }
   if ((approvalRequestId === null) !== (approvalExpectedVersion === null)) {
-    return { ok: false, state: { status: "invalid", message: "Approval ID و نسخه باید با هم وارد شوند." } };
+    return {
+      ok: false,
+      state: { status: "invalid", message: "Approval ID و نسخه باید با هم وارد شوند." },
+    };
   }
   if (operation === "Grant" && (entitlementId !== null || expectedEntitlementVersion !== null)) {
-    return { ok: false, state: { status: "invalid", message: "Grant نباید Entitlement موجود داشته باشد." } };
+    return {
+      ok: false,
+      state: { status: "invalid", message: "Grant نباید Entitlement موجود داشته باشد." },
+    };
   }
   if (operation !== "Grant" && (entitlementId === null || expectedEntitlementVersion === null)) {
-    return { ok: false, state: { status: "invalid", message: "برای تغییر Entitlement موجود، ID و نسخه فعلی لازم است." } };
+    return {
+      ok: false,
+      state: {
+        status: "invalid",
+        message: "برای تغییر Entitlement موجود، ID و نسخه فعلی لازم است.",
+      },
+    };
   }
   if ((scheduleMode === "AddDays" || scheduleMode === "AddMonths") && scheduleAmount == null) {
-    return { ok: false, state: { status: "invalid", message: "این مدل زمان‌بندی به مقدار عددی نیاز دارد." } };
+    return {
+      ok: false,
+      state: { status: "invalid", message: "این مدل زمان‌بندی به مقدار عددی نیاز دارد." },
+    };
   }
   if (scheduleAmount === undefined) {
-    return { ok: false, state: { status: "invalid", message: "مقدار زمان‌بندی خارج از محدوده است." } };
+    return {
+      ok: false,
+      state: { status: "invalid", message: "مقدار زمان‌بندی خارج از محدوده است." },
+    };
   }
   if (scheduleMode === "Immediate" && operation !== "Revoke") {
-    return { ok: false, state: { status: "invalid", message: "Immediate فقط برای Revoke مجاز است." } };
+    return {
+      ok: false,
+      state: { status: "invalid", message: "Immediate فقط برای Revoke مجاز است." },
+    };
   }
   if (operation === "Reduce" && scheduleMode !== "ExactExpiry") {
-    return { ok: false, state: { status: "invalid", message: "Reduce فقط با Exact Expiry انجام می‌شود." } };
+    return {
+      ok: false,
+      state: { status: "invalid", message: "Reduce فقط با Exact Expiry انجام می‌شود." },
+    };
   }
   if (reason.length < 10 || reason.length > 1000) {
-    return { ok: false, state: { status: "invalid", message: "دلیل باید بین ۱۰ تا ۱۰۰۰ نویسه باشد." } };
+    return {
+      ok: false,
+      state: { status: "invalid", message: "دلیل باید بین ۱۰ تا ۱۰۰۰ نویسه باشد." },
+    };
   }
   if (!referenceAtUtc || Number.isNaN(Date.parse(referenceAtUtc))) {
-    return { ok: false, state: { status: "invalid", message: "زمان مرجع درخواست معتبر نیست؛ صفحه را تازه کنید." } };
+    return {
+      ok: false,
+      state: { status: "invalid", message: "زمان مرجع درخواست معتبر نیست؛ صفحه را تازه کنید." },
+    };
   }
 
   let exactExpiresAtUtc: string | null = null;
