@@ -25,7 +25,10 @@ function Feedback({ state }: { state: typeof initialCustomRoleActionState }) {
 }
 
 export function CreateCustomRoleForm({ canWrite }: { canWrite: boolean }) {
-  const [state, action, pending] = useActionState(createCustomRoleAction, initialCustomRoleActionState);
+  const [state, action, pending] = useActionState(
+    createCustomRoleAction,
+    initialCustomRoleActionState,
+  );
   const [key, setKey] = useState(() => crypto.randomUUID());
   if (!canWrite) {
     return <p className={styles.notice}>مجوز `security.roles.write` برای ساخت نقش لازم است.</p>;
@@ -137,7 +140,14 @@ export function CustomRoleCard({
             </label>
             <label>
               <span>Rank</span>
-              <input name="rank" type="number" defaultValue={role.rank} min="1" max="1000" required />
+              <input
+                name="rank"
+                type="number"
+                defaultValue={role.rank}
+                min="1"
+                max="1000"
+                required
+              />
             </label>
             <label>
               <span>دلیل تغییر</span>
