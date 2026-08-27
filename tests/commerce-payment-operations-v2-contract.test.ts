@@ -29,6 +29,16 @@ describe("Commerce payment operations v2", () => {
     expect(actions).toContain("expectedVersion");
   });
 
+  it("rotates idempotency keys only after a successful operation", async () => {
+    const controls = await source("app/commerce/operations/PaymentOperationsControls.tsx");
+    expect(controls).toContain("useIdempotencyInput");
+    expect(controls).toContain('state.status === "success"');
+    expect(controls).toContain("handledSuccessRef.current !== state");
+    expect(controls).toContain("input.value = key(prefix)");
+    expect(controls).toContain("ensureIdempotencyKey");
+    expect(controls).not.toContain("useMemo");
+  });
+
   it("keeps renewal intent separate from refund/reconciliation reason validation", async () => {
     const actions = await source("app/commerce/operations/actions.ts");
     const renewal = actions.slice(actions.indexOf("export async function renewalIntentAction"));
