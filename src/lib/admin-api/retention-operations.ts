@@ -251,7 +251,7 @@ export async function getRetentionWorkspace(): Promise<RetentionReadResult> {
     readJson("/api/v1/security/retention/holds"),
   ]);
   const blocked = [policiesResult, previewResult, holdsResult].find((item) => item.kind !== "ok");
-  if (blocked && blocked.kind !== "ok") return blocked;
+  if (blocked) return blocked;
   if (policiesResult.kind !== "ok" || previewResult.kind !== "ok" || holdsResult.kind !== "ok")
     return { kind: "unavailable" };
   const policiesPayload = policiesResult.value as Record<string, unknown> | null;
