@@ -38,7 +38,10 @@ function reason(formData: FormData): string | null {
   return value.length >= 10 && value.length <= 1000 ? value : null;
 }
 
-function mapped(result: CommercePaymentMutationResult, success: string): CommerceOperationsActionState {
+function mapped(
+  result: CommercePaymentMutationResult,
+  success: string,
+): CommerceOperationsActionState {
   if (result.kind === "ok") {
     return {
       status: "success",
