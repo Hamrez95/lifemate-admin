@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import styles from "./commerce-reference.module.css";
 
 export type CommerceWorkspaceTab =
-  "catalog" | "plans" | "promotions" | "subscriptions" | "revenue" | "adjustments";
+  "catalog" | "plans" | "promotions" | "subscriptions" | "operations" | "revenue" | "adjustments";
 
 type CommerceWorkspaceHeaderProps = {
   active: CommerceWorkspaceTab;
@@ -24,6 +24,7 @@ const tabs: readonly {
   { key: "plans", href: "/commerce/plans", label: "پلن‌ها" },
   { key: "promotions", href: "/commerce/promotions", label: "پروموشن‌ها" },
   { key: "subscriptions", href: "/commerce/subscriptions", label: "اشتراک‌ها" },
+  { key: "operations", href: "/commerce/operations", label: "عملیات مالی" },
   { key: "adjustments", href: "/commerce/entitlements/adjustments", label: "Adjustment" },
   { key: "revenue", href: "/commerce/revenue", label: "درآمد" },
 ];
