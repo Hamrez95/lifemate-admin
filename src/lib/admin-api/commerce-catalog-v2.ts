@@ -35,6 +35,7 @@ export type CommerceCatalogProduct = {
   code: string;
   name: string;
   status: string;
+  version: number;
   updatedAtUtc: string | null;
   offers: CommerceCatalogOffer[];
   policies: CommerceCatalogPolicy[];
@@ -163,7 +164,19 @@ function parseProduct(value: unknown): CommerceCatalogProduct | null {
   const code = string(row.code);
   const name = string(row.name);
   const status = string(row.status);
-  if (!id || !UUID.test(id) || !code || !CODE.test(code) || !name || !status) return null;
+  const version = integer(row.version);
+  if (
+    !id ||
+    !UUID.test(id) ||
+    !code ||
+    !CODE.test(code) ||
+    !name ||
+    !status ||
+    version === null ||
+    version < 1
+  ) {
+    return null;
+  }
   if (!Array.isArray(row.offers) || !Array.isArray(row.policies)) return null;
   const offers = row.offers.map(parseOffer);
   const policies = row.policies.map(parsePolicy);
@@ -173,6 +186,7 @@ function parseProduct(value: unknown): CommerceCatalogProduct | null {
     code,
     name,
     status,
+    version,
     updatedAtUtc: row.updatedAtUtc === null ? null : string(row.updatedAtUtc),
     offers: offers as CommerceCatalogOffer[],
     policies: policies as CommerceCatalogPolicy[],
