@@ -112,7 +112,8 @@ function parsePolicy(value: unknown): RetentionPolicy | null {
     !createdAtUtc ||
     !updatedAtUtc ||
     (effectiveValue !== null && effectiveAtUtc === null)
-  ) return null;
+  )
+    return null;
   return {
     dataCategory,
     purposeCode,
@@ -149,7 +150,8 @@ function parsePreview(value: unknown): RetentionDeletionPreview | null {
     heldCount === null ||
     row.destructiveActionPerformed !== false ||
     !freshness
-  ) return null;
+  )
+    return null;
   return { pendingCount, eligibleCount, heldCount, destructiveActionPerformed: false, freshness };
 }
 
@@ -168,9 +170,18 @@ function parseHold(value: unknown): RetentionHold | null {
   const releasedByValue = row.released_by_account_id ?? row.releasedByAccountId;
   const releasedAtValue = row.released_at_utc ?? row.releasedAtUtc;
   if (
-    !id || !UUID.test(id) || !accountId || !UUID.test(accountId) || !reasonCode || !KEY.test(reasonCode) ||
-    !status || !createdByAccountId || !UUID.test(createdByAccountId) || !createdAtUtc
-  ) return null;
+    !id ||
+    !UUID.test(id) ||
+    !accountId ||
+    !UUID.test(accountId) ||
+    !reasonCode ||
+    !KEY.test(reasonCode) ||
+    !status ||
+    !createdByAccountId ||
+    !UUID.test(createdByAccountId) ||
+    !createdAtUtc
+  )
+    return null;
   const dataCategory = dataCategoryValue === null ? null : text(dataCategoryValue);
   const purposeCode = purposeCodeValue === null ? null : text(purposeCodeValue);
   const expiresAtUtc = expiresValue === null ? null : iso(expiresValue);
@@ -182,8 +193,21 @@ function parseHold(value: unknown): RetentionHold | null {
     (expiresValue !== null && expiresAtUtc === null) ||
     (releasedByAccountId && !UUID.test(releasedByAccountId)) ||
     (releasedAtValue !== null && releasedAtUtc === null)
-  ) return null;
-  return { id, accountId, dataCategory, purposeCode, reasonCode, status, expiresAtUtc, createdByAccountId, createdAtUtc, releasedByAccountId, releasedAtUtc };
+  )
+    return null;
+  return {
+    id,
+    accountId,
+    dataCategory,
+    purposeCode,
+    reasonCode,
+    status,
+    expiresAtUtc,
+    createdByAccountId,
+    createdAtUtc,
+    releasedByAccountId,
+    releasedAtUtc,
+  };
 }
 
 async function authenticatedFetch(path: string, init: RequestInit): Promise<Response | null> {
@@ -192,18 +216,28 @@ async function authenticatedFetch(path: string, init: RequestInit): Promise<Resp
   const config = getPublicRuntimeConfig();
   return fetch(`${config.adminApiUrl}${path}`, {
     ...init,
-    headers: { Authorization: `Bearer ${token}`, Accept: "application/json", ...(init.headers ?? {}) },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+      ...(init.headers ?? {}),
+    },
     cache: "no-store",
     signal: AbortSignal.timeout(10_000),
   });
 }
 
-async function readJson(path: string): Promise<{ kind: "ok"; value: unknown } | Exclude<RetentionReadResult, { kind: "ok" }>> {
+async function readJson(
+  path: string,
+): Promise<{ kind: "ok"; value: unknown } | Exclude<RetentionReadResult, { kind: "ok" }>> {
   try {
     const response = await authenticatedFetch(path, { method: "GET" });
     if (!response || response.status === 401) return { kind: "unauthenticated" };
     if (response.status === 403) return { kind: "forbidden" };
-    if (!response.ok) return { kind: "unavailable", correlationId: response.headers.get("x-correlation-id") ?? undefined };
+    if (!response.ok)
+      return {
+        kind: "unavailable",
+        correlationId: response.headers.get("x-correlation-id") ?? undefined,
+      };
     return { kind: "ok", value: await response.json().catch(() => null) };
   } catch {
     return { kind: "unavailable" };
@@ -218,24 +252,42 @@ export async function getRetentionWorkspace(): Promise<RetentionReadResult> {
   ]);
   const blocked = [policiesResult, previewResult, holdsResult].find((item) => item.kind !== "ok");
   if (blocked && blocked.kind !== "ok") return blocked;
-  if (policiesResult.kind !== "ok" || previewResult.kind !== "ok" || holdsResult.kind !== "ok") return { kind: "unavailable" };
+  if (policiesResult.kind !== "ok" || previewResult.kind !== "ok" || holdsResult.kind !== "ok")
+    return { kind: "unavailable" };
   const policiesPayload = policiesResult.value as Record<string, unknown> | null;
   const holdsPayload = holdsResult.value as Record<string, unknown> | null;
-  if (!policiesPayload || !Array.isArray(policiesPayload.items) || !holdsPayload || !Array.isArray(holdsPayload.items)) return { kind: "unavailable" };
+  if (
+    !policiesPayload ||
+    !Array.isArray(policiesPayload.items) ||
+    !holdsPayload ||
+    !Array.isArray(holdsPayload.items)
+  )
+    return { kind: "unavailable" };
   const policies = policiesPayload.items.map(parsePolicy);
   const holds = holdsPayload.items.map(parseHold);
   const preview = parsePreview(previewResult.value);
-  if (policies.some((item) => item === null) || holds.some((item) => item === null) || !preview) return { kind: "unavailable" };
-  return { kind: "ok", data: { policies: policies as RetentionPolicy[], holds: holds as RetentionHold[], preview } };
+  if (policies.some((item) => item === null) || holds.some((item) => item === null) || !preview)
+    return { kind: "unavailable" };
+  return {
+    kind: "ok",
+    data: { policies: policies as RetentionPolicy[], holds: holds as RetentionHold[], preview },
+  };
 }
 
 function messageFrom(value: unknown): string | undefined {
-  return value && typeof value === "object" && !Array.isArray(value) && typeof (value as Record<string, unknown>).message === "string"
+  return value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    typeof (value as Record<string, unknown>).message === "string"
     ? String((value as Record<string, unknown>).message)
     : undefined;
 }
 
-async function mutate(path: string, body: Record<string, unknown>, idempotencyKey: string): Promise<RetentionMutationResult> {
+async function mutate(
+  path: string,
+  body: Record<string, unknown>,
+  idempotencyKey: string,
+): Promise<RetentionMutationResult> {
   try {
     const response = await authenticatedFetch(path, {
       method: "POST",
@@ -248,8 +300,17 @@ async function mutate(path: string, body: Record<string, unknown>, idempotencyKe
     const message = messageFrom(payload);
     if (response.status === 400) return { kind: "invalid", message };
     if (response.status === 409) return { kind: "conflict", message };
-    if (!response.ok) return { kind: "unavailable", correlationId: response.headers.get("x-correlation-id") ?? undefined, message };
-    const replayed = !!payload && typeof payload === "object" && !Array.isArray(payload) && (payload as Record<string, unknown>).replayed === true;
+    if (!response.ok)
+      return {
+        kind: "unavailable",
+        correlationId: response.headers.get("x-correlation-id") ?? undefined,
+        message,
+      };
+    const replayed =
+      !!payload &&
+      typeof payload === "object" &&
+      !Array.isArray(payload) &&
+      (payload as Record<string, unknown>).replayed === true;
     return { kind: "ok", replayed };
   } catch {
     return { kind: "unavailable" };
@@ -257,34 +318,61 @@ async function mutate(path: string, body: Record<string, unknown>, idempotencyKe
 }
 
 export function activateRetentionPolicy(input: {
-  dataCategory: string; purposeCode: string; retentionDays: number | null; graceDays: number;
-  disposition: RetentionPolicy["disposition"]; legalBasis: string | null; reason: string; idempotencyKey: string;
+  dataCategory: string;
+  purposeCode: string;
+  retentionDays: number | null;
+  graceDays: number;
+  disposition: RetentionPolicy["disposition"];
+  legalBasis: string | null;
+  reason: string;
+  idempotencyKey: string;
 }) {
-  return mutate("/api/v1/security/retention/policies", {
-    dataCategory: input.dataCategory,
-    purposeCode: input.purposeCode,
-    retentionDays: input.retentionDays,
-    graceDays: input.graceDays,
-    disposition: input.disposition,
-    legalBasis: input.legalBasis,
-    reason: input.reason,
-  }, input.idempotencyKey);
+  return mutate(
+    "/api/v1/security/retention/policies",
+    {
+      dataCategory: input.dataCategory,
+      purposeCode: input.purposeCode,
+      retentionDays: input.retentionDays,
+      graceDays: input.graceDays,
+      disposition: input.disposition,
+      legalBasis: input.legalBasis,
+      reason: input.reason,
+    },
+    input.idempotencyKey,
+  );
 }
 
 export function createRetentionHold(input: {
-  accountId: string; dataCategory: string | null; purposeCode: string | null; reasonCode: string;
-  reason: string; expiresAtUtc: string | null; idempotencyKey: string;
+  accountId: string;
+  dataCategory: string | null;
+  purposeCode: string | null;
+  reasonCode: string;
+  reason: string;
+  expiresAtUtc: string | null;
+  idempotencyKey: string;
 }) {
-  return mutate("/api/v1/security/retention/holds", {
-    accountId: input.accountId,
-    dataCategory: input.dataCategory,
-    purposeCode: input.purposeCode,
-    reasonCode: input.reasonCode,
-    reason: input.reason,
-    expiresAtUtc: input.expiresAtUtc,
-  }, input.idempotencyKey);
+  return mutate(
+    "/api/v1/security/retention/holds",
+    {
+      accountId: input.accountId,
+      dataCategory: input.dataCategory,
+      purposeCode: input.purposeCode,
+      reasonCode: input.reasonCode,
+      reason: input.reason,
+      expiresAtUtc: input.expiresAtUtc,
+    },
+    input.idempotencyKey,
+  );
 }
 
-export function releaseRetentionHold(input: { holdId: string; reason: string; idempotencyKey: string }) {
-  return mutate(`/api/v1/security/retention/holds/${encodeURIComponent(input.holdId)}/release`, { reason: input.reason }, input.idempotencyKey);
+export function releaseRetentionHold(input: {
+  holdId: string;
+  reason: string;
+  idempotencyKey: string;
+}) {
+  return mutate(
+    `/api/v1/security/retention/holds/${encodeURIComponent(input.holdId)}/release`,
+    { reason: input.reason },
+    input.idempotencyKey,
+  );
 }
