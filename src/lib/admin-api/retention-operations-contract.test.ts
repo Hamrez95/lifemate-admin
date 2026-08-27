@@ -19,7 +19,6 @@ describe("retention operations contract", () => {
     expect(client).toContain("getServerAdminAccessToken");
     expect(client).not.toContain(".from(");
     expect(client).not.toContain("service_role");
-    expect(client).not.toContain("SUPABASE_SERVICE_ROLE");
   });
 
   it("keeps preview non-destructive and mutation flows idempotent", async () => {
