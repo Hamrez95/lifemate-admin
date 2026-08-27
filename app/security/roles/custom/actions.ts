@@ -41,7 +41,7 @@ function mutationState(
       status: "forbidden",
       message:
         result.kind === "forbidden"
-          ? (result.message ?? "مجوز مدیریت نقش‌های سفارشی وجود ندارد.")
+          ? "مجوز مدیریت نقش‌های سفارشی وجود ندارد."
           : "نشست مدیریتی معتبر نیست؛ دوباره وارد شوید.",
     };
   }
