@@ -20,7 +20,11 @@ type CommerceWorkspaceHeaderProps = {
   badges?: readonly string[];
 };
 
-const tabs: readonly { key: CommerceWorkspaceTab; href: string; label: string }[] = [
+const tabs: readonly {
+  key: CommerceWorkspaceTab;
+  href: string;
+  label: string;
+}[] = [
   { key: "catalog", href: "/commerce/catalog", label: "کاتالوگ اکوسیستم" },
   { key: "plans", href: "/commerce/plans", label: "پلن‌ها" },
   { key: "promotions", href: "/commerce/promotions", label: "پروموشن‌ها" },
