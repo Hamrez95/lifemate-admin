@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 
+import { useAdminSession } from "@/src/components/auth/AdminSessionProvider";
+
 import { initialUserActionFormState, runUserAccountAction } from "./actions";
 import styles from "./user-action-menu.module.css";
 
@@ -52,6 +54,40 @@ function configForStatus(status: string): ActionConfig | null {
   return null;
 }
 
+function CommerceAdjustmentAction({ accountId }: { accountId: string }) {
+  const admin = useAdminSession();
+  const canAdjust = admin.permissions.some((permission) =>
+    [
+      "commerce.entitlement.adjust.read",
+      "commerce.entitlement.adjust.request",
+      "commerce.entitlement.adjust.execute",
+    ].includes(permission),
+  );
+
+  if (!canAdjust) return null;
+
+  return (
+    <aside className={styles.panel} data-tone="restore" aria-label="عملیات اشتراک کاربر">
+      <div className={styles.panelCopy}>
+        <span className={styles.kicker}>Commerce actions</span>
+        <strong>Subscription / Entitlement Adjustment</strong>
+        <p>
+          Account context همین User 360 به workflow canonical منتقل می‌شود؛
+          Grant/Extend/Reduce/Revoke همچنان approval، abuse policy و audit را در Core enforce
+          می‌کنند.
+        </p>
+      </div>
+      <a
+        className={styles.trigger}
+        data-tone="restore"
+        href={`/commerce/entitlements/adjustments?accountId=${encodeURIComponent(accountId)}`}
+      >
+        مدیریت Entitlement
+      </a>
+    </aside>
+  );
+}
+
 export function UserActionMenu({ accountId, accountStatus, canManage }: UserActionMenuProps) {
   const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -84,30 +120,36 @@ export function UserActionMenu({ accountId, accountStatus, canManage }: UserActi
 
   if (!canManage) {
     return (
-      <aside className={styles.panel} data-tone="locked" aria-label="عملیات حساب کاربر">
-        <div className={styles.panelCopy}>
-          <span className={styles.kicker}>User actions</span>
-          <strong>عملیات حساس محدود است</strong>
-          <p>برای تعلیق یا بازگردانی حساب، مجوز users.suspend لازم است.</p>
-        </div>
-        <span className={styles.lockedBadge}>فقط مشاهده</span>
-      </aside>
+      <>
+        <aside className={styles.panel} data-tone="locked" aria-label="عملیات حساب کاربر">
+          <div className={styles.panelCopy}>
+            <span className={styles.kicker}>User actions</span>
+            <strong>عملیات حساس محدود است</strong>
+            <p>برای تعلیق یا بازگردانی حساب، مجوز users.suspend لازم است.</p>
+          </div>
+          <span className={styles.lockedBadge}>فقط مشاهده</span>
+        </aside>
+        <CommerceAdjustmentAction accountId={accountId} />
+      </>
     );
   }
 
   if (!config) {
     return (
-      <aside className={styles.panel} data-tone="locked" aria-label="عملیات حساب کاربر">
-        <div className={styles.panelCopy}>
-          <span className={styles.kicker}>User actions</span>
-          <strong>اقدام مستقیم برای این وضعیت تعریف نشده</strong>
-          <p>
-            حساب‌های در انتظار حذف یا وضعیت‌های خارج از چرخه Active/Disabled از این منو تغییر
-            نمی‌کنند.
-          </p>
-        </div>
-        <span className={styles.lockedBadge}>{accountStatus}</span>
-      </aside>
+      <>
+        <aside className={styles.panel} data-tone="locked" aria-label="عملیات حساب کاربر">
+          <div className={styles.panelCopy}>
+            <span className={styles.kicker}>User actions</span>
+            <strong>اقدام مستقیم برای این وضعیت تعریف نشده</strong>
+            <p>
+              حساب‌های در انتظار حذف یا وضعیت‌های خارج از چرخه Active/Disabled از این منو تغییر
+              نمی‌کنند.
+            </p>
+          </div>
+          <span className={styles.lockedBadge}>{accountStatus}</span>
+        </aside>
+        <CommerceAdjustmentAction accountId={accountId} />
+      </>
     );
   }
 
@@ -130,6 +172,8 @@ export function UserActionMenu({ accountId, accountStatus, canManage }: UserActi
           {config.trigger}
         </button>
       </aside>
+
+      <CommerceAdjustmentAction accountId={accountId} />
 
       <dialog
         ref={dialogRef}
