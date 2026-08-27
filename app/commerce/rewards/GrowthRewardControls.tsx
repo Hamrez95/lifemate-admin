@@ -37,7 +37,10 @@ function Status({ state }: { state: GrowthRewardActionState }) {
 }
 
 export function RewardRuleForm() {
-  const [state, action, pending] = useActionState(saveRewardRuleAction, initialGrowthRewardActionState);
+  const [state, action, pending] = useActionState(
+    saveRewardRuleAction,
+    initialGrowthRewardActionState,
+  );
   const keyRef = useIdempotencyInput("growth-rule", state);
   return (
     <form action={action} className={styles.form}>
@@ -50,13 +53,19 @@ export function RewardRuleForm() {
         <label>
           Trigger
           <select name="triggerKind" defaultValue="Referral">
-            <option>Referral</option><option>Advocacy</option><option>Gift</option><option>Campaign</option>
+            <option>Referral</option>
+            <option>Advocacy</option>
+            <option>Gift</option>
+            <option>Campaign</option>
           </select>
         </label>
         <label>
           Reward
           <select name="rewardKind" defaultValue="Discount">
-            <option>Discount</option><option>GiftEntitlement</option><option>RaffleEligibility</option><option>CharityImpact</option>
+            <option>Discount</option>
+            <option>GiftEntitlement</option>
+            <option>RaffleEligibility</option>
+            <option>CharityImpact</option>
           </select>
         </label>
       </div>
@@ -64,7 +73,10 @@ export function RewardRuleForm() {
         <label>
           Status
           <select name="status" defaultValue="Draft">
-            <option>Draft</option><option>Active</option><option>Paused</option><option>Retired</option>
+            <option>Draft</option>
+            <option>Active</option>
+            <option>Paused</option>
+            <option>Retired</option>
           </select>
         </label>
         <label>
@@ -78,13 +90,21 @@ export function RewardRuleForm() {
       </label>
       <label>
         Reward Config JSON
-        <textarea name="rewardConfig" required defaultValue={'{"value":1}'} maxLength={4096} dir="ltr" />
+        <textarea
+          name="rewardConfig"
+          required
+          defaultValue={'{"value":1}'}
+          maxLength={4096}
+          dir="ltr"
+        />
       </label>
       <label>
         دلیل تغییر
         <textarea name="reason" required minLength={10} maxLength={1000} />
       </label>
-      <button type="submit" disabled={pending}>{pending ? "در حال ثبت…" : "ذخیره Rule"}</button>
+      <button type="submit" disabled={pending}>
+        {pending ? "در حال ثبت…" : "ذخیره Rule"}
+      </button>
       <Status state={state} />
     </form>
   );
@@ -99,7 +119,10 @@ export function RewardSourceReviewForm({
   sourceId: string;
   version: number;
 }) {
-  const [state, action, pending] = useActionState(reviewRewardSourceAction, initialGrowthRewardActionState);
+  const [state, action, pending] = useActionState(
+    reviewRewardSourceAction,
+    initialGrowthRewardActionState,
+  );
   const keyRef = useIdempotencyInput(`growth-review-${sourceId}`, state);
   return (
     <form action={action} className={styles.reviewForm}>
@@ -112,8 +135,12 @@ export function RewardSourceReviewForm({
         <input name="reason" required minLength={10} maxLength={1000} />
       </label>
       <div className={styles.reviewActions}>
-        <button name="decision" value="approve" type="submit" disabled={pending}>Approve</button>
-        <button name="decision" value="reject" type="submit" disabled={pending} data-tone="danger">Reject</button>
+        <button name="decision" value="approve" type="submit" disabled={pending}>
+          Approve
+        </button>
+        <button name="decision" value="reject" type="submit" disabled={pending} data-tone="danger">
+          Reject
+        </button>
       </div>
       <Status state={state} />
     </form>
