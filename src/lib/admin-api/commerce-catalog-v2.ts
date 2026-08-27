@@ -84,14 +84,7 @@ function parsePrice(value: unknown): CommerceCatalogPrice | null | undefined {
   const currency = string(row.currency);
   const provider = string(row.storeProvider);
   const amountMinor = string(row.amountMinor);
-  if (
-    !id ||
-    !UUID.test(id) ||
-    !currency ||
-    !CURRENCY.test(currency) ||
-    !provider ||
-    !amountMinor
-  ) {
+  if (!id || !UUID.test(id) || !currency || !CURRENCY.test(currency) || !provider || !amountMinor) {
     return undefined;
   }
   if (!/^-?[0-9]+$/.test(amountMinor)) return undefined;
@@ -259,14 +252,11 @@ export async function getCommerceCatalogV2(input?: {
   if (input?.includeHidden) search.set("includeHidden", "true");
   const suffix = search.size ? `?${search.toString()}` : "";
   try {
-    const response = await fetch(
-      `${config.adminApiUrl}/api/v1/commerce/catalog-v2${suffix}`,
-      {
-        headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-        cache: "no-store",
-        signal: AbortSignal.timeout(10_000),
-      },
-    );
+    const response = await fetch(`${config.adminApiUrl}/api/v1/commerce/catalog-v2${suffix}`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+      cache: "no-store",
+      signal: AbortSignal.timeout(10_000),
+    });
     if (response.status === 401) return { kind: "unauthenticated" };
     if (response.status === 403) return { kind: "forbidden" };
     if (response.status === 400) return { kind: "invalid" };
