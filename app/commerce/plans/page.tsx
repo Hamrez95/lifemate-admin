@@ -135,13 +135,11 @@ async function PlansContent({ canPlanWrite }: { canPlanWrite: boolean }) {
           endpointهای ساخت/ویرایش پلن و زمان‌بندی Price موجودند. mutationها permission، reason،
           Idempotency-Key و Audit سمت Admin API دارند.
         </CoreDependencyNotice>
-        <CoreDependencyNotice title="Trial configuration · Core #412">
-          مدت، eligibility و lifecycle آزمایشی فقط قابل مشاهده‌اند؛ فرم تنظیم Trial تا تکمیل قرارداد
-          Core #412 فعال نمی‌شود.
+        <CoreDependencyNotice title="Trial configuration · Core #412" tone="available">
+          قرارداد canonical تنظیم Trial و eligibility در Core تکمیل شده است؛ UI فقط همان contract versioned و audit‌شده را مصرف می‌کند.
         </CoreDependencyNotice>
-        <CoreDependencyNotice title="Entitlement assignment · Core #412">
-          اتصال Plan به Feature/Entitlement هنوز mutation canonical با concurrency semantics ندارد؛
-          بنابراین فرم ساختگی ارائه نمی‌شود.
+        <CoreDependencyNotice title="Plan ↔ Feature assignment · Core #412" tone="available">
+          mutation canonical با permission مستقل، idempotency و concurrency/version semantics در Core موجود است و دیگر blocker معماری محسوب نمی‌شود.
         </CoreDependencyNotice>
       </CommerceDependencyGrid>
       <PlanCreateForm products={data.products} canWrite={canPlanWrite} />
@@ -158,8 +156,7 @@ async function PlansContent({ canPlanWrite }: { canPlanWrite: boolean }) {
         }}
       />
       <p className={styles.safetyNote}>
-        Discount-code issuance جداگانه و bulk نیز تا تکمیل Core #412 فعال نیست. این صفحه قیمت، Trial
-        یا Entitlement را از داده‌های دیگر حدس نمی‌زند.
+        Trial، Feature assignment و discount-code mutation اکنون contract canonical دارند؛ هیچ‌کدام از UI با direct DB write یا inference اجرا نمی‌شوند. برای Product/Offer/Bundle v2 نیز صفحه «کاتالوگ اکوسیستم» منبع read canonical است.
       </p>
     </div>
   );
