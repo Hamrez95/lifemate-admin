@@ -73,7 +73,10 @@ const columns: readonly AdminTableColumn<CommercePlanDistribution>[] = [
     key: "manage",
     header: "مدیریت",
     render: (row) => (
-      <Link className={styles.secondaryLink} href={`/commerce/plans/${row.planId}/manage`}>
+      <Link
+        className={styles.secondaryLink}
+        href={`/commerce/plans/${row.planId}/manage`}
+      >
         قیمت و lifecycle
       </Link>
     ),
@@ -82,9 +85,15 @@ const columns: readonly AdminTableColumn<CommercePlanDistribution>[] = [
 
 function Summary({ data }: { data: CommerceOverviewResponse }) {
   const total = data.planDistribution.length;
-  const active = data.planDistribution.filter((plan) => plan.planStatus === "Active").length;
-  const retired = data.planDistribution.filter((plan) => plan.planStatus === "Retired").length;
-  const sellableProducts = data.products.filter((product) => product.status === "Active").length;
+  const active = data.planDistribution.filter(
+    (plan) => plan.planStatus === "Active",
+  ).length;
+  const retired = data.planDistribution.filter(
+    (plan) => plan.planStatus === "Retired",
+  ).length;
+  const sellableProducts = data.products.filter(
+    (product) => product.status === "Active",
+  ).length;
 
   return (
     <section className={styles.summaryGrid} aria-label="خلاصه کاتالوگ فروش">
@@ -104,7 +113,9 @@ function Summary({ data }: { data: CommerceOverviewResponse }) {
 }
 
 async function PlansContent({ canPlanWrite }: { canPlanWrite: boolean }) {
-  const result = await getCommerceOverview(new URLSearchParams({ page: "1", pageSize: "25" }));
+  const result = await getCommerceOverview(
+    new URLSearchParams({ page: "1", pageSize: "25" }),
+  );
   if (result.kind === "unauthenticated") redirect("/login");
   if (result.kind === "forbidden") return <AdminPageState state="forbidden" />;
   if (result.kind === "invalid") {
@@ -136,10 +147,12 @@ async function PlansContent({ canPlanWrite }: { canPlanWrite: boolean }) {
           Idempotency-Key و Audit سمت Admin API دارند.
         </CoreDependencyNotice>
         <CoreDependencyNotice title="Trial configuration · Core #412" tone="available">
-          قرارداد canonical تنظیم Trial و eligibility در Core تکمیل شده است؛ UI فقط همان contract versioned و audit‌شده را مصرف می‌کند.
+          قرارداد canonical تنظیم Trial و eligibility در Core تکمیل شده است؛ UI فقط همان contract
+          versioned و audit‌شده را مصرف می‌کند.
         </CoreDependencyNotice>
         <CoreDependencyNotice title="Plan ↔ Feature assignment · Core #412" tone="available">
-          mutation canonical با permission مستقل، idempotency و concurrency/version semantics در Core موجود است و دیگر blocker معماری محسوب نمی‌شود.
+          mutation canonical با permission مستقل، idempotency و concurrency/version semantics در Core
+          موجود است و دیگر blocker معماری محسوب نمی‌شود.
         </CoreDependencyNotice>
       </CommerceDependencyGrid>
       <PlanCreateForm products={data.products} canWrite={canPlanWrite} />
@@ -156,7 +169,9 @@ async function PlansContent({ canPlanWrite }: { canPlanWrite: boolean }) {
         }}
       />
       <p className={styles.safetyNote}>
-        Trial، Feature assignment و discount-code mutation اکنون contract canonical دارند؛ هیچ‌کدام از UI با direct DB write یا inference اجرا نمی‌شوند. برای Product/Offer/Bundle v2 نیز صفحه «کاتالوگ اکوسیستم» منبع read canonical است.
+        Trial، Feature assignment و discount-code mutation اکنون contract canonical دارند؛ هیچ‌کدام
+        از UI با direct DB write یا inference اجرا نمی‌شوند. برای Product/Offer/Bundle v2 نیز صفحه
+        «کاتالوگ اکوسیستم» منبع read canonical است.
       </p>
     </div>
   );
