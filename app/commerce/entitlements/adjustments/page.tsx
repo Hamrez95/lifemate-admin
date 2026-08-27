@@ -62,7 +62,11 @@ function HistoryItem({ item }: { item: ManualEntitlementHistoryItem }) {
         <span>{formatDate(item.createdAtUtc)}</span>
         <span>{item.scheduleMode}</span>
         <small>{item.affectedEntitlementIds.length.toLocaleString("fa-IR")} entitlement</small>
-        {item.approvalRequestId ? <small>Approval-linked</small> : <small>Direct policy path</small>}
+        {item.approvalRequestId ? (
+          <small>Approval-linked</small>
+        ) : (
+          <small>Direct policy path</small>
+        )}
       </div>
     </article>
   );
@@ -79,9 +83,10 @@ export default async function EntitlementAdjustmentsPage({ searchParams }: Props
   const query = await searchParams;
   const accountId = one(query.accountId).trim();
   const accountIsValid = !accountId || UUID_PATTERN.test(accountId);
-  const history = accountId && accountIsValid && canRead
-    ? await getEntitlementAdjustmentHistory(accountId, 50)
-    : null;
+  const history =
+    accountId && accountIsValid && canRead
+      ? await getEntitlementAdjustmentHistory(accountId, 50)
+      : null;
 
   if (history?.kind === "unauthenticated") redirect("/login");
 
@@ -98,8 +103,8 @@ export default async function EntitlementAdjustmentsPage({ searchParams }: Props
               <span>Commerce Control Center v2</span>
               <h1>Adjustment بدون دست‌کاری مستقیم دیتابیس</h1>
               <p>
-                Grant، Extend، Reduce و Revoke از قرارداد canonical Core عبور می‌کنند. هر تغییر reason،
-                idempotency، optimistic version، Abuse decision و Audit دارد.
+                Grant، Extend، Reduce و Revoke از قرارداد canonical Core عبور می‌کنند. هر تغییر
+                reason، idempotency، optimistic version، Abuse decision و Audit دارد.
               </p>
             </div>
             <div className={styles.heroActions}>
@@ -113,7 +118,8 @@ export default async function EntitlementAdjustmentsPage({ searchParams }: Props
               <span>User / Account context</span>
               <h2 id="account-history-title">انتخاب Account و تاریخچه Adjustment</h2>
               <p>
-                Billing و entitlement روی Account هستند. این صفحه از Person یا داده سلامت برای تصمیم تجاری استفاده نمی‌کند.
+                Billing و entitlement روی Account هستند. این صفحه از Person یا داده سلامت برای تصمیم
+                تجاری استفاده نمی‌کند.
               </p>
             </header>
             <form className={styles.lookup} method="get">
@@ -129,7 +135,11 @@ export default async function EntitlementAdjustmentsPage({ searchParams }: Props
             </form>
 
             {!accountIsValid ? (
-              <AdminPageState state="error" title="Account ID معتبر نیست" description="یک UUID معتبر وارد کنید." />
+              <AdminPageState
+                state="error"
+                title="Account ID معتبر نیست"
+                description="یک UUID معتبر وارد کنید."
+              />
             ) : null}
             {accountId && !canRead ? (
               <AdminPageState
@@ -145,18 +155,25 @@ export default async function EntitlementAdjustmentsPage({ searchParams }: Props
               <AdminPageState
                 state="error"
                 title="تاریخچه در دسترس نیست"
-                description={history.correlationId ? `کد پیگیری: ${history.correlationId}` : undefined}
+                description={
+                  history.correlationId ? `کد پیگیری: ${history.correlationId}` : undefined
+                }
               />
             ) : null}
             {history?.kind === "not_found" ? (
               <AdminPageState state="empty" title="Account پیدا نشد" />
             ) : null}
             {history?.kind === "ok" && history.data.items.length === 0 ? (
-              <AdminPageState state="empty" title="Adjustment ثبت‌شده‌ای برای این Account وجود ندارد" />
+              <AdminPageState
+                state="empty"
+                title="Adjustment ثبت‌شده‌ای برای این Account وجود ندارد"
+              />
             ) : null}
             {history?.kind === "ok" && history.data.items.length > 0 ? (
               <div className={styles.historyList}>
-                {history.data.items.map((item) => <HistoryItem item={item} key={item.id} />)}
+                {history.data.items.map((item) => (
+                  <HistoryItem item={item} key={item.id} />
+                ))}
               </div>
             ) : null}
           </section>
