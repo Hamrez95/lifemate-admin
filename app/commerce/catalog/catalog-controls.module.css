@@ -1,0 +1,119 @@
+.workspace {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.heading,
+.entity {
+  display: grid;
+  gap: 0.8rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 22px;
+  background: var(--surface-card);
+  padding: 1rem;
+  box-shadow: var(--shadow-soft);
+}
+.heading span {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+.heading h3,
+.heading p,
+.entity h4,
+.form header p {
+  margin: 0;
+}
+.heading p,
+.form header p {
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+.entity {
+  background: var(--surface-muted);
+}
+.offer {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+.form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 0.85rem;
+  background: var(--surface-card);
+}
+.form header,
+.form .full,
+.footer {
+  grid-column: 1 / -1;
+}
+.form header {
+  display: grid;
+  gap: 0.2rem;
+}
+.form label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+}
+.form input,
+.form select,
+.form textarea {
+  min-width: 0;
+  width: 100%;
+  border: 1px solid var(--border-subtle);
+  border-radius: 11px;
+  background: var(--surface-card);
+  color: inherit;
+  padding: 0.62rem 0.7rem;
+}
+.form textarea {
+  resize: vertical;
+}
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+.footer span {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+.footer span[data-status="success"] {
+  color: var(--success-text);
+}
+.footer span[data-status="error"] {
+  color: var(--danger-text);
+}
+.footer button {
+  border: 0;
+  border-radius: 11px;
+  padding: 0.65rem 0.9rem;
+  background: var(--text-primary);
+  color: var(--surface-card);
+  font-weight: 700;
+  cursor: pointer;
+}
+.footer button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+@media (max-width: 900px) {
+  .offer,
+  .form {
+    grid-template-columns: 1fr;
+  }
+  .form header,
+  .form .full,
+  .footer {
+    grid-column: 1;
+  }
+  .footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
