@@ -45,14 +45,17 @@ export default async function AbuseRulesPage() {
               <p className="eyebrow">P0 · Core #503</p>
               <h2 id="abuse-title">Rule Engine قابل توضیح، نه Risk Score مبهم</h2>
               <p>
-                تصمیم‌ها فقط Allow، Deny یا RequireApproval هستند و هر تصمیم Rule ID و reason code دارد.
-                این نسخه هیچ اقدام تنبیهی خودکار روی حساب و هیچ استفاده‌ای از داده سلامت ندارد.
+                تصمیم‌ها فقط Allow، Deny یا RequireApproval هستند و هر تصمیم Rule ID و reason code
+                دارد. این نسخه هیچ اقدام تنبیهی خودکار روی حساب و هیچ استفاده‌ای از داده سلامت
+                ندارد.
               </p>
             </div>
             <aside>
               <strong>Privacy boundary</strong>
               <span>
-                {data && !data.privacy.subjectIdentifiersExposed && !data.privacy.rawContactValuesExposed
+                {data &&
+                !data.privacy.subjectIdentifiersExposed &&
+                !data.privacy.rawContactValuesExposed
                   ? "Subject و contact در decision feed مخفی هستند"
                   : "Unavailable"}
               </span>
@@ -67,15 +70,34 @@ export default async function AbuseRulesPage() {
           ) : (
             <>
               <section className={styles.metrics} aria-label="Abuse engine summary">
-                <article><span>Rules</span><strong>{data.rules.length.toLocaleString("fa-IR")}</strong></article>
-                <article><span>Active</span><strong>{data.rules.filter((rule) => rule.status === "Active").length.toLocaleString("fa-IR")}</strong></article>
-                <article><span>Recent decisions</span><strong>{data.decisions.length.toLocaleString("fa-IR")}</strong></article>
-                <article><span>As of</span><strong className={styles.dateMetric}>{formatDate(data.freshness.asOfUtc)}</strong></article>
+                <article>
+                  <span>Rules</span>
+                  <strong>{data.rules.length.toLocaleString("fa-IR")}</strong>
+                </article>
+                <article>
+                  <span>Active</span>
+                  <strong>
+                    {data.rules
+                      .filter((rule) => rule.status === "Active")
+                      .length.toLocaleString("fa-IR")}
+                  </strong>
+                </article>
+                <article>
+                  <span>Recent decisions</span>
+                  <strong>{data.decisions.length.toLocaleString("fa-IR")}</strong>
+                </article>
+                <article>
+                  <span>As of</span>
+                  <strong className={styles.dateMetric}>{formatDate(data.freshness.asOfUtc)}</strong>
+                </article>
               </section>
 
               <section className={styles.panel} aria-labelledby="rule-editor-title">
                 <header>
-                  <div><p className="eyebrow">Explainable policy</p><h3 id="rule-editor-title">ساخت / ویرایش Rule</h3></div>
+                  <div>
+                    <p className="eyebrow">Explainable policy</p>
+                    <h3 id="rule-editor-title">ساخت / ویرایش Rule</h3>
+                  </div>
                   <span>{canWrite ? "security.abuse.write" : "Read only"}</span>
                 </header>
                 <AbuseRuleForm canWrite={canWrite} />
@@ -83,53 +105,97 @@ export default async function AbuseRulesPage() {
 
               <section className={styles.panel} aria-labelledby="rule-list-title">
                 <header>
-                  <div><p className="eyebrow">Current rules</p><h3 id="rule-list-title">Rule registry</h3></div>
+                  <div>
+                    <p className="eyebrow">Current rules</p>
+                    <h3 id="rule-list-title">Rule registry</h3>
+                  </div>
                   <span>{data.rules.length.toLocaleString("fa-IR")} rule</span>
                 </header>
                 <div className={styles.rules}>
                   {data.rules.length === 0 ? (
                     <div className={styles.empty}>هنوز Rule canonical تعریف نشده است.</div>
-                  ) : data.rules.map((rule) => (
-                    <article className={styles.ruleCard} key={rule.id}>
-                      <header>
-                        <div><strong>{rule.displayName}</strong><code>{rule.contextCode} · {rule.code}</code></div>
-                        <span>{rule.status} · v{rule.version}</span>
-                      </header>
-                      <dl>
-                        <div><dt>Kind</dt><dd>{rule.ruleKind}</dd></div>
-                        <div><dt>Subject</dt><dd>{rule.subjectScope}</dd></div>
-                        <div><dt>Action</dt><dd>{rule.enforcementAction}</dd></div>
-                        <div><dt>Priority</dt><dd>{rule.priority}</dd></div>
-                      </dl>
-                      <p className={styles.ruleShape}>
-                        window={rule.windowSeconds ?? "—"} · max={rule.maxCount ?? "—"} · cooldown={rule.cooldownSeconds ?? "—"} · evidence={rule.evidenceCode ?? "—"}
-                      </p>
-                      <RetireRuleForm rule={rule} canWrite={canWrite} />
-                    </article>
-                  ))}
+                  ) : (
+                    data.rules.map((rule) => (
+                      <article className={styles.ruleCard} key={rule.id}>
+                        <header>
+                          <div>
+                            <strong>{rule.displayName}</strong>
+                            <code>
+                              {rule.contextCode} · {rule.code}
+                            </code>
+                          </div>
+                          <span>
+                            {rule.status} · v{rule.version}
+                          </span>
+                        </header>
+                        <dl>
+                          <div>
+                            <dt>Kind</dt>
+                            <dd>{rule.ruleKind}</dd>
+                          </div>
+                          <div>
+                            <dt>Subject</dt>
+                            <dd>{rule.subjectScope}</dd>
+                          </div>
+                          <div>
+                            <dt>Action</dt>
+                            <dd>{rule.enforcementAction}</dd>
+                          </div>
+                          <div>
+                            <dt>Priority</dt>
+                            <dd>{rule.priority}</dd>
+                          </div>
+                        </dl>
+                        <p className={styles.ruleShape}>
+                          window={rule.windowSeconds ?? "—"} · max={rule.maxCount ?? "—"} · cooldown=
+                          {rule.cooldownSeconds ?? "—"} · evidence={rule.evidenceCode ?? "—"}
+                        </p>
+                        <RetireRuleForm rule={rule} canWrite={canWrite} />
+                      </article>
+                    ))
+                  )}
                 </div>
               </section>
 
               <section className={styles.panel} aria-labelledby="decision-title">
                 <header>
-                  <div><p className="eyebrow">Review queue</p><h3 id="decision-title">Recent decisions</h3></div>
+                  <div>
+                    <p className="eyebrow">Review queue</p>
+                    <h3 id="decision-title">Recent decisions</h3>
+                  </div>
                   <span>بدون subject identifier</span>
                 </header>
                 <div className={styles.tableWrap}>
                   <table>
-                    <thead><tr><th>Context</th><th>Action</th><th>Reasons</th><th>Matched rules</th><th>Time</th></tr></thead>
+                    <thead>
+                      <tr>
+                        <th>Context</th>
+                        <th>Action</th>
+                        <th>Reasons</th>
+                        <th>Matched rules</th>
+                        <th>Time</th>
+                      </tr>
+                    </thead>
                     <tbody>
                       {data.decisions.length === 0 ? (
-                        <tr><td colSpan={5} className={styles.emptyCell}>تصمیمی ثبت نشده است.</td></tr>
-                      ) : data.decisions.map((decision) => (
-                        <tr key={decision.id}>
-                          <td>{decision.contextCode}</td>
-                          <td><strong>{decision.finalAction}</strong></td>
-                          <td>{decision.reasonCodes.join(", ") || "—"}</td>
-                          <td>{decision.matchedRuleIds.length.toLocaleString("fa-IR")}</td>
-                          <td>{formatDate(decision.evaluatedAtUtc)}</td>
+                        <tr>
+                          <td colSpan={5} className={styles.emptyCell}>
+                            تصمیمی ثبت نشده است.
+                          </td>
                         </tr>
-                      ))}
+                      ) : (
+                        data.decisions.map((decision) => (
+                          <tr key={decision.id}>
+                            <td>{decision.contextCode}</td>
+                            <td>
+                              <strong>{decision.finalAction}</strong>
+                            </td>
+                            <td>{decision.reasonCodes.join(", ") || "—"}</td>
+                            <td>{decision.matchedRuleIds.length.toLocaleString("fa-IR")}</td>
+                            <td>{formatDate(decision.evaluatedAtUtc)}</td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
