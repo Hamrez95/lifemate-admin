@@ -138,14 +138,16 @@ function parseList(value: unknown): CustomRolesResponse | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const row = value as Record<string, unknown>;
   if (!Array.isArray(row.roles) || !Array.isArray(row.permissionCatalog)) return null;
-  if (!row.freshness || typeof row.freshness !== "object" || Array.isArray(row.freshness)) return null;
+  if (!row.freshness || typeof row.freshness !== "object" || Array.isArray(row.freshness))
+    return null;
   const freshness = row.freshness as Record<string, unknown>;
   const status = freshness.status;
   const asOfUtc = text(freshness.asOfUtc);
   if ((status !== "fresh" && status !== "stale") || !asOfUtc) return null;
   const roles = row.roles.map(parseRole);
   const permissionCatalog = row.permissionCatalog.map(parsePermission);
-  if (roles.some((item) => item === null) || permissionCatalog.some((item) => item === null)) return null;
+  if (roles.some((item) => item === null) || permissionCatalog.some((item) => item === null))
+    return null;
   return {
     roles: roles as CustomRoleSummary[],
     permissionCatalog: permissionCatalog as CustomRolePermissionCatalogItem[],
