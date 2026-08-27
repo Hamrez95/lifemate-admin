@@ -181,7 +181,9 @@ async function CatalogContent({ canWrite }: { canWrite: boolean }) {
         )}
       </section>
 
-      {canWrite ? <CatalogMutationControls products={data.products} bundles={data.bundles} /> : null}
+      {canWrite ? (
+        <CatalogMutationControls products={data.products} bundles={data.bundles} />
+      ) : null}
 
       <p className={styles.notice}>
         مبلغ‌ها عمداً به همان minor unit ثبت‌شده نمایش داده می‌شوند. این UI تعداد decimal، FX،
