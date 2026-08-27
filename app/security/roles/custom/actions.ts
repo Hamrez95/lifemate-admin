@@ -62,9 +62,9 @@ function mutationState(
   };
 }
 
-function common(formData: FormData):
-  | { reason: string; idempotencyKey: string }
-  | { error: CustomRoleActionState } {
+function common(
+  formData: FormData,
+): { reason: string; idempotencyKey: string } | { error: CustomRoleActionState } {
   const reason = text(formData, "reason");
   const idempotencyKey = text(formData, "idempotencyKey");
   if (reason.length < 10 || reason.length > 1000) {
@@ -186,7 +186,11 @@ export async function mutateCustomRolePermissionAction(
   const confirmation = text(formData, "confirmation");
   const shared = common(formData);
   if ("error" in shared) return shared.error;
-  if (!ROLE_CODE.test(roleCode) || !PERMISSION_CODE.test(permissionCode) || expectedVersion === null) {
+  if (
+    !ROLE_CODE.test(roleCode) ||
+    !PERMISSION_CODE.test(permissionCode) ||
+    expectedVersion === null
+  ) {
     return { status: "invalid", message: "نقش، permission یا نسخه معتبر نیست." };
   }
   if (action !== "assign" && action !== "revoke") {
