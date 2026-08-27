@@ -8,14 +8,16 @@ function source(path: string): string {
 }
 
 describe("Commerce references 10/11", () => {
-  it("uses the approved commerce hero and exposes the four workspace tabs", () => {
+  it("uses the approved commerce hero and exposes the workspace tabs", () => {
     const header = source("app/commerce/CommerceWorkspaceHeader.tsx");
 
     expect(header).toContain("/design-assets/commerce-hero-v1.png");
     expect(header).toContain('sizes="(max-width: 720px) 60vw, (max-width: 1100px) 34vw, 360px"');
+    expect(header).toContain('href: "/commerce/catalog"');
     expect(header).toContain('href: "/commerce/plans"');
     expect(header).toContain('href: "/commerce/promotions"');
     expect(header).toContain('href: "/commerce/subscriptions"');
+    expect(header).toContain('href: "/commerce/entitlements/adjustments"');
     expect(header).toContain('href: "/commerce/revenue"');
     expect(header).toContain('aria-current={active === tab.key ? "page" : undefined}');
   });
@@ -54,17 +56,21 @@ describe("Commerce references 10/11", () => {
     expect(client).not.toContain("createClient");
   });
 
-  it("makes Core 412 dependencies explicit and never enables missing control forms", () => {
+  it("recognizes completed Core 412 controls while keeping unsupported subscription writes explicit", () => {
     const plans = source("app/commerce/plans/page.tsx");
-    const promotions = source("app/commerce/promotions/page.tsx");
     const subscriptions = source("app/commerce/subscriptions/page.tsx");
+    const featureControls = source("app/commerce/plans/[planId]/PlanFeatureControls.tsx");
+    const discountControls = source(
+      "app/commerce/promotions/[promotionId]/DiscountCodeControls.tsx",
+    );
 
-    for (const page of [plans, promotions, subscriptions]) {
-      expect(page).toContain("Core #412");
-    }
-    expect(plans).toContain("Core #412 فعال نمی‌شود");
-    expect(plans).toContain("فرم ساختگی ارائه نمی‌شود");
-    expect(promotions).toContain("هیچ generator یا edit form جداگانه فعال نیست");
+    expect(plans).toContain("Trial configuration · Core #412");
+    expect(plans).toContain("Plan ↔ Feature assignment · Core #412");
+    expect(plans).not.toContain("Core #412 فعال نمی‌شود");
+    expect(featureControls).toContain("commerce.plan_feature.write");
+    expect(discountControls).toContain("commerce.discount_code.write");
+    expect(subscriptions).toContain("تغییر مستقیم Subscription از Command Center تعریف نشده است");
+    expect(subscriptions).not.toContain("use server");
   });
 
   it("keeps the reference shell responsive and long-text safe", () => {
