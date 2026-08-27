@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import type { ReactNode } from "react";
 
 import { AdminPageState } from "@/src/components/admin-data-table";
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
@@ -12,14 +13,21 @@ import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
 import { SupportConversationPanel } from "../SupportConversationPanel";
 
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 type Props = { params: Promise<{ ticketId: string }> };
 
 function stateFor(kind: "forbidden" | "not_found" | "invalid" | "unavailable") {
   if (kind === "not_found") notFound();
-  if (kind === "forbidden") return <AdminPageState state="forbidden" title="گفتگو برای نقش فعلی قابل مشاهده نیست" />;
-  if (kind === "invalid") return <AdminPageState state="error" title="شناسه گفتگو معتبر نیست" />;
+  if (kind === "forbidden") {
+    return (
+      <AdminPageState state="forbidden" title="گفتگو برای نقش فعلی قابل مشاهده نیست" />
+    );
+  }
+  if (kind === "invalid") {
+    return <AdminPageState state="error" title="شناسه گفتگو معتبر نیست" />;
+  }
   return <AdminPageState state="unavailable" title="گفتگوی پشتیبانی فعلاً در دسترس نیست" />;
 }
 
@@ -35,7 +43,11 @@ export default async function SupportConversationPage({ params }: Props) {
   if (!canRead) {
     return (
       <AdminSessionProvider admin={admin}>
-        <AdminShell activeSlug="support" title="گفتگوی پشتیبانی" subtitle="گفتگوی permission-aware و server-only">
+        <AdminShell
+          activeSlug="support"
+          title="گفتگوی پشتیبانی"
+          subtitle="گفتگوی permission-aware و server-only"
+        >
           <AdminPageState state="forbidden" />
         </AdminShell>
       </AdminSessionProvider>
@@ -46,9 +58,11 @@ export default async function SupportConversationPage({ params }: Props) {
     getSupportConversation(normalizedTicketId),
     getSupportConversationOperations(normalizedTicketId),
   ]);
-  if (conversation.kind === "unauthenticated" || operations.kind === "unauthenticated") redirect("/login");
+  if (conversation.kind === "unauthenticated" || operations.kind === "unauthenticated") {
+    redirect("/login");
+  }
 
-  let content: React.ReactNode;
+  let content: ReactNode;
   if (conversation.kind !== "ok") {
     content = stateFor(conversation.kind);
   } else if (operations.kind !== "ok") {
@@ -57,7 +71,9 @@ export default async function SupportConversationPage({ params }: Props) {
     content = (
       <>
         <p>
-          <Link href={`/support/${normalizedTicketId}`}>بازگشت به جزئیات و Timeline تیکت</Link>
+          <Link href={`/support/${normalizedTicketId}`}>
+            بازگشت به جزئیات و Timeline تیکت
+          </Link>
         </p>
         <SupportConversationPanel
           ticketId={normalizedTicketId}
