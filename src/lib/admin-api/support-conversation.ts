@@ -147,9 +147,7 @@ export async function getSupportConversation(
   return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
 }
 
-export async function getSupportConversationOperations(
-  ticketId: string,
-): Promise<
+export async function getSupportConversationOperations(ticketId: string): Promise<
   ReadResult<{
     escalations: SupportConversationEscalation[];
     links: SupportConversationLink[];
