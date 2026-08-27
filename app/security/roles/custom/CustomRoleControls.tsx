@@ -16,10 +16,6 @@ import {
 } from "./actions";
 import styles from "./custom-roles.module.css";
 
-function RequestKey() {
-  return <input type="hidden" name="idempotencyKey" value={crypto.randomUUID()} />;
-}
-
 function Feedback({ state }: { state: typeof initialCustomRoleActionState }) {
   return (
     <div className={styles.feedback} data-status={state.status} aria-live="polite">
@@ -64,7 +60,9 @@ export function CreateCustomRoleForm({ canWrite }: { canWrite: boolean }) {
         این نقش فقط از permissionهای allow-listed استفاده می‌کند و Founder قابل ایجاد نیست.
       </label>
       <Feedback state={state} />
-      <button type="submit" disabled={pending}>{pending ? "در حال ثبت…" : "ساخت نقش"}</button>
+      <button type="submit" disabled={pending}>
+        {pending ? "در حال ثبت…" : "ساخت نقش"}
+      </button>
     </form>
   );
 }
@@ -93,6 +91,7 @@ export function CustomRoleCard({
   const [updateKey, setUpdateKey] = useState(() => crypto.randomUUID());
   const [retireKey, setRetireKey] = useState(() => crypto.randomUUID());
   const [permissionKey, setPermissionKey] = useState(() => crypto.randomUUID());
+  const [permissionMode, setPermissionMode] = useState<"assign" | "revoke">("assign");
   const delegable = useMemo(() => catalog.filter((item) => item.delegable), [catalog]);
 
   return (
@@ -109,49 +108,136 @@ export function CustomRoleCard({
         </div>
       </header>
       <div className={styles.permissionList} aria-label={`Permissionهای ${role.displayName}`}>
-        {role.permissions.length ? role.permissions.map((permission) => <code key={permission}>{permission}</code>) : <span>بدون permission مستقیم</span>}
+        {role.permissions.length ? (
+          role.permissions.map((permission) => <code key={permission}>{permission}</code>)
+        ) : (
+          <span>بدون permission مستقیم</span>
+        )}
       </div>
 
       {canWrite && role.status === "Active" ? (
         <div className={styles.controlGrid}>
-          <form className={styles.form} action={updateAction} onChange={() => setUpdateKey(crypto.randomUUID())}>
+          <form
+            className={styles.form}
+            action={updateAction}
+            onChange={() => setUpdateKey(crypto.randomUUID())}
+          >
             <input type="hidden" name="code" value={role.code} />
             <input type="hidden" name="expectedVersion" value={String(role.version)} />
             <input type="hidden" name="idempotencyKey" value={updateKey} />
-            <label><span>نام</span><input name="displayName" defaultValue={role.displayName} minLength={2} maxLength={120} required /></label>
-            <label><span>Rank</span><input name="rank" type="number" defaultValue={role.rank} min="1" max="1000" required /></label>
-            <label><span>دلیل تغییر</span><textarea name="reason" minLength={10} maxLength={1000} rows={2} required /></label>
-            <label className={styles.confirmation}><input type="checkbox" name="confirmation" value="confirm-custom-role-update" required disabled={updatePending} />ویرایش نسخه {role.version.toLocaleString("fa-IR")} را تأیید می‌کنم.</label>
+            <label>
+              <span>نام</span>
+              <input
+                name="displayName"
+                defaultValue={role.displayName}
+                minLength={2}
+                maxLength={120}
+                required
+              />
+            </label>
+            <label>
+              <span>Rank</span>
+              <input name="rank" type="number" defaultValue={role.rank} min="1" max="1000" required />
+            </label>
+            <label>
+              <span>دلیل تغییر</span>
+              <textarea name="reason" minLength={10} maxLength={1000} rows={2} required />
+            </label>
+            <label className={styles.confirmation}>
+              <input
+                type="checkbox"
+                name="confirmation"
+                value="confirm-custom-role-update"
+                required
+                disabled={updatePending}
+              />
+              ویرایش نسخه {role.version.toLocaleString("fa-IR")} را تأیید می‌کنم.
+            </label>
             <Feedback state={updateState} />
-            <button type="submit" disabled={updatePending}>{updatePending ? "در حال ثبت…" : "ویرایش نقش"}</button>
+            <button type="submit" disabled={updatePending}>
+              {updatePending ? "در حال ثبت…" : "ویرایش نقش"}
+            </button>
           </form>
 
-          <form className={styles.form} action={permissionAction} onChange={() => setPermissionKey(crypto.randomUUID())}>
+          <form
+            className={styles.form}
+            action={permissionAction}
+            onChange={() => setPermissionKey(crypto.randomUUID())}
+          >
             <input type="hidden" name="roleCode" value={role.code} />
             <input type="hidden" name="expectedVersion" value={String(role.version)} />
             <input type="hidden" name="idempotencyKey" value={permissionKey} />
             <label>
               <span>Permission</span>
               <select name="permissionCode" required defaultValue="">
-                <option value="" disabled>انتخاب permission</option>
-                {delegable.map((permission) => <option key={permission.code} value={permission.code}>{permission.code} · {permission.domain}</option>)}
+                <option value="" disabled>
+                  انتخاب permission
+                </option>
+                {delegable.map((permission) => (
+                  <option key={permission.code} value={permission.code}>
+                    {permission.code} · {permission.domain}
+                  </option>
+                ))}
               </select>
             </label>
-            <label><span>عملیات</span><select name="permissionAction" defaultValue="assign"><option value="assign">افزودن</option><option value="revoke">حذف</option></select></label>
-            <label><span>دلیل</span><textarea name="reason" minLength={10} maxLength={1000} rows={2} required /></label>
-            <label className={styles.confirmation}><input type="checkbox" name="confirmation" value="confirm-custom-role-permission-assign" onChange={(event) => { const form = event.currentTarget.form; if (!form) return; const actionSelect = form.elements.namedItem("permissionAction") as HTMLSelectElement | null; event.currentTarget.value = actionSelect?.value === "revoke" ? "confirm-custom-role-permission-revoke" : "confirm-custom-role-permission-assign"; }} required disabled={permissionPending} />تغییر permission را با توجه به سطح اختیار فعلی تأیید می‌کنم.</label>
+            <label>
+              <span>عملیات</span>
+              <select
+                name="permissionAction"
+                value={permissionMode}
+                onChange={(event) => setPermissionMode(event.target.value as "assign" | "revoke")}
+              >
+                <option value="assign">افزودن</option>
+                <option value="revoke">حذف</option>
+              </select>
+            </label>
+            <label>
+              <span>دلیل</span>
+              <textarea name="reason" minLength={10} maxLength={1000} rows={2} required />
+            </label>
+            <label className={styles.confirmation}>
+              <input
+                key={permissionMode}
+                type="checkbox"
+                name="confirmation"
+                value={`confirm-custom-role-permission-${permissionMode}`}
+                required
+                disabled={permissionPending}
+              />
+              تغییر permission را با توجه به سطح اختیار فعلی تأیید می‌کنم.
+            </label>
             <Feedback state={permissionState} />
-            <button type="submit" disabled={permissionPending}>{permissionPending ? "در حال ثبت…" : "ثبت permission"}</button>
+            <button type="submit" disabled={permissionPending || delegable.length === 0}>
+              {permissionPending ? "در حال ثبت…" : "ثبت permission"}
+            </button>
           </form>
 
-          <form className={styles.retireForm} action={retireAction} onChange={() => setRetireKey(crypto.randomUUID())}>
+          <form
+            className={styles.retireForm}
+            action={retireAction}
+            onChange={() => setRetireKey(crypto.randomUUID())}
+          >
             <input type="hidden" name="code" value={role.code} />
             <input type="hidden" name="expectedVersion" value={String(role.version)} />
             <input type="hidden" name="idempotencyKey" value={retireKey} />
-            <label><span>دلیل بازنشستگی</span><textarea name="reason" minLength={10} maxLength={1000} rows={2} required /></label>
-            <label className={styles.confirmation}><input type="checkbox" name="confirmation" value="confirm-custom-role-retire" required disabled={retirePending} />بازنشستگی این نقش را تأیید می‌کنم.</label>
+            <label>
+              <span>دلیل بازنشستگی</span>
+              <textarea name="reason" minLength={10} maxLength={1000} rows={2} required />
+            </label>
+            <label className={styles.confirmation}>
+              <input
+                type="checkbox"
+                name="confirmation"
+                value="confirm-custom-role-retire"
+                required
+                disabled={retirePending}
+              />
+              بازنشستگی این نقش را تأیید می‌کنم.
+            </label>
             <Feedback state={retireState} />
-            <button type="submit" disabled={retirePending}>{retirePending ? "در حال ثبت…" : "بازنشسته‌کردن نقش"}</button>
+            <button type="submit" disabled={retirePending}>
+              {retirePending ? "در حال ثبت…" : "بازنشسته‌کردن نقش"}
+            </button>
           </form>
         </div>
       ) : null}
