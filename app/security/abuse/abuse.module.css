@@ -1,0 +1,290 @@
+.page {
+  display: grid;
+  gap: 20px;
+  padding-bottom: 32px;
+}
+
+.breadcrumbs {
+  display: flex;
+  gap: 8px;
+  color: #667085;
+  font-size: 0.86rem;
+}
+
+.breadcrumbs a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.hero,
+.panel,
+.unavailable,
+.metrics article,
+.ruleCard {
+  border: 1px solid rgba(15, 31, 47, 0.09);
+  border-radius: 20px;
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: 0 14px 35px rgba(14, 30, 44, 0.05);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  gap: 24px;
+  padding: 26px;
+}
+
+.hero h2,
+.panel h3 {
+  margin: 4px 0 8px;
+  color: #132a3a;
+}
+
+.hero p,
+.unavailable p {
+  margin: 0;
+  color: #667085;
+  line-height: 1.85;
+}
+
+.hero aside {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  border-radius: 16px;
+  padding: 18px;
+  background: #f1f7f1;
+  color: #215d47;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.metrics article {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+}
+
+.metrics span {
+  color: #667085;
+  font-size: 0.82rem;
+}
+
+.metrics strong {
+  color: #132a3a;
+  font-size: 1.35rem;
+}
+
+.dateMetric {
+  font-size: 0.9rem !important;
+}
+
+.panel,
+.unavailable {
+  padding: 22px;
+}
+
+.panel > header,
+.ruleCard > header,
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+
+.panel > header {
+  margin-bottom: 18px;
+}
+
+.panel > header span {
+  color: #667085;
+  font-size: 0.8rem;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.form label,
+.retireForm {
+  display: grid;
+  gap: 7px;
+  color: #344054;
+  font-size: 0.84rem;
+}
+
+.form input,
+.form textarea,
+.form select,
+.retireForm input {
+  width: 100%;
+  border: 1px solid #d7ded9;
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px 12px;
+  color: #132a3a;
+  font: inherit;
+}
+
+.wide,
+.footer,
+.message {
+  grid-column: 1 / -1;
+}
+
+.footer button,
+.retireForm button {
+  border: 0;
+  border-radius: 12px;
+  background: #246b50;
+  color: #fff;
+  padding: 10px 15px;
+  font: inherit;
+}
+
+.footer button:disabled,
+.retireForm button:disabled {
+  opacity: 0.5;
+}
+
+.footer span,
+.ruleShape {
+  color: #667085;
+  font-size: 0.8rem;
+}
+
+.message {
+  margin: 0;
+  border-radius: 10px;
+  padding: 9px 12px;
+  background: #f5f6f4;
+}
+
+.message[data-status="invalid"],
+.message[data-status="conflict"] {
+  background: #fff7e8;
+  color: #8a5b00;
+}
+
+.message[data-status="forbidden"],
+.message[data-status="unavailable"] {
+  background: #fff1f1;
+  color: #9a3737;
+}
+
+.rules {
+  display: grid;
+  gap: 12px;
+}
+
+.ruleCard {
+  padding: 16px;
+  box-shadow: none;
+}
+
+.ruleCard header code {
+  display: block;
+  margin-top: 5px;
+  color: #78867e;
+  font-size: 0.72rem;
+}
+
+.ruleCard header > span {
+  border-radius: 999px;
+  background: #edf4ef;
+  padding: 5px 9px;
+  font-size: 0.76rem;
+}
+
+.ruleCard dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.ruleCard dt {
+  color: #667085;
+  font-size: 0.74rem;
+}
+
+.ruleCard dd {
+  margin: 4px 0 0;
+  color: #344054;
+}
+
+.retireForm {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.tableWrap table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.tableWrap th,
+.tableWrap td {
+  border-bottom: 1px solid #edf0ed;
+  padding: 11px;
+  text-align: right;
+}
+
+.tableWrap th {
+  color: #667085;
+  font-size: 0.78rem;
+}
+
+.empty,
+.emptyCell {
+  padding: 26px;
+  color: #667085;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .hero,
+  .metrics,
+  .form,
+  .ruleCard dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hero > :first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero,
+  .metrics,
+  .form,
+  .ruleCard dl,
+  .retireForm {
+    grid-template-columns: 1fr;
+  }
+
+  .hero,
+  .panel {
+    padding: 16px;
+  }
+
+  .panel > header,
+  .ruleCard > header,
+  .footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
