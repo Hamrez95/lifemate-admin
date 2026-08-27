@@ -60,9 +60,7 @@ export default async function CommerceOperationsPage() {
               <CoreDependencyNotice
                 key={key}
                 title={`${key}: ${state}`}
-                tone={
-                  state === "ready" ? "available" : state === "forbidden" ? "info" : "blocked"
-                }
+                tone={state === "ready" ? "available" : state === "forbidden" ? "info" : "blocked"}
               >
                 {state === "ready"
                   ? "داده از Core canonical دریافت شده است."
@@ -134,9 +132,7 @@ export default async function CommerceOperationsPage() {
               {canReconcile ? (
                 <ReconciliationForm />
               ) : (
-                <p className={styles.muted}>
-                  permission: commerce.reconciliation.write لازم است.
-                </p>
+                <p className={styles.muted}>permission: commerce.reconciliation.write لازم است.</p>
               )}
             </article>
 
@@ -154,7 +150,8 @@ export default async function CommerceOperationsPage() {
                     <div>
                       <strong>{item.cancellationReasonCode ?? "reason unavailable"}</strong>
                       <small>
-                        {item.status} · {item.cancelAtPeriodEnd ? "cancel at period end" : "renewal active"}
+                        {item.status} ·{" "}
+                        {item.cancelAtPeriodEnd ? "cancel at period end" : "renewal active"}
                       </small>
                     </div>
                     <time>{format(item.nonRenewalRequestedAtUtc ?? item.currentPeriodEndUtc)}</time>
@@ -172,7 +169,8 @@ export default async function CommerceOperationsPage() {
           </section>
 
           <footer className={styles.footer}>
-            As of {format(snapshot.asOfUtc)} · هیچ revenue/refund/provider fact از UI استنتاج نمی‌شود.
+            As of {format(snapshot.asOfUtc)} · هیچ revenue/refund/provider fact از UI استنتاج
+            نمی‌شود.
           </footer>
         </main>
       </AdminShell>
