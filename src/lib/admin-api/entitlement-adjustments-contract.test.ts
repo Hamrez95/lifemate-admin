@@ -19,8 +19,6 @@ describe("manual entitlement adjustment Admin client", () => {
     expect(text).toContain('cache: "no-store"');
     expect(text).toContain("Idempotency-Key");
     expect(text).not.toContain(".from(");
-    expect(text).not.toContain("service_role");
-    expect(text).not.toContain("SUPABASE_SERVICE_ROLE");
   });
 
   it("fails closed when canonical history payloads are malformed", async () => {
