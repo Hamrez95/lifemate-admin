@@ -44,7 +44,13 @@ export function RetentionPolicyForm({ canWrite }: { canWrite: boolean }) {
       <input type="hidden" name="confirmation" value="confirm-retention-policy" />
       <label>
         Data category
-        <input name="dataCategory" required minLength={3} maxLength={80} placeholder="health_events" />
+        <input
+          name="dataCategory"
+          required
+          minLength={3}
+          maxLength={80}
+          placeholder="health_events"
+        />
       </label>
       <label>
         Purpose
@@ -52,7 +58,13 @@ export function RetentionPolicyForm({ canWrite }: { canWrite: boolean }) {
       </label>
       <label>
         Retention days
-        <input name="retentionDays" type="number" min={0} max={36500} placeholder="خالی = بدون زمان ثابت" />
+        <input
+          name="retentionDays"
+          type="number"
+          min={0}
+          max={36500}
+          placeholder="خالی = بدون زمان ثابت"
+        />
       </label>
       <label>
         Grace days
@@ -116,11 +128,17 @@ export function RetentionHoldForm({ canWrite }: { canWrite: boolean }) {
       </label>
       <label>
         Reason code
-        <input name="reasonCode" required minLength={3} maxLength={80} defaultValue="operational_hold" />
+        <input
+          name="reasonCode"
+          required
+          minLength={3}
+          maxLength={80}
+          defaultValue="operational_hold"
+        />
       </label>
       <label>
         Expiry UTC
-        <input name="expiresAtUtc" type="datetime-local" />
+        <input name="expiresAtUtc" placeholder="2026-09-01T12:00:00Z" inputMode="text" />
       </label>
       <label className={styles.wide}>
         دلیل
@@ -130,7 +148,9 @@ export function RetentionHoldForm({ canWrite }: { canWrite: boolean }) {
         <button type="submit" disabled={!canWrite || pending}>
           {pending ? "در حال ثبت…" : "ایجاد hold"}
         </button>
-        <span>Hold از purge/anonymization واجد شرایط جلوگیری می‌کند؛ entitlement را تغییر نمی‌دهد.</span>
+        <span>
+          Hold از purge/anonymization واجد شرایط جلوگیری می‌کند؛ entitlement را تغییر نمی‌دهد.
+        </span>
       </div>
       <ActionMessage status={state.status} message={state.message} />
     </form>
@@ -160,7 +180,9 @@ export function RetentionHoldCard({ hold, canWrite }: { hold: RetentionHold; can
         </div>
         <div>
           <dt>Scope</dt>
-          <dd>{[hold.dataCategory, hold.purposeCode].filter(Boolean).join(" / ") || "همه دسته‌ها"}</dd>
+          <dd>
+            {[hold.dataCategory, hold.purposeCode].filter(Boolean).join(" / ") || "همه دسته‌ها"}
+          </dd>
         </div>
         <div>
           <dt>Expires</dt>
