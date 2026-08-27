@@ -34,6 +34,13 @@ export type CustomRolesResult =
   | { kind: "unauthenticated" }
   | { kind: "forbidden" }
   | { kind: "invalid"; message?: string }
+  | { kind: "unavailable"; correlationId?: string; message?: string };
+
+export type CustomRoleMutationResult =
+  | { kind: "ok"; replayed: boolean }
+  | { kind: "unauthenticated" }
+  | { kind: "forbidden" }
+  | { kind: "invalid"; message?: string }
   | { kind: "conflict"; message?: string }
   | { kind: "unavailable"; correlationId?: string; message?: string };
 
@@ -146,25 +153,55 @@ function parseList(value: unknown): CustomRolesResponse | null {
   };
 }
 
-async function request(path: string, init?: RequestInit): Promise<CustomRolesResult> {
+async function authenticatedFetch(path: string, init: RequestInit): Promise<Response | null> {
   const token = await getServerAdminAccessToken();
-  if (!token) return { kind: "unauthenticated" };
+  if (!token) return null;
   const config = getPublicRuntimeConfig();
+  return await fetch(`${config.adminApiUrl}${path}`, {
+    ...init,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+      ...(init.headers ?? {}),
+    },
+    cache: "no-store",
+    signal: AbortSignal.timeout(10_000),
+  });
+}
+
+function messageFrom(value: unknown): string | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const message = (value as Record<string, unknown>).message;
+  return typeof message === "string" ? message : undefined;
+}
+
+export async function getCustomRoles(): Promise<CustomRolesResult> {
   try {
-    const response = await fetch(`${config.adminApiUrl}${path}`, {
-      ...init,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        ...(init?.headers ?? {}),
-      },
-      cache: "no-store",
-      signal: AbortSignal.timeout(10_000),
-    });
+    const response = await authenticatedFetch("/api/v1/security/custom-roles", { method: "GET" });
+    if (!response) return { kind: "unauthenticated" };
     if (response.status === 401) return { kind: "unauthenticated" };
     if (response.status === 403) return { kind: "forbidden" };
-    const payload = (await response.json().catch(() => null)) as Record<string, unknown> | null;
-    const message = payload && typeof payload.message === "string" ? payload.message : undefined;
+    if (!response.ok) {
+      return {
+        kind: "unavailable",
+        correlationId: response.headers.get("x-correlation-id") ?? undefined,
+      };
+    }
+    const parsed = parseList((await response.json().catch(() => null)) as unknown);
+    return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
+  } catch {
+    return { kind: "unavailable" };
+  }
+}
+
+async function mutate(path: string, init: RequestInit): Promise<CustomRoleMutationResult> {
+  try {
+    const response = await authenticatedFetch(path, init);
+    if (!response) return { kind: "unauthenticated" };
+    if (response.status === 401) return { kind: "unauthenticated" };
+    if (response.status === 403) return { kind: "forbidden" };
+    const payload = (await response.json().catch(() => null)) as unknown;
+    const message = messageFrom(payload);
     if (response.status === 400) return { kind: "invalid", message };
     if (response.status === 409) return { kind: "conflict", message };
     if (!response.ok) {
@@ -174,25 +211,21 @@ async function request(path: string, init?: RequestInit): Promise<CustomRolesRes
         message,
       };
     }
-    if (init?.method && init.method !== "GET") {
-      return {
-        kind: "ok",
-        data: { roles: [], permissionCatalog: [], freshness: { status: "fresh", asOfUtc: new Date().toISOString() } },
-      };
-    }
-    const parsed = parseList(payload);
-    return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
+    const replayed =
+      !!payload &&
+      typeof payload === "object" &&
+      !Array.isArray(payload) &&
+      typeof (payload as Record<string, unknown>).replayed === "boolean"
+        ? Boolean((payload as Record<string, unknown>).replayed)
+        : false;
+    return { kind: "ok", replayed };
   } catch {
     return { kind: "unavailable" };
   }
 }
 
-export function getCustomRoles(): Promise<CustomRolesResult> {
-  return request("/api/v1/security/custom-roles", { method: "GET" });
-}
-
-export function createCustomRole(input: RoleMutationInput): Promise<CustomRolesResult> {
-  return request("/api/v1/security/custom-roles", {
+export function createCustomRole(input: RoleMutationInput): Promise<CustomRoleMutationResult> {
+  return mutate("/api/v1/security/custom-roles", {
     method: "POST",
     headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
     body: JSON.stringify({
@@ -204,8 +237,8 @@ export function createCustomRole(input: RoleMutationInput): Promise<CustomRolesR
   });
 }
 
-export function updateCustomRole(input: RoleMutationInput): Promise<CustomRolesResult> {
-  return request(`/api/v1/security/custom-roles/${encodeURIComponent(input.code)}`, {
+export function updateCustomRole(input: RoleMutationInput): Promise<CustomRoleMutationResult> {
+  return mutate(`/api/v1/security/custom-roles/${encodeURIComponent(input.code)}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
     body: JSON.stringify({
@@ -217,8 +250,8 @@ export function updateCustomRole(input: RoleMutationInput): Promise<CustomRolesR
   });
 }
 
-export function retireCustomRole(input: RoleMutationInput): Promise<CustomRolesResult> {
-  return request(`/api/v1/security/custom-roles/${encodeURIComponent(input.code)}/actions/retire`, {
+export function retireCustomRole(input: RoleMutationInput): Promise<CustomRoleMutationResult> {
+  return mutate(`/api/v1/security/custom-roles/${encodeURIComponent(input.code)}/actions/retire`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
     body: JSON.stringify({ expectedVersion: input.expectedVersion, reason: input.reason }),
@@ -228,8 +261,8 @@ export function retireCustomRole(input: RoleMutationInput): Promise<CustomRolesR
 export function mutateCustomRolePermission(
   action: "assign" | "revoke",
   input: PermissionMutationInput,
-): Promise<CustomRolesResult> {
-  return request(
+): Promise<CustomRoleMutationResult> {
+  return mutate(
     `/api/v1/security/custom-roles/${encodeURIComponent(input.roleCode)}/permissions/${action}`,
     {
       method: "POST",
