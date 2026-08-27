@@ -89,29 +89,29 @@ async function problem(response: Response) {
   }
 }
 
-async function request(
-  path: string,
-  init: RequestInit,
-): Promise<Response | null> {
+async function request(path: string, init: RequestInit): Promise<Response | null> {
   const token = await getServerAdminAccessToken();
   if (!token) return null;
   const config = getPublicRuntimeConfig();
+  const headers = new Headers(init.headers);
+  headers.set("Authorization", `Bearer ${token}`);
   return fetch(`${config.adminApiUrl}${path}`, {
     ...init,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...(init.headers ?? {}),
-    },
+    headers,
     cache: "no-store",
     signal: AbortSignal.timeout(10_000),
   });
 }
 
-function classifyFailure(response: Response, issue: Awaited<ReturnType<typeof problem>>): EntitlementAdjustmentResult {
+function classifyFailure(
+  response: Response,
+  issue: Awaited<ReturnType<typeof problem>>,
+): EntitlementAdjustmentResult {
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden", message: issue.message };
   if (response.status === 404) return { kind: "not_found", message: issue.message };
-  if (response.status === 409) return { kind: "conflict", code: issue.code, message: issue.message };
+  if (response.status === 409)
+    return { kind: "conflict", code: issue.code, message: issue.message };
   if (response.status === 400) return { kind: "invalid", code: issue.code, message: issue.message };
   return { kind: "unavailable", correlationId: issue.correlationId };
 }
@@ -156,12 +156,15 @@ function historyItem(value: unknown): ManualEntitlementHistoryItem | null {
   if (typeof row.target_type !== "string" || typeof row.target_id !== "string") return null;
   if (!UUID_PATTERN.test(row.target_id)) return null;
   if (typeof row.operation !== "string" || typeof row.schedule_mode !== "string") return null;
-  if (typeof row.reference_at_utc !== "string" || typeof row.actor_account_id !== "string") return null;
+  if (typeof row.reference_at_utc !== "string" || typeof row.actor_account_id !== "string")
+    return null;
   if (!UUID_PATTERN.test(row.actor_account_id)) return null;
   if (typeof row.reason !== "string" || typeof row.correlation_id !== "string") return null;
   if (!UUID_PATTERN.test(row.correlation_id) || typeof row.created_at_utc !== "string") return null;
   const affected = Array.isArray(row.affected_entitlement_ids)
-    ? row.affected_entitlement_ids.filter((item): item is string => typeof item === "string" && UUID_PATTERN.test(item))
+    ? row.affected_entitlement_ids.filter(
+        (item): item is string => typeof item === "string" && UUID_PATTERN.test(item),
+      )
     : [];
   return {
     id: row.id,
@@ -171,7 +174,8 @@ function historyItem(value: unknown): ManualEntitlementHistoryItem | null {
     operation: row.operation,
     scheduleMode: row.schedule_mode,
     scheduleAmount: Number.isInteger(row.schedule_amount) ? Number(row.schedule_amount) : null,
-    exactExpiresAtUtc: typeof row.exact_expires_at_utc === "string" ? row.exact_expires_at_utc : null,
+    exactExpiresAtUtc:
+      typeof row.exact_expires_at_utc === "string" ? row.exact_expires_at_utc : null,
     referenceAtUtc: row.reference_at_utc,
     affectedEntitlementIds: affected,
     approvalRequestId: typeof row.approval_request_id === "string" ? row.approval_request_id : null,
@@ -220,13 +224,19 @@ export async function getEntitlementAdjustmentHistory(
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden" };
   if (response.status === 404) return { kind: "not_found" };
-  if (!response.ok) return { kind: "unavailable", correlationId: (await problem(response)).correlationId };
+  if (!response.ok)
+    return { kind: "unavailable", correlationId: (await problem(response)).correlationId };
   try {
     const body = (await response.json()) as Record<string, unknown>;
-    if (body.subjectAccountId !== accountId || !Array.isArray(body.items)) return { kind: "unavailable" };
-    if (!Number.isInteger(body.limit) || !body.freshness || typeof body.freshness !== "object") return { kind: "unavailable" };
+    if (body.subjectAccountId !== accountId || !Array.isArray(body.items))
+      return { kind: "unavailable" };
+    if (!Number.isInteger(body.limit) || !body.freshness || typeof body.freshness !== "object")
+      return { kind: "unavailable" };
     const freshness = body.freshness as Record<string, unknown>;
-    if ((freshness.status !== "fresh" && freshness.status !== "stale") || typeof freshness.asOfUtc !== "string") {
+    if (
+      (freshness.status !== "fresh" && freshness.status !== "stale") ||
+      typeof freshness.asOfUtc !== "string"
+    ) {
       return { kind: "unavailable" };
     }
     const items = body.items.map(historyItem);
