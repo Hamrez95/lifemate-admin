@@ -15,6 +15,7 @@ import {
   CommerceWorkspaceHeader,
   CoreDependencyNotice,
 } from "../CommerceWorkspaceHeader";
+import { CatalogMutationControls } from "./CatalogMutationControls";
 import styles from "./catalog-v2.module.css";
 
 function Price({ price }: { price: CommerceCatalogPrice | null }) {
@@ -43,8 +44,8 @@ function Policy({ policy }: { policy: CommerceCatalogPolicy }) {
   );
 }
 
-async function CatalogContent() {
-  const result = await getCommerceCatalogV2();
+async function CatalogContent({ canWrite }: { canWrite: boolean }) {
+  const result = await getCommerceCatalogV2({ includeHidden: canWrite });
   if (result.kind === "unauthenticated") redirect("/login");
   if (result.kind === "forbidden") return <AdminPageState state="forbidden" />;
   if (result.kind === "invalid") {
@@ -67,8 +68,8 @@ async function CatalogContent() {
         active="catalog"
         eyebrow={`Commerce Catalog v2 · ${data.version}`}
         title="محصول، Offer، Bundle و Free Tier از یک منبع canonical"
-        description="این نما مستقیماً قرارداد Core #486 را مصرف می‌کند. Product، Offer، قیمت نسخه‌دار، Bundle و policyهای Free Tier در UI بازسازی یا hardcode نمی‌شوند."
-        badges={["Core #486", "commerce.read", "Server-only", "No inferred pricing"]}
+        description="این نما قرارداد Core #486/#560 را مصرف می‌کند. Product، Offer، قیمت نسخه‌دار، Bundle و policyهای Free Tier در UI بازسازی یا hardcode نمی‌شوند."
+        badges={["Core #486/#560", "commerce.read", "Server-only", "No inferred pricing"]}
       />
 
       <CommerceDependencyGrid>
@@ -80,14 +81,15 @@ async function CatalogContent() {
           ترکیب Bundle و gift eligibility از مدل canonical نمایش داده می‌شود و از نام محصول یا UI
           استنتاج نمی‌شود.
         </CoreDependencyNotice>
-        <CoreDependencyNotice title="Mutationهای v2" tone="info">
-          Core فعلاً برای Product/Offer/Bundle v2 قرارداد read canonical دارد. تا زمانی که mutation
-          versioned و audited منتشر نشود، این صفحه edit ساختگی یا direct DB write ارائه نمی‌کند.
+        <CoreDependencyNotice title="Mutationهای v2" tone={canWrite ? "available" : "info"}>
+          {canWrite
+            ? "Core #560 قرارداد versioned/idempotent/audited را فراهم می‌کند؛ کنترل‌های پایین فقط همان API را مصرف می‌کنند."
+            : "برای تغییر Product/Offer/Price/Bundle/Policy مجوز commerce.catalog.write لازم است."}
         </CoreDependencyNotice>
       </CommerceDependencyGrid>
 
       <div className={styles.toolbar}>
-        <strong>کاتالوگ Published</strong>
+        <strong>{canWrite ? "کاتالوگ قابل مدیریت" : "کاتالوگ Published"}</strong>
         <span className={styles.freshness}>
           {data.freshness.status === "fresh" ? "تازه" : "قدیمی"} ·{" "}
           {new Date(data.freshness.asOfUtc).toLocaleString("fa-IR")}
@@ -95,7 +97,7 @@ async function CatalogContent() {
       </div>
 
       {data.products.length === 0 ? (
-        <div className={styles.empty}>هیچ Product منتشرشده‌ای در قرارداد canonical وجود ندارد.</div>
+        <div className={styles.empty}>هیچ Productی در قرارداد canonical وجود ندارد.</div>
       ) : (
         <section className={styles.grid} aria-label="محصولات اکوسیستم">
           {data.products.map((product) => (
@@ -107,10 +109,11 @@ async function CatalogContent() {
                 </div>
                 <span className={styles.status}>{product.status}</span>
               </header>
+              <div className={styles.meta}>Product v{product.version.toLocaleString("fa-IR")}</div>
 
               <h4 className={styles.sectionTitle}>Offerها</h4>
               {product.offers.length === 0 ? (
-                <div className={styles.empty}>Offer منتشرشده ندارد.</div>
+                <div className={styles.empty}>Offer فعالی ندارد.</div>
               ) : (
                 <ul className={styles.list}>
                   {product.offers.map((offer) => (
@@ -149,7 +152,7 @@ async function CatalogContent() {
       <section aria-labelledby="catalog-bundles-title">
         <h2 id="catalog-bundles-title">Bundleها</h2>
         {data.bundles.length === 0 ? (
-          <div className={styles.empty}>Bundle منتشرشده‌ای وجود ندارد.</div>
+          <div className={styles.empty}>Bundle فعالی وجود ندارد.</div>
         ) : (
           <div className={styles.bundleGrid}>
             {data.bundles.map((bundle) => (
@@ -178,10 +181,14 @@ async function CatalogContent() {
         )}
       </section>
 
+      {canWrite ? (
+        <CatalogMutationControls products={data.products} bundles={data.bundles} />
+      ) : null}
+
       <p className={styles.notice}>
         مبلغ‌ها عمداً به همان minor unit ثبت‌شده نمایش داده می‌شوند. این UI تعداد decimal، FX،
-        revenue یا ارزش مالی Bundle را حدس نمی‌زند. mutationهای Product/Offer/Bundle نیز تا وجود API
-        canonical فعال نمی‌شوند.
+        revenue یا ارزش مالی Bundle را حدس نمی‌زند. تمام mutationها از Core #560 عبور می‌کنند و
+        direct DB write در browser وجود ندارد.
       </p>
     </div>
   );
@@ -190,6 +197,7 @@ async function CatalogContent() {
 export default async function CommerceCatalogPage() {
   const admin = await requireAdminAccess();
   const canRead = admin.permissions.includes("commerce.read");
+  const canWrite = admin.permissions.includes("commerce.catalog.write");
 
   return (
     <AdminSessionProvider admin={admin}>
@@ -198,7 +206,7 @@ export default async function CommerceCatalogPage() {
         title="کاتالوگ اکوسیستم"
         subtitle="Product، Offer، Bundle، قیمت نسخه‌دار و Free Tier"
       >
-        {canRead ? <CatalogContent /> : <AdminPageState state="forbidden" />}
+        {canRead ? <CatalogContent canWrite={canWrite} /> : <AdminPageState state="forbidden" />}
       </AdminShell>
     </AdminSessionProvider>
   );

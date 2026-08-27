@@ -35,6 +35,7 @@ export type CommerceCatalogProduct = {
   code: string;
   name: string;
   status: string;
+  version: number;
   updatedAtUtc: string | null;
   offers: CommerceCatalogOffer[];
   policies: CommerceCatalogPolicy[];
@@ -63,6 +64,14 @@ export type CommerceCatalogV2Result =
   | { kind: "forbidden" }
   | { kind: "invalid" }
   | { kind: "unavailable"; correlationId?: string };
+
+export type CommerceCatalogMutationResult =
+  | { kind: "ok"; replayed: boolean }
+  | { kind: "unauthenticated" }
+  | { kind: "forbidden" }
+  | { kind: "invalid"; message?: string }
+  | { kind: "conflict"; message?: string }
+  | { kind: "unavailable"; message?: string; correlationId?: string };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CODE = /^[a-z0-9][a-z0-9._-]{1,63}$/;
@@ -155,7 +164,19 @@ function parseProduct(value: unknown): CommerceCatalogProduct | null {
   const code = string(row.code);
   const name = string(row.name);
   const status = string(row.status);
-  if (!id || !UUID.test(id) || !code || !CODE.test(code) || !name || !status) return null;
+  const version = integer(row.version);
+  if (
+    !id ||
+    !UUID.test(id) ||
+    !code ||
+    !CODE.test(code) ||
+    !name ||
+    !status ||
+    version === null ||
+    version < 1
+  ) {
+    return null;
+  }
   if (!Array.isArray(row.offers) || !Array.isArray(row.policies)) return null;
   const offers = row.offers.map(parseOffer);
   const policies = row.policies.map(parsePolicy);
@@ -165,6 +186,7 @@ function parseProduct(value: unknown): CommerceCatalogProduct | null {
     code,
     name,
     status,
+    version,
     updatedAtUtc: row.updatedAtUtc === null ? null : string(row.updatedAtUtc),
     offers: offers as CommerceCatalogOffer[],
     policies: policies as CommerceCatalogPolicy[],
@@ -238,35 +260,97 @@ function parseCatalog(value: unknown): CommerceCatalogV2 | null {
   };
 }
 
+async function serverRequest(path: string, init?: RequestInit): Promise<Response | null> {
+  const token = await getServerAdminAccessToken();
+  if (!token) return null;
+  const config = getPublicRuntimeConfig();
+  try {
+    return await fetch(`${config.adminApiUrl}${path}`, {
+      ...init,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        ...(init?.headers ?? {}),
+      },
+      cache: "no-store",
+      signal: AbortSignal.timeout(10_000),
+    });
+  } catch {
+    return null;
+  }
+}
+
 export async function getCommerceCatalogV2(input?: {
   product?: string;
   includeHidden?: boolean;
 }): Promise<CommerceCatalogV2Result> {
   const product = input?.product?.trim().toLowerCase();
   if (product && !CODE.test(product)) return { kind: "invalid" };
-  const token = await getServerAdminAccessToken();
-  if (!token) return { kind: "unauthenticated" };
-  const config = getPublicRuntimeConfig();
   const search = new URLSearchParams();
   if (product) search.set("product", product);
   if (input?.includeHidden) search.set("includeHidden", "true");
   const suffix = search.size ? `?${search.toString()}` : "";
+  const response = await serverRequest(`/api/v1/commerce/catalog-v2${suffix}`);
+  if (!response) return { kind: "unauthenticated" };
+  if (response.status === 401) return { kind: "unauthenticated" };
+  if (response.status === 403) return { kind: "forbidden" };
+  if (response.status === 400) return { kind: "invalid" };
+  if (!response.ok) {
+    const correlationId = response.headers.get("x-correlation-id") ?? undefined;
+    return { kind: "unavailable", correlationId };
+  }
   try {
-    const response = await fetch(`${config.adminApiUrl}/api/v1/commerce/catalog-v2${suffix}`, {
-      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-      cache: "no-store",
-      signal: AbortSignal.timeout(10_000),
-    });
-    if (response.status === 401) return { kind: "unauthenticated" };
-    if (response.status === 403) return { kind: "forbidden" };
-    if (response.status === 400) return { kind: "invalid" };
-    if (!response.ok) {
-      const correlationId = response.headers.get("x-correlation-id") ?? undefined;
-      return { kind: "unavailable", correlationId };
-    }
     const parsed = parseCatalog((await response.json()) as unknown);
     return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
   } catch {
     return { kind: "unavailable" };
   }
+}
+
+export async function mutateCommerceCatalogV2(
+  path: string,
+  method: "POST" | "PUT",
+  payload: Record<string, unknown>,
+  idempotencyKey: string,
+): Promise<CommerceCatalogMutationResult> {
+  if (!path.startsWith("/api/v1/commerce/catalog-v2/") || idempotencyKey.length < 8) {
+    return { kind: "invalid", message: "Catalog mutation request is invalid." };
+  }
+  const response = await serverRequest(path, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      "Idempotency-Key": idempotencyKey,
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!response) return { kind: "unauthenticated" };
+  let body: Record<string, unknown> | null = null;
+  try {
+    const value = (await response.json()) as unknown;
+    body =
+      value && typeof value === "object" && !Array.isArray(value)
+        ? (value as Record<string, unknown>)
+        : null;
+  } catch {
+    body = null;
+  }
+  const message =
+    body && typeof body.detail === "string"
+      ? body.detail
+      : body && typeof body.message === "string"
+        ? body.message
+        : undefined;
+  if (response.ok) {
+    return { kind: "ok", replayed: body?.replayed === true };
+  }
+  if (response.status === 401) return { kind: "unauthenticated" };
+  if (response.status === 403) return { kind: "forbidden" };
+  if (response.status === 409) return { kind: "conflict", message };
+  if (response.status >= 400 && response.status < 500) return { kind: "invalid", message };
+  return {
+    kind: "unavailable",
+    message,
+    correlationId: response.headers.get("x-correlation-id") ?? undefined,
+  };
 }
