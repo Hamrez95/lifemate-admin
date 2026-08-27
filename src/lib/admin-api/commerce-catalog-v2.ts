@@ -328,17 +328,19 @@ export async function mutateCommerceCatalogV2(
   let body: Record<string, unknown> | null = null;
   try {
     const value = (await response.json()) as unknown;
-    body = value && typeof value === "object" && !Array.isArray(value)
-      ? (value as Record<string, unknown>)
-      : null;
+    body =
+      value && typeof value === "object" && !Array.isArray(value)
+        ? (value as Record<string, unknown>)
+        : null;
   } catch {
     body = null;
   }
-  const message = body && typeof body.detail === "string"
-    ? body.detail
-    : body && typeof body.message === "string"
-      ? body.message
-      : undefined;
+  const message =
+    body && typeof body.detail === "string"
+      ? body.detail
+      : body && typeof body.message === "string"
+        ? body.message
+        : undefined;
   if (response.ok) {
     return { kind: "ok", replayed: body?.replayed === true };
   }
