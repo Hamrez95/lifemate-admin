@@ -13,17 +13,14 @@ import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
 import { SupportConversationPanel } from "../SupportConversationPanel";
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 type Props = { params: Promise<{ ticketId: string }> };
 
 function stateFor(kind: "forbidden" | "not_found" | "invalid" | "unavailable") {
   if (kind === "not_found") notFound();
   if (kind === "forbidden") {
-    return (
-      <AdminPageState state="forbidden" title="گفتگو برای نقش فعلی قابل مشاهده نیست" />
-    );
+    return <AdminPageState state="forbidden" title="گفتگو برای نقش فعلی قابل مشاهده نیست" />;
   }
   if (kind === "invalid") {
     return <AdminPageState state="error" title="شناسه گفتگو معتبر نیست" />;
@@ -71,9 +68,7 @@ export default async function SupportConversationPage({ params }: Props) {
     content = (
       <>
         <p>
-          <Link href={`/support/${normalizedTicketId}`}>
-            بازگشت به جزئیات و Timeline تیکت
-          </Link>
+          <Link href={`/support/${normalizedTicketId}`}>بازگشت به جزئیات و Timeline تیکت</Link>
         </p>
         <SupportConversationPanel
           ticketId={normalizedTicketId}
