@@ -6,7 +6,10 @@ import { describe, expect, it } from "vitest";
 const root = process.cwd();
 const client = readFileSync(join(root, "src/lib/admin-api/support-conversation.ts"), "utf8");
 const page = readFileSync(join(root, "app/support/[ticketId]/conversation/page.tsx"), "utf8");
-const panel = readFileSync(join(root, "app/support/[ticketId]/SupportConversationPanel.tsx"), "utf8");
+const panel = readFileSync(
+  join(root, "app/support/[ticketId]/SupportConversationPanel.tsx"),
+  "utf8",
+);
 const actions = readFileSync(join(root, "app/support/[ticketId]/conversation-actions.ts"), "utf8");
 
 describe("Support conversation workspace contract", () => {
