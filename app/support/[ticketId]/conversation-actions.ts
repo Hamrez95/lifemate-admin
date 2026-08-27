@@ -32,14 +32,35 @@ function text(formData: FormData, key: string): string {
 }
 
 function mapped(result: ConversationMutationResult, success: string): ConversationActionState {
-  if (result.kind === "ok") return { status: "success", message: result.replayed ? `${success} (درخواست تکراری بدون اثر اضافه)` : success };
+  if (result.kind === "ok")
+    return {
+      status: "success",
+      message: result.replayed ? `${success} (درخواست تکراری بدون اثر اضافه)` : success,
+    };
   if (result.kind === "forbidden" || result.kind === "unauthenticated") {
-    return { status: "forbidden", message: result.kind === "forbidden" ? result.message ?? "مجوز support.write لازم است." : "نشست مدیریتی معتبر نیست." };
+    return {
+      status: "forbidden",
+      message:
+        result.kind === "forbidden"
+          ? (result.message ?? "مجوز support.write لازم است.")
+          : "نشست مدیریتی معتبر نیست.",
+    };
   }
-  if (result.kind === "conflict") return { status: "conflict", message: result.message ?? "این عملیات با وضعیت فعلی تعارض دارد؛ صفحه را تازه‌سازی کنید." };
-  if (result.kind === "invalid") return { status: "invalid", message: result.message ?? "اطلاعات عملیات معتبر نیست." };
-  if (result.kind === "not_found") return { status: "conflict", message: result.message ?? "تیکت پیدا نشد." };
-  return { status: "unavailable", message: result.correlationId ? `Admin API در دسترس نیست. کد پیگیری: ${result.correlationId}` : "Admin API در دسترس نیست؛ دوباره تلاش کنید." };
+  if (result.kind === "conflict")
+    return {
+      status: "conflict",
+      message: result.message ?? "این عملیات با وضعیت فعلی تعارض دارد؛ صفحه را تازه‌سازی کنید.",
+    };
+  if (result.kind === "invalid")
+    return { status: "invalid", message: result.message ?? "اطلاعات عملیات معتبر نیست." };
+  if (result.kind === "not_found")
+    return { status: "conflict", message: result.message ?? "تیکت پیدا نشد." };
+  return {
+    status: "unavailable",
+    message: result.correlationId
+      ? `Admin API در دسترس نیست. کد پیگیری: ${result.correlationId}`
+      : "Admin API در دسترس نیست؛ دوباره تلاش کنید.",
+  };
 }
 
 export async function sendConversationMessage(
@@ -50,10 +71,20 @@ export async function sendConversationMessage(
   const body = text(formData, "body");
   const clientMessageId = text(formData, "clientMessageId").toLowerCase();
   const idempotencyKey = text(formData, "idempotencyKey");
-  if (!UUID_PATTERN.test(ticketId) || !UUID_PATTERN.test(clientMessageId) || body.length < 1 || body.length > 4000) {
+  if (
+    !UUID_PATTERN.test(ticketId) ||
+    !UUID_PATTERN.test(clientMessageId) ||
+    body.length < 1 ||
+    body.length > 4000
+  ) {
     return { status: "invalid", message: "پیام یا شناسه درخواست معتبر نیست." };
   }
-  const result = await sendSupportConversationMessage({ ticketId, body, clientMessageId, idempotencyKey });
+  const result = await sendSupportConversationMessage({
+    ticketId,
+    body,
+    clientMessageId,
+    idempotencyKey,
+  });
   const state = mapped(result, "پیام برای کاربر ثبت شد.");
   if (state.status === "success") revalidatePath(`/support/${ticketId}`);
   return state;
@@ -67,10 +98,20 @@ export async function escalateConversation(
   const targetRoleCode = text(formData, "targetRoleCode").toLowerCase();
   const safeReason = text(formData, "safeReason");
   const idempotencyKey = text(formData, "idempotencyKey");
-  if (!UUID_PATTERN.test(ticketId) || !ROLE_CODE_PATTERN.test(targetRoleCode) || safeReason.length < 5 || safeReason.length > 800) {
+  if (
+    !UUID_PATTERN.test(ticketId) ||
+    !ROLE_CODE_PATTERN.test(targetRoleCode) ||
+    safeReason.length < 5 ||
+    safeReason.length > 800
+  ) {
     return { status: "invalid", message: "نقش مقصد یا دلیل ارجاع معتبر نیست." };
   }
-  const result = await escalateSupportConversation({ ticketId, targetRoleCode, safeReason, idempotencyKey });
+  const result = await escalateSupportConversation({
+    ticketId,
+    targetRoleCode,
+    safeReason,
+    idempotencyKey,
+  });
   const state = mapped(result, "ارجاع برای تیم مقصد ثبت شد.");
   if (state.status === "success") revalidatePath(`/support/${ticketId}`);
   return state;
@@ -84,10 +125,21 @@ export async function linkConversationReference(
   const linkKind = text(formData, "linkKind") as SupportConversationLink["linkKind"];
   const referenceCode = text(formData, "referenceCode");
   const idempotencyKey = text(formData, "idempotencyKey");
-  if (!UUID_PATTERN.test(ticketId) || !LINK_KINDS.has(linkKind) || !referenceCode || referenceCode.length > 180 || /^https?:\/\//i.test(referenceCode)) {
+  if (
+    !UUID_PATTERN.test(ticketId) ||
+    !LINK_KINDS.has(linkKind) ||
+    !referenceCode ||
+    referenceCode.length > 180 ||
+    /^https?:\/\//i.test(referenceCode)
+  ) {
     return { status: "invalid", message: "نوع یا شناسه مرجع داخلی معتبر نیست." };
   }
-  const result = await linkSupportConversationReference({ ticketId, linkKind, referenceCode, idempotencyKey });
+  const result = await linkSupportConversationReference({
+    ticketId,
+    linkKind,
+    referenceCode,
+    idempotencyKey,
+  });
   const state = mapped(result, "مرجع داخلی به تیکت متصل شد.");
   if (state.status === "success") revalidatePath(`/support/${ticketId}`);
   return state;
