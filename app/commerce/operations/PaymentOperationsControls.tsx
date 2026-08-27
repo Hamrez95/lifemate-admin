@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo } from "react";
+import { useActionState, useEffect, useState } from "react";
 
 import {
   initialCommerceOperationsActionState,
@@ -13,6 +13,22 @@ import styles from "./operations.module.css";
 
 function key(prefix: string) {
   return `${prefix}-${crypto.randomUUID()}`;
+}
+
+function useIdempotencyKey(prefix: string, state: CommerceOperationsActionState) {
+  const [idempotencyKey, setIdempotencyKey] = useState("");
+
+  useEffect(() => {
+    setIdempotencyKey(key(prefix));
+  }, [prefix]);
+
+  useEffect(() => {
+    if (state.status === "success") {
+      setIdempotencyKey(key(prefix));
+    }
+  }, [prefix, state]);
+
+  return idempotencyKey;
 }
 
 function Status({ state }: { state: CommerceOperationsActionState }) {
@@ -29,8 +45,7 @@ export function RefundRequestForm() {
     requestRefundAction,
     initialCommerceOperationsActionState,
   );
-  const succeeded = state.status === "success";
-  const idempotencyKey = useMemo(() => key("refund-request"), [succeeded]);
+  const idempotencyKey = useIdempotencyKey("refund-request", state);
   return (
     <form action={action} className={styles.form}>
       <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
@@ -50,7 +65,7 @@ export function RefundRequestForm() {
         <input type="checkbox" name="confirmation" value="confirm-refund-request" required />
         درخواست refund را بررسی و تأیید می‌کنم.
       </label>
-      <button type="submit" disabled={pending}>
+      <button type="submit" disabled={pending || !idempotencyKey}>
         {pending ? "در حال ثبت…" : "ثبت Refund Request"}
       </button>
       <Status state={state} />
@@ -63,8 +78,7 @@ export function ReconciliationForm() {
     openReconciliationAction,
     initialCommerceOperationsActionState,
   );
-  const succeeded = state.status === "success";
-  const idempotencyKey = useMemo(() => key("reconciliation"), [succeeded]);
+  const idempotencyKey = useIdempotencyKey("reconciliation", state);
   return (
     <form action={action} className={styles.form}>
       <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
@@ -90,7 +104,7 @@ export function ReconciliationForm() {
         <input type="checkbox" name="confirmation" value="confirm-reconciliation-open" required />
         Provider facts را تغییر نمی‌دهم و فقط case می‌سازم.
       </label>
-      <button type="submit" disabled={pending}>
+      <button type="submit" disabled={pending || !idempotencyKey}>
         {pending ? "در حال ثبت…" : "باز کردن Reconciliation Case"}
       </button>
       <Status state={state} />
@@ -103,8 +117,7 @@ export function RenewalIntentForm() {
     renewalIntentAction,
     initialCommerceOperationsActionState,
   );
-  const succeeded = state.status === "success";
-  const idempotencyKey = useMemo(() => key("renewal-intent"), [succeeded]);
+  const idempotencyKey = useIdempotencyKey("renewal-intent", state);
   return (
     <form action={action} className={styles.form}>
       <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
@@ -131,7 +144,7 @@ export function RenewalIntentForm() {
         <input type="checkbox" name="confirmation" value="confirm-renewal-intent" required />
         اثر این تغییر روی renewal را تأیید می‌کنم.
       </label>
-      <button type="submit" disabled={pending}>
+      <button type="submit" disabled={pending || !idempotencyKey}>
         {pending ? "در حال ثبت…" : "ثبت Renewal Intent"}
       </button>
       <Status state={state} />
