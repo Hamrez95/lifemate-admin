@@ -88,7 +88,9 @@ export default async function AbuseRulesPage() {
                 </article>
                 <article>
                   <span>As of</span>
-                  <strong className={styles.dateMetric}>{formatDate(data.freshness.asOfUtc)}</strong>
+                  <strong className={styles.dateMetric}>
+                    {formatDate(data.freshness.asOfUtc)}
+                  </strong>
                 </article>
               </section>
 
@@ -147,7 +149,8 @@ export default async function AbuseRulesPage() {
                           </div>
                         </dl>
                         <p className={styles.ruleShape}>
-                          window={rule.windowSeconds ?? "—"} · max={rule.maxCount ?? "—"} · cooldown=
+                          window={rule.windowSeconds ?? "—"} · max={rule.maxCount ?? "—"} ·
+                          cooldown=
                           {rule.cooldownSeconds ?? "—"} · evidence={rule.evidenceCode ?? "—"}
                         </p>
                         <RetireRuleForm rule={rule} canWrite={canWrite} />
