@@ -26,7 +26,9 @@ describe("commerce catalog v2 Admin consumer", () => {
     expect(text).toContain("parseOffer");
     expect(text).toContain("parsePrice");
     expect(text).toContain("parseBundle");
-    expect(text).toContain('return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" }');
+    expect(text).toContain(
+      'return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" }',
+    );
   });
 
   it("does not fabricate v2 mutations or financial conversions in the workspace", async () => {
