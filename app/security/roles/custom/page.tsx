@@ -32,7 +32,7 @@ export default async function CustomRolesPage() {
       <AdminShell
         activeSlug="security"
         title="نقش‌های سفارشی"
-        subtitle="Custom Roles با allow-list، concurrency و Audit canonical"
+        subtitle="Custom Roles با allow-listed permission catalog، concurrency و Audit canonical"
       >
         <main className={styles.page} dir="rtl">
           <nav className={styles.breadcrumbs} aria-label="مسیر صفحه">
