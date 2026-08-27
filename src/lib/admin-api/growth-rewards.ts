@@ -119,18 +119,13 @@ function parseRule(value: unknown): GrowthRewardRule | null {
   };
 }
 
-function parseSource(
-  kind: "Referral" | "Advocacy",
-  value: unknown,
-): GrowthRewardSource | null {
+function parseSource(kind: "Referral" | "Advocacy", value: unknown): GrowthRewardSource | null {
   const row = record(value);
   if (!row) return null;
   const id = uuid(row.id);
   const status = text(row.status, 32);
   const version = integer(row.version, 1);
-  const occurredAtUtc = date(
-    kind === "Referral" ? row.attributed_at_utc : row.created_at_utc,
-  );
+  const occurredAtUtc = date(kind === "Referral" ? row.attributed_at_utc : row.created_at_utc);
   if (!id || !status || version === null || !occurredAtUtc) return null;
   if (kind === "Referral") return { id, kind, status, version, occurredAtUtc };
   const platformCode = text(row.platform_code, 64);
@@ -198,8 +193,7 @@ async function api(path: string, init: RequestInit = {}): Promise<Response | nul
 async function list<T>(path: string, parser: (value: unknown) => T | null) {
   const response = await api(path);
   if (!response) return { state: "unavailable" as const };
-  if (response.status === 401 || response.status === 403)
-    return { state: "forbidden" as const };
+  if (response.status === 401 || response.status === 403) return { state: "forbidden" as const };
   if (!response.ok) return { state: "unavailable" as const };
   const body = record(await response.json().catch(() => null));
   if (!body || !Array.isArray(body.items)) return { state: "unavailable" as const };
@@ -259,8 +253,7 @@ async function mutation(path: string, body: Record<string, unknown>, idempotency
     } as GrowthRewardMutationResult;
   if (response.status === 401) return { kind: "unauthenticated" } as GrowthRewardMutationResult;
   if (response.status === 403) return { kind: "forbidden" } as GrowthRewardMutationResult;
-  if (response.status === 409)
-    return { kind: "conflict", message } as GrowthRewardMutationResult;
+  if (response.status === 409) return { kind: "conflict", message } as GrowthRewardMutationResult;
   if (response.status >= 400 && response.status < 500)
     return { kind: "invalid", message } as GrowthRewardMutationResult;
   return { kind: "unavailable", message, correlationId } as GrowthRewardMutationResult;
