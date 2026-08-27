@@ -104,14 +104,35 @@ function parseRule(value: unknown): AbuseRule | null {
   const createdAtUtc = iso(row.created_at_utc ?? row.createdAtUtc);
   const updatedAtUtc = iso(row.updated_at_utc ?? row.updatedAtUtc);
   if (
-    !id || !UUID.test(id) || !code || !KEY.test(code) || !contextCode || !KEY.test(contextCode) ||
-    !displayName || !ruleKind || !["VelocityLimit", "UsageCap", "Cooldown", "DuplicateKey", "EvidenceRequired"].includes(ruleKind) ||
-    !subjectScope || !["Account", "VerifiedPhone"].includes(subjectScope) ||
-    !enforcementAction || !["Allow", "Deny", "RequireApproval"].includes(enforcementAction) ||
-    windowSeconds === undefined || maxCount === undefined || cooldownSeconds === undefined ||
-    evidenceCode === undefined || approvalRequestType === undefined || priority === null || priority < 1 ||
-    !status || version === null || version < 1 || !createdAtUtc || !updatedAtUtc
-  ) return null;
+    !id ||
+    !UUID.test(id) ||
+    !code ||
+    !KEY.test(code) ||
+    !contextCode ||
+    !KEY.test(contextCode) ||
+    !displayName ||
+    !ruleKind ||
+    !["VelocityLimit", "UsageCap", "Cooldown", "DuplicateKey", "EvidenceRequired"].includes(
+      ruleKind,
+    ) ||
+    !subjectScope ||
+    !["Account", "VerifiedPhone"].includes(subjectScope) ||
+    !enforcementAction ||
+    !["Allow", "Deny", "RequireApproval"].includes(enforcementAction) ||
+    windowSeconds === undefined ||
+    maxCount === undefined ||
+    cooldownSeconds === undefined ||
+    evidenceCode === undefined ||
+    approvalRequestType === undefined ||
+    priority === null ||
+    priority < 1 ||
+    !status ||
+    version === null ||
+    version < 1 ||
+    !createdAtUtc ||
+    !updatedAtUtc
+  )
+    return null;
   return {
     id,
     code,
@@ -145,11 +166,21 @@ function parseDecision(value: unknown): AbuseDecision | null {
   const matched = row.matched_rule_ids ?? row.matchedRuleIds;
   const reasons = row.reason_codes ?? row.reasonCodes;
   if (
-    !id || !UUID.test(id) || !contextCode || !KEY.test(contextCode) || !finalAction ||
-    !["Allow", "Deny", "RequireApproval"].includes(finalAction) || approvalRequestType === undefined ||
-    !ruleSetHash || !evaluatedAtUtc || !Array.isArray(matched) || !matched.every((item) => typeof item === "string" && UUID.test(item)) ||
-    !Array.isArray(reasons) || !reasons.every((item) => typeof item === "string" && KEY.test(item))
-  ) return null;
+    !id ||
+    !UUID.test(id) ||
+    !contextCode ||
+    !KEY.test(contextCode) ||
+    !finalAction ||
+    !["Allow", "Deny", "RequireApproval"].includes(finalAction) ||
+    approvalRequestType === undefined ||
+    !ruleSetHash ||
+    !evaluatedAtUtc ||
+    !Array.isArray(matched) ||
+    !matched.every((item) => typeof item === "string" && UUID.test(item)) ||
+    !Array.isArray(reasons) ||
+    !reasons.every((item) => typeof item === "string" && KEY.test(item))
+  )
+    return null;
   return {
     id,
     contextCode,
@@ -168,18 +199,28 @@ async function authenticatedFetch(path: string, init: RequestInit): Promise<Resp
   const config = getPublicRuntimeConfig();
   return fetch(`${config.adminApiUrl}${path}`, {
     ...init,
-    headers: { Authorization: `Bearer ${token}`, Accept: "application/json", ...(init.headers ?? {}) },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+      ...(init.headers ?? {}),
+    },
     cache: "no-store",
     signal: AbortSignal.timeout(10_000),
   });
 }
 
-async function read(path: string): Promise<{ kind: "ok"; value: unknown } | Exclude<AbuseReadResult, { kind: "ok" }>> {
+async function read(
+  path: string,
+): Promise<{ kind: "ok"; value: unknown } | Exclude<AbuseReadResult, { kind: "ok" }>> {
   try {
     const response = await authenticatedFetch(path, { method: "GET" });
     if (!response || response.status === 401) return { kind: "unauthenticated" };
     if (response.status === 403) return { kind: "forbidden" };
-    if (!response.ok) return { kind: "unavailable", correlationId: response.headers.get("x-correlation-id") ?? undefined };
+    if (!response.ok)
+      return {
+        kind: "unavailable",
+        correlationId: response.headers.get("x-correlation-id") ?? undefined,
+      };
     return { kind: "ok", value: await response.json().catch(() => null) };
   } catch {
     return { kind: "unavailable" };
@@ -195,7 +236,13 @@ export async function getAbuseWorkspace(): Promise<AbuseReadResult> {
   if (decisionsResult.kind !== "ok") return decisionsResult;
   const rulesPayload = rulesResult.value as Record<string, unknown> | null;
   const decisionsPayload = decisionsResult.value as Record<string, unknown> | null;
-  if (!rulesPayload || !Array.isArray(rulesPayload.items) || !decisionsPayload || !Array.isArray(decisionsPayload.items)) return { kind: "unavailable" };
+  if (
+    !rulesPayload ||
+    !Array.isArray(rulesPayload.items) ||
+    !decisionsPayload ||
+    !Array.isArray(decisionsPayload.items)
+  )
+    return { kind: "unavailable" };
   const rules = rulesPayload.items.map(parseRule);
   const decisions = decisionsPayload.items.map(parseDecision);
   const privacyValue = decisionsPayload.privacy as Record<string, unknown> | null;
@@ -203,10 +250,15 @@ export async function getAbuseWorkspace(): Promise<AbuseReadResult> {
   const asOfUtc = freshnessValue ? iso(freshnessValue.asOfUtc) : null;
   const freshnessStatus = freshnessValue?.status;
   if (
-    rules.some((item) => item === null) || decisions.some((item) => item === null) ||
-    !privacyValue || privacyValue.subjectIdentifiersExposed !== false || privacyValue.rawContactValuesExposed !== false ||
-    (freshnessStatus !== "fresh" && freshnessStatus !== "stale") || !asOfUtc
-  ) return { kind: "unavailable" };
+    rules.some((item) => item === null) ||
+    decisions.some((item) => item === null) ||
+    !privacyValue ||
+    privacyValue.subjectIdentifiersExposed !== false ||
+    privacyValue.rawContactValuesExposed !== false ||
+    (freshnessStatus !== "fresh" && freshnessStatus !== "stale") ||
+    !asOfUtc
+  )
+    return { kind: "unavailable" };
   return {
     kind: "ok",
     data: {
@@ -219,12 +271,19 @@ export async function getAbuseWorkspace(): Promise<AbuseReadResult> {
 }
 
 function messageFrom(value: unknown): string | undefined {
-  return value && typeof value === "object" && !Array.isArray(value) && typeof (value as Record<string, unknown>).message === "string"
+  return value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    typeof (value as Record<string, unknown>).message === "string"
     ? String((value as Record<string, unknown>).message)
     : undefined;
 }
 
-async function mutate(path: string, body: Record<string, unknown>, idempotencyKey: string): Promise<AbuseMutationResult> {
+async function mutate(
+  path: string,
+  body: Record<string, unknown>,
+  idempotencyKey: string,
+): Promise<AbuseMutationResult> {
   try {
     const response = await authenticatedFetch(path, {
       method: "POST",
@@ -237,8 +296,17 @@ async function mutate(path: string, body: Record<string, unknown>, idempotencyKe
     const message = messageFrom(payload);
     if (response.status === 400) return { kind: "invalid", message };
     if (response.status === 409) return { kind: "conflict", message };
-    if (!response.ok) return { kind: "unavailable", correlationId: response.headers.get("x-correlation-id") ?? undefined, message };
-    const replayed = !!payload && typeof payload === "object" && !Array.isArray(payload) && (payload as Record<string, unknown>).replayed === true;
+    if (!response.ok)
+      return {
+        kind: "unavailable",
+        correlationId: response.headers.get("x-correlation-id") ?? undefined,
+        message,
+      };
+    const replayed =
+      !!payload &&
+      typeof payload === "object" &&
+      !Array.isArray(payload) &&
+      (payload as Record<string, unknown>).replayed === true;
     return { kind: "ok", replayed };
   } catch {
     return { kind: "unavailable" };
@@ -266,7 +334,12 @@ export function upsertAbuseRule(input: {
   return mutate("/api/v1/security/abuse/rules", body, idempotencyKey);
 }
 
-export function retireAbuseRule(input: { ruleId: string; expectedVersion: number; reason: string; idempotencyKey: string }) {
+export function retireAbuseRule(input: {
+  ruleId: string;
+  expectedVersion: number;
+  reason: string;
+  idempotencyKey: string;
+}) {
   return mutate(
     `/api/v1/security/abuse/rules/${encodeURIComponent(input.ruleId)}/actions/retire`,
     { expectedVersion: input.expectedVersion, reason: input.reason },
