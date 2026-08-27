@@ -181,7 +181,10 @@ export async function schedulePriceAction(
     !reason ||
     !key
   ) {
-    return { status: "error", message: "اطلاعات قیمت معتبر نیست؛ زمان باید ISO-8601 با Z یا offset باشد." };
+    return {
+      status: "error",
+      message: "اطلاعات قیمت معتبر نیست؛ زمان باید ISO-8601 با Z یا offset باشد.",
+    };
   }
   return mutate(
     `/api/v1/commerce/catalog-v2/offers/${offerId}/prices`,
