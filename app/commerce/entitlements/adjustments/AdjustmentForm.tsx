@@ -24,7 +24,13 @@ function SubmitButtons({ canRequest, canExecute }: { canRequest: boolean; canExe
         </button>
       ) : null}
       {canExecute ? (
-        <button className={styles.dangerAction} type="submit" name="intent" value="execute" disabled={pending}>
+        <button
+          className={styles.dangerAction}
+          type="submit"
+          name="intent"
+          value="execute"
+          disabled={pending}
+        >
           اجرای Adjustment
         </button>
       ) : null}
@@ -64,8 +70,8 @@ export function AdjustmentForm({
         <span>Manual Entitlement</span>
         <h2 id="adjustment-form-title">Grant / Extend / Reduce / Revoke</h2>
         <p>
-          این فرم فقط API canonical را صدا می‌زند. Founder هم permission، AAL2، Abuse Rule و Audit را دور
-          نمی‌زند؛ فقط در policy مجاز می‌تواند بدون approval تجاری اجرا کند.
+          این فرم فقط API canonical را صدا می‌زند. Founder هم permission، AAL2، Abuse Rule و Audit
+          را دور نمی‌زند؛ فقط در policy مجاز می‌تواند بدون approval تجاری اجرا کند.
         </p>
       </header>
 
@@ -75,7 +81,13 @@ export function AdjustmentForm({
 
         <label>
           <span>Account ID</span>
-          <input name="subjectAccountId" defaultValue={accountId} required dir="ltr" autoComplete="off" />
+          <input
+            name="subjectAccountId"
+            defaultValue={accountId}
+            required
+            dir="ltr"
+            autoComplete="off"
+          />
         </label>
 
         <div className={styles.grid2}>
@@ -88,7 +100,13 @@ export function AdjustmentForm({
           </label>
           <label>
             <span>Target ID</span>
-            <input name="targetId" required dir="ltr" autoComplete="off" placeholder="UUID محصول یا Offer" />
+            <input
+              name="targetId"
+              required
+              dir="ltr"
+              autoComplete="off"
+              placeholder="UUID محصول یا Offer"
+            />
           </label>
         </div>
 
@@ -116,7 +134,14 @@ export function AdjustmentForm({
         <div className={styles.grid2}>
           <label>
             <span>Schedule Amount</span>
-            <input name="scheduleAmount" type="number" inputMode="numeric" min="1" max="3650" placeholder="مثلاً 30" />
+            <input
+              name="scheduleAmount"
+              type="number"
+              inputMode="numeric"
+              min="1"
+              max="3650"
+              placeholder="مثلاً 30"
+            />
           </label>
           <label>
             <span>Exact Expiry · Tehran</span>
@@ -127,7 +152,12 @@ export function AdjustmentForm({
         <div className={styles.grid2}>
           <label>
             <span>Entitlement ID · برای تغییر موجود</span>
-            <input name="entitlementId" dir="ltr" autoComplete="off" placeholder="برای Grant خالی" />
+            <input
+              name="entitlementId"
+              dir="ltr"
+              autoComplete="off"
+              placeholder="برای Grant خالی"
+            />
           </label>
           <label>
             <span>Entitlement Version</span>
