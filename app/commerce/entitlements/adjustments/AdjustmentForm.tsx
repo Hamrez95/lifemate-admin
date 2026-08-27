@@ -13,9 +13,11 @@ function SubmitButtons({ canRequest, canExecute }: { canRequest: boolean; canExe
   const { pending } = useFormStatus();
   return (
     <div className={styles.actions}>
-      <button type="submit" name="intent" value="preview" disabled={pending}>
-        {pending ? "در حال بررسی…" : "پیش‌نمایش"}
-      </button>
+      {canRequest ? (
+        <button type="submit" name="intent" value="preview" disabled={pending}>
+          {pending ? "در حال بررسی…" : "پیش‌نمایش"}
+        </button>
+      ) : null}
       {canRequest ? (
         <button type="submit" name="intent" value="request" disabled={pending}>
           ثبت درخواست Approval
