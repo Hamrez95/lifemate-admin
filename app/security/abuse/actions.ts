@@ -25,7 +25,12 @@ function text(formData: FormData, key: string): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function optionalInteger(formData: FormData, key: string, min: number, max: number): number | null | undefined {
+function optionalInteger(
+  formData: FormData,
+  key: string,
+  min: number,
+  max: number,
+): number | null | undefined {
   const raw = text(formData, key);
   if (!raw) return null;
   if (!/^\d+$/.test(raw)) return undefined;
@@ -39,7 +44,9 @@ function optionalKey(formData: FormData, key: string): string | null | undefined
   return KEY.test(raw) ? raw : undefined;
 }
 
-function common(formData: FormData): { reason: string; idempotencyKey: string } | { error: AbuseActionState } {
+function common(
+  formData: FormData,
+): { reason: string; idempotencyKey: string } | { error: AbuseActionState } {
   const reason = text(formData, "reason");
   const idempotencyKey = text(formData, "idempotencyKey");
   if (reason.length < 10 || reason.length > 1000) {
@@ -53,19 +60,29 @@ function common(formData: FormData): { reason: string; idempotencyKey: string } 
 
 function resultState(result: AbuseMutationResult, successMessage: string): AbuseActionState {
   if (result.kind === "ok") {
-    return { status: "success", message: result.replayed ? `${successMessage} (replay امن)` : successMessage };
+    return {
+      status: "success",
+      message: result.replayed ? `${successMessage} (replay امن)` : successMessage,
+    };
   }
   if (result.kind === "unauthenticated" || result.kind === "forbidden") {
     return {
       status: "forbidden",
-      message: result.kind === "forbidden" ? "مجوز مدیریت Abuse Rules وجود ندارد." : "نشست مدیریتی معتبر نیست.",
+      message:
+        result.kind === "forbidden"
+          ? "مجوز مدیریت Abuse Rules وجود ندارد."
+          : "نشست مدیریتی معتبر نیست.",
     };
   }
-  if (result.kind === "invalid") return { status: "invalid", message: result.message ?? "Rule معتبر نیست." };
-  if (result.kind === "conflict") return { status: "conflict", message: result.message ?? "نسخه Rule تغییر کرده است." };
+  if (result.kind === "invalid")
+    return { status: "invalid", message: result.message ?? "Rule معتبر نیست." };
+  if (result.kind === "conflict")
+    return { status: "conflict", message: result.message ?? "نسخه Rule تغییر کرده است." };
   return {
     status: "unavailable",
-    message: result.correlationId ? `سرویس Abuse در دسترس نیست. کد پیگیری: ${result.correlationId}` : "سرویس Abuse در دسترس نیست.",
+    message: result.correlationId
+      ? `سرویس Abuse در دسترس نیست. کد پیگیری: ${result.correlationId}`
+      : "سرویس Abuse در دسترس نیست.",
   };
 }
 
@@ -96,28 +113,63 @@ export async function upsertAbuseRuleAction(
   const approvalRequestType = optionalKey(formData, "approvalRequestType");
   const priority = optionalInteger(formData, "priority", 1, 10000);
   const expectedVersion = optionalInteger(formData, "expectedVersion", 1, Number.MAX_SAFE_INTEGER);
-  if (!KEY.test(code) || !KEY.test(contextCode) || displayName.length < 2 || displayName.length > 160) {
+  if (
+    !KEY.test(code) ||
+    !KEY.test(contextCode) ||
+    displayName.length < 2 ||
+    displayName.length > 160
+  ) {
     return { status: "invalid", message: "Code، context یا display name معتبر نیست." };
   }
   if (
-    !["VelocityLimit", "UsageCap", "Cooldown", "DuplicateKey", "EvidenceRequired"].includes(ruleKind) ||
+    !["VelocityLimit", "UsageCap", "Cooldown", "DuplicateKey", "EvidenceRequired"].includes(
+      ruleKind,
+    ) ||
     !["Account", "VerifiedPhone"].includes(subjectScope) ||
     !["Allow", "Deny", "RequireApproval"].includes(enforcementAction) ||
-    windowSeconds === undefined || maxCount === undefined || cooldownSeconds === undefined ||
-    evidenceCode === undefined || approvalRequestType === undefined || priority === undefined || expectedVersion === undefined
+    windowSeconds === undefined ||
+    maxCount === undefined ||
+    cooldownSeconds === undefined ||
+    evidenceCode === undefined ||
+    approvalRequestType === undefined ||
+    priority === undefined ||
+    expectedVersion === undefined
   ) {
     return { status: "invalid", message: "پارامترهای Rule معتبر نیستند." };
   }
-  if (enforcementAction === "RequireApproval" ? !approvalRequestType : approvalRequestType !== null) {
+  if (
+    enforcementAction === "RequireApproval" ? !approvalRequestType : approvalRequestType !== null
+  ) {
     return { status: "invalid", message: "RequireApproval باید approval request type داشته باشد." };
   }
   const shapeValid =
-    (ruleKind === "VelocityLimit" && windowSeconds !== null && maxCount !== null && cooldownSeconds === null && evidenceCode === null) ||
-    (ruleKind === "UsageCap" && windowSeconds === null && maxCount !== null && cooldownSeconds === null && evidenceCode === null) ||
-    (ruleKind === "Cooldown" && windowSeconds === null && maxCount === null && cooldownSeconds !== null && evidenceCode === null) ||
-    (ruleKind === "DuplicateKey" && windowSeconds === null && maxCount === null && cooldownSeconds === null && evidenceCode === null) ||
-    (ruleKind === "EvidenceRequired" && windowSeconds === null && maxCount === null && cooldownSeconds === null && evidenceCode !== null);
-  if (!shapeValid) return { status: "invalid", message: "پارامترها با Rule Kind انتخاب‌شده سازگار نیستند." };
+    (ruleKind === "VelocityLimit" &&
+      windowSeconds !== null &&
+      maxCount !== null &&
+      cooldownSeconds === null &&
+      evidenceCode === null) ||
+    (ruleKind === "UsageCap" &&
+      windowSeconds === null &&
+      maxCount !== null &&
+      cooldownSeconds === null &&
+      evidenceCode === null) ||
+    (ruleKind === "Cooldown" &&
+      windowSeconds === null &&
+      maxCount === null &&
+      cooldownSeconds !== null &&
+      evidenceCode === null) ||
+    (ruleKind === "DuplicateKey" &&
+      windowSeconds === null &&
+      maxCount === null &&
+      cooldownSeconds === null &&
+      evidenceCode === null) ||
+    (ruleKind === "EvidenceRequired" &&
+      windowSeconds === null &&
+      maxCount === null &&
+      cooldownSeconds === null &&
+      evidenceCode !== null);
+  if (!shapeValid)
+    return { status: "invalid", message: "پارامترها با Rule Kind انتخاب‌شده سازگار نیستند." };
   const state = resultState(
     await upsertAbuseRule({
       code,
