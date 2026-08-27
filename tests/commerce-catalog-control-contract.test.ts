@@ -94,15 +94,22 @@ describe("P0 Monetization Control Plane — plan pricing and trial batch", () =>
     expect(actions).toContain("idempotencyKey");
   });
 
-  it("keeps entitlement and discount-code controls blocked on the remaining Core 412 work", () => {
+  it("recognizes completed Core 412 feature and discount-code contracts without browser fallbacks", () => {
     const page = source("app/commerce/plans/page.tsx");
-    const manage = source("app/commerce/plans/[planId]/manage/page.tsx");
+    const featureControls = source("app/commerce/plans/[planId]/PlanFeatureControls.tsx");
+    const discountControls = source(
+      "app/commerce/promotions/[promotionId]/DiscountCodeControls.tsx",
+    );
 
-    expect(page).toContain("Entitlement assignment · Core #412");
-    expect(page).toContain("Discount-code issuance جداگانه و bulk");
-    expect(page).toContain("Core #412 فعال نمی‌شود");
-    expect(manage).toContain("Entitlement assignment");
-    expect(manage).toContain("Discount-code issuance");
+    expect(page).toContain("Trial configuration · Core #412");
+    expect(page).toContain("Plan ↔ Feature assignment · Core #412");
+    expect(page).toContain("discount-code mutation اکنون contract canonical دارند");
+    expect(page).not.toContain("Core #412 فعال نمی‌شود");
+    expect(featureControls).toContain("commerce.plan_feature.write");
+    expect(discountControls).toContain("commerce.discount_code.write");
+    expect(discountControls).toContain("contract canonical");
+    expect(discountControls).not.toContain(".from(");
+    expect(discountControls).not.toContain("service_role");
   });
 
   it("keeps Persian RTL UI responsive keyboard visible and motion aware", () => {
