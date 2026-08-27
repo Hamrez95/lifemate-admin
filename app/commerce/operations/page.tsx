@@ -169,8 +169,7 @@ export default async function CommerceOperationsPage() {
           </section>
 
           <footer className={styles.footer}>
-            As of {format(snapshot.asOfUtc)} · هیچ revenue/refund/provider fact از UI استنتاج
-            نمی‌شود.
+            As of {format(snapshot.asOfUtc)} · {"هیچ revenue/refund/provider fact از UI استنتاج نمی‌شود."}
           </footer>
         </main>
       </AdminShell>
