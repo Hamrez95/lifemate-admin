@@ -72,19 +72,20 @@ export function ReconciliationForm() {
       </label>
       <label>
         Case Type
-        <input name="caseType" minLength={5} maxLength={40} required defaultValue="provider_mismatch" />
+        <input
+          name="caseType"
+          minLength={5}
+          maxLength={40}
+          required
+          defaultValue="provider_mismatch"
+        />
       </label>
       <label>
         دلیل
         <textarea name="reason" minLength={10} maxLength={1000} required />
       </label>
       <label className={styles.confirm}>
-        <input
-          type="checkbox"
-          name="confirmation"
-          value="confirm-reconciliation-open"
-          required
-        />
+        <input type="checkbox" name="confirmation" value="confirm-reconciliation-open" required />
         Provider facts را تغییر نمی‌دهم و فقط case می‌سازم.
       </label>
       <button type="submit" disabled={pending}>
