@@ -29,7 +29,8 @@ export function RefundRequestForm() {
     requestRefundAction,
     initialCommerceOperationsActionState,
   );
-  const idempotencyKey = useMemo(() => key("refund-request"), [state.status === "success"]);
+  const succeeded = state.status === "success";
+  const idempotencyKey = useMemo(() => key("refund-request"), [succeeded]);
   return (
     <form action={action} className={styles.form}>
       <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
@@ -62,7 +63,8 @@ export function ReconciliationForm() {
     openReconciliationAction,
     initialCommerceOperationsActionState,
   );
-  const idempotencyKey = useMemo(() => key("reconciliation"), [state.status === "success"]);
+  const succeeded = state.status === "success";
+  const idempotencyKey = useMemo(() => key("reconciliation"), [succeeded]);
   return (
     <form action={action} className={styles.form}>
       <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
@@ -101,7 +103,8 @@ export function RenewalIntentForm() {
     renewalIntentAction,
     initialCommerceOperationsActionState,
   );
-  const idempotencyKey = useMemo(() => key("renewal-intent"), [state.status === "success"]);
+  const succeeded = state.status === "success";
+  const idempotencyKey = useMemo(() => key("renewal-intent"), [succeeded]);
   return (
     <form action={action} className={styles.form}>
       <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
