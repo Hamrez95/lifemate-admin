@@ -20,7 +20,10 @@ import styles from "./catalog-v2.module.css";
 function Price({ price }: { price: CommerceCatalogPrice | null }) {
   if (!price) return <span className={styles.meta}>قیمت فعال ثبت نشده</span>;
   return (
-    <div className={styles.price} title="مبلغ به minor unit ذخیره‌شده نمایش داده می‌شود؛ UI نرخ ارز یا decimal را حدس نمی‌زند.">
+    <div
+      className={styles.price}
+      title="مبلغ به minor unit ذخیره‌شده نمایش داده می‌شود؛ UI نرخ ارز یا decimal را حدس نمی‌زند."
+    >
       {price.amountMinor} minor · {price.currency} · {price.storeProvider}
       {price.countryCode ? ` · ${price.countryCode}` : ""}
     </div>
@@ -70,20 +73,24 @@ async function CatalogContent() {
 
       <CommerceDependencyGrid>
         <CoreDependencyNotice title="Product → Offer → Versioned Price" tone="available">
-          کاتالوگ v2 و قیمت فعال هر Offer از Core خوانده می‌شود؛ قیمت Subscriptionهای قبلی بازنویسی نمی‌شود.
+          کاتالوگ v2 و قیمت فعال هر Offer از Core خوانده می‌شود؛ قیمت Subscriptionهای قبلی بازنویسی
+          نمی‌شود.
         </CoreDependencyNotice>
         <CoreDependencyNotice title="Bundle + Gift eligibility" tone="available">
-          ترکیب Bundle و gift eligibility از مدل canonical نمایش داده می‌شود و از نام محصول یا UI استنتاج نمی‌شود.
+          ترکیب Bundle و gift eligibility از مدل canonical نمایش داده می‌شود و از نام محصول یا UI
+          استنتاج نمی‌شود.
         </CoreDependencyNotice>
         <CoreDependencyNotice title="Mutationهای v2" tone="info">
-          Core فعلاً برای Product/Offer/Bundle v2 قرارداد read canonical دارد. تا زمانی که mutation versioned و audited منتشر نشود، این صفحه edit ساختگی یا direct DB write ارائه نمی‌کند.
+          Core فعلاً برای Product/Offer/Bundle v2 قرارداد read canonical دارد. تا زمانی که mutation
+          versioned و audited منتشر نشود، این صفحه edit ساختگی یا direct DB write ارائه نمی‌کند.
         </CoreDependencyNotice>
       </CommerceDependencyGrid>
 
       <div className={styles.toolbar}>
         <strong>کاتالوگ Published</strong>
         <span className={styles.freshness}>
-          {data.freshness.status === "fresh" ? "تازه" : "قدیمی"} · {new Date(data.freshness.asOfUtc).toLocaleString("fa-IR")}
+          {data.freshness.status === "fresh" ? "تازه" : "قدیمی"} ·{" "}
+          {new Date(data.freshness.asOfUtc).toLocaleString("fa-IR")}
         </span>
       </div>
 
@@ -128,7 +135,11 @@ async function CatalogContent() {
               {product.policies.length === 0 ? (
                 <div className={styles.empty}>policy فعالی ثبت نشده است.</div>
               ) : (
-                <ul className={styles.list}>{product.policies.map((policy) => <Policy key={`${policy.key}-${policy.version}`} policy={policy} />)}</ul>
+                <ul className={styles.list}>
+                  {product.policies.map((policy) => (
+                    <Policy key={`${policy.key}-${policy.version}`} policy={policy} />
+                  ))}
+                </ul>
               )}
             </article>
           ))}
@@ -168,7 +179,9 @@ async function CatalogContent() {
       </section>
 
       <p className={styles.notice}>
-        مبلغ‌ها عمداً به همان minor unit ثبت‌شده نمایش داده می‌شوند. این UI تعداد decimal، FX، revenue یا ارزش مالی Bundle را حدس نمی‌زند. mutationهای Product/Offer/Bundle نیز تا وجود API canonical فعال نمی‌شوند.
+        مبلغ‌ها عمداً به همان minor unit ثبت‌شده نمایش داده می‌شوند. این UI تعداد decimal، FX،
+        revenue یا ارزش مالی Bundle را حدس نمی‌زند. mutationهای Product/Offer/Bundle نیز تا وجود API
+        canonical فعال نمی‌شوند.
       </p>
     </div>
   );
