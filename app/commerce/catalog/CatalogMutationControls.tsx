@@ -45,11 +45,7 @@ function MutationForm({
   }, [state.status]);
 
   return (
-    <form
-      action={formAction}
-      className={styles.form}
-      onInput={() => setKey(crypto.randomUUID())}
-    >
+    <form action={formAction} className={styles.form} onInput={() => setKey(crypto.randomUUID())}>
       <input type="hidden" name="idempotencyKey" value={key} />
       <header>
         <strong>{title}</strong>
@@ -125,11 +121,26 @@ function ProductControls({ product }: { product: CommerceCatalogProduct }) {
         description="Offer جدید به همین Product متصل می‌شود؛ قیمت جداگانه و نسخه‌دار است."
       >
         <input type="hidden" name="productId" value={product.id} />
-        <label><span>Code</span><input name="code" pattern="[a-z0-9][a-z0-9._-]+" required /></label>
-        <label><span>Name</span><input name="name" minLength={2} maxLength={120} required /></label>
-        <label><span>Duration months</span><input name="durationMonths" type="number" min="1" max="120" required /></label>
-        <label><span>Status</span><Lifecycle value="Hidden" /></label>
-        <label><span>Gift</span><GiftEligible value={false} /></label>
+        <label>
+          <span>Code</span>
+          <input name="code" pattern="[a-z0-9][a-z0-9._-]+" required />
+        </label>
+        <label>
+          <span>Name</span>
+          <input name="name" minLength={2} maxLength={120} required />
+        </label>
+        <label>
+          <span>Duration months</span>
+          <input name="durationMonths" type="number" min="1" max="120" required />
+        </label>
+        <label>
+          <span>Status</span>
+          <Lifecycle value="Hidden" />
+        </label>
+        <label>
+          <span>Gift</span>
+          <GiftEligible value={false} />
+        </label>
       </MutationForm>
 
       {product.offers.map((offer) => (
@@ -141,22 +152,68 @@ function ProductControls({ product }: { product: CommerceCatalogProduct }) {
           >
             <input type="hidden" name="offerId" value={offer.id} />
             <input type="hidden" name="expectedVersion" value={offer.version} />
-            <label><span>Name</span><input name="name" defaultValue={offer.name} minLength={2} maxLength={120} required /></label>
-            <label><span>Duration</span><input name="durationMonths" type="number" min="1" max="120" defaultValue={offer.durationMonths} required /></label>
-            <label><span>Status · v{offer.version}</span><Lifecycle value={offer.status} /></label>
-            <label><span>Gift</span><GiftEligible value={offer.giftEligible} /></label>
+            <label>
+              <span>Name</span>
+              <input name="name" defaultValue={offer.name} minLength={2} maxLength={120} required />
+            </label>
+            <label>
+              <span>Duration</span>
+              <input
+                name="durationMonths"
+                type="number"
+                min="1"
+                max="120"
+                defaultValue={offer.durationMonths}
+                required
+              />
+            </label>
+            <label>
+              <span>Status · v{offer.version}</span>
+              <Lifecycle value={offer.status} />
+            </label>
+            <label>
+              <span>Gift</span>
+              <GiftEligible value={offer.giftEligible} />
+            </label>
           </MutationForm>
           <MutationForm
             action={schedulePriceAction}
             title={`Schedule price · ${offer.code}`}
-            description="فقط minor-unit + currency/provider صریح؛ قیمت قبلی rewrite نمی‌شود."
+            description="فقط minor-unit + currency/provider صریح؛ قیمت قبلی rewrite نمی‌شود. زمان باید ISO-8601 با Z یا offset باشد."
           >
             <input type="hidden" name="offerId" value={offer.id} />
-            <label><span>Country (optional)</span><input name="countryCode" maxLength={2} placeholder="IR" /></label>
-            <label><span>Currency</span><input name="currency" minLength={3} maxLength={3} placeholder="IRR" required /></label>
-            <label><span>Provider</span><input name="storeProvider" minLength={2} maxLength={40} placeholder="direct" required /></label>
-            <label><span>Amount minor</span><input name="amountMinor" inputMode="numeric" pattern="[0-9]+" required /></label>
-            <label className={styles.full}><span>Effective from</span><input name="effectiveFromUtc" type="datetime-local" required /></label>
+            <label>
+              <span>Country (optional)</span>
+              <input name="countryCode" maxLength={2} placeholder="IR" />
+            </label>
+            <label>
+              <span>Currency</span>
+              <input name="currency" minLength={3} maxLength={3} placeholder="IRR" required />
+            </label>
+            <label>
+              <span>Provider</span>
+              <input
+                name="storeProvider"
+                minLength={2}
+                maxLength={40}
+                placeholder="direct"
+                required
+              />
+            </label>
+            <label>
+              <span>Amount minor</span>
+              <input name="amountMinor" inputMode="numeric" pattern="[0-9]+" required />
+            </label>
+            <label className={styles.full}>
+              <span>Effective from (ISO-8601)</span>
+              <input
+                name="effectiveFromUtc"
+                type="text"
+                placeholder="2026-08-28T09:00:00Z"
+                pattern=".*(?:[zZ]|[+-][0-9]{2}:[0-9]{2})$"
+                required
+              />
+            </label>
           </MutationForm>
         </div>
       ))}
@@ -171,9 +228,33 @@ function ProductControls({ product }: { product: CommerceCatalogProduct }) {
           <input type="hidden" name="productId" value={product.id} />
           <input type="hidden" name="policyKey" value={policy.key} />
           <input type="hidden" name="expectedVersion" value={policy.version} />
-          <label><span>Type</span><select name="valueType" defaultValue={policy.valueType}><option value="integer">integer</option><option value="boolean">boolean</option><option value="string">string</option><option value="json">json</option></select></label>
-          <label><span>Status · v{policy.version}</span><select name="policyStatus" defaultValue="Active"><option value="Active">Active</option><option value="Retired">Retired</option></select></label>
-          <label className={styles.full}><span>Value</span><textarea name="value" defaultValue={typeof policy.value === "string" ? policy.value : JSON.stringify(policy.value)} rows={2} required /></label>
+          <label>
+            <span>Type</span>
+            <select name="valueType" defaultValue={policy.valueType}>
+              <option value="integer">integer</option>
+              <option value="boolean">boolean</option>
+              <option value="string">string</option>
+              <option value="json">json</option>
+            </select>
+          </label>
+          <label>
+            <span>Status · v{policy.version}</span>
+            <select name="policyStatus" defaultValue="Active">
+              <option value="Active">Active</option>
+              <option value="Retired">Retired</option>
+            </select>
+          </label>
+          <label className={styles.full}>
+            <span>Value</span>
+            <textarea
+              name="value"
+              defaultValue={
+                typeof policy.value === "string" ? policy.value : JSON.stringify(policy.value)
+              }
+              rows={2}
+              required
+            />
+          </label>
         </MutationForm>
       ))}
 
@@ -184,10 +265,30 @@ function ProductControls({ product }: { product: CommerceCatalogProduct }) {
       >
         <input type="hidden" name="productId" value={product.id} />
         <input type="hidden" name="expectedVersion" value="" />
-        <label><span>Policy key</span><input name="policyKey" pattern="[a-z0-9][a-z0-9._-]+" required /></label>
-        <label><span>Type</span><select name="valueType" defaultValue="integer"><option value="integer">integer</option><option value="boolean">boolean</option><option value="string">string</option><option value="json">json</option></select></label>
-        <label><span>Status</span><select name="policyStatus" defaultValue="Active"><option value="Active">Active</option><option value="Retired">Retired</option></select></label>
-        <label className={styles.full}><span>Value</span><textarea name="value" rows={2} required /></label>
+        <label>
+          <span>Policy key</span>
+          <input name="policyKey" pattern="[a-z0-9][a-z0-9._-]+" required />
+        </label>
+        <label>
+          <span>Type</span>
+          <select name="valueType" defaultValue="integer">
+            <option value="integer">integer</option>
+            <option value="boolean">boolean</option>
+            <option value="string">string</option>
+            <option value="json">json</option>
+          </select>
+        </label>
+        <label>
+          <span>Status</span>
+          <select name="policyStatus" defaultValue="Active">
+            <option value="Active">Active</option>
+            <option value="Retired">Retired</option>
+          </select>
+        </label>
+        <label className={styles.full}>
+          <span>Value</span>
+          <textarea name="value" rows={2} required />
+        </label>
       </MutationForm>
     </section>
   );
@@ -202,10 +303,27 @@ function BundleControls({ bundle }: { bundle: CommerceCatalogBundle }) {
     >
       <input type="hidden" name="bundleId" value={bundle.id} />
       <input type="hidden" name="expectedVersion" value={bundle.version} />
-      <label><span>Name</span><input name="name" defaultValue={bundle.name} minLength={2} maxLength={120} required /></label>
-      <label><span>Status · v{bundle.version}</span><Lifecycle value={bundle.status} /></label>
-      <label><span>Gift</span><GiftEligible value={bundle.giftEligible} /></label>
-      <label className={styles.full}><span>Offer IDs</span><textarea name="offerIds" defaultValue={bundle.items.map((item) => item.offerId).join("\n")} rows={3} required /></label>
+      <label>
+        <span>Name</span>
+        <input name="name" defaultValue={bundle.name} minLength={2} maxLength={120} required />
+      </label>
+      <label>
+        <span>Status · v{bundle.version}</span>
+        <Lifecycle value={bundle.status} />
+      </label>
+      <label>
+        <span>Gift</span>
+        <GiftEligible value={bundle.giftEligible} />
+      </label>
+      <label className={styles.full}>
+        <span>Offer IDs</span>
+        <textarea
+          name="offerIds"
+          defaultValue={bundle.items.map((item) => item.offerId).join("\n")}
+          rows={3}
+          required
+        />
+      </label>
     </MutationForm>
   );
 }
@@ -224,17 +342,40 @@ export function CatalogMutationControls({
         <h3>Catalog Controls</h3>
         <p>تمام writeها server-only، idempotent، reason-required و توسط Core #560 audit می‌شوند.</p>
       </header>
-      {products.map((product) => <ProductControls key={product.id} product={product} />)}
+      {products.map((product) => (
+        <ProductControls key={product.id} product={product} />
+      ))}
       <section className={styles.entity}>
         <h4>Bundles</h4>
-        <MutationForm action={createBundleAction} title="Create Bundle" description="Bundle جدید با Offer IDهای canonical ساخته می‌شود.">
-          <label><span>Code</span><input name="code" pattern="[a-z0-9][a-z0-9._-]+" required /></label>
-          <label><span>Name</span><input name="name" minLength={2} maxLength={120} required /></label>
-          <label><span>Status</span><Lifecycle value="Hidden" /></label>
-          <label><span>Gift</span><GiftEligible value={false} /></label>
-          <label className={styles.full}><span>Offer IDs</span><textarea name="offerIds" rows={3} placeholder="یک UUID در هر خط" required /></label>
+        <MutationForm
+          action={createBundleAction}
+          title="Create Bundle"
+          description="Bundle جدید با Offer IDهای canonical ساخته می‌شود."
+        >
+          <label>
+            <span>Code</span>
+            <input name="code" pattern="[a-z0-9][a-z0-9._-]+" required />
+          </label>
+          <label>
+            <span>Name</span>
+            <input name="name" minLength={2} maxLength={120} required />
+          </label>
+          <label>
+            <span>Status</span>
+            <Lifecycle value="Hidden" />
+          </label>
+          <label>
+            <span>Gift</span>
+            <GiftEligible value={false} />
+          </label>
+          <label className={styles.full}>
+            <span>Offer IDs</span>
+            <textarea name="offerIds" rows={3} placeholder="یک UUID در هر خط" required />
+          </label>
         </MutationForm>
-        {bundles.map((bundle) => <BundleControls key={bundle.id} bundle={bundle} />)}
+        {bundles.map((bundle) => (
+          <BundleControls key={bundle.id} bundle={bundle} />
+        ))}
       </section>
     </section>
   );
