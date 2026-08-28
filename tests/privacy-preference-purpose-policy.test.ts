@@ -11,7 +11,9 @@ describe("Admin #185 preference-purpose policy administration", () => {
   it("uses only the canonical Admin policy directory and mutation", () => {
     const client = source("src/lib/admin-api/privacy-preference-policies.ts");
     expect(client).toContain("/api/v1/privacy/preference-purposes?");
-    expect(client).toContain("/api/v1/privacy/preference-purposes/${encodeURIComponent(normalized.purpose)}");
+    expect(client).toContain(
+      "/api/v1/privacy/preference-purposes/${encodeURIComponent(normalized.purpose)}",
+    );
     expect(client).toContain('"Idempotency-Key": idempotencyKey(normalized)');
     expect(client).toContain("expectedUpdatedAt: normalized.expectedUpdatedAt");
     expect(client).not.toContain("supabase.from");
