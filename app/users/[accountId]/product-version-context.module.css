@@ -4,7 +4,7 @@
   bottom: 1rem;
   z-index: 30;
   width: min(420px, calc(100vw - 2rem));
-  max-height: min(52vh, 520px);
+  max-height: min(62vh, 620px);
   overflow: auto;
   padding: 0.9rem;
   border: 1px solid var(--border);
@@ -12,6 +12,12 @@
   background: color-mix(in srgb, var(--surface) 94%, transparent);
   box-shadow: 0 12px 34px rgb(0 0 0 / 18%);
   backdrop-filter: blur(12px);
+}
+
+.contextSection + .contextSection {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
 }
 
 .panel header {
@@ -63,6 +69,38 @@
   grid-column: 1 / -1;
 }
 
+.privacySummary {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.privacySummary dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.privacySummary dl div {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-raised);
+}
+
+.privacySummary dt {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.privacySummary dd {
+  margin: 0;
+  font-weight: 700;
+}
+
 @media (max-width: 680px) {
   .panel {
     position: static;
@@ -82,6 +120,10 @@
   .panel li code {
     grid-column: 1 / -1;
     justify-self: start;
+  }
+
+  .privacySummary dl {
+    grid-template-columns: 1fr;
   }
 }
 
