@@ -132,8 +132,8 @@ export async function getResearchExportDownload(jobId: string): Promise<Research
   format: string;
   artifactSha256: string;
   artifactExpiresAtUtc: string;
-  url: string;
-  expiresAtUtc: string;
+  signedUrl: string;
+  expiresInSeconds: number;
 }>> {
   return mapped(await adminFetch(`/api/v1/research/exports/${encodeURIComponent(jobId)}/download`));
 }
