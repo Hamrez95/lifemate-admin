@@ -1,39 +1,241 @@
-.page { display: grid; gap: 1rem; padding: 1rem; }
-.hero, .panel, .dangerPanel, .list { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
-.hero { display: flex; justify-content: space-between; gap: 1rem; align-items: start; padding: 1rem; }
-.hero div, .panelHeader div { display: grid; gap: .25rem; }
-.hero h2, .hero p, .panel h3, .dangerPanel h3, .dangerPanel p { margin: 0; }
-.hero p, .panel small, .rule small, .securityNotice { color: var(--text-muted); }
-.workspace { display: grid; grid-template-columns: minmax(220px, 280px) minmax(0, 1fr); gap: 1rem; align-items: start; }
-.list { position: sticky; top: 1rem; display: grid; overflow: hidden; }
-.list header { display: flex; justify-content: space-between; padding: .8rem; border-bottom: 1px solid var(--border); }
-.item, .activeItem { display: grid; gap: .2rem; padding: .75rem .8rem; border-bottom: 1px solid var(--border); text-decoration: none; color: inherit; }
-.activeItem { background: var(--surface-raised); font-weight: 700; }
-.detail { display: grid; gap: 1rem; min-width: 0; }
-.panel, .dangerPanel { padding: 1rem; }
-.panelHeader { display: flex; justify-content: space-between; gap: 1rem; align-items: start; }
-.securityNotice { margin-top: .75rem; padding: .65rem; border: 1px dashed var(--border); border-radius: 10px; }
-.metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .55rem; margin: .8rem 0; }
-.metrics div { padding: .6rem; border-radius: 10px; background: var(--surface-raised); }
-.metrics dt { color: var(--text-muted); font-size: .75rem; }
-.metrics dd { margin: .2rem 0 0; font-weight: 700; }
-.form, .compactForm { display: grid; gap: .65rem; margin-top: .8rem; }
-.form label { display: grid; gap: .25rem; }
-.row, .actionGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; }
-.form input, .form select, .form textarea, .form button, .compactForm input, .compactForm select, .compactForm button { min-height: 42px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-raised); color: inherit; padding: .55rem .65rem; }
-.form textarea { min-height: 82px; resize: vertical; }
-.form button, .compactForm button { cursor: pointer; font-weight: 700; }
-.check { display: flex !important; align-items: center; gap: .5rem !important; }
-.check input { min-height: auto; width: 18px; height: 18px; }
-.rules { display: grid; gap: .65rem; margin-top: .8rem; }
-.rule { display: grid; gap: .5rem; padding: .7rem; border: 1px solid var(--border); border-radius: 12px; }
-.rule header { display: flex; justify-content: space-between; gap: .75rem; }
-.rolloutBar { height: 8px; border-radius: 999px; overflow: hidden; background: var(--surface-raised); }
-.rolloutBar i { display: block; height: 100%; background: currentColor; opacity: .55; }
-.compactForm { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.compactForm button { grid-column: span 2; }
-.dangerPanel { border-style: dashed; }
-.history { display: grid; gap: .4rem; padding: 0; list-style: none; }
-.history li { display: flex; justify-content: space-between; gap: 1rem; padding: .55rem; border-radius: 10px; background: var(--surface-raised); }
-@media (max-width: 900px) { .workspace { grid-template-columns: 1fr; } .list { position: static; } .metrics, .compactForm { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 640px) { .page { padding: .75rem; } .hero, .panelHeader, .rule header { display: grid; } .metrics, .row, .actionGrid, .compactForm { grid-template-columns: 1fr; } .compactForm button { grid-column: auto; } }
+.page {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+.hero,
+.panel,
+.dangerPanel,
+.list {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+  padding: 1rem;
+}
+.hero div,
+.panelHeader div {
+  display: grid;
+  gap: 0.25rem;
+}
+.hero h2,
+.hero p,
+.panel h3,
+.dangerPanel h3,
+.dangerPanel p {
+  margin: 0;
+}
+.hero p,
+.panel small,
+.rule small,
+.securityNotice {
+  color: var(--text-muted);
+}
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+.list {
+  position: sticky;
+  top: 1rem;
+  display: grid;
+  overflow: hidden;
+}
+.list header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.8rem;
+  border-bottom: 1px solid var(--border);
+}
+.item,
+.activeItem {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.75rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+}
+.activeItem {
+  background: var(--surface-raised);
+  font-weight: 700;
+}
+.detail {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+.panel,
+.dangerPanel {
+  padding: 1rem;
+}
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+.securityNotice {
+  margin-top: 0.75rem;
+  padding: 0.65rem;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin: 0.8rem 0;
+}
+.metrics div {
+  padding: 0.6rem;
+  border-radius: 10px;
+  background: var(--surface-raised);
+}
+.metrics dt {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+.metrics dd {
+  margin: 0.2rem 0 0;
+  font-weight: 700;
+}
+.form,
+.compactForm {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.8rem;
+}
+.form label {
+  display: grid;
+  gap: 0.25rem;
+}
+.row,
+.actionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+.form input,
+.form select,
+.form textarea,
+.form button,
+.compactForm input,
+.compactForm select,
+.compactForm button {
+  min-height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-raised);
+  color: inherit;
+  padding: 0.55rem 0.65rem;
+}
+.form textarea {
+  min-height: 82px;
+  resize: vertical;
+}
+.form button,
+.compactForm button {
+  cursor: pointer;
+  font-weight: 700;
+}
+.check {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem !important;
+}
+.check input {
+  min-height: auto;
+  width: 18px;
+  height: 18px;
+}
+.rules {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.8rem;
+}
+.rule {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.rule header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.rolloutBar {
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface-raised);
+}
+.rolloutBar i {
+  display: block;
+  height: 100%;
+  background: currentColor;
+  opacity: 0.55;
+}
+.compactForm {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.compactForm button {
+  grid-column: span 2;
+}
+.dangerPanel {
+  border-style: dashed;
+}
+.history {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0;
+  list-style: none;
+}
+.history li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem;
+  border-radius: 10px;
+  background: var(--surface-raised);
+}
+@media (max-width: 900px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+  .list {
+    position: static;
+  }
+  .metrics,
+  .compactForm {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .page {
+    padding: 0.75rem;
+  }
+  .hero,
+  .panelHeader,
+  .rule header {
+    display: grid;
+  }
+  .metrics,
+  .row,
+  .actionGrid,
+  .compactForm {
+    grid-template-columns: 1fr;
+  }
+  .compactForm button {
+    grid-column: auto;
+  }
+}
