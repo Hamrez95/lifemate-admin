@@ -72,7 +72,8 @@ export async function updateControlAction(formData: FormData) {
   const expectedVersion = integer(formData, "expectedVersion");
   const valueType = text(formData, "valueType") as PlatformControl["valueType"];
   const status = text(formData, "status");
-  if (expectedVersion === null || !["Boolean", "Integer", "String", "Json"].includes(valueType)) return;
+  if (expectedVersion === null || !["Boolean", "Integer", "String", "Json"].includes(valueType))
+    return;
   if (status !== "Active" && status !== "Retired") return;
   const reason = text(formData, "reason");
   const result = await updatePlatformControl({
@@ -94,8 +95,14 @@ export async function createRuleAction(formData: FormData) {
   const status = text(formData, "status");
   const priority = integer(formData, "priority");
   const valueType = text(formData, "valueType") as PlatformControl["valueType"];
-  if (!(["Global", "Product", "Segment", "Percentage", "Beta", "Account"] as string[]).includes(targetType)) return;
-  if (!(["Active", "Disabled", "Retired"] as string[]).includes(status) || priority === null) return;
+  if (
+    !(["Global", "Product", "Segment", "Percentage", "Beta", "Account"] as string[]).includes(
+      targetType,
+    )
+  )
+    return;
+  if (!(["Active", "Disabled", "Retired"] as string[]).includes(status) || priority === null)
+    return;
   const reason = text(formData, "reason");
   const rollout = integer(formData, "rolloutBasisPoints");
   const result = await createPlatformRule({
@@ -122,7 +129,12 @@ export async function updateRuleAction(formData: FormData) {
   const status = text(formData, "status");
   const valueType = text(formData, "valueType") as PlatformControl["valueType"];
   if (expectedVersion === null || priority === null) return;
-  if (!(["Global", "Product", "Segment", "Percentage", "Beta", "Account"] as string[]).includes(targetType)) return;
+  if (
+    !(["Global", "Product", "Segment", "Percentage", "Beta", "Account"] as string[]).includes(
+      targetType,
+    )
+  )
+    return;
   if (!(["Active", "Disabled", "Retired"] as string[]).includes(status)) return;
   const reason = text(formData, "reason");
   const rollout = integer(formData, "rolloutBasisPoints");
@@ -154,7 +166,12 @@ export async function rollbackControlAction(formData: FormData) {
     expectedVersion,
     historyVersion,
     reason,
-    idempotencyKey: key("platform-control-rollback", [controlKey, expectedVersion, historyVersion, reason]),
+    idempotencyKey: key("platform-control-rollback", [
+      controlKey,
+      expectedVersion,
+      historyVersion,
+      reason,
+    ]),
   });
   if (result.kind === "ok") revalidatePath("/operations/platform-controls");
 }
