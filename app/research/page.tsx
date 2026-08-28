@@ -172,11 +172,7 @@ async function ResearchContent({ selectedId }: { selectedId: string }) {
             </div>
           </div>
           <form action={createDatasetAction} className={styles.formGrid}>
-            <input
-              type="hidden"
-              name="idempotencyKey"
-              value={`research-dataset-${randomUUID()}`}
-            />
+            <input type="hidden" name="idempotencyKey" value={`research-dataset-${randomUUID()}`} />
             <label className={styles.wideField}>
               <span>نام Dataset</span>
               <input
