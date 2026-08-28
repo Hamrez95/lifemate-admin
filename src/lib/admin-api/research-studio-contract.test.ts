@@ -33,7 +33,7 @@ describe("Founder Research Studio contract", () => {
     expect(page).toContain("No raw export-all");
     expect(page).toContain("minimumCohortSize");
     expect(page).toContain("smallCellThreshold");
-    expect(page).toContain('rowMode: "Aggregate"');
+    expect(page).toContain("Aggregate تنها حالت قابل ساخت است");
     expect(actions).toContain('rowMode: "Aggregate"');
     expect(actions).not.toContain("randomUUID");
   });
