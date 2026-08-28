@@ -33,11 +33,7 @@ function destination(kind: string, message: string): never {
   redirect(`/marketing/audiences?${new URLSearchParams({ notice: kind, message }).toString()}`);
 }
 
-function resultMessage(result: {
-  kind: string;
-  message?: string;
-  correlationId?: string;
-}): string {
+function resultMessage(result: { kind: string; message?: string; correlationId?: string }): string {
   if (result.kind === "forbidden")
     return "مجوز مدیریت Audience Segment برای این عملیات وجود ندارد.";
   if (result.kind === "conflict")
