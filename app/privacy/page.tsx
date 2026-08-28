@@ -14,11 +14,7 @@ import {
 } from "@/src/lib/admin-api/privacy-consent";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
-import {
-  createDocumentAction,
-  publishDocumentAction,
-  retireDocumentAction,
-} from "./actions";
+import { createDocumentAction, publishDocumentAction, retireDocumentAction } from "./actions";
 import styles from "./privacy.module.css";
 
 type PageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
@@ -325,7 +321,9 @@ function CoveragePanel({ coverage }: { coverage: PrivacyCoverageResponse }) {
                   <td>{item.jurisdiction}</td>
                   <td>{item.acceptedCount.toLocaleString("fa-IR")}</td>
                   <td>{item.eligibleAccountCount.toLocaleString("fa-IR")}</td>
-                  <td>{item.coveragePercent.toLocaleString("fa-IR", { maximumFractionDigits: 2 })}%</td>
+                  <td>
+                    {item.coveragePercent.toLocaleString("fa-IR", { maximumFractionDigits: 2 })}%
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -365,7 +363,13 @@ function CreateDocumentPanel() {
         </label>
         <label>
           SHA / hash سند
-          <input name="documentHash" required minLength={32} maxLength={128} pattern="[0-9a-fA-F]{32,128}" />
+          <input
+            name="documentHash"
+            required
+            minLength={32}
+            maxLength={128}
+            pattern="[0-9a-fA-F]{32,128}"
+          />
         </label>
         <label>
           لینک HTTPS سند
@@ -471,7 +475,8 @@ async function PrivacyContent({ query, canManage }: { query: Query; canManage: b
       {coverageResult?.kind === "ok" ? <CoveragePanel coverage={coverageResult.data} /> : null}
       {query.view === "documents" && coverageResult && coverageResult.kind !== "ok" ? (
         <div className={styles.notice}>
-          پوشش پذیرش در حال حاضر قابل دریافت نیست؛ فهرست اسناد همچنان از قرارداد canonical نمایش داده می‌شود.
+          پوشش پذیرش در حال حاضر قابل دریافت نیست؛ فهرست اسناد همچنان از قرارداد canonical نمایش
+          داده می‌شود.
         </div>
       ) : null}
 
