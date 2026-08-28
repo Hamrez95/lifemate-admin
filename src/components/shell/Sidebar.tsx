@@ -39,7 +39,9 @@ export function Sidebar({ activeSlug }: SidebarProps) {
                 <Link
                   className="nav-item"
                   data-active={
-                    active && !auditActive && !researchActive && !experimentsActive ? "true" : "false"
+                    active && !auditActive && !researchActive && !experimentsActive
+                      ? "true"
+                      : "false"
                   }
                   href={workspaceHref(workspace)}
                   aria-label={workspace.label}
