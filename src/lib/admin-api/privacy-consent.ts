@@ -21,20 +21,28 @@ export type PrivacyResult =
   | { kind: "invalid" }
   | { kind: "unavailable"; correlationId?: string };
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function parseDirectory(value: unknown): PrivacyDirectoryResponse | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const body = value as Record<string, unknown>;
   if (!Array.isArray(body.items)) return null;
-  if (!Number.isInteger(body.page) || !Number.isInteger(body.pageSize) || !Number.isInteger(body.total)) {
+  if (
+    !Number.isInteger(body.page) ||
+    !Number.isInteger(body.pageSize) ||
+    !Number.isInteger(body.total)
+  ) {
     return null;
   }
   if (!body.freshness || typeof body.freshness !== "object" || Array.isArray(body.freshness)) {
     return null;
   }
   const freshness = body.freshness as Record<string, unknown>;
-  if ((freshness.status !== "fresh" && freshness.status !== "stale") || typeof freshness.asOfUtc !== "string") {
+  if (
+    (freshness.status !== "fresh" && freshness.status !== "stale") ||
+    typeof freshness.asOfUtc !== "string"
+  ) {
     return null;
   }
   for (const item of body.items) {
@@ -102,7 +110,9 @@ export async function retirePrivacyDocument(input: {
   expectedUpdatedAt: string;
   reasonCode: string;
 }): Promise<{ ok: true } | { ok: false; code: string }> {
-  if (!UUID.test(input.documentId)) return { ok: false, code: "privacy_document_id_invalid" };
+  if (!UUID.test(input.documentId)) {
+    return { ok: false, code: "privacy_document_id_invalid" };
+  }
   const token = await getServerAdminAccessToken();
   if (!token) return { ok: false, code: "unauthenticated" };
   const config = getPublicRuntimeConfig();
