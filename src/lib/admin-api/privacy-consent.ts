@@ -1,5 +1,6 @@
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
+import { privacyRetireIdempotencyKey } from "./privacy-idempotency";
 
 export type PrivacyDirectoryKind = "documents" | "acceptances" | "consents" | "preferences";
 
@@ -22,7 +23,6 @@ export type PrivacyResult =
   | { kind: "unavailable"; correlationId?: string };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const IDEMPOTENCY_SAFE = /[^A-Za-z0-9._:-]/g;
 
 function parseDirectory(value: unknown): PrivacyDirectoryResponse | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
@@ -76,19 +76,6 @@ async function problemCorrelation(response: Response): Promise<string | undefine
   } catch {
     return undefined;
   }
-}
-
-export function privacyRetireIdempotencyKey(input: {
-  documentId: string;
-  expectedUpdatedAt: string;
-  reasonCode: string;
-}): string {
-  const stable =
-    `privacy-retire:${input.documentId}:${input.expectedUpdatedAt}:${input.reasonCode}`.replace(
-      IDEMPOTENCY_SAFE,
-      "_",
-    );
-  return stable.slice(0, 180);
 }
 
 export async function getPrivacyDirectory(
