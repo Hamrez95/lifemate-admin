@@ -148,14 +148,18 @@ export async function setExperimentStatus(input: {
   );
 }
 
-export async function listFeedback(query: {
-  status?: string;
-  kind?: string;
-  product?: string;
-  appVersion?: string;
-  limit?: number;
-  offset?: number;
-} = {}): Promise<ProductSignalResult<{ items: FeedbackItem[]; total: number; limit: number; offset: number }>> {
+export async function listFeedback(
+  query: {
+    status?: string;
+    kind?: string;
+    product?: string;
+    appVersion?: string;
+    limit?: number;
+    offset?: number;
+  } = {},
+): Promise<
+  ProductSignalResult<{ items: FeedbackItem[]; total: number; limit: number; offset: number }>
+> {
   const params = new URLSearchParams();
   if (query.status) params.set("status", query.status);
   if (query.kind) params.set("kind", query.kind);
@@ -166,10 +170,12 @@ export async function listFeedback(query: {
   return mapped(await adminFetch(`/api/v1/feedback${params.size ? `?${params}` : ""}`));
 }
 
-export async function listFeedbackTrends(input: {
-  product?: string;
-  days?: number;
-} = {}): Promise<ProductSignalResult<{ items: FeedbackTrend[]; days: number }>> {
+export async function listFeedbackTrends(
+  input: {
+    product?: string;
+    days?: number;
+  } = {},
+): Promise<ProductSignalResult<{ items: FeedbackTrend[]; days: number }>> {
   const params = new URLSearchParams();
   if (input.product) params.set("product", input.product);
   if (input.days) params.set("days", String(input.days));
