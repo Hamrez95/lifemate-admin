@@ -289,7 +289,10 @@ export async function publishPrivacyDocument(input: {
   expectedUpdatedAt: string;
   reasonCode: string;
 }): Promise<PrivacyMutationResult> {
-  if (!UUID.test(input.documentId) || !Number.isFinite(new Date(input.expectedUpdatedAt).getTime())) {
+  if (
+    !UUID.test(input.documentId) ||
+    !Number.isFinite(new Date(input.expectedUpdatedAt).getTime())
+  ) {
     return { ok: false, code: "privacy_document_publish_invalid" };
   }
   const reasonCode = input.reasonCode.trim().toLowerCase();
