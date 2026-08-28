@@ -28,8 +28,6 @@ describe("ADM-SEC-003 audit navigation", () => {
     expect(sidebar).toContain('pathname.startsWith("/experiments/")');
     expect(sidebar).toContain('aria-current={auditActive ? "page" : undefined}');
     expect(sidebar).toContain('aria-current={experimentsActive ? "page" : undefined}');
-    expect(sidebar).toContain(
-      'active && !auditActive && !researchActive && !experimentsActive',
-    );
+    expect(sidebar).toContain("active && !auditActive && !researchActive && !experimentsActive");
   });
 });
