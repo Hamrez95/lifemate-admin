@@ -55,7 +55,7 @@ async function adminFetch(path: string, init?: RequestInit): Promise<Response | 
         ...(init?.headers ?? {}),
       },
       cache: "no-store",
-      signal: AbortSignal.timeout(15_000),
+      signal: AbortSignal.timeout(10_000),
     });
   } catch {
     return new Response(null, { status: 503 });
