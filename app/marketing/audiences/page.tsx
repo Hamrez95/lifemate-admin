@@ -71,11 +71,12 @@ function ruleSummary(segment: AudienceSegment): string {
     .map((rule) => {
       const label = attributeLabels[rule.attribute] ?? rule.attribute;
       const operator = operatorLabels[rule.operator] ?? rule.operator;
-      const value = rule.value === undefined
-        ? ""
-        : Array.isArray(rule.value)
-        ? rule.value.join(", ")
-        : String(rule.value);
+      const value =
+        rule.value === undefined
+          ? ""
+          : Array.isArray(rule.value)
+            ? rule.value.join(", ")
+            : String(rule.value);
       return `${label} · ${operator}${value ? ` · ${value}` : ""}`;
     })
     .join(segment.ruleSet.match === "all" ? " AND " : " OR ");
@@ -87,7 +88,10 @@ function SegmentActions({ segment }: { segment: AudienceSegment }) {
   }
   return (
     <div className={styles.actions}>
-      <form action={previewAudienceSegmentAction} className={`${styles.action} ${styles.secondary}`}>
+      <form
+        action={previewAudienceSegmentAction}
+        className={`${styles.action} ${styles.secondary}`}
+      >
         <input type="hidden" name="segmentId" value={segment.id} />
         <button type="submit">Preview</button>
       </form>
@@ -135,11 +139,13 @@ function columns(canWrite: boolean): AdminTableColumn<AudienceSegment>[] {
       hideOnMobile: true,
     },
     ...(canWrite
-      ? [{
-          key: "actions",
-          header: "اجرا",
-          render: (row: AudienceSegment) => <SegmentActions segment={row} />,
-        } satisfies AdminTableColumn<AudienceSegment>]
+      ? [
+          {
+            key: "actions",
+            header: "اجرا",
+            render: (row: AudienceSegment) => <SegmentActions segment={row} />,
+          } satisfies AdminTableColumn<AudienceSegment>,
+        ]
       : []),
   ];
 }
@@ -195,10 +201,7 @@ function CreateSegment() {
         </label>
         <label>
           <span>مقدار</span>
-          <input
-            name="value"
-            placeholder="مثلاً wellmate یا active_30d؛ برای exists خالی"
-          />
+          <input name="value" placeholder="مثلاً wellmate یا active_30d؛ برای exists خالی" />
         </label>
         <div className={styles.full}>
           <button type="submit">ساخت Segment</button>
@@ -236,7 +239,8 @@ export default async function AudienceStudioPage({ searchParams }: PageProps) {
               <h2>Audience را یک‌بار تعریف کن؛ Campaign فقط از Snapshot نسخه‌دار استفاده کند.</h2>
               <p>
                 Segmentها از projectionهای canonical Account/Person/Product/Subscription/Engagement
-                ساخته می‌شوند. شمارش کوچک privacy-suppressed است و Snapshot برای execution تغییرناپذیر می‌ماند.
+                ساخته می‌شوند. شمارش کوچک privacy-suppressed است و Snapshot برای execution
+                تغییرناپذیر می‌ماند.
               </p>
             </div>
             <Link className={styles.back} href="/marketing/campaigns">
@@ -248,13 +252,17 @@ export default async function AudienceStudioPage({ searchParams }: PageProps) {
             <strong>مرز غیرقابل‌عبور Marketing</strong>
             <p>
               Health، medication، diagnosis، treatment، Women Health و cycle data در Segment Builder
-              ارائه نمی‌شوند. نوع رابطه یا داده سلامت هیچ‌وقت به‌عنوان permission یا targeting shortcut
-              استفاده نمی‌شود.
+              ارائه نمی‌شوند. نوع رابطه یا داده سلامت هیچ‌وقت به‌عنوان permission یا targeting
+              shortcut استفاده نمی‌شود.
             </p>
           </section>
 
           {notice && message ? (
-            <div className={styles.notice} data-kind={notice} role={notice === "error" ? "alert" : "status"}>
+            <div
+              className={styles.notice}
+              data-kind={notice}
+              role={notice === "error" ? "alert" : "status"}
+            >
               {message}
             </div>
           ) : null}
@@ -271,7 +279,9 @@ export default async function AudienceStudioPage({ searchParams }: PageProps) {
                 <strong>Attributes قابل ارزیابی الان</strong>
                 <div className={styles.capabilities}>
                   {capabilities.data.supportedAttributes.map((attribute) => (
-                    <span className={styles.chip} key={attribute}>{attribute}</span>
+                    <span className={styles.chip} key={attribute}>
+                      {attribute}
+                    </span>
                   ))}
                   {capabilities.data.unavailableAttributes.map((attribute) => (
                     <span className={`${styles.chip} ${styles.unavailable}`} key={attribute}>
@@ -280,8 +290,9 @@ export default async function AudienceStudioPage({ searchParams }: PageProps) {
                   ))}
                 </div>
                 <p>
-                  حداقل cohort برای نمایش شمارش دقیق: {capabilities.data.minimumPreviewCohort}. منبعی که
-                  canonical نیست در UI قابل انتخاب نمی‌شود و سیستم مقدار ساختگی تولید نمی‌کند.
+                  حداقل cohort برای نمایش شمارش دقیق: {capabilities.data.minimumPreviewCohort}.
+                  منبعی که canonical نیست در UI قابل انتخاب نمی‌شود و سیستم مقدار ساختگی تولید
+                  نمی‌کند.
                 </p>
               </section>
               {canWrite ? <CreateSegment /> : null}
