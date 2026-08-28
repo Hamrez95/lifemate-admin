@@ -27,9 +27,18 @@ export type PlatformRule = {
   version: number;
 };
 
+export type PlatformEvaluatorDefinition = {
+  key: string;
+  kind: PlatformControl["kind"];
+  valueType: PlatformControl["valueType"];
+  defaultValue: unknown;
+  failClosed: boolean;
+  version: number;
+};
+
 export type PlatformControlDetail = {
   key: string;
-  definition: PlatformControl;
+  definition: PlatformEvaluatorDefinition;
   rules: PlatformRule[];
   authoritative: "server";
   security: { grantsPermission: false; grantsEntitlement: false };
@@ -37,7 +46,11 @@ export type PlatformControlDetail = {
 
 export type PlatformControlHistory = {
   controlKey: string;
-  controlHistory: Array<{ version: number; snapshot_json: Record<string, unknown>; archived_at_utc: string }>;
+  controlHistory: Array<{
+    version: number;
+    snapshot_json: Record<string, unknown>;
+    archived_at_utc: string;
+  }>;
   ruleHistory: Array<{
     rule_id: string;
     version: number;
@@ -81,7 +94,10 @@ async function mapped<T>(response: Response | null): Promise<Result<T>> {
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden" };
   if ([400, 404, 409].includes(response.status)) {
-    return { kind: "invalid", message: typeof body.message === "string" ? body.message : undefined };
+    return {
+      kind: "invalid",
+      message: typeof body.message === "string" ? body.message : undefined,
+    };
   }
   return {
     kind: "unavailable",
@@ -89,7 +105,12 @@ async function mapped<T>(response: Response | null): Promise<Result<T>> {
   };
 }
 
-function mutation(path: string, method: "POST" | "PATCH", body: Record<string, unknown>, idempotencyKey: string) {
+function mutation(
+  path: string,
+  method: "POST" | "PATCH",
+  body: Record<string, unknown>,
+  idempotencyKey: string,
+) {
   return mapped<Record<string, unknown>>(
     request(path, {
       method,
@@ -236,7 +257,11 @@ export function rollbackPlatformControl(input: {
   return mutation(
     `/api/v1/platform/controls/${encodeURIComponent(input.key)}/actions/rollback`,
     "POST",
-    { expectedVersion: input.expectedVersion, historyVersion: input.historyVersion, reason: input.reason },
+    {
+      expectedVersion: input.expectedVersion,
+      historyVersion: input.historyVersion,
+      reason: input.reason,
+    },
     input.idempotencyKey,
   );
 }
