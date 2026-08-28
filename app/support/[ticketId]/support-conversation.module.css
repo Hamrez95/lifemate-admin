@@ -1,0 +1,172 @@
+.workspace {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border-subtle, #d8dee8);
+  border-radius: 1.25rem;
+  background: var(--surface, #fff);
+}
+
+.heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.heading span,
+.heading p,
+.operationHistory span,
+.operationHistory small,
+.readOnly,
+.attachmentNotice,
+.empty {
+  color: var(--text-muted, #667085);
+}
+
+.heading h3 {
+  margin: 0.25rem 0;
+}
+.heading p {
+  margin: 0;
+}
+.badge {
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.messageList {
+  display: grid;
+  gap: 0.75rem;
+  max-height: 34rem;
+  overflow: auto;
+  padding: 0.25rem;
+}
+
+.message {
+  width: min(82%, 44rem);
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  background: #f4f6f8;
+  border: 1px solid #e5e9ef;
+}
+
+.message[data-sender="Staff"] {
+  justify-self: start;
+  background: #eef6ff;
+  border-color: #d5e8ff;
+}
+
+.message[data-sender="User"] {
+  justify-self: end;
+}
+.message header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.82rem;
+}
+.message p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0.55rem 0 0;
+}
+
+.composer,
+.operationCard {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.9rem;
+  border-radius: 1rem;
+  background: #fafbfc;
+  border: 1px solid #e5e9ef;
+}
+
+.composer label,
+.operationCard label {
+  display: grid;
+  gap: 0.35rem;
+}
+.composer textarea,
+.operationCard textarea,
+.operationCard input,
+.operationCard select {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #cfd6df;
+  border-radius: 0.7rem;
+  background: #fff;
+  color: inherit;
+}
+
+.composer button,
+.operationCard button {
+  justify-self: start;
+  border: 0;
+  border-radius: 0.7rem;
+  padding: 0.65rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.composer button:disabled,
+.operationCard button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.feedback {
+  margin: 0;
+  font-size: 0.9rem;
+}
+.feedback[data-status="success"] {
+  color: #067647;
+}
+.feedback[data-status="invalid"],
+.feedback[data-status="conflict"],
+.feedback[data-status="forbidden"],
+.feedback[data-status="unavailable"] {
+  color: #b42318;
+}
+
+.operationsGrid,
+.formsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+.operationHistory {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.8rem;
+  border-radius: 0.9rem;
+  background: #fafbfc;
+}
+.operationHistory > div {
+  display: grid;
+  gap: 0.15rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid #eaecf0;
+}
+.operationHistory code {
+  overflow-wrap: anywhere;
+}
+.attachmentNotice {
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.8rem;
+  border: 1px dashed #d0d5dd;
+  font-size: 0.88rem;
+}
+
+@media (max-width: 760px) {
+  .heading {
+    flex-direction: column;
+  }
+  .message {
+    width: 94%;
+  }
+  .operationsGrid,
+  .formsGrid {
+    grid-template-columns: 1fr;
+  }
+}
