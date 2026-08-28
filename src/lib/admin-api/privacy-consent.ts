@@ -83,8 +83,11 @@ export function privacyRetireIdempotencyKey(input: {
   expectedUpdatedAt: string;
   reasonCode: string;
 }): string {
-  const stable = `privacy-retire:${input.documentId}:${input.expectedUpdatedAt}:${input.reasonCode}`
-    .replace(IDEMPOTENCY_SAFE, "_");
+  const stable =
+    `privacy-retire:${input.documentId}:${input.expectedUpdatedAt}:${input.reasonCode}`.replace(
+      IDEMPOTENCY_SAFE,
+      "_",
+    );
   return stable.slice(0, 180);
 }
 
