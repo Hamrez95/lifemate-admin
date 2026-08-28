@@ -67,7 +67,9 @@ export function Sidebar({ activeSlug }: SidebarProps) {
                     aria-label="Research Studio"
                     aria-current={researchActive ? "page" : undefined}
                   >
-                    <span className="nav-item__symbol" aria-hidden="true">↳</span>
+                    <span className="nav-item__symbol" aria-hidden="true">
+                      ↳
+                    </span>
                     <span>Research Studio</span>
                   </Link>
                 ) : null}
@@ -79,7 +81,9 @@ export function Sidebar({ activeSlug }: SidebarProps) {
                     aria-label="Experiments, Feedback & Advocacy"
                     aria-current={experimentsActive ? "page" : undefined}
                   >
-                    <span className="nav-item__symbol" aria-hidden="true">↳</span>
+                    <span className="nav-item__symbol" aria-hidden="true">
+                      ↳
+                    </span>
                     <span>Experiments & Feedback</span>
                   </Link>
                 ) : null}
@@ -91,7 +95,9 @@ export function Sidebar({ activeSlug }: SidebarProps) {
                     aria-label="گزارش ممیزی"
                     aria-current={auditActive ? "page" : undefined}
                   >
-                    <span className="nav-item__symbol" aria-hidden="true">↳</span>
+                    <span className="nav-item__symbol" aria-hidden="true">
+                      ↳
+                    </span>
                     <span>گزارش ممیزی</span>
                   </Link>
                 ) : null}
@@ -99,8 +105,16 @@ export function Sidebar({ activeSlug }: SidebarProps) {
             );
           })}
           <li>
-            <Link className="nav-item" data-active={profileActive ? "true" : "false"} href="/profile" aria-label="پروفایل و تغییر رمز عبور" aria-current={profileActive ? "page" : undefined}>
-              <span className="nav-item__symbol" aria-hidden="true">◎</span>
+            <Link
+              className="nav-item"
+              data-active={profileActive ? "true" : "false"}
+              href="/profile"
+              aria-label="پروفایل و تغییر رمز عبور"
+              aria-current={profileActive ? "page" : undefined}
+            >
+              <span className="nav-item__symbol" aria-hidden="true">
+                ◎
+              </span>
               <span>پروفایل و امنیت</span>
             </Link>
           </li>
@@ -108,7 +122,10 @@ export function Sidebar({ activeSlug }: SidebarProps) {
       </nav>
       <div className="sidebar__status" role="status" aria-label="وضعیت امنیت نشست مدیریت">
         <span className="status-dot" aria-hidden="true" />
-        <div><strong>نشست مدیریتی فعال</strong><span>مجوزها از Admin API دریافت شده‌اند.</span></div>
+        <div>
+          <strong>نشست مدیریتی فعال</strong>
+          <span>مجوزها از Admin API دریافت شده‌اند.</span>
+        </div>
       </div>
     </aside>
   );
