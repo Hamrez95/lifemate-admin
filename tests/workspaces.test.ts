@@ -4,7 +4,7 @@ import { findWorkspace, workspaceHref, workspaces } from "../src/config/workspac
 
 describe("workspace configuration", () => {
   it("contains the approved management workspaces without duplicate routes", () => {
-    expect(workspaces).toHaveLength(12);
+    expect(workspaces).toHaveLength(13);
     expect(new Set(workspaces.map((workspace) => workspace.slug)).size).toBe(workspaces.length);
   });
 
@@ -16,6 +16,7 @@ describe("workspace configuration", () => {
 
   it("resolves known workspaces and rejects unknown ones", () => {
     expect(findWorkspace("security")?.label).toBe("امنیت");
+    expect(findWorkspace("privacy")?.requiredPermissions).toContain("privacy.consent.read");
     expect(findWorkspace("not-a-workspace")).toBeUndefined();
   });
 });

@@ -24,6 +24,11 @@ describe("workspace visibility policy", () => {
     expect(canAccessWorkspace(workspace("finance"), ["finance.read"])).toBe(true);
   });
 
+  it("keeps Privacy hidden without the canonical consent-read permission", () => {
+    expect(canAccessWorkspace(workspace("privacy"), ["support.read"])).toBe(false);
+    expect(canAccessWorkspace(workspace("privacy"), ["privacy.consent.read"])).toBe(true);
+  });
+
   it("allows approved AI permissions into the AI workspace", () => {
     expect(canAccessWorkspace(workspace("ai"), ["ai.advisor.read"])).toBe(true);
     expect(canAccessWorkspace(workspace("ai"), ["ai.marketing.use"])).toBe(true);

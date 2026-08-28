@@ -102,6 +102,15 @@ export const workspaces: readonly Workspace[] = [
     requiredPermissions: ["security.audit.read", "security.roles.write"],
   },
   {
+    slug: "privacy",
+    label: "حریم خصوصی و رضایت",
+    shortLabel: "حریم خصوصی",
+    description: "اسناد قانونی، پذیرش، رضایت‌های واقعی و ترجیحات اختیاری",
+    symbol: "◐",
+    tone: "green",
+    requiredPermissions: ["privacy.consent.read"],
+  },
+  {
     slug: "ai",
     label: "مشاور هوش مصنوعی",
     shortLabel: "AI",
