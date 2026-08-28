@@ -111,7 +111,9 @@ export async function getProductVersionAdoption(
   );
 }
 
-export async function getProductUpdatePolicies(): Promise<Result<{ items: ProductUpdatePolicy[] }>> {
+export async function getProductUpdatePolicies(): Promise<
+  Result<{ items: ProductUpdatePolicy[] }>
+> {
   return mapped(await request("/api/v1/platform/product-update-policies"));
 }
 
@@ -132,9 +134,7 @@ export async function getAccountProductVersions(
   accountId: string,
 ): Promise<Result<{ accountId: string; items: AccountProductVersion[] }>> {
   return mapped(
-    await request(
-      `/api/v1/analytics/accounts/${encodeURIComponent(accountId)}/product-versions`,
-    ),
+    await request(`/api/v1/analytics/accounts/${encodeURIComponent(accountId)}/product-versions`),
   );
 }
 
