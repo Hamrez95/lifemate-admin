@@ -22,6 +22,7 @@ export async function saveProductUpdatePolicyAction(formData: FormData) {
   const messageKey = value(formData, "messageKey");
   const status = value(formData, "status");
   const effectiveAtUtc = value(formData, "effectiveAtUtc");
+  const effectiveAt = new Date(effectiveAtUtc);
   const expectedVersion = Number(value(formData, "expectedVersion"));
   const reason = value(formData, "reason");
   const idempotencyKey = value(formData, "idempotencyKey");
@@ -32,8 +33,11 @@ export async function saveProductUpdatePolicyAction(formData: FormData) {
     (mode !== "Soft" && mode !== "Force") ||
     !["Routine", "Critical", "Security", "BreakingCompatibility"].includes(reasonCode) ||
     !["Active", "Disabled"].includes(status) ||
+    Number.isNaN(effectiveAt.getTime()) ||
     !Number.isInteger(expectedVersion) ||
     expectedVersion < 0 ||
+    reason.length < 10 ||
+    reason.length > 1000 ||
     idempotencyKey.length < 8
   ) {
     redirect("/operations/releases?status=invalid");
@@ -48,7 +52,7 @@ export async function saveProductUpdatePolicyAction(formData: FormData) {
     reasonCode: reasonCode as "Routine" | "Critical" | "Security" | "BreakingCompatibility",
     messageKey: messageKey || null,
     status: status as "Active" | "Disabled",
-    effectiveAtUtc: new Date(effectiveAtUtc).toISOString(),
+    effectiveAtUtc: effectiveAt.toISOString(),
     expectedVersion,
     reason,
     idempotencyKey,
