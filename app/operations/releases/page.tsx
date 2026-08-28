@@ -137,7 +137,9 @@ export default async function ReleaseAdoptionPage({ searchParams }: Props) {
                 </table>
               </div>
             ) : (
-              <p className={styles.muted}>Adoption API unavailable؛ داده ساختگی نمایش داده نمی‌شود.</p>
+              <p className={styles.muted}>
+                Adoption API unavailable؛ داده ساختگی نمایش داده نمی‌شود.
+              </p>
             )}
           </section>
 
