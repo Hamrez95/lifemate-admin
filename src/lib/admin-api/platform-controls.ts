@@ -124,7 +124,9 @@ function mutation(
   );
 }
 
-export function getPlatformControls(): Promise<Result<{ items: PlatformControl[]; total: number }>> {
+export function getPlatformControls(): Promise<
+  Result<{ items: PlatformControl[]; total: number }>
+> {
   return mapped(request("/api/v1/platform/controls"));
 }
 
@@ -140,7 +142,10 @@ export async function getPlatformControl(key: string): Promise<Result<PlatformCo
   const metadata = listResult.data.items.find((item) => item.key === key);
   if (!metadata) return { kind: "invalid", message: "Platform control was not found." };
   if (metadata.version !== detailResult.data.definition.version) {
-    return { kind: "invalid", message: "Platform control changed while loading; refresh and retry." };
+    return {
+      kind: "invalid",
+      message: "Platform control changed while loading; refresh and retry.",
+    };
   }
   return {
     kind: "ok",
