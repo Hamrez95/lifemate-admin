@@ -57,15 +57,16 @@ export async function createExperimentAction(formData: FormData) {
 
 export async function setExperimentStatusAction(formData: FormData) {
   const expectedVersion = Number(text(formData, "expectedVersion"));
-  const result = Number.isSafeInteger(expectedVersion) && expectedVersion > 0
-    ? await setExperimentStatus({
-        experimentKey: text(formData, "experimentKey"),
-        status: text(formData, "nextStatus"),
-        expectedVersion,
-        reason: text(formData, "reason"),
-        idempotencyKey: text(formData, "idempotencyKey"),
-      })
-    : { kind: "invalid" as const };
+  const result =
+    Number.isSafeInteger(expectedVersion) && expectedVersion > 0
+      ? await setExperimentStatus({
+          experimentKey: text(formData, "experimentKey"),
+          status: text(formData, "nextStatus"),
+          expectedVersion,
+          reason: text(formData, "reason"),
+          idempotencyKey: text(formData, "idempotencyKey"),
+        })
+      : { kind: "invalid" as const };
   revalidatePath("/experiments");
   redirect(`/experiments?status=${resultStatus(result.kind)}`);
 }
