@@ -35,11 +35,26 @@ const products = [
 ] as const;
 
 const stageMeta: Record<GrowthStage, { label: string; description: string }> = {
-  acquisition: { label: "Acquisition", description: "ورود حساب‌های جدید با attribution فقط در صورت وجود fact canonical." },
-  activation: { label: "Activation", description: "ثبت‌نام محصول و activation مشاهده‌شده از enrollmentهای canonical." },
-  engagement: { label: "Engagement", description: "شاخص‌های استفاده فقط وقتی event history معتبر وجود داشته باشد." },
-  monetization: { label: "Monetization", description: "درآمد، تبدیل پولی، LTV و CAC بدون inference یا FX ضمنی." },
-  retention: { label: "Retention", description: "renewal/churn فقط با denominator و cohort history معتبر." },
+  acquisition: {
+    label: "Acquisition",
+    description: "ورود حساب‌های جدید با attribution فقط در صورت وجود fact canonical.",
+  },
+  activation: {
+    label: "Activation",
+    description: "ثبت‌نام محصول و activation مشاهده‌شده از enrollmentهای canonical.",
+  },
+  engagement: {
+    label: "Engagement",
+    description: "شاخص‌های استفاده فقط وقتی event history معتبر وجود داشته باشد.",
+  },
+  monetization: {
+    label: "Monetization",
+    description: "درآمد، تبدیل پولی، LTV و CAC بدون inference یا FX ضمنی.",
+  },
+  retention: {
+    label: "Retention",
+    description: "renewal/churn فقط با denominator و cohort history معتبر.",
+  },
 };
 
 const stateLabel: Record<GrowthMetricState, string> = {
@@ -78,7 +93,8 @@ function paramsFrom(input: Record<string, string | string[] | undefined>): URLSe
 
 function displayValue(metric: GrowthMetric): string {
   if (metric.state === "unavailable" || metric.value === null) return "—";
-  if (metric.unit === "rate" && typeof metric.value === "number") return `${number.format(metric.value * 100)}٪`;
+  if (metric.unit === "rate" && typeof metric.value === "number")
+    return `${number.format(metric.value * 100)}٪`;
   if (metric.unit === "minor_currency") {
     return typeof metric.value === "string" ? metric.value : number.format(metric.value);
   }
@@ -163,7 +179,8 @@ async function GrowthContent({ filters }: { filters: URLSearchParams }) {
           <h2>Acquisition → Activation → Engagement → Monetization → Retention</h2>
           <p>
             این cockpit فقط factهای canonical Core را نمایش می‌دهد. KPIهای فاقد source معتبر به‌صورت
-            Unavailable باقی می‌مانند و LTV، CAC، Revenue یا Churn از داده‌های ناقص استنتاج نمی‌شوند.
+            Unavailable باقی می‌مانند و LTV، CAC، Revenue یا Churn از داده‌های ناقص استنتاج
+            نمی‌شوند.
           </p>
         </div>
         <div className={styles.heroMeta}>
@@ -205,7 +222,11 @@ async function GrowthContent({ filters }: { filters: URLSearchParams }) {
           </label>
           <button type="submit">اعمال فیلتر</button>
         </form>
-        <button type="button" disabled title="Core هنوز aggregate export contract برای Growth Analytics ارائه نمی‌کند">
+        <button
+          type="button"
+          disabled
+          title="Core هنوز aggregate export contract برای Growth Analytics ارائه نمی‌کند"
+        >
           خروجی
         </button>
       </section>
@@ -232,7 +253,11 @@ async function GrowthContent({ filters }: { filters: URLSearchParams }) {
           ) : (
             <div className={styles.metricGrid}>
               {metrics.map((metric) => (
-                <MetricCard key={metric.key} metric={metric} previous={previousByKey.get(metric.key)} />
+                <MetricCard
+                  key={metric.key}
+                  metric={metric}
+                  previous={previousByKey.get(metric.key)}
+                />
               ))}
             </div>
           )}
