@@ -27,7 +27,7 @@ export type PlatformRule = {
   version: number;
 };
 
-export type PlatformEvaluatorDefinition = {
+type PlatformEvaluatorDefinition = {
   key: string;
   kind: PlatformControl["kind"];
   valueType: PlatformControl["valueType"];
@@ -36,12 +36,16 @@ export type PlatformEvaluatorDefinition = {
   version: number;
 };
 
-export type PlatformControlDetail = {
+type PlatformControlDetailRaw = {
   key: string;
   definition: PlatformEvaluatorDefinition;
   rules: PlatformRule[];
   authoritative: "server";
   security: { grantsPermission: false; grantsEntitlement: false };
+};
+
+export type PlatformControlDetail = Omit<PlatformControlDetailRaw, "definition"> & {
+  definition: PlatformControl;
 };
 
 export type PlatformControlHistory = {
@@ -124,8 +128,27 @@ export function getPlatformControls(): Promise<Result<{ items: PlatformControl[]
   return mapped(request("/api/v1/platform/controls"));
 }
 
-export function getPlatformControl(key: string): Promise<Result<PlatformControlDetail>> {
-  return mapped(request(`/api/v1/platform/controls/${encodeURIComponent(key)}`));
+export async function getPlatformControl(key: string): Promise<Result<PlatformControlDetail>> {
+  const [detailResult, listResult] = await Promise.all([
+    mapped<PlatformControlDetailRaw>(
+      await request(`/api/v1/platform/controls/${encodeURIComponent(key)}`),
+    ),
+    getPlatformControls(),
+  ]);
+  if (detailResult.kind !== "ok") return detailResult;
+  if (listResult.kind !== "ok") return listResult;
+  const metadata = listResult.data.items.find((item) => item.key === key);
+  if (!metadata) return { kind: "invalid", message: "Platform control was not found." };
+  if (metadata.version !== detailResult.data.definition.version) {
+    return { kind: "invalid", message: "Platform control changed while loading; refresh and retry." };
+  }
+  return {
+    kind: "ok",
+    data: {
+      ...detailResult.data,
+      definition: metadata,
+    },
+  };
 }
 
 export function getPlatformControlHistory(key: string): Promise<Result<PlatformControlHistory>> {
