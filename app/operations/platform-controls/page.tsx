@@ -37,7 +37,10 @@ export default async function PlatformControlsPage({ searchParams }: Props) {
   if (listResult.kind === "unauthenticated") redirect("/login");
   if (listResult.kind === "forbidden") redirect("/forbidden");
   const controls = listResult.kind === "ok" ? listResult.data.items : [];
-  const key = selectedKey && controls.some((item) => item.key === selectedKey) ? selectedKey : controls[0]?.key;
+  const key =
+    selectedKey && controls.some((item) => item.key === selectedKey)
+      ? selectedKey
+      : controls[0]?.key;
   const [detailResult, historyResult] = key
     ? await Promise.all([getPlatformControl(key), getPlatformControlHistory(key)])
     : [null, null];
@@ -57,8 +60,9 @@ export default async function PlatformControlsPage({ searchParams }: Props) {
               <span>Control Plane · P0</span>
               <h2>Feature Flags و Remote Config با مرز دسترسی صریح</h2>
               <p>
-                این کنترل‌ها فقط رفتار و presentation را تغییر می‌دهند. هیچ flag یا rollout در client
-                نمی‌تواند Permission یا Entitlement ایجاد کند؛ authorization همچنان server-authoritative است.
+                این کنترل‌ها فقط رفتار و presentation را تغییر می‌دهند. هیچ flag یا rollout در
+                client نمی‌تواند Permission یا Entitlement ایجاد کند؛ authorization همچنان
+                server-authoritative است.
               </p>
             </div>
             <Link href="/operations/releases">Release controls →</Link>
@@ -126,15 +130,33 @@ export default async function PlatformControlsPage({ searchParams }: Props) {
                       {canWrite ? (
                         <form action={updateControlAction} className={styles.form}>
                           <input type="hidden" name="controlKey" value={detail.key} />
-                          <input type="hidden" name="expectedVersion" value={detail.definition.version} />
-                          <input type="hidden" name="valueType" value={detail.definition.valueType} />
+                          <input
+                            type="hidden"
+                            name="expectedVersion"
+                            value={detail.definition.version}
+                          />
+                          <input
+                            type="hidden"
+                            name="valueType"
+                            value={detail.definition.valueType}
+                          />
                           <label>
                             Default value
-                            <textarea name="defaultValue" defaultValue={displayValue(detail.definition.defaultValue)} required />
+                            <textarea
+                              name="defaultValue"
+                              defaultValue={displayValue(detail.definition.defaultValue)}
+                              required
+                            />
                           </label>
                           <label>
                             Description
-                            <textarea name="description" defaultValue={detail.definition.description} minLength={5} maxLength={240} required />
+                            <textarea
+                              name="description"
+                              defaultValue={detail.definition.description}
+                              minLength={5}
+                              maxLength={240}
+                              required
+                            />
                           </label>
                           <div className={styles.row}>
                             <label>
@@ -145,7 +167,11 @@ export default async function PlatformControlsPage({ searchParams }: Props) {
                               </select>
                             </label>
                             <label className={styles.check}>
-                              <input type="checkbox" name="failClosed" defaultChecked={detail.definition.failClosed} />
+                              <input
+                                type="checkbox"
+                                name="failClosed"
+                                defaultChecked={detail.definition.failClosed}
+                              />
                               Fail closed
                             </label>
                           </div>
@@ -166,39 +192,103 @@ export default async function PlatformControlsPage({ searchParams }: Props) {
                         </div>
                       </header>
                       <div className={styles.rules}>
-                        {detail.rules.length === 0 ? <p>هیچ rollout rule فعالی ثبت نشده است.</p> : null}
+                        {detail.rules.length === 0 ? (
+                          <p>هیچ rollout rule فعالی ثبت نشده است.</p>
+                        ) : null}
                         {detail.rules.map((rule) => (
                           <article key={rule.id} className={styles.rule}>
                             <header>
                               <strong>{rule.targetType}</strong>
-                              <span>priority {rule.priority} · v{rule.version}</span>
+                              <span>
+                                priority {rule.priority} · v{rule.version}
+                              </span>
                             </header>
                             <div className={styles.rolloutBar}>
-                              <i style={{ width: `${rule.targetType === "Percentage" ? (rule.rolloutBasisPoints ?? 0) / 100 : 100}%` }} />
+                              <i
+                                style={{
+                                  width: `${rule.targetType === "Percentage" ? (rule.rolloutBasisPoints ?? 0) / 100 : 100}%`,
+                                }}
+                              />
                             </div>
                             <small>
-                              target: {rule.targetKey ?? "global"} · value: {displayValue(rule.value)}
+                              target: {rule.targetKey ?? "global"} · value:{" "}
+                              {displayValue(rule.value)}
                             </small>
                             {canWrite ? (
                               <form action={updateRuleAction} className={styles.compactForm}>
                                 <input type="hidden" name="ruleId" value={rule.id} />
-                                <input type="hidden" name="expectedVersion" value={rule.version} />
-                                <input type="hidden" name="valueType" value={detail.definition.valueType} />
-                                <input name="priority" type="number" min={1} max={10000} defaultValue={rule.priority} required />
+                                <input
+                                  type="hidden"
+                                  name="expectedVersion"
+                                  value={rule.version}
+                                />
+                                <input
+                                  type="hidden"
+                                  name="valueType"
+                                  value={detail.definition.valueType}
+                                />
+                                <input
+                                  name="priority"
+                                  type="number"
+                                  min={1}
+                                  max={10000}
+                                  defaultValue={rule.priority}
+                                  required
+                                />
                                 <select name="targetType" defaultValue={rule.targetType}>
-                                  {['Global','Product','Segment','Percentage','Beta','Account'].map((value) => <option key={value} value={value}>{value}</option>)}
+                                  {[
+                                    "Global",
+                                    "Product",
+                                    "Segment",
+                                    "Percentage",
+                                    "Beta",
+                                    "Account",
+                                  ].map((value) => (
+                                    <option key={value} value={value}>
+                                      {value}
+                                    </option>
+                                  ))}
                                 </select>
-                                <input name="targetKey" defaultValue={rule.targetKey ?? ""} placeholder="opaque target key" />
-                                <input name="rolloutBasisPoints" type="number" min={0} max={10000} defaultValue={rule.rolloutBasisPoints ?? ""} placeholder="basis points" />
-                                <input name="value" defaultValue={displayValue(rule.value)} required />
-                                <input name="startsAtUtc" defaultValue={rule.startsAtUtc ?? ""} placeholder="ISO start" />
-                                <input name="endsAtUtc" defaultValue={rule.endsAtUtc ?? ""} placeholder="ISO end" />
+                                <input
+                                  name="targetKey"
+                                  defaultValue={rule.targetKey ?? ""}
+                                  placeholder="opaque target key"
+                                />
+                                <input
+                                  name="rolloutBasisPoints"
+                                  type="number"
+                                  min={0}
+                                  max={10000}
+                                  defaultValue={rule.rolloutBasisPoints ?? ""}
+                                  placeholder="basis points"
+                                />
+                                <input
+                                  name="value"
+                                  defaultValue={displayValue(rule.value)}
+                                  required
+                                />
+                                <input
+                                  name="startsAtUtc"
+                                  defaultValue={rule.startsAtUtc ?? ""}
+                                  placeholder="ISO start"
+                                />
+                                <input
+                                  name="endsAtUtc"
+                                  defaultValue={rule.endsAtUtc ?? ""}
+                                  placeholder="ISO end"
+                                />
                                 <select name="status" defaultValue="Active">
                                   <option value="Active">Active</option>
                                   <option value="Disabled">Disabled</option>
                                   <option value="Retired">Retired</option>
                                 </select>
-                                <input name="reason" minLength={10} maxLength={1000} placeholder="Audit reason" required />
+                                <input
+                                  name="reason"
+                                  minLength={10}
+                                  maxLength={1000}
+                                  placeholder="Audit reason"
+                                  required
+                                />
                                 <button type="submit">Update rule</button>
                               </form>
                             ) : null}
@@ -210,20 +300,69 @@ export default async function PlatformControlsPage({ searchParams }: Props) {
                         <form action={createRuleAction} className={styles.form}>
                           <h4>Add rollout rule</h4>
                           <input type="hidden" name="controlKey" value={detail.key} />
-                          <input type="hidden" name="valueType" value={detail.definition.valueType} />
+                          <input
+                            type="hidden"
+                            name="valueType"
+                            value={detail.definition.valueType}
+                          />
                           <div className={styles.row}>
-                            <label>Priority<input name="priority" type="number" min={1} max={10000} defaultValue={100} required /></label>
-                            <label>Target<select name="targetType" defaultValue="Global">{['Global','Product','Segment','Percentage','Beta','Account'].map((value) => <option key={value} value={value}>{value}</option>)}</select></label>
+                            <label>
+                              Priority
+                              <input
+                                name="priority"
+                                type="number"
+                                min={1}
+                                max={10000}
+                                defaultValue={100}
+                                required
+                              />
+                            </label>
+                            <label>
+                              Target
+                              <select name="targetType" defaultValue="Global">
+                                {[
+                                  "Global",
+                                  "Product",
+                                  "Segment",
+                                  "Percentage",
+                                  "Beta",
+                                  "Account",
+                                ].map((value) => (
+                                  <option key={value} value={value}>
+                                    {value}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
                           </div>
-                          <input name="targetKey" placeholder="product / segment / beta / opaque account key" />
-                          <input name="rolloutBasisPoints" type="number" min={0} max={10000} placeholder="Percentage only: 0–10000 bp" />
+                          <input
+                            name="targetKey"
+                            placeholder="product / segment / beta / opaque account key"
+                          />
+                          <input
+                            name="rolloutBasisPoints"
+                            type="number"
+                            min={0}
+                            max={10000}
+                            placeholder="Percentage only: 0–10000 bp"
+                          />
                           <input name="value" placeholder="Typed value" required />
                           <div className={styles.row}>
                             <input name="startsAtUtc" placeholder="Optional ISO start" />
                             <input name="endsAtUtc" placeholder="Optional ISO end" />
                           </div>
-                          <select name="status" defaultValue="Active"><option value="Active">Active</option><option value="Disabled">Disabled</option><option value="Retired">Retired</option></select>
-                          <input name="reason" minLength={10} maxLength={1000} placeholder="Audit reason" required />
+                          <select name="status" defaultValue="Active">
+                            <option value="Active">Active</option>
+                            <option value="Disabled">Disabled</option>
+                            <option value="Retired">Retired</option>
+                          </select>
+                          <input
+                            name="reason"
+                            minLength={10}
+                            maxLength={1000}
+                            placeholder="Audit reason"
+                            required
+                          />
                           <button type="submit">Create rule</button>
                         </form>
                       ) : null}
@@ -232,20 +371,48 @@ export default async function PlatformControlsPage({ searchParams }: Props) {
                     {canWrite ? (
                       <section className={styles.dangerPanel}>
                         <h3>Rollback / Kill switch</h3>
-                        <p>هر دو action version-checked، idempotent و audited هستند. Kill switch فقط برای Boolean FeatureFlag معتبر است.</p>
+                        <p>
+                          هر دو action version-checked، idempotent و audited هستند. Kill switch فقط
+                          برای Boolean FeatureFlag معتبر است.
+                        </p>
                         <div className={styles.actionGrid}>
                           <form action={rollbackControlAction} className={styles.form}>
                             <input type="hidden" name="controlKey" value={detail.key} />
-                            <input type="hidden" name="expectedVersion" value={detail.definition.version} />
-                            <label>History version<input name="historyVersion" type="number" min={1} required /></label>
-                            <label>Reason<input name="reason" minLength={10} maxLength={1000} required /></label>
+                            <input
+                              type="hidden"
+                              name="expectedVersion"
+                              value={detail.definition.version}
+                            />
+                            <label>
+                              History version
+                              <input name="historyVersion" type="number" min={1} required />
+                            </label>
+                            <label>
+                              Reason
+                              <input name="reason" minLength={10} maxLength={1000} required />
+                            </label>
                             <button type="submit">Rollback</button>
                           </form>
                           <form action={killSwitchControlAction} className={styles.form}>
                             <input type="hidden" name="controlKey" value={detail.key} />
-                            <input type="hidden" name="expectedVersion" value={detail.definition.version} />
-                            <label>Reason<input name="reason" minLength={10} maxLength={1000} required /></label>
-                            <button type="submit" disabled={detail.definition.kind !== "FeatureFlag" || detail.definition.valueType !== "Boolean"}>Activate kill switch</button>
+                            <input
+                              type="hidden"
+                              name="expectedVersion"
+                              value={detail.definition.version}
+                            />
+                            <label>
+                              Reason
+                              <input name="reason" minLength={10} maxLength={1000} required />
+                            </label>
+                            <button
+                              type="submit"
+                              disabled={
+                                detail.definition.kind !== "FeatureFlag" ||
+                                detail.definition.valueType !== "Boolean"
+                              }
+                            >
+                              Activate kill switch
+                            </button>
                           </form>
                         </div>
                       </section>
@@ -268,7 +435,9 @@ export default async function PlatformControlsPage({ searchParams }: Props) {
                     </section>
                   </>
                 ) : (
-                  <section className={styles.panel}><p>Control detail unavailable; fake runtime data is not generated.</p></section>
+                  <section className={styles.panel}>
+                    <p>Control detail unavailable; fake runtime data is not generated.</p>
+                  </section>
                 )}
               </div>
             </div>
@@ -279,14 +448,43 @@ export default async function PlatformControlsPage({ searchParams }: Props) {
               <h3>Create typed control</h3>
               <form action={createControlAction} className={styles.form}>
                 <div className={styles.row}>
-                  <label>Key<input name="controlKey" pattern="[a-z][a-z0-9._-]{2,95}" required /></label>
-                  <label>Kind<select name="controlKind" defaultValue="FeatureFlag"><option value="FeatureFlag">FeatureFlag</option><option value="Config">Config</option></select></label>
-                  <label>Value type<select name="valueType" defaultValue="Boolean"><option value="Boolean">Boolean</option><option value="Integer">Integer</option><option value="String">String</option><option value="Json">Json</option></select></label>
+                  <label>
+                    Key
+                    <input name="controlKey" pattern="[a-z][a-z0-9._-]{2,95}" required />
+                  </label>
+                  <label>
+                    Kind
+                    <select name="controlKind" defaultValue="FeatureFlag">
+                      <option value="FeatureFlag">FeatureFlag</option>
+                      <option value="Config">Config</option>
+                    </select>
+                  </label>
+                  <label>
+                    Value type
+                    <select name="valueType" defaultValue="Boolean">
+                      <option value="Boolean">Boolean</option>
+                      <option value="Integer">Integer</option>
+                      <option value="String">String</option>
+                      <option value="Json">Json</option>
+                    </select>
+                  </label>
                 </div>
-                <label>Default value<textarea name="defaultValue" defaultValue="false" required /></label>
-                <label>Description<textarea name="description" minLength={5} maxLength={240} required /></label>
-                <label className={styles.check}><input type="checkbox" name="failClosed" />Fail closed</label>
-                <label>Audit reason<input name="reason" minLength={10} maxLength={1000} required /></label>
+                <label>
+                  Default value
+                  <textarea name="defaultValue" defaultValue="false" required />
+                </label>
+                <label>
+                  Description
+                  <textarea name="description" minLength={5} maxLength={240} required />
+                </label>
+                <label className={styles.check}>
+                  <input type="checkbox" name="failClosed" />
+                  Fail closed
+                </label>
+                <label>
+                  Audit reason
+                  <input name="reason" minLength={10} maxLength={1000} required />
+                </label>
                 <button type="submit">Create control</button>
               </form>
             </section>
