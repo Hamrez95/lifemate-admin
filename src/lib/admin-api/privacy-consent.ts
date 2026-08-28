@@ -1,5 +1,6 @@
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
+import { privacyRetireIdempotencyKey } from "./privacy-idempotency";
 
 export type PrivacyDirectoryKind = "documents" | "acceptances" | "consents" | "preferences";
 
@@ -124,6 +125,7 @@ export async function retirePrivacyDocument(input: {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
+          "Idempotency-Key": privacyRetireIdempotencyKey(input),
         },
         body: JSON.stringify({
           expectedUpdatedAt: input.expectedUpdatedAt,
