@@ -28,6 +28,21 @@ export type ProductUpdatePolicy = {
   updatedAtUtc: string;
 };
 
+export type ProductUpdatePolicyHistoryItem = {
+  product: string;
+  platform: string;
+  policyVersion: number;
+  minimumSupportedVersion: string | null;
+  recommendedVersion: string | null;
+  mode: string | null;
+  reasonCode: string | null;
+  messageKey: string | null;
+  status: string | null;
+  effectiveAtUtc: string | null;
+  updatedAtUtc: string | null;
+  archivedAtUtc: string;
+};
+
 export type AccountProductVersion = {
   accountId: string;
   product: string;
@@ -74,7 +89,10 @@ async function mapped<T>(response: Response | null): Promise<Result<T>> {
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden" };
   if ([400, 404, 409].includes(response.status)) {
-    return { kind: "invalid", message: typeof body.message === "string" ? body.message : undefined };
+    return {
+      kind: "invalid",
+      message: typeof body.message === "string" ? body.message : undefined,
+    };
   }
   return {
     kind: "unavailable",
@@ -82,10 +100,9 @@ async function mapped<T>(response: Response | null): Promise<Result<T>> {
   };
 }
 
-export async function getProductVersionAdoption(input: {
-  product?: string;
-  platform?: string;
-} = {}): Promise<Result<{ items: ProductVersionAdoptionItem[] }>> {
+export async function getProductVersionAdoption(
+  input: { product?: string; platform?: string } = {},
+): Promise<Result<{ items: ProductVersionAdoptionItem[] }>> {
   const params = new URLSearchParams();
   if (input.product) params.set("product", input.product);
   if (input.platform) params.set("platform", input.platform);
@@ -98,10 +115,27 @@ export async function getProductUpdatePolicies(): Promise<Result<{ items: Produc
   return mapped(await request("/api/v1/platform/product-update-policies"));
 }
 
+export async function getProductUpdatePolicyHistory(
+  input: { product?: string; platform?: string } = {},
+): Promise<Result<{ items: ProductUpdatePolicyHistoryItem[] }>> {
+  const params = new URLSearchParams();
+  if (input.product) params.set("product", input.product);
+  if (input.platform) params.set("platform", input.platform);
+  return mapped(
+    await request(
+      `/api/v1/platform/product-update-policies/history${params.size ? `?${params}` : ""}`,
+    ),
+  );
+}
+
 export async function getAccountProductVersions(
   accountId: string,
 ): Promise<Result<{ accountId: string; items: AccountProductVersion[] }>> {
-  return mapped(await request(`/api/v1/accounts/${encodeURIComponent(accountId)}/product-versions`));
+  return mapped(
+    await request(
+      `/api/v1/analytics/accounts/${encodeURIComponent(accountId)}/product-versions`,
+    ),
+  );
 }
 
 export async function putProductUpdatePolicy(input: {
