@@ -147,8 +147,9 @@ export default async function ExperimentsFeedbackPage({ searchParams }: Props) {
   const canReadExperiments = admin.permissions.includes("experiments.read");
   const canWriteExperiments = admin.permissions.includes("experiments.write");
   const canReadFeedback = admin.permissions.includes("feedback.read");
+  const canReadFeedbackTrends = admin.permissions.includes("feedback.trends.read");
   const canWriteFeedback = admin.permissions.includes("feedback.write");
-  if (!canReadExperiments && !canReadFeedback) {
+  if (!canReadExperiments && !canReadFeedback && !canReadFeedbackTrends) {
     return (
       <AdminSessionProvider admin={admin}>
         <AdminShell
@@ -166,7 +167,8 @@ export default async function ExperimentsFeedbackPage({ searchParams }: Props) {
   if (experiments?.kind === "unauthenticated") redirect("/login");
   const feedback = canReadFeedback ? await listFeedback({ limit: 50 }) : null;
   if (feedback?.kind === "unauthenticated") redirect("/login");
-  const trends = canReadFeedback ? await listFeedbackTrends({ days: 30 }) : null;
+  const trends = canReadFeedbackTrends ? await listFeedbackTrends({ days: 30 }) : null;
+  if (trends?.kind === "unauthenticated") redirect("/login");
 
   return (
     <AdminSessionProvider admin={admin}>
@@ -275,99 +277,107 @@ export default async function ExperimentsFeedbackPage({ searchParams }: Props) {
             </section>
           ) : null}
 
-          <section className={styles.panel}>
-            <div className={styles.heading}>
-              <h3>Experiments</h3>
-              <span>
-                {experiments?.kind === "ok" ? experiments.data.total.toLocaleString("fa-IR") : "—"}
-              </span>
-            </div>
-            {experiments?.kind === "ok" ? (
-              experiments.data.items.length ? (
-                <div className={styles.cards}>
-                  {experiments.data.items.map((item) => (
-                    <ExperimentCard key={item.key} item={item} canWrite={canWriteExperiments} />
+          {canReadExperiments ? (
+            <section className={styles.panel}>
+              <div className={styles.heading}>
+                <h3>Experiments</h3>
+                <span>
+                  {experiments?.kind === "ok"
+                    ? experiments.data.total.toLocaleString("fa-IR")
+                    : "—"}
+                </span>
+              </div>
+              {experiments?.kind === "ok" ? (
+                experiments.data.items.length ? (
+                  <div className={styles.cards}>
+                    {experiments.data.items.map((item) => (
+                      <ExperimentCard key={item.key} item={item} canWrite={canWriteExperiments} />
+                    ))}
+                  </div>
+                ) : (
+                  <AdminPageState state="empty" title="Experimentی وجود ندارد" />
+                )
+              ) : (
+                <AdminPageState
+                  state="unavailable"
+                  title="Experiment API در دسترس نیست"
+                  description="هیچ Feature Flag یا نتیجه‌ای به‌صورت local جعل نمی‌شود."
+                />
+              )}
+            </section>
+          ) : null}
+
+          {canReadFeedback ? (
+            <section className={styles.panel}>
+              <div className={styles.heading}>
+                <h3>Feedback / NPS / Advocacy</h3>
+                <span>
+                  {feedback?.kind === "ok" ? feedback.data.total.toLocaleString("fa-IR") : "—"}
+                </span>
+              </div>
+              {feedback?.kind === "ok" ? (
+                <div className={styles.tableWrap}>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Kind</th>
+                        <th>Product</th>
+                        <th>Version</th>
+                        <th>NPS</th>
+                        <th>Status</th>
+                        <th>Message</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {feedback.data.items.map((item) => (
+                        <FeedbackRow key={item.itemId} item={item} canWrite={canWriteFeedback} />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <AdminPageState
+                  state="unavailable"
+                  title="Feedback Admin API هنوز آماده نیست"
+                  description="این بخش تا merge شدن Core #574 fail-closed می‌ماند؛ direct DB fallback وجود ندارد."
+                />
+              )}
+            </section>
+          ) : null}
+
+          {canReadFeedbackTrends ? (
+            <section className={styles.panel}>
+              <div className={styles.heading}>
+                <h3>۳۰ روز اخیر</h3>
+                <span>Aggregate only</span>
+              </div>
+              {trends?.kind === "ok" ? (
+                <div className={styles.trends}>
+                  {trends.data.items.slice(0, 24).map((item, index) => (
+                    <div
+                      key={`${item.day}-${item.product_code}-${item.kind}-${item.status}-${index}`}
+                    >
+                      <strong>{String(item.item_count)}</strong>
+                      <span>
+                        {item.day} · {item.product_code} · {item.kind} · {item.status}
+                      </span>
+                      <small>
+                        NPS responses: {String(item.nps_response_count)} · avg:{" "}
+                        {item.average_nps ?? "—"}
+                      </small>
+                    </div>
                   ))}
                 </div>
               ) : (
-                <AdminPageState state="empty" title="Experimentی وجود ندارد" />
-              )
-            ) : (
-              <AdminPageState
-                state="unavailable"
-                title="Experiment API در دسترس نیست"
-                description="هیچ Feature Flag یا نتیجه‌ای به‌صورت local جعل نمی‌شود."
-              />
-            )}
-          </section>
-
-          <section className={styles.panel}>
-            <div className={styles.heading}>
-              <h3>Feedback / NPS / Advocacy</h3>
-              <span>
-                {feedback?.kind === "ok" ? feedback.data.total.toLocaleString("fa-IR") : "—"}
-              </span>
-            </div>
-            {feedback?.kind === "ok" ? (
-              <div className={styles.tableWrap}>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Kind</th>
-                      <th>Product</th>
-                      <th>Version</th>
-                      <th>NPS</th>
-                      <th>Status</th>
-                      <th>Message</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {feedback.data.items.map((item) => (
-                      <FeedbackRow key={item.itemId} item={item} canWrite={canWriteFeedback} />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <AdminPageState
-                state="unavailable"
-                title="Feedback Admin API هنوز آماده نیست"
-                description="این بخش تا merge شدن Core #574 fail-closed می‌ماند؛ direct DB fallback وجود ندارد."
-              />
-            )}
-          </section>
-
-          <section className={styles.panel}>
-            <div className={styles.heading}>
-              <h3>۳۰ روز اخیر</h3>
-              <span>Aggregate only</span>
-            </div>
-            {trends?.kind === "ok" ? (
-              <div className={styles.trends}>
-                {trends.data.items.slice(0, 24).map((item, index) => (
-                  <div
-                    key={`${item.day}-${item.product_code}-${item.kind}-${item.status}-${index}`}
-                  >
-                    <strong>{String(item.item_count)}</strong>
-                    <span>
-                      {item.day} · {item.product_code} · {item.kind} · {item.status}
-                    </span>
-                    <small>
-                      NPS responses: {String(item.nps_response_count)} · avg:{" "}
-                      {item.average_nps ?? "—"}
-                    </small>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className={styles.muted}>Trend فقط از aggregate canonical نمایش داده می‌شود.</p>
-            )}
-            <p className={styles.muted}>
-              Advocacy reward execution هنوز تا وجود API canonical reward handoff غیرفعال است؛
-              review یا view جعلی ساخته نمی‌شود.
-            </p>
-          </section>
+                <p className={styles.muted}>Trend فقط از aggregate canonical نمایش داده می‌شود.</p>
+              )}
+              <p className={styles.muted}>
+                Advocacy reward execution هنوز تا وجود API canonical reward handoff غیرفعال است؛
+                review یا view جعلی ساخته نمی‌شود.
+              </p>
+            </section>
+          ) : null}
         </div>
       </AdminShell>
     </AdminSessionProvider>
