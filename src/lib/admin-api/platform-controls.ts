@@ -86,7 +86,10 @@ async function request(path: string, init?: RequestInit): Promise<Response | nul
   }
 }
 
-async function mapped<T>(response: Response | null): Promise<Result<T>> {
+async function mapped<T>(
+  responseOrPromise: Response | null | Promise<Response | null>,
+): Promise<Result<T>> {
+  const response = await responseOrPromise;
   if (response === null) return { kind: "unauthenticated" };
   let body: Record<string, unknown> = {};
   try {
@@ -133,7 +136,7 @@ export function getPlatformControls(): Promise<
 export async function getPlatformControl(key: string): Promise<Result<PlatformControlDetail>> {
   const [detailResult, listResult] = await Promise.all([
     mapped<PlatformControlDetailRaw>(
-      await request(`/api/v1/platform/controls/${encodeURIComponent(key)}`),
+      request(`/api/v1/platform/controls/${encodeURIComponent(key)}`),
     ),
     getPlatformControls(),
   ]);
