@@ -217,11 +217,7 @@ export default async function PlatformControlsPage({ searchParams }: Props) {
                             {canWrite ? (
                               <form action={updateRuleAction} className={styles.compactForm}>
                                 <input type="hidden" name="ruleId" value={rule.id} />
-                                <input
-                                  type="hidden"
-                                  name="expectedVersion"
-                                  value={rule.version}
-                                />
+                                <input type="hidden" name="expectedVersion" value={rule.version} />
                                 <input
                                   type="hidden"
                                   name="valueType"
