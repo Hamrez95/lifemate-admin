@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { privacyRetireIdempotencyKey } from "../src/lib/admin-api/privacy-consent";
+import { privacyRetireIdempotencyKey } from "../src/lib/admin-api/privacy-idempotency";
 
 const input = {
   documentId: "33333333-3333-4333-8333-333333333333",
