@@ -100,13 +100,7 @@ function Status({ children }: { children: string }) {
   return <span className={styles.status}>{children}</span>;
 }
 
-function DocumentRows({
-  data,
-  canManage,
-}: {
-  data: PrivacyDirectoryResponse;
-  canManage: boolean;
-}) {
+function DocumentRows({ data, canManage }: { data: PrivacyDirectoryResponse; canManage: boolean }) {
   return (
     <div className={styles.tableWrap}>
       <table className={styles.table}>
