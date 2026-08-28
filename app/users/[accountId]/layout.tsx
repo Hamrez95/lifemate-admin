@@ -77,7 +77,7 @@ export default async function User360Layout({ children, params }: Props) {
                 <span>User 360 · Privacy context</span>
                 <strong>پذیرش و ترجیحات</strong>
               </div>
-              <Link href="/privacy">Privacy controls →</Link>
+              <Link href="/privacy/preference-purposes">Policy controls →</Link>
             </header>
             {privacy ? (
               <div className={styles.privacySummary}>
@@ -89,7 +89,9 @@ export default async function User360Layout({ children, params }: Props) {
                   <div>
                     <dt>Preference فعال</dt>
                     <dd>
-                      {privacy.preferences.filter((item) => item.enabled).length.toLocaleString("fa-IR")}
+                      {privacy.preferences
+                        .filter((item) => item.enabled)
+                        .length.toLocaleString("fa-IR")}
                     </dd>
                   </div>
                   <div>
@@ -97,7 +99,9 @@ export default async function User360Layout({ children, params }: Props) {
                     <dd>{privacy.consents.length.toLocaleString("fa-IR")}</dd>
                   </div>
                 </dl>
-                <small>نمایش فقط خواندنی است؛ Admin نمی‌تواند پذیرش یا Opt-in را به‌جای کاربر ثبت کند.</small>
+                <small>
+                  نمایش فقط خواندنی است؛ Admin نمی‌تواند پذیرش یا Opt-in را به‌جای کاربر ثبت کند.
+                </small>
               </div>
             ) : (
               <p>Privacy summary فعلاً در دسترس نیست؛ داده جایگزین ساخته نمی‌شود.</p>
