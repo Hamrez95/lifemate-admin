@@ -41,7 +41,12 @@ function parseSummary(value: unknown): UserPrivacySummary | null {
   const body = value as Record<string, unknown>;
   if (typeof body.accountId !== "string" || !UUID.test(body.accountId)) return null;
   if (body.mutableFromAdmin !== false || typeof body.asOfUtc !== "string") return null;
-  if (!Array.isArray(body.legalAcceptances) || !Array.isArray(body.preferences) || !Array.isArray(body.consents)) return null;
+  if (
+    !Array.isArray(body.legalAcceptances) ||
+    !Array.isArray(body.preferences) ||
+    !Array.isArray(body.consents)
+  )
+    return null;
 
   const legalAcceptances: UserPrivacySummary["legalAcceptances"] = [];
   for (const raw of body.legalAcceptances) {
@@ -52,7 +57,8 @@ function parseSummary(value: unknown): UserPrivacySummary | null {
       typeof item.version !== "string" ||
       typeof item.jurisdiction !== "string" ||
       typeof item.acceptedAtUtc !== "string"
-    ) return null;
+    )
+      return null;
     legalAcceptances.push({
       purpose: item.purpose,
       version: item.version,
@@ -73,7 +79,8 @@ function parseSummary(value: unknown): UserPrivacySummary | null {
       typeof item.enabled !== "boolean" ||
       typeof item.explicit !== "boolean" ||
       typeof item.status !== "string"
-    ) return null;
+    )
+      return null;
     preferences.push({
       purpose: item.purpose,
       category: item.category,
@@ -89,7 +96,12 @@ function parseSummary(value: unknown): UserPrivacySummary | null {
   for (const raw of body.consents) {
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
     const item = raw as Record<string, unknown>;
-    if (typeof item.purpose !== "string" || typeof item.scopeKey !== "string" || typeof item.status !== "string") return null;
+    if (
+      typeof item.purpose !== "string" ||
+      typeof item.scopeKey !== "string" ||
+      typeof item.status !== "string"
+    )
+      return null;
     consents.push({ purpose: item.purpose, scopeKey: item.scopeKey, status: item.status });
   }
 
