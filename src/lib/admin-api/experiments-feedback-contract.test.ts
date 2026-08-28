@@ -37,6 +37,22 @@ describe("Admin #191 experiments/feedback canonical boundary", () => {
     expect(page).not.toContain('value="cycle"');
   });
 
+  it("keeps raw feedback and aggregate-only trends on separate permissions", () => {
+    const page = source("app/experiments/page.tsx");
+    const sidebar = source("src/components/shell/Sidebar.tsx");
+    expect(page).toContain('admin.permissions.includes("feedback.read")');
+    expect(page).toContain('admin.permissions.includes("feedback.trends.read")');
+    expect(page).toContain(
+      "if (!canReadExperiments && !canReadFeedback && !canReadFeedbackTrends)",
+    );
+    expect(page).toContain(
+      "const trends = canReadFeedbackTrends ? await listFeedbackTrends({ days: 30 }) : null;",
+    );
+    expect(page).toContain("{canReadFeedback ? (");
+    expect(page).toContain("{canReadFeedbackTrends ? (");
+    expect(sidebar).toContain('admin.permissions.includes("feedback.trends.read")');
+  });
+
   it("fails closed when feedback Admin API is unavailable and never invents advocacy rewards", () => {
     const page = source("app/experiments/page.tsx");
     expect(page).toContain("Feedback Admin API هنوز آماده نیست");
