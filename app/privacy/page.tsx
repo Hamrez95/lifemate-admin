@@ -6,13 +6,15 @@ import { AdminPageState } from "@/src/components/admin-data-table";
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
 import { AdminShell } from "@/src/components/shell/AdminShell";
 import {
+  getPrivacyCoverage,
   getPrivacyDirectory,
+  type PrivacyCoverageResponse,
   type PrivacyDirectoryKind,
   type PrivacyDirectoryResponse,
 } from "@/src/lib/admin-api/privacy-consent";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
-import { retireDocumentAction } from "./actions";
+import { createDocumentAction, publishDocumentAction, retireDocumentAction } from "./actions";
 import styles from "./privacy.module.css";
 
 type PageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
@@ -135,7 +137,23 @@ function DocumentRows({ data, canManage }: { data: PrivacyDirectoryResponse; can
                 <td>{Number(row.acceptanceCount ?? 0).toLocaleString("fa-IR")}</td>
                 <td>{date(row, "updatedAtUtc")}</td>
                 <td>
-                  {status === "Active" && canManage ? (
+                  {status === "Draft" && canManage ? (
+                    <form action={publishDocumentAction} className={styles.actions}>
+                      <input type="hidden" name="documentId" value={id} />
+                      <input
+                        type="hidden"
+                        name="expectedUpdatedAt"
+                        value={value(row, "updatedAtUtc")}
+                      />
+                      <input type="hidden" name="reasonCode" value="approved_for_release" />
+                      <button type="submit">انتشار نسخه</button>
+                      {typeof uri === "string" && uri.startsWith("https://") ? (
+                        <a className={styles.link} href={uri} target="_blank" rel="noreferrer">
+                          بازبینی سند
+                        </a>
+                      ) : null}
+                    </form>
+                  ) : status === "Active" && canManage ? (
                     <form action={retireDocumentAction} className={styles.actions}>
                       <input type="hidden" name="documentId" value={id} />
                       <input
@@ -273,6 +291,101 @@ function PreferenceRows({ data }: { data: PrivacyDirectoryResponse }) {
   );
 }
 
+function CoveragePanel({ coverage }: { coverage: PrivacyCoverageResponse }) {
+  return (
+    <section className={styles.panel} aria-labelledby="privacy-coverage-title">
+      <header className={styles.panelHeader}>
+        <h3 id="privacy-coverage-title">پوشش پذیرش نسخه‌های الزامی</h3>
+        <span>{coverage.eligibleAccountCount.toLocaleString("fa-IR")} حساب فعال</span>
+      </header>
+      {coverage.items.length === 0 ? (
+        <div className={styles.empty}>سند الزامی فعالی برای GLOBAL وجود ندارد.</div>
+      ) : (
+        <div className={styles.tableWrap}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Purpose</th>
+                <th>نسخه</th>
+                <th>حوزه</th>
+                <th>پذیرفته‌شده</th>
+                <th>واجد شرایط</th>
+                <th>پوشش</th>
+              </tr>
+            </thead>
+            <tbody>
+              {coverage.items.map((item) => (
+                <tr key={item.documentId}>
+                  <td className={styles.code}>{item.purpose}</td>
+                  <td>{item.version}</td>
+                  <td>{item.jurisdiction}</td>
+                  <td>{item.acceptedCount.toLocaleString("fa-IR")}</td>
+                  <td>{item.eligibleAccountCount.toLocaleString("fa-IR")}</td>
+                  <td>
+                    {item.coveragePercent.toLocaleString("fa-IR", { maximumFractionDigits: 2 })}%
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function CreateDocumentPanel() {
+  return (
+    <section className={styles.panel} aria-labelledby="privacy-create-title">
+      <header className={styles.panelHeader}>
+        <h3 id="privacy-create-title">نسخه Draft جدید</h3>
+        <span>ایجاد Draft به معنی پذیرش کاربر یا انتشار نیست</span>
+      </header>
+      <form className={styles.filters} action={createDocumentAction}>
+        <label>
+          نوع سند
+          <select name="purpose" defaultValue="privacy_notice" required>
+            <option value="privacy_notice">Privacy Notice</option>
+            <option value="legal_terms">Terms</option>
+          </select>
+        </label>
+        <label>
+          نسخه
+          <input name="version" required maxLength={64} pattern="[A-Za-z0-9][A-Za-z0-9._-]{0,63}" />
+        </label>
+        <label>
+          حوزه
+          <input name="jurisdiction" defaultValue="GLOBAL" required maxLength={16} />
+        </label>
+        <label>
+          عنوان
+          <input name="title" required minLength={3} maxLength={200} />
+        </label>
+        <label>
+          SHA / hash سند
+          <input
+            name="documentHash"
+            required
+            minLength={32}
+            maxLength={128}
+            pattern="[0-9a-fA-F]{32,128}"
+          />
+        </label>
+        <label>
+          لینک HTTPS سند
+          <input name="contentUri" type="url" required pattern="https://.*" />
+        </label>
+        <label>
+          زمان اثرگذاری (تهران)
+          <input name="effectiveAtLocal" type="datetime-local" required />
+        </label>
+        <input type="hidden" name="reasonCode" value="new_legal_version" />
+        <button type="submit">ساخت Draft</button>
+      </form>
+    </section>
+  );
+}
+
 function Rows({
   data,
   query,
@@ -314,6 +427,7 @@ async function PrivacyContent({ query, canManage }: { query: Query; canManage: b
     );
   }
 
+  const coverageResult = query.view === "documents" ? await getPrivacyCoverage("GLOBAL") : null;
   const data = result.data;
   const selected = views.find((item) => item.key === query.view)!;
   const previous = data.page > 1 ? `/privacy?${params(query, data.page - 1)}` : null;
@@ -356,6 +470,15 @@ async function PrivacyContent({ query, canManage }: { query: Query; canManage: b
       <div className={styles.notice}>
         {selected.hint} · آخرین دریافت: {dateFormatter.format(new Date(data.freshness.asOfUtc))}
       </div>
+
+      {query.view === "documents" && canManage ? <CreateDocumentPanel /> : null}
+      {coverageResult?.kind === "ok" ? <CoveragePanel coverage={coverageResult.data} /> : null}
+      {query.view === "documents" && coverageResult && coverageResult.kind !== "ok" ? (
+        <div className={styles.notice}>
+          پوشش پذیرش در حال حاضر قابل دریافت نیست؛ فهرست اسناد همچنان از قرارداد canonical نمایش
+          داده می‌شود.
+        </div>
+      ) : null}
 
       <form className={styles.filters} action="/privacy">
         <input type="hidden" name="view" value={query.view} />
