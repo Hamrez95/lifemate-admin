@@ -18,11 +18,15 @@ describe("ADM-SEC-003 audit navigation", () => {
     expect(sidebar).toContain('aria-label="گزارش ممیزی"');
   });
 
-  it("marks the nested explorer rather than the parent workspace as the current page", () => {
+  it("marks nested routes rather than their parent workspace as the current page", () => {
     const sidebar = source("src/components/shell/Sidebar.tsx");
     expect(sidebar).toContain('pathname === "/security/audit"');
     expect(sidebar).toContain('pathname.startsWith("/security/audit/")');
+    expect(sidebar).toContain('pathname === "/research"');
+    expect(sidebar).toContain('pathname.startsWith("/research/")');
     expect(sidebar).toContain('aria-current={auditActive ? "page" : undefined}');
-    expect(sidebar).toContain('data-active={active && !auditActive ? "true" : "false"}');
+    expect(sidebar).toContain(
+      'data-active={active && !auditActive && !researchActive ? "true" : "false"}',
+    );
   });
 });
