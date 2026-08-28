@@ -2,13 +2,7 @@ import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
 export type CampaignExecutionStatus =
-  | "Prepared"
-  | "Confirmed"
-  | "Scheduled"
-  | "Processing"
-  | "Completed"
-  | "Cancelled"
-  | "Failed";
+  "Prepared" | "Confirmed" | "Scheduled" | "Processing" | "Completed" | "Cancelled" | "Failed";
 
 export type CampaignExecution = {
   id: string;
@@ -173,7 +167,8 @@ export async function getCampaignExecutions(
   if (!result) return { kind: "unauthenticated" };
   if (!result.response.ok) return failed(result.response, result.body);
   const body = record(result.body);
-  if (!body || !Array.isArray(body.items) || !nonNegative(body.total)) return { kind: "unavailable" };
+  if (!body || !Array.isArray(body.items) || !nonNegative(body.total))
+    return { kind: "unavailable" };
   const items = body.items.map(parseExecution);
   const privacy = record(body.privacy);
   const freshness = record(body.freshness);
@@ -223,7 +218,9 @@ export async function prepareCampaignExecution(payload: {
 }
 
 export async function confirmCampaignExecution(executionId: string, expectedVersion: number) {
-  return mutate(`/api/v1/marketing/campaign-executions/${executionId}/confirm`, { expectedVersion });
+  return mutate(`/api/v1/marketing/campaign-executions/${executionId}/confirm`, {
+    expectedVersion,
+  });
 }
 
 export async function scheduleCampaignExecution(
