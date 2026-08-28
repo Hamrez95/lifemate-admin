@@ -11,6 +11,7 @@ import styles from "../ops-settings.module.css";
 const canonicalPaths = [
   { href: "/security/audit", label: "Audit و رخدادهای ثبت‌شده" },
   { href: "/support", label: "صف پشتیبانی و incidentهای کاربری" },
+  { href: "/operations/releases", label: "Release Adoption و Update Policy" },
   { href: "/marketing/content-calendar", label: "اجرای انتشارهای canonical" },
   { href: "/finance", label: "read model مالی canonical" },
 ] as const;
