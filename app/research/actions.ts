@@ -1,6 +1,5 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -30,6 +29,11 @@ function integer(form: FormData, key: string): number | null {
   return Number.isSafeInteger(number) ? number : null;
 }
 
+function idempotencyKey(form: FormData): string | null {
+  const value = text(form, "idempotencyKey", 180);
+  return /^[A-Za-z0-9._:-]{8,180}$/.test(value) ? value : null;
+}
+
 function datasetDateKeys(kind: string): [string, string] {
   if (kind === "HealthObservationAggregate") return ["observedFrom", "observedTo"];
   if (kind === "DoseAdherenceAggregate") return ["scheduledFrom", "scheduledTo"];
@@ -45,7 +49,8 @@ function resultRedirect(code: string, datasetId?: string): never {
 
 export async function createDatasetAction(form: FormData) {
   const kind = text(form, "datasetKind", 48);
-  if (!KINDS.has(kind)) resultRedirect("invalid");
+  const stableKey = idempotencyKey(form);
+  if (!KINDS.has(kind) || !stableKey) resultRedirect("invalid");
 
   const name = text(form, "name", 160);
   const purpose = text(form, "purpose", 80);
@@ -76,7 +81,7 @@ export async function createDatasetAction(form: FormData) {
   if (ageMax !== null) filters.ageMax = ageMax;
 
   const result = await createResearchDataset({
-    idempotencyKey: `research-dataset-${randomUUID()}`,
+    idempotencyKey: stableKey,
     payload: {
       name,
       datasetKind: kind,
@@ -102,14 +107,19 @@ export async function createDatasetAction(form: FormData) {
 export async function requestExportAction(form: FormData) {
   const datasetId = text(form, "datasetId", 64);
   const format = text(form, "format", 8);
-  if (!/^[0-9a-f-]{36}$/i.test(datasetId) || (format !== "CSV" && format !== "XLSX")) {
+  const stableKey = idempotencyKey(form);
+  if (
+    !stableKey ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(datasetId) ||
+    (format !== "CSV" && format !== "XLSX")
+  ) {
     resultRedirect("invalid", datasetId || undefined);
   }
 
   const result = await requestResearchExport({
     datasetId,
     format: format as "CSV" | "XLSX",
-    idempotencyKey: `research-export-${randomUUID()}`,
+    idempotencyKey: stableKey,
   });
   if (result.kind === "unauthenticated") redirect("/login");
   if (result.kind === "forbidden") resultRedirect("forbidden", datasetId);
