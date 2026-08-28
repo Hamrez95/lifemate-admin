@@ -29,9 +29,7 @@ export type PreferencePurposePolicyResult =
   | { kind: "invalid" }
   | { kind: "unavailable"; correlationId?: string };
 
-export type PreferencePurposeMutationResult =
-  | { ok: true }
-  | { ok: false; code: string };
+export type PreferencePurposeMutationResult = { ok: true } | { ok: false; code: string };
 
 const PURPOSE = /^[a-z][a-z0-9._-]{2,79}$/;
 const VERSION = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
@@ -40,10 +38,21 @@ const REASON = /^[a-z0-9_.-]{3,80}$/;
 function parsePage(value: unknown): PreferencePurposePolicyPage | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const body = value as Record<string, unknown>;
-  if (!Array.isArray(body.items) || !Number.isInteger(body.page) || !Number.isInteger(body.pageSize) || !Number.isInteger(body.total)) return null;
-  if (!body.freshness || typeof body.freshness !== "object" || Array.isArray(body.freshness)) return null;
+  if (
+    !Array.isArray(body.items) ||
+    !Number.isInteger(body.page) ||
+    !Number.isInteger(body.pageSize) ||
+    !Number.isInteger(body.total)
+  )
+    return null;
+  if (!body.freshness || typeof body.freshness !== "object" || Array.isArray(body.freshness))
+    return null;
   const freshness = body.freshness as Record<string, unknown>;
-  if ((freshness.status !== "fresh" && freshness.status !== "stale") || typeof freshness.asOfUtc !== "string") return null;
+  if (
+    (freshness.status !== "fresh" && freshness.status !== "stale") ||
+    typeof freshness.asOfUtc !== "string"
+  )
+    return null;
 
   const items: PreferencePurposePolicy[] = [];
   for (const raw of body.items) {
@@ -60,7 +69,8 @@ function parsePage(value: unknown): PreferencePurposePolicyPage | null {
       typeof item.description !== "string" ||
       typeof item.createdAtUtc !== "string" ||
       typeof item.updatedAtUtc !== "string"
-    ) return null;
+    )
+      return null;
     items.push({
       purpose: item.purpose,
       category: item.category,
@@ -99,17 +109,22 @@ async function problem(response: Response): Promise<{ code?: string; correlation
   }
 }
 
-export async function getPreferencePurposePolicies(params = new URLSearchParams()): Promise<PreferencePurposePolicyResult> {
+export async function getPreferencePurposePolicies(
+  params = new URLSearchParams(),
+): Promise<PreferencePurposePolicyResult> {
   const token = await getToken();
   if (!token) return { kind: "unauthenticated" };
   const config = getPublicRuntimeConfig();
   let response: Response;
   try {
-    response = await fetch(`${config.adminApiUrl}/api/v1/privacy/preference-purposes?${params.toString()}`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-      signal: AbortSignal.timeout(10_000),
-    });
+    response = await fetch(
+      `${config.adminApiUrl}/api/v1/privacy/preference-purposes?${params.toString()}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+        signal: AbortSignal.timeout(10_000),
+      },
+    );
   } catch {
     return { kind: "unavailable" };
   }
@@ -159,30 +174,34 @@ export async function updatePreferencePurposePolicy(input: {
     normalized.description.length > 240 ||
     !VERSION.test(normalized.policyVersion) ||
     !REASON.test(normalized.reasonCode)
-  ) return { ok: false, code: "privacy_preference_payload_invalid" };
+  )
+    return { ok: false, code: "privacy_preference_payload_invalid" };
 
   const token = await getToken();
   if (!token) return { ok: false, code: "unauthenticated" };
   const config = getPublicRuntimeConfig();
   let response: Response;
   try {
-    response = await fetch(`${config.adminApiUrl}/api/v1/privacy/preference-purposes/${encodeURIComponent(normalized.purpose)}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-        "Idempotency-Key": idempotencyKey(normalized),
+    response = await fetch(
+      `${config.adminApiUrl}/api/v1/privacy/preference-purposes/${encodeURIComponent(normalized.purpose)}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Idempotency-Key": idempotencyKey(normalized),
+        },
+        body: JSON.stringify({
+          expectedUpdatedAt: normalized.expectedUpdatedAt,
+          description: normalized.description,
+          policyVersion: normalized.policyVersion,
+          status: normalized.status,
+          reasonCode: normalized.reasonCode,
+        }),
+        cache: "no-store",
+        signal: AbortSignal.timeout(10_000),
       },
-      body: JSON.stringify({
-        expectedUpdatedAt: normalized.expectedUpdatedAt,
-        description: normalized.description,
-        policyVersion: normalized.policyVersion,
-        status: normalized.status,
-        reasonCode: normalized.reasonCode,
-      }),
-      cache: "no-store",
-      signal: AbortSignal.timeout(10_000),
-    });
+    );
   } catch {
     return { ok: false, code: "unavailable" };
   }
