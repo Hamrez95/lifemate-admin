@@ -6,11 +6,7 @@ import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 export type GrowthWindow = "daily" | "weekly" | "monthly" | "quarterly" | "yearly";
 export type GrowthMetricState = "ready" | "partial" | "unavailable";
 export type GrowthStage =
-  | "acquisition"
-  | "activation"
-  | "engagement"
-  | "monetization"
-  | "retention";
+  "acquisition" | "activation" | "engagement" | "monetization" | "retention";
 
 export type GrowthMetric = {
   key: string;
@@ -124,7 +120,8 @@ function parseResponse(value: unknown): GrowthAnalyticsResponse | null {
   }
 
   const previous = body.previous as Record<string, unknown>;
-  if (!previous.range || typeof previous.range !== "object" || !Array.isArray(previous.metrics)) return null;
+  if (!previous.range || typeof previous.range !== "object" || !Array.isArray(previous.metrics))
+    return null;
   const previousRange = previous.range as Record<string, unknown>;
   if (typeof previousRange.from !== "string" || typeof previousRange.to !== "string") return null;
 
@@ -179,6 +176,7 @@ export async function getGrowthAnalytics(params: URLSearchParams): Promise<Growt
   }
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden" };
-  if (response.status === 400) return { kind: "invalid", correlationId: await correlationId(response) };
+  if (response.status === 400)
+    return { kind: "invalid", correlationId: await correlationId(response) };
   return { kind: "unavailable", correlationId: await correlationId(response) };
 }
