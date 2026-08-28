@@ -80,7 +80,10 @@ async function mapped<T>(response: Response | null): Promise<ResearchResult<T>> 
     // Keep transport details private and fail closed.
   }
   if (response.status === 400 || response.status === 409) {
-    return { kind: "invalid", message: typeof body.message === "string" ? body.message : undefined };
+    return {
+      kind: "invalid",
+      message: typeof body.message === "string" ? body.message : undefined,
+    };
   }
   return {
     kind: "unavailable",
@@ -88,16 +91,26 @@ async function mapped<T>(response: Response | null): Promise<ResearchResult<T>> 
   };
 }
 
-export async function listResearchDatasets(): Promise<ResearchResult<{ items: ResearchDataset[] }>> {
+export async function listResearchDatasets(): Promise<
+  ResearchResult<{ items: ResearchDataset[] }>
+> {
   return mapped(await adminFetch("/api/v1/research/datasets"));
 }
 
-export async function previewResearchDataset(datasetId: string): Promise<ResearchResult<{ preview: Record<string, unknown> }>> {
-  return mapped(await adminFetch(`/api/v1/research/datasets/${encodeURIComponent(datasetId)}/preview`));
+export async function previewResearchDataset(
+  datasetId: string,
+): Promise<ResearchResult<{ preview: Record<string, unknown> }>> {
+  return mapped(
+    await adminFetch(`/api/v1/research/datasets/${encodeURIComponent(datasetId)}/preview`),
+  );
 }
 
-export async function listResearchExports(datasetId: string): Promise<ResearchResult<{ items: ResearchExportJob[] }>> {
-  return mapped(await adminFetch(`/api/v1/research/datasets/${encodeURIComponent(datasetId)}/exports`));
+export async function listResearchExports(
+  datasetId: string,
+): Promise<ResearchResult<{ items: ResearchExportJob[] }>> {
+  return mapped(
+    await adminFetch(`/api/v1/research/datasets/${encodeURIComponent(datasetId)}/exports`),
+  );
 }
 
 export async function createResearchDataset(input: {
@@ -127,13 +140,15 @@ export async function requestResearchExport(input: {
   );
 }
 
-export async function getResearchExportDownload(jobId: string): Promise<ResearchResult<{
-  jobId: string;
-  format: string;
-  artifactSha256: string;
-  artifactExpiresAtUtc: string;
-  signedUrl: string;
-  expiresInSeconds: number;
-}>> {
+export async function getResearchExportDownload(jobId: string): Promise<
+  ResearchResult<{
+    jobId: string;
+    format: string;
+    artifactSha256: string;
+    artifactExpiresAtUtc: string;
+    signedUrl: string;
+    expiresInSeconds: number;
+  }>
+> {
   return mapped(await adminFetch(`/api/v1/research/exports/${encodeURIComponent(jobId)}/download`));
 }
