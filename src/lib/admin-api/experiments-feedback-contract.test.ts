@@ -22,7 +22,14 @@ describe("Admin #191 experiments/feedback canonical boundary", () => {
 
   it("keeps experiment delivery constrained to canonical non-clinical surfaces", () => {
     const page = source("app/experiments/page.tsx");
-    for (const surface of ["onboarding", "pricing", "paywall", "cta", "offer", "nonclinical_feature"]) {
+    for (const surface of [
+      "onboarding",
+      "pricing",
+      "paywall",
+      "cta",
+      "offer",
+      "nonclinical_feature",
+    ]) {
       expect(page).toContain(`value=\"${surface}\"`);
     }
     expect(page).not.toContain('value="medication"');
@@ -35,10 +42,14 @@ describe("Admin #191 experiments/feedback canonical boundary", () => {
     const sidebar = source("src/components/shell/Sidebar.tsx");
     expect(page).toContain('admin.permissions.includes("feedback.read")');
     expect(page).toContain('admin.permissions.includes("feedback.trends.read")');
-    expect(page).toContain("if (!canReadExperiments && !canReadFeedback && !canReadFeedbackTrends)");
-    expect(page).toContain("const trends = canReadFeedbackTrends ? await listFeedbackTrends({ days: 30 }) : null;");
-    expect(page).toContain("{canReadFeedback ?");
-    expect(page).toContain("{canReadFeedbackTrends ?");
+    expect(page).toContain(
+      "if (!canReadExperiments && !canReadFeedback && !canReadFeedbackTrends)",
+    );
+    expect(page).toContain(
+      "const trends = canReadFeedbackTrends ? await listFeedbackTrends({ days: 30 }) : null;",
+    );
+    expect(page).toContain("{canReadFeedback ? (");
+    expect(page).toContain("{canReadFeedbackTrends ? (");
     expect(sidebar).toContain('admin.permissions.includes("feedback.trends.read")');
   });
 
@@ -46,7 +57,9 @@ describe("Admin #191 experiments/feedback canonical boundary", () => {
     const page = source("app/experiments/page.tsx");
     expect(page).toContain("Feedback Admin API هنوز آماده نیست");
     expect(page).toContain("direct DB fallback وجود ندارد");
-    expect(page).toContain("Advocacy reward execution هنوز تا وجود API canonical reward handoff غیرفعال است");
+    expect(page).toContain(
+      "Advocacy reward execution هنوز تا وجود API canonical reward handoff غیرفعال است",
+    );
     expect(page).toContain("No social scraping");
   });
 
