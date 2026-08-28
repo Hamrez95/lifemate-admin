@@ -26,7 +26,8 @@ function destination(campaignId: string, notice: string, message: string): never
 }
 
 function message(result: { kind: string; message?: string; correlationId?: string }): string {
-  if (result.kind === "forbidden") return "مجوز marketing.campaign.send برای این عملیات وجود ندارد.";
+  if (result.kind === "forbidden")
+    return "مجوز marketing.campaign.send برای این عملیات وجود ندارد.";
   if (result.kind === "conflict")
     return result.message ?? "Execution همزمان تغییر کرده است؛ صفحه را تازه کنید.";
   if (result.kind === "invalid") return result.message ?? "درخواست Campaign Execution معتبر نیست.";
