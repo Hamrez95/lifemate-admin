@@ -4,7 +4,7 @@ import {
   privacyCreateIdempotencyKey,
   privacyPublishIdempotencyKey,
   privacyRetireIdempotencyKey,
-} from "@/src/lib/admin-api/privacy-idempotency";
+} from "../src/lib/admin-api/privacy-idempotency";
 
 describe("privacy control idempotency", () => {
   it("keeps document creation retries stable while including the canonical version inputs", () => {
