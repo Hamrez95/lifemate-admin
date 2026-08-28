@@ -19,7 +19,9 @@ export function Sidebar({ activeSlug }: SidebarProps) {
   const canReadAudit = admin.permissions.includes("security.audit.read");
   const isFounder = admin.roles.includes("founder");
   const canReadProductSignals =
-    admin.permissions.includes("experiments.read") || admin.permissions.includes("feedback.read");
+    admin.permissions.includes("experiments.read") ||
+    admin.permissions.includes("feedback.read") ||
+    admin.permissions.includes("feedback.trends.read");
   const auditActive = pathname === "/security/audit" || pathname.startsWith("/security/audit/");
   const researchActive = pathname === "/research" || pathname.startsWith("/research/");
   const experimentsActive = pathname === "/experiments" || pathname.startsWith("/experiments/");
