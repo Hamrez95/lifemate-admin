@@ -115,7 +115,10 @@ function ExecutionCard({
               <button type="submit">Schedule</button>
             </form>
           ) : null}
-          <form action={cancelCampaignExecutionAction} className={`${styles.actionForm} ${styles.cancel}`}>
+          <form
+            action={cancelCampaignExecutionAction}
+            className={`${styles.actionForm} ${styles.cancel}`}
+          >
             <input type="hidden" name="campaignId" value={campaignId} />
             <input type="hidden" name="executionId" value={execution.id} />
             <input type="hidden" name="expectedVersion" value={execution.version} />
@@ -139,7 +142,8 @@ export default async function CampaignExecutionsPage({ params, searchParams }: P
   const [detail, executions] = canSend
     ? await Promise.all([getMarketingCampaignDetail(campaignId), getCampaignExecutions(campaignId)])
     : [null, null];
-  if (detail?.kind === "unauthenticated" || executions?.kind === "unauthenticated") redirect("/login");
+  if (detail?.kind === "unauthenticated" || executions?.kind === "unauthenticated")
+    redirect("/login");
   const notice = one(query.notice);
   const message = one(query.message);
 
@@ -164,7 +168,11 @@ export default async function CampaignExecutionsPage({ params, searchParams }: P
           </header>
 
           {notice && message ? (
-            <div className={styles.notice} data-kind={notice} role={notice === "error" ? "alert" : "status"}>
+            <div
+              className={styles.notice}
+              data-kind={notice}
+              role={notice === "error" ? "alert" : "status"}
+            >
               {message}
             </div>
           ) : null}
@@ -178,7 +186,7 @@ export default async function CampaignExecutionsPage({ params, searchParams }: P
               <section className={styles.privacy}>
                 <strong>Privacy boundary verified by API response</strong>
                 <p>
-                  recipientIdentifiersExposed=false · messageBodiesExposed=false · freshness {" "}
+                  recipientIdentifiersExposed=false · messageBodiesExposed=false · freshness{" "}
                   {when(executions.data.freshness.asOfUtc)}
                 </p>
               </section>
@@ -187,8 +195,8 @@ export default async function CampaignExecutionsPage({ params, searchParams }: P
                 <span className={styles.eyebrow}>Prepare execution</span>
                 <h3>Snapshot را به نسخه دقیق Campaign قفل کن</h3>
                 <p>
-                  اگر Campaign بعد از این timestamp تغییر کند، Core prepare را fail-closed می‌کند. SMS
-                  pricing فقط زمانی پذیرفته می‌شود که SMS واقعاً انتخاب شده باشد.
+                  اگر Campaign بعد از این timestamp تغییر کند، Core prepare را fail-closed می‌کند.
+                  SMS pricing فقط زمانی پذیرفته می‌شود که SMS واقعاً انتخاب شده باشد.
                 </p>
                 <form action={prepareCampaignExecutionAction} className={styles.form}>
                   <input type="hidden" name="campaignId" value={campaignId} />
@@ -224,7 +232,9 @@ export default async function CampaignExecutionsPage({ params, searchParams }: P
               </section>
 
               {executions.data.items.length === 0 ? (
-                <div className={styles.empty}>هنوز execution canonical برای این Campaign ثبت نشده است.</div>
+                <div className={styles.empty}>
+                  هنوز execution canonical برای این Campaign ثبت نشده است.
+                </div>
               ) : (
                 executions.data.items.map((execution) => (
                   <ExecutionCard key={execution.id} campaignId={campaignId} execution={execution} />
