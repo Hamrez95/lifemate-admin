@@ -108,16 +108,27 @@ function parseSegment(value: unknown): AudienceSegment | null {
   const row = record(value);
   if (!row || typeof row.id !== "string" || !UUID.test(row.id)) return null;
   const ruleSet = record(row.ruleSet);
-  if (!ruleSet || ruleSet.version !== 1 || (ruleSet.match !== "all" && ruleSet.match !== "any") || !Array.isArray(ruleSet.rules)) return null;
+  if (
+    !ruleSet ||
+    ruleSet.version !== 1 ||
+    (ruleSet.match !== "all" && ruleSet.match !== "any") ||
+    !Array.isArray(ruleSet.rules)
+  )
+    return null;
   const rules = ruleSet.rules.map(parseRule);
   if (rules.some((item) => !item)) return null;
   if (
-    typeof row.key !== "string" || typeof row.name !== "string" ||
+    typeof row.key !== "string" ||
+    typeof row.name !== "string" ||
     (row.description !== null && typeof row.description !== "string") ||
-    typeof row.ruleHash !== "string" || !HEX.test(row.ruleHash) ||
+    typeof row.ruleHash !== "string" ||
+    !HEX.test(row.ruleHash) ||
     (row.status !== "Active" && row.status !== "Archived") ||
-    !Number.isInteger(row.version) || !instant(row.createdAtUtc) || !instant(row.updatedAtUtc)
-  ) return null;
+    !Number.isInteger(row.version) ||
+    !instant(row.createdAtUtc) ||
+    !instant(row.updatedAtUtc)
+  )
+    return null;
   return {
     id: row.id,
     key: row.key,
@@ -136,7 +147,9 @@ async function bearer(): Promise<string | null> {
   const supabase = await createServerSupabaseClient();
   const { data: claimsData, error } = await supabase.auth.getClaims();
   if (error || !claimsData?.claims?.sub) return null;
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   return session?.access_token ?? null;
 }
 
@@ -154,14 +167,21 @@ function failed<T>(response: Response, body: Problem): SegmentResult<T> {
   };
 }
 
-async function api(path: string, init?: RequestInit): Promise<{ response: Response; body: unknown } | null> {
+async function api(
+  path: string,
+  init?: RequestInit,
+): Promise<{ response: Response; body: unknown } | null> {
   const token = await bearer();
   if (!token) return null;
   const config = getPublicRuntimeConfig();
   try {
     const response = await fetch(`${config.adminApiUrl}${path}`, {
       ...init,
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", ...(init?.headers ?? {}) },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        ...(init?.headers ?? {}),
+      },
       cache: "no-store",
       signal: AbortSignal.timeout(10_000),
     });
@@ -188,19 +208,34 @@ export async function getSegmentCapabilities(): Promise<SegmentResult<SegmentCap
   if (!result) return { kind: "unauthenticated" };
   if (!result.response.ok) return failed(result.response, (record(result.body) ?? {}) as Problem);
   const body = record(result.body);
-  if (!body || !Array.isArray(body.supportedAttributes) || !Array.isArray(body.unavailableAttributes) || !Number.isInteger(body.minimumPreviewCohort)) return { kind: "unavailable" };
+  if (
+    !body ||
+    !Array.isArray(body.supportedAttributes) ||
+    !Array.isArray(body.unavailableAttributes) ||
+    !Number.isInteger(body.minimumPreviewCohort)
+  )
+    return { kind: "unavailable" };
   return {
     kind: "ok",
     data: {
-      supportedAttributes: body.supportedAttributes.filter((v): v is string => typeof v === "string"),
-      unavailableAttributes: body.unavailableAttributes.filter((v): v is string => typeof v === "string"),
+      supportedAttributes: body.supportedAttributes.filter(
+        (v): v is string => typeof v === "string",
+      ),
+      unavailableAttributes: body.unavailableAttributes.filter(
+        (v): v is string => typeof v === "string",
+      ),
       minimumPreviewCohort: Number(body.minimumPreviewCohort),
     },
   };
 }
 
 export async function createAudienceSegment(
-  payload: { key: string; name: string; description: string | null; rules: AudienceSegment["ruleSet"] },
+  payload: {
+    key: string;
+    name: string;
+    description: string | null;
+    rules: AudienceSegment["ruleSet"];
+  },
   idempotencyKey: string,
 ): Promise<SegmentResult<AudienceSegment>> {
   const result = await api("/api/v1/marketing/segments", {
@@ -220,7 +255,19 @@ export async function previewAudienceSegment(id: string): Promise<SegmentResult<
   if (!result) return { kind: "unauthenticated" };
   if (!result.response.ok) return failed(result.response, (record(result.body) ?? {}) as Problem);
   const body = record(result.body);
-  if (!body || body.segmentId !== id || !Number.isInteger(body.segmentVersion) || typeof body.ruleHash !== "string" || !HEX.test(body.ruleHash) || (body.count !== null && !Number.isInteger(body.count)) || typeof body.suppressed !== "boolean" || !Number.isInteger(body.minimumCohortSize) || typeof body.source !== "string" || !instant(body.sourceAsOfUtc)) return { kind: "unavailable" };
+  if (
+    !body ||
+    body.segmentId !== id ||
+    !Number.isInteger(body.segmentVersion) ||
+    typeof body.ruleHash !== "string" ||
+    !HEX.test(body.ruleHash) ||
+    (body.count !== null && !Number.isInteger(body.count)) ||
+    typeof body.suppressed !== "boolean" ||
+    !Number.isInteger(body.minimumCohortSize) ||
+    typeof body.source !== "string" ||
+    !instant(body.sourceAsOfUtc)
+  )
+    return { kind: "unavailable" };
   return { kind: "ok", data: body as unknown as SegmentPreview };
 }
 
@@ -238,6 +285,20 @@ export async function snapshotAudienceSegment(
   if (!result) return { kind: "unauthenticated" };
   if (!result.response.ok) return failed(result.response, (record(result.body) ?? {}) as Problem);
   const body = record(result.body);
-  if (!body || typeof body.id !== "string" || !UUID.test(body.id) || body.segmentId !== id || !Number.isInteger(body.segmentVersion) || typeof body.ruleHash !== "string" || !HEX.test(body.ruleHash) || (body.memberCount !== null && !Number.isInteger(body.memberCount)) || typeof body.suppressed !== "boolean" || !Number.isInteger(body.minimumCohortSize) || !instant(body.sourceAsOfUtc) || !instant(body.createdAtUtc)) return { kind: "unavailable" };
+  if (
+    !body ||
+    typeof body.id !== "string" ||
+    !UUID.test(body.id) ||
+    body.segmentId !== id ||
+    !Number.isInteger(body.segmentVersion) ||
+    typeof body.ruleHash !== "string" ||
+    !HEX.test(body.ruleHash) ||
+    (body.memberCount !== null && !Number.isInteger(body.memberCount)) ||
+    typeof body.suppressed !== "boolean" ||
+    !Number.isInteger(body.minimumCohortSize) ||
+    !instant(body.sourceAsOfUtc) ||
+    !instant(body.createdAtUtc)
+  )
+    return { kind: "unavailable" };
   return { kind: "ok", data: body as unknown as SegmentSnapshot };
 }
