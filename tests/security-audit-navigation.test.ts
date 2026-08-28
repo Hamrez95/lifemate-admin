@@ -24,9 +24,12 @@ describe("ADM-SEC-003 audit navigation", () => {
     expect(sidebar).toContain('pathname.startsWith("/security/audit/")');
     expect(sidebar).toContain('pathname === "/research"');
     expect(sidebar).toContain('pathname.startsWith("/research/")');
+    expect(sidebar).toContain('pathname === "/experiments"');
+    expect(sidebar).toContain('pathname.startsWith("/experiments/")');
     expect(sidebar).toContain('aria-current={auditActive ? "page" : undefined}');
+    expect(sidebar).toContain('aria-current={experimentsActive ? "page" : undefined}');
     expect(sidebar).toContain(
-      'data-active={active && !auditActive && !researchActive ? "true" : "false"}',
+      'active && !auditActive && !researchActive && !experimentsActive',
     );
   });
 });
