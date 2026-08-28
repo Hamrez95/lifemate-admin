@@ -17,7 +17,9 @@ export function Sidebar({ activeSlug }: SidebarProps) {
     canAccessWorkspace(workspace, admin.permissions),
   );
   const canReadAudit = admin.permissions.includes("security.audit.read");
+  const isFounder = admin.roles.includes("founder");
   const auditActive = pathname === "/security/audit" || pathname.startsWith("/security/audit/");
+  const researchActive = pathname === "/research" || pathname.startsWith("/research/");
   const profileActive = pathname === "/profile" || pathname.startsWith("/profile/");
 
   return (
@@ -33,10 +35,10 @@ export function Sidebar({ activeSlug }: SidebarProps) {
               <li key={workspace.slug || "command-center"}>
                 <Link
                   className="nav-item"
-                  data-active={active && !auditActive ? "true" : "false"}
+                  data-active={active && !auditActive && !researchActive ? "true" : "false"}
                   href={workspaceHref(workspace)}
                   aria-label={workspace.label}
-                  aria-current={active && !auditActive ? "page" : undefined}
+                  aria-current={active && !auditActive && !researchActive ? "page" : undefined}
                 >
                   <span className="nav-item__symbol" aria-hidden="true">
                     {workspace.symbol}
@@ -44,6 +46,20 @@ export function Sidebar({ activeSlug }: SidebarProps) {
                   <span>{workspace.label}</span>
                   {workspace.slug === "ai" && <span className="nav-item__badge">جدید</span>}
                 </Link>
+                {workspace.slug === "analytics" && active && isFounder ? (
+                  <Link
+                    className="nav-item nav-item--subroute"
+                    data-active={researchActive ? "true" : "false"}
+                    href="/research"
+                    aria-label="Research Studio"
+                    aria-current={researchActive ? "page" : undefined}
+                  >
+                    <span className="nav-item__symbol" aria-hidden="true">
+                      ↳
+                    </span>
+                    <span>Research Studio</span>
+                  </Link>
+                ) : null}
                 {workspace.slug === "security" && active && canReadAudit ? (
                   <Link
                     className="nav-item nav-item--subroute"
