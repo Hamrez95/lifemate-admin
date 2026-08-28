@@ -1,0 +1,230 @@
+.page {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.hero,
+.toolbar,
+.scopeNotice,
+.stageSection,
+.previousPeriod {
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  background: var(--surface-panel);
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.hero h2,
+.sectionHeading h3 {
+  margin: 0.25rem 0 0.5rem;
+}
+
+.hero p,
+.sectionHeading p,
+.metricCard p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.8;
+}
+
+.eyebrow,
+.metricKey {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.heroMeta {
+  min-width: 13rem;
+  display: grid;
+  align-content: start;
+  gap: 0.45rem;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+}
+
+.toolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.filters label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.filters input,
+.filters select,
+.filters button,
+.toolbar > button {
+  min-height: 2.5rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.65rem;
+  background: var(--surface-raised);
+  color: inherit;
+  padding: 0.55rem 0.75rem;
+}
+
+.filters button {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.toolbar > button:disabled {
+  opacity: 0.55;
+}
+
+.scopeNotice,
+.previousPeriod {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  padding: 1rem 1.2rem;
+  color: var(--text-muted);
+}
+
+.scopeNotice strong,
+.previousPeriod strong {
+  color: var(--text-primary);
+}
+
+.stageSection {
+  padding: 1.15rem;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.metricCard {
+  min-width: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.85rem;
+  padding: 1rem;
+  background: var(--surface-raised);
+  display: grid;
+  gap: 0.7rem;
+}
+
+.metricCard[data-state="unavailable"] {
+  border-style: dashed;
+}
+
+.metricHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.metricHeader > div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.metricHeader strong {
+  font-size: 1.4rem;
+}
+
+.stateBadge {
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  padding: 0.25rem 0.55rem;
+  font-size: 0.72rem;
+}
+
+.stateBadge[data-state="ready"] {
+  font-weight: 700;
+}
+
+.stateBadge[data-state="unavailable"] {
+  opacity: 0.65;
+}
+
+.metricMeta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.metricCard small {
+  overflow-wrap: anywhere;
+  color: var(--text-muted);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.links a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+}
+
+@media (max-width: 1100px) {
+  .metricGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .hero,
+  .toolbar,
+  .sectionHeading {
+    flex-direction: column;
+  }
+
+  .heroMeta {
+    min-width: 0;
+  }
+
+  .filters {
+    width: 100%;
+  }
+
+  .filters label,
+  .filters input,
+  .filters select,
+  .filters button,
+  .toolbar > button {
+    width: 100%;
+  }
+
+  .metricGrid {
+    grid-template-columns: 1fr;
+  }
+}
