@@ -3,10 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import {
-  createResearchDataset,
-  requestResearchExport,
-} from "@/src/lib/admin-api/research-studio";
+import { createResearchDataset, requestResearchExport } from "@/src/lib/admin-api/research-studio";
 
 const KINDS = new Set([
   "HealthObservationAggregate",
@@ -123,7 +120,8 @@ export async function requestExportAction(form: FormData) {
   });
   if (result.kind === "unauthenticated") redirect("/login");
   if (result.kind === "forbidden") resultRedirect("forbidden", datasetId);
-  if (result.kind !== "ok") resultRedirect(result.kind === "invalid" ? "invalid" : "unavailable", datasetId);
+  if (result.kind !== "ok")
+    resultRedirect(result.kind === "invalid" ? "invalid" : "unavailable", datasetId);
 
   revalidatePath("/research");
   resultRedirect("export_requested", datasetId);
