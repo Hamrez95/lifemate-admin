@@ -24,7 +24,7 @@ describe("Admin #185 User 360 privacy summary", () => {
     const client = source("src/lib/admin-api/privacy-user-summary.ts");
     const layout = source("app/users/[accountId]/layout.tsx");
 
-    expect(client).toContain('mutableFromAdmin: false');
+    expect(client).toContain("mutableFromAdmin: false");
     expect(layout).toContain("Admin نمی‌تواند پذیرش یا Opt-in را به‌جای کاربر ثبت کند");
     expect(layout).not.toContain("subjectPersonId");
     expect(layout).not.toContain("documentHash");
@@ -35,7 +35,9 @@ describe("Admin #185 User 360 privacy summary", () => {
   it("does not let release permission gate hide privacy-only access", () => {
     const layout = source("app/users/[accountId]/layout.tsx");
     expect(layout).toContain("if (!canReadVersions && !canReadPrivacy) return children;");
-    expect(layout).toContain("canReadPrivacy ? getUserPrivacySummary(accountId) : Promise.resolve(null)");
+    expect(layout).toContain(
+      "canReadPrivacy ? getUserPrivacySummary(accountId) : Promise.resolve(null)",
+    );
     expect(layout).toContain("Privacy summary فعلاً در دسترس نیست؛ داده جایگزین ساخته نمی‌شود");
   });
 });
