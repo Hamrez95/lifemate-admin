@@ -14,7 +14,7 @@ describe("Admin #191 experiments/feedback canonical boundary", () => {
     expect(client).toContain('cache: "no-store"');
     expect(client).toContain("AbortSignal.timeout(10_000)");
     expect(client).toContain('adminFetch("/api/v1/experiments")');
-    expect(client).toContain('adminFetch(`/api/v1/feedback');
+    expect(client).toContain("adminFetch(`/api/v1/feedback");
     expect(client).not.toContain("createClient(");
     expect(client).not.toContain("service_role");
     expect(client).not.toContain(".from(");
@@ -22,7 +22,14 @@ describe("Admin #191 experiments/feedback canonical boundary", () => {
 
   it("keeps experiment delivery constrained to canonical non-clinical surfaces", () => {
     const page = source("app/experiments/page.tsx");
-    for (const surface of ["onboarding", "pricing", "paywall", "cta", "offer", "nonclinical_feature"]) {
+    for (const surface of [
+      "onboarding",
+      "pricing",
+      "paywall",
+      "cta",
+      "offer",
+      "nonclinical_feature",
+    ]) {
       expect(page).toContain(`value=\"${surface}\"`);
     }
     expect(page).not.toContain('value="medication"');
@@ -34,7 +41,9 @@ describe("Admin #191 experiments/feedback canonical boundary", () => {
     const page = source("app/experiments/page.tsx");
     expect(page).toContain("Feedback Admin API هنوز آماده نیست");
     expect(page).toContain("direct DB fallback وجود ندارد");
-    expect(page).toContain("Advocacy reward execution هنوز تا وجود API canonical reward handoff غیرفعال است");
+    expect(page).toContain(
+      "Advocacy reward execution هنوز تا وجود API canonical reward handoff غیرفعال است",
+    );
     expect(page).toContain("no social scraping");
   });
 
