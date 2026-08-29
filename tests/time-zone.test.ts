@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  DEFAULT_ADMIN_LOCALE,
+  formatAdminDate,
+  formatAdminDateTime,
   localDateTimeToUtc,
   tehranDayBoundaryToUtc,
   tehranLocalDateTimeToUtc,
@@ -18,5 +21,23 @@ describe("timezone conversion", () => {
 
   it("rejects malformed local date-time values", () => {
     expect(() => localDateTimeToUtc("2026-08-15 09:30", "Asia/Tehran")).toThrow(RangeError);
+  });
+});
+
+describe("Persian Admin presentation", () => {
+  it("uses the Persian calendar as the single Admin locale", () => {
+    expect(DEFAULT_ADMIN_LOCALE).toContain("ca-persian");
+  });
+
+  it("renders a known Gregorian instant as a Jalali date", () => {
+    const rendered = formatAdminDate("2026-08-29T12:00:00.000Z");
+    expect(rendered).toContain("1405");
+    expect(rendered).not.toContain("2026");
+  });
+
+  it("renders Admin date-time in Tehran using the Jalali calendar", () => {
+    const rendered = formatAdminDateTime("2026-08-29T12:00:00.000Z");
+    expect(rendered).toContain("1405");
+    expect(rendered).toMatch(/15:30|۱۵:۳۰/);
   });
 });
