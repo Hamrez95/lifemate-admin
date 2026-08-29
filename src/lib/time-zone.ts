@@ -2,6 +2,8 @@ const ISO_DAY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const ISO_LOCAL_MINUTE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/;
 
 const formatterCache = new Map<string, Intl.DateTimeFormat>();
+const PERSIAN_LOCALE = "fa-IR-u-ca-persian-nu-latn";
+const TEHRAN_TIME_ZONE = "Asia/Tehran";
 
 function formatterFor(timeZone: string): Intl.DateTimeFormat {
   const existing = formatterCache.get(timeZone);
@@ -19,6 +21,37 @@ function formatterFor(timeZone: string): Intl.DateTimeFormat {
   });
   formatterCache.set(timeZone, formatter);
   return formatter;
+}
+
+function parseDisplayDate(value: string | Date | null | undefined): Date | null {
+  if (!value) return null;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+export function formatPersianDate(value: string | Date | null | undefined): string {
+  const date = parseDisplayDate(value);
+  if (!date) return "—";
+  return new Intl.DateTimeFormat(PERSIAN_LOCALE, {
+    timeZone: TEHRAN_TIME_ZONE,
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(date);
+}
+
+export function formatPersianDateTime(value: string | Date | null | undefined): string {
+  const date = parseDisplayDate(value);
+  if (!date) return "—";
+  return new Intl.DateTimeFormat(PERSIAN_LOCALE, {
+    timeZone: TEHRAN_TIME_ZONE,
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(date);
 }
 
 function timeZoneOffsetMs(instantMs: number, timeZone: string): number {
@@ -81,9 +114,9 @@ export function localDateTimeToUtc(value: string, timeZone: string): string {
 }
 
 export function tehranDayBoundaryToUtc(day: string, boundary: "start" | "end"): string {
-  return localDayBoundaryToUtc(day, "Asia/Tehran", boundary);
+  return localDayBoundaryToUtc(day, TEHRAN_TIME_ZONE, boundary);
 }
 
 export function tehranLocalDateTimeToUtc(value: string): string {
-  return localDateTimeToUtc(value, "Asia/Tehran");
+  return localDateTimeToUtc(value, TEHRAN_TIME_ZONE);
 }
