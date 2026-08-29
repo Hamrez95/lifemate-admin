@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { PwaRegistrar } from "@/src/components/pwa/PwaRegistrar";
 
 import "./globals.css";
+import "./typography.css";
 import "./design-system.css";
 import "./admin-auth.css";
 import "./admin-auth-enhanced.css";
