@@ -1,12 +1,18 @@
 const ISO_DAY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const ISO_LOCAL_MINUTE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/;
 
-const formatterCache = new Map<string, Intl.DateTimeFormat>();
+export const DEFAULT_ADMIN_TIME_ZONE = "Asia/Tehran";
+export const DEFAULT_ADMIN_LOCALE = "fa-IR-u-ca-persian-nu-latn";
 
-function formatterFor(timeZone: string): Intl.DateTimeFormat {
-  const existing = formatterCache.get(timeZone);
+const offsetFormatterCache = new Map<string, Intl.DateTimeFormat>();
+const displayFormatterCache = new Map<string, Intl.DateTimeFormat>();
+
+function offsetFormatterFor(timeZone: string): Intl.DateTimeFormat {
+  const existing = offsetFormatterCache.get(timeZone);
   if (existing) return existing;
 
+  // Offset calculations intentionally use the Gregorian calendar. Display
+  // formatting is handled separately through the Persian calendar helpers.
   const formatter = new Intl.DateTimeFormat("en-CA", {
     timeZone,
     hourCycle: "h23",
@@ -17,12 +23,57 @@ function formatterFor(timeZone: string): Intl.DateTimeFormat {
     minute: "2-digit",
     second: "2-digit",
   });
-  formatterCache.set(timeZone, formatter);
+  offsetFormatterCache.set(timeZone, formatter);
   return formatter;
 }
 
+function displayFormatterFor(
+  options: Intl.DateTimeFormatOptions,
+  locale = DEFAULT_ADMIN_LOCALE,
+  timeZone = DEFAULT_ADMIN_TIME_ZONE,
+): Intl.DateTimeFormat {
+  const normalizedOptions = { ...options, timeZone };
+  const key = `${locale}|${JSON.stringify(normalizedOptions)}`;
+  const existing = displayFormatterCache.get(key);
+  if (existing) return existing;
+  const formatter = new Intl.DateTimeFormat(locale, normalizedOptions);
+  displayFormatterCache.set(key, formatter);
+  return formatter;
+}
+
+function toDate(value: Date | string | number): Date {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) throw new RangeError("Expected a valid date value");
+  return date;
+}
+
+/** Canonical Admin date presentation: Jalali/Persian calendar in Tehran time. */
+export function formatAdminDate(
+  value: Date | string | number,
+  options: Intl.DateTimeFormatOptions = { year: "numeric", month: "2-digit", day: "2-digit" },
+): string {
+  return displayFormatterFor(options).format(toDate(value));
+}
+
+/** Canonical Admin date-time presentation: Jalali/Persian calendar in Tehran time. */
+export function formatAdminDateTime(value: Date | string | number): string {
+  return formatAdminDate(value, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  });
+}
+
+/** Canonical Admin month/day presentation for compact Persian UI. */
+export function formatAdminShortDate(value: Date | string | number): string {
+  return formatAdminDate(value, { month: "short", day: "numeric" });
+}
+
 function timeZoneOffsetMs(instantMs: number, timeZone: string): number {
-  const parts = formatterFor(timeZone).formatToParts(new Date(instantMs));
+  const parts = offsetFormatterFor(timeZone).formatToParts(new Date(instantMs));
   const values = new Map(parts.map((part) => [part.type, part.value]));
   const asUtc = Date.UTC(
     Number(values.get("year")),
@@ -81,9 +132,9 @@ export function localDateTimeToUtc(value: string, timeZone: string): string {
 }
 
 export function tehranDayBoundaryToUtc(day: string, boundary: "start" | "end"): string {
-  return localDayBoundaryToUtc(day, "Asia/Tehran", boundary);
+  return localDayBoundaryToUtc(day, DEFAULT_ADMIN_TIME_ZONE, boundary);
 }
 
 export function tehranLocalDateTimeToUtc(value: string): string {
-  return localDateTimeToUtc(value, "Asia/Tehran");
+  return localDateTimeToUtc(value, DEFAULT_ADMIN_TIME_ZONE);
 }
