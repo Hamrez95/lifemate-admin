@@ -1,0 +1,29 @@
+/*
+ * LifeMate Command Center typography contract.
+ *
+ * Keep font ownership in this single file so Persian typography can be
+ * replaced without touching feature pages. The pinned Vazir v16.1.0 asset
+ * matches the project-supplied font package; feature code must never declare
+ * its own Persian font stack.
+ */
+@font-face {
+  font-family: "Vazir";
+  src: url("https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v16.1.0/dist/Vazir.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  --lm-font-family-persian: "Vazir", Tahoma, Arial, system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
+}
+
+html[lang="fa"],
+html[lang="fa"] body,
+html[lang="fa"] button,
+html[lang="fa"] input,
+html[lang="fa"] select,
+html[lang="fa"] textarea {
+  font-family: var(--lm-font-family-persian);
+}
