@@ -1,6 +1,6 @@
 const MAX_BODY_BYTES = 16_384;
 const UPSTREAM_TIMEOUT_MS = 12_000;
-const ALLOWED_ACTIONS = new Set(["login", "signup", "activate_founder"]);
+const ALLOWED_ACTIONS = new Set(["login", "activate_founder"]);
 
 function noStoreHeaders(contentType = "application/json; charset=utf-8") {
   return {
