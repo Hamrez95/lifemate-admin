@@ -23,7 +23,9 @@ describe("Persian calendar UI contract", () => {
 
     for (const file of tsxFiles("app")) {
       const source = readFileSync(path.join(root, file), "utf8");
-      const formatterCalls = source.matchAll(/new Intl\.DateTimeFormat\(([^\n]*)(?:\n[\s\S]{0,180})?/g);
+      const formatterCalls = source.matchAll(
+        /new Intl\.DateTimeFormat\(([^\n]*)(?:\n[\s\S]{0,180})?/g,
+      );
       for (const match of formatterCalls) {
         const snippet = match[0];
         if (!snippet.includes("u-ca-persian")) offenders.push(file);
