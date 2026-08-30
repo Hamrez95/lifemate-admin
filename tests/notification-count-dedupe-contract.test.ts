@@ -21,14 +21,14 @@ describe("notification count request dedupe", () => {
     expect(source).not.toContain("successCache.set(cookie");
   });
 
-  it("deduplicates in-flight calls without caching auth or failure responses", async () => {
+  it("deduplicates in-flight calls and writes cache only behind the success discriminator", async () => {
     const source = await routeSource();
 
     expect(source).toContain("const inFlight = new Map");
     expect(source).toContain("const pending = inFlight.get(key)");
     expect(source).toContain("if (pending) return pending");
     expect(source).toContain('if (result.kind === "ok") rememberSuccess(key, result)');
-    expect(source).not.toMatch(/rememberSuccess\(key, result\)[\s\S]*kind === "forbidden"/);
+    expect(source.match(/rememberSuccess\(key, result\)/g)).toHaveLength(1);
   });
 
   it("keeps browser/proxy caching disabled for private notification counts", async () => {
