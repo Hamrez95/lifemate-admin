@@ -16,14 +16,17 @@ describe("Login/MFA reference design contract", () => {
     expect(page).toContain("ورود امن به مرکز فرماندهی LifeMate");
   });
 
-  it("keeps founder activation, AAL2, TOTP and fail-closed access logic unchanged", () => {
+  it("keeps founder activation, universal AAL2/TOTP and fail-closed access logic", () => {
     const flow = source("src/components/auth/AdminLoginFlow.tsx");
     expect(flow).toContain('action: "activate_founder"');
-    expect(flow).toContain('data.access_state === "founder_compat"');
+    expect(flow).not.toContain("founder_compat");
     expect(flow).toContain('data.access_state === "pending_role"');
     expect(flow).toContain("mfa.getAuthenticatorAssuranceLevel()");
     expect(flow).toContain('aal.currentLevel === "aal2"');
     expect(flow).toContain("mfa.challengeAndVerify");
+    expect(flow).toContain('factorType: "totp"');
+    expect(flow).toContain("await prepareMfa()");
+    expect(flow).toContain("از جمله Founder");
     expect(flow).toContain('signOut({ scope: "local" })');
     expect(flow).not.toMatch(/service_role|DATABASE_URL|SUPABASE_SERVICE_ROLE/i);
   });
@@ -36,13 +39,13 @@ describe("Login/MFA reference design contract", () => {
     expect(styles).toContain("animation: auth-spin");
   });
 
-  it("keeps loading concise and exposes accessible error/success status messaging", () => {
+  it("keeps loading concise and exposes accessible invite-only/error status messaging", () => {
     const flow = source("src/components/auth/AdminLoginFlow.tsx");
     expect(flow).toContain('role="status"');
     expect(flow).toContain('aria-live="polite"');
     expect(flow).toContain("در حال بررسی نشست امن...");
-    expect(flow).toContain("ثبت‌نام انجام شد.");
-    expect(flow).toContain("حساب شما ثبت شده اما هنوز نقش و دسترسی");
+    expect(flow).toContain("ثبت‌نام عمومی ندارد");
+    expect(flow).toContain("این هویت هنوز نقش فعال Command Center ندارد");
     expect(flow).toContain("نام کاربری یا رمز عبور صحیح نیست");
   });
 });

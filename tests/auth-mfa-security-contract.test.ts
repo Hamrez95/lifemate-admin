@@ -8,7 +8,7 @@ function source(path: string): string {
 }
 
 describe("ADM-QA-001 authentication and MFA security contract", () => {
-  it("uses the dedicated workforce username auth boundary without exposing internal email", () => {
+  it("uses the dedicated invite-only workforce username auth boundary without exposing internal email", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
     const runtime = source("src/lib/runtime-config.ts");
     const workforceProxy = source("app/api/auth/workforce/route.ts");
@@ -19,10 +19,10 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(workforceProxy).toContain("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
     expect(workforceProxy).not.toMatch(/SERVICE_ROLE|serviceRole|SUPABASE_DB_URL|DATABASE_URL/);
     expect(login).toContain('action: "login"');
-    expect(login).toContain('action: "signup"');
     expect(login).toContain('action: "activate_founder"');
-    expect(login).toContain("ثبت‌نام با نام کاربری و رمز عبور");
-    expect(login).toContain("ورود با نام کاربری");
+    expect(login).not.toContain('action: "signup"');
+    expect(login).not.toContain("ثبت‌نام با نام کاربری");
+    expect(login).toContain("ثبت‌نام عمومی ندارد");
     expect(login).toContain("supabase.auth.setSession");
     expect(login).not.toContain('type="email"');
     expect(login).not.toContain('type="tel"');
@@ -30,15 +30,14 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(login).not.toContain("SUPABASE_SERVICE_ROLE");
   });
 
-  it("keeps self-registration default-deny until Founder assigns a role", () => {
+  it("keeps non-invited or role-less identities fail-closed", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
     expect(login).toContain('data.access_state === "pending_role"');
-    expect(login).toContain("تا زمان تأیید مدیر سیستم");
-    expect(login).toContain("هیچ دسترسی مدیریتی");
+    expect(login).toContain("فقط هویت‌های دعوت‌شده");
     expect(login).toContain('signOut({ scope: "local" })');
   });
 
-  it("requires AAL2 for ordinary staff and supports verified TOTP challenge or controlled enrollment", () => {
+  it("requires AAL2 for every authorized workforce identity including Founder", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
     expect(login).toContain("mfa.getAuthenticatorAssuranceLevel()");
     expect(login).toContain('aal.currentLevel === "aal2"');
@@ -46,8 +45,9 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(login).toContain("mfa.listFactors()");
     expect(login).toContain("mfa.challengeAndVerify");
     expect(login).toContain('factorType: "totp"');
-    expect(login).toContain("Command Center نشست AAL2 را الزامی می‌کند");
-    expect(login).toContain('data.access_state === "founder_compat"');
+    expect(login).toContain("از جمله Founder");
+    expect(login).not.toContain("founder_compat");
+    expect(login).toContain("await prepareMfa()");
   });
 
   it("validates identity claims before using a session token server-side", () => {

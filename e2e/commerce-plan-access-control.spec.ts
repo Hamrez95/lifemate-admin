@@ -26,7 +26,7 @@ test("commerce plan control redirects an unauthenticated browser to workforce lo
 
   await expect(page).toHaveURL(/\/login$/);
   await expect(page.getByLabel("نام کاربری", { exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "ورود با نام کاربری" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "ادامه به تأیید دومرحله‌ای" })).toBeVisible();
   await expect(page.getByText("commerce.plan.write")).toHaveCount(0);
   await expect(page.getByText("commerce.price.write")).toHaveCount(0);
 

@@ -15,7 +15,7 @@ test("login stays usable without horizontal overflow", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "ورود امن به مرکز فرماندهی LifeMate" }),
   ).toBeVisible();
-  await expect(page.getByRole("button", { name: "ورود با نام کاربری" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "ادامه به تأیید دومرحله‌ای" })).toBeVisible();
   await expectNoViewportOverflow(page);
 });
 

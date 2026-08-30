@@ -111,17 +111,6 @@ export async function startQaWorkforceAuth() {
       });
     }
 
-    if (body?.action === "signup") {
-      if (
-        body?.username !== "new.staff" ||
-        body?.displayName !== "کارمند آزمایشی" ||
-        body?.password !== "qa-password"
-      ) {
-        return json(response, 400, { ok: false, code: "invalid_registration" });
-      }
-      return json(response, 201, { ok: true, status: "pending_role_assignment" });
-    }
-
     if (body?.action === "activate_founder") {
       return json(response, 401, { ok: false, code: "invalid_activation" });
     }
