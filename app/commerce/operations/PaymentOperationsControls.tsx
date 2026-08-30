@@ -219,7 +219,8 @@ export function GiftTestFinalizeForm() {
       </label>
       <label className={styles.confirm}>
         <input type="checkbox" name="confirmation" value="confirm-gift-test-finalize" required />
-        این یک Test Finalize داخلی است و هیچ Relationship، Consent یا Health Permission ایجاد نمی‌کند.
+        این یک Test Finalize داخلی است و هیچ Relationship، Consent یا Health Permission ایجاد
+        نمی‌کند.
       </label>
       <button type="submit" disabled={pending}>
         {pending ? "در حال شبیه‌سازی…" : "Test Finalize Gift"}
