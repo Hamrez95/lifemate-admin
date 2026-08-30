@@ -18,11 +18,11 @@ Non-negotiable rules:
 
 ## Severity model
 
-| Severity | Example | First action |
-| --- | --- | --- |
-| SEV-1 | suspected credential/key compromise, unauthorized sensitive-data access, destructive production corruption, unavailable authentication for all Admin operators | contain access and preserve evidence before attempting recovery |
-| SEV-2 | material Admin API outage, partial authorization regression, failed migration affecting production operations | stop promotion, identify last known-good release and database state |
-| SEV-3 | degraded non-sensitive feature, isolated UI/runtime defect without privilege or data-integrity impact | triage through normal release workflow |
+| Severity | Example                                                                                                                                                        | First action                                                        |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| SEV-1    | suspected credential/key compromise, unauthorized sensitive-data access, destructive production corruption, unavailable authentication for all Admin operators | contain access and preserve evidence before attempting recovery     |
+| SEV-2    | material Admin API outage, partial authorization regression, failed migration affecting production operations                                                  | stop promotion, identify last known-good release and database state |
+| SEV-3    | degraded non-sensitive feature, isolated UI/runtime defect without privilege or data-integrity impact                                                          | triage through normal release workflow                              |
 
 Severity may only be lowered after evidence rules out the higher-risk condition.
 
@@ -41,16 +41,16 @@ Severity may only be lowered after evidence rules out the higher-risk condition.
 
 Before a restore can be declared operationally ready, the operator must capture live provider evidence for all of these fields:
 
-| Evidence | Required value | Current source status |
-| --- | --- | --- |
-| Database backup mechanism | provider/job name and scope | **unverified in source** |
-| Backup encryption | provider evidence that backup material is encrypted and key ownership is known | **unverified in source** |
-| Backup retention | live configured retention | **unverified in source** |
-| RPO | founder/operator-approved target supported by provider evidence | **decision/evidence required** |
-| RTO | founder/operator-approved target demonstrated by a timed drill | **decision/evidence required** |
-| Restore destination | isolated/disposable or protected staging target | **must be chosen for each drill** |
+| Evidence                   | Required value                                                                                   | Current source status                |
+| -------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| Database backup mechanism  | provider/job name and scope                                                                      | **unverified in source**             |
+| Backup encryption          | provider evidence that backup material is encrypted and key ownership is known                   | **unverified in source**             |
+| Backup retention           | live configured retention                                                                        | **unverified in source**             |
+| RPO                        | founder/operator-approved target supported by provider evidence                                  | **decision/evidence required**       |
+| RTO                        | founder/operator-approved target demonstrated by a timed drill                                   | **decision/evidence required**       |
+| Restore destination        | isolated/disposable or protected staging target                                                  | **must be chosen for each drill**    |
 | Identity-link key recovery | external key reference/version can be restored without storing key material in PostgreSQL backup | **must be evidenced with Core #217** |
-| Release correlation | exact Admin + Core refs compatible with restored schema | **required for every drill** |
+| Release correlation        | exact Admin + Core refs compatible with restored schema                                          | **required for every drill**         |
 
 A source merge does not satisfy these rows.
 
