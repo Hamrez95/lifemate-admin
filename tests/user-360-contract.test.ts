@@ -27,7 +27,9 @@ describe("ADM-USR-002 / ADM-USR-004 User 360 detail", () => {
     expect(client).toContain('reason: "contract_mismatch"');
     expect(client).toContain('reason: "transport"');
     expect(client).toContain('reason: "backend"');
-    expect(client).toContain('value === "ready" || value === "empty" || value === "forbidden" || value === "unavailable"');
+    expect(client).toContain(
+      'value === "ready" || value === "empty" || value === "forbidden" || value === "unavailable"',
+    );
     expect(client).toContain('freshness.status === "fresh" || freshness.status === "stale"');
   });
 
@@ -54,7 +56,14 @@ describe("ADM-USR-002 / ADM-USR-004 User 360 detail", () => {
 
   it("provides deep-linkable Persian-first tabs without fabricating unavailable support data", () => {
     const page = source("app/users/[accountId]/page.tsx");
-    for (const tab of ["overview", "products", "relationships", "commerce", "support", "activity"]) {
+    for (const tab of [
+      "overview",
+      "products",
+      "relationships",
+      "commerce",
+      "support",
+      "activity",
+    ]) {
       expect(page).toContain(`id: "${tab}"`);
     }
     expect(page).toContain('aria-current={tab.id === activeTab ? "page" : undefined}');
