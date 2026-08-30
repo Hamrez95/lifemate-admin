@@ -70,6 +70,15 @@ describe("core route performance contract", () => {
     }
   });
 
+  it("deduplicates /me within a render and avoids speculative protected-route auth fetches", () => {
+    const server = source("src/lib/admin-api/server.ts");
+    const sidebar = source("src/components/shell/Sidebar.tsx");
+
+    expect(server).toContain("const getAdminAccessForRequest = cache(async ()");
+    expect(occurrences(server, "/api/v1/me")).toBe(1);
+    expect(occurrences(sidebar, "prefetch={false}")).toBe(5);
+  });
+
   it("keeps the responsive browser gate on all requested core routes", () => {
     const e2e = source("e2e/core-routes-responsive.spec.ts");
     for (const route of [
