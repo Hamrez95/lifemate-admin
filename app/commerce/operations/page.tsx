@@ -179,8 +179,8 @@ export default async function CommerceOperationsPage() {
                 <span>Test</span>
               </header>
               <p className={styles.muted}>
-                شبیه‌سازی پرداخت Gift فقط از endpoint امن Core انجام می‌شود. این عملیات هیچ رابطه، رضایت
-                دسترسی یا مجوز سلامت ایجاد نمی‌کند و داده حساس سلامت را نمایش نمی‌دهد.
+                شبیه‌سازی پرداخت Gift فقط از endpoint امن Core انجام می‌شود. این عملیات هیچ رابطه،
+                رضایت دسترسی یا مجوز سلامت ایجاد نمی‌کند و داده حساس سلامت را نمایش نمی‌دهد.
               </p>
               {canGiftTestFinalize ? (
                 <GiftTestFinalizeForm />
