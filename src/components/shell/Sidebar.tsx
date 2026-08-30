@@ -46,6 +46,7 @@ export function Sidebar({ activeSlug }: SidebarProps) {
                       : "false"
                   }
                   href={workspaceHref(workspace)}
+                  prefetch={false}
                   aria-label={workspace.label}
                   aria-current={
                     active && !auditActive && !researchActive && !experimentsActive
@@ -64,6 +65,7 @@ export function Sidebar({ activeSlug }: SidebarProps) {
                     className="nav-item nav-item--subroute"
                     data-active={researchActive ? "true" : "false"}
                     href="/research"
+                    prefetch={false}
                     aria-label="Research Studio"
                     aria-current={researchActive ? "page" : undefined}
                   >
@@ -78,6 +80,7 @@ export function Sidebar({ activeSlug }: SidebarProps) {
                     className="nav-item nav-item--subroute"
                     data-active={experimentsActive ? "true" : "false"}
                     href="/experiments"
+                    prefetch={false}
                     aria-label="Experiments, Feedback & Advocacy"
                     aria-current={experimentsActive ? "page" : undefined}
                   >
@@ -92,6 +95,7 @@ export function Sidebar({ activeSlug }: SidebarProps) {
                     className="nav-item nav-item--subroute"
                     data-active={auditActive ? "true" : "false"}
                     href="/security/audit"
+                    prefetch={false}
                     aria-label="گزارش ممیزی"
                     aria-current={auditActive ? "page" : undefined}
                   >
@@ -109,6 +113,7 @@ export function Sidebar({ activeSlug }: SidebarProps) {
               className="nav-item"
               data-active={profileActive ? "true" : "false"}
               href="/profile"
+              prefetch={false}
               aria-label="پروفایل و تغییر رمز عبور"
               aria-current={profileActive ? "page" : undefined}
             >
