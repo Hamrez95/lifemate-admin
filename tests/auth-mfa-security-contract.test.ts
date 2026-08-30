@@ -18,6 +18,8 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(workforceProxy).toContain("NEXT_PUBLIC_ADMIN_AUTH_URL");
     expect(workforceProxy).toContain("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
     expect(workforceProxy).not.toMatch(/SERVICE_ROLE|serviceRole|SUPABASE_DB_URL|DATABASE_URL/);
+    expect(workforceProxy).toContain('new Set(["login", "activate_founder"])');
+    expect(workforceProxy).not.toContain('"signup"');
     expect(login).toContain('action: "login"');
     expect(login).toContain('action: "activate_founder"');
     expect(login).not.toContain('action: "signup"');
