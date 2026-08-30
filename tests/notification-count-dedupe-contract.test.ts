@@ -15,7 +15,7 @@ describe("notification count request dedupe", () => {
 
     expect(source).toContain('request.headers.get("cookie")');
     expect(source).toContain('crypto.subtle.digest("SHA-256"');
-    expect(source).toContain('return `${sessionDigest}:${sources}`');
+    expect(source).toContain("return `${sessionDigest}:${sources}`");
     expect(source).toContain("const SUCCESS_TTL_MS = 10_000");
     expect(source).toContain("const MAX_CACHE_ENTRIES = 256");
     expect(source).not.toContain("successCache.set(cookie");
