@@ -50,7 +50,7 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(login).toContain("await prepareMfa()");
   });
 
-  it("validates identity claims before using a session token server-side", () => {
+  it("validates identity claims and dedupes the per-request capability lookup without shared auth caching", () => {
     const server = source("src/lib/admin-api/server.ts");
     const session = source("src/lib/admin-api/session.ts");
     const proxy = source("src/lib/supabase/proxy.ts");
@@ -58,9 +58,14 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(session.indexOf("supabase.auth.getClaims()")).toBeLessThan(
       session.indexOf("supabase.auth.getSession()"),
     );
+    expect(server).toContain('import { cache } from "react"');
+    expect(server).toContain("const getAdminAccessForRequest = cache(");
+    expect(server).toContain("return getAdminAccessForRequest()");
     expect(server).toContain("getServerAdminAccessToken");
     expect(server).toContain("Authorization: `Bearer ${token}`");
     expect(server).toContain('cache: "no-store"');
+    expect(server).not.toContain("unstable_cache");
+    expect(server).not.toContain("force-cache");
     expect(server).toContain("AbortSignal.timeout(10_000)");
     expect(proxy).toContain("await supabase.auth.getClaims()");
     expect(proxy).not.toContain("supabase.auth.getSession(");
