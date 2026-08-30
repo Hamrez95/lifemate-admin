@@ -12,6 +12,7 @@ import {
   type RelationshipOverviewKind,
 } from "@/src/lib/admin-api/relationship-overview";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
+import { formatPersianDateTime } from "@/src/lib/time-zone";
 
 import { AccessGrantActions } from "./AccessGrantActions";
 import referenceStyles from "./relationships-reference.module.css";
@@ -55,15 +56,6 @@ const statusLabels: Record<string, string> = {
   Superseded: "جایگزین‌شده",
 };
 
-const dateTimeFormatter = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
-  timeZone: "Asia/Tehran",
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-});
-
 function one(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
 }
@@ -85,12 +77,6 @@ function pageHref(filters: URLSearchParams, page: number): string {
 
 function labelStatus(value: string): string {
   return statusLabels[value] ?? value;
-}
-
-function formatDateTime(value: string | null): string {
-  if (!value) return "—";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "—" : dateTimeFormatter.format(date);
 }
 
 function kindTotal(
@@ -163,9 +149,9 @@ function OverviewItem({
         </div>
         <p>{itemDetail(item)}</p>
         <div className={styles.activityMeta}>
-          <span>ثبت: {formatDateTime(item.occurredAtUtc)}</span>
-          <span>شروع: {formatDateTime(item.startedAtUtc)}</span>
-          <span>پایان: {formatDateTime(item.endedAtUtc)}</span>
+          <span>ثبت: {formatPersianDateTime(item.occurredAtUtc)}</span>
+          <span>شروع: {formatPersianDateTime(item.startedAtUtc)}</span>
+          <span>پایان: {formatPersianDateTime(item.endedAtUtc)}</span>
           {item.version !== null ? <span>نسخه: {item.version.toLocaleString("fa-IR")}</span> : null}
           {item.subjectPersonId ? (
             <code title="شناسه Person موضوع رکورد">{item.subjectPersonId}</code>
@@ -414,7 +400,7 @@ async function RelationshipsContent({
                 <h3 id="relationship-activity-title">روابط، درخواست‌ها و وضعیت رضایت</h3>
                 <p>
                   {data.total.toLocaleString("fa-IR")} رکورد مطابق فیلتر · تازه‌سازی:{" "}
-                  {formatDateTime(data.freshness.asOfUtc)}
+                  {formatPersianDateTime(data.freshness.asOfUtc)}
                 </p>
               </div>
               <Link className={styles.ledgerHint} href="/relationships/ledger">
