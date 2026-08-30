@@ -55,7 +55,7 @@ export default async function CommerceOperationsPage() {
             active="operations"
             eyebrow="Core #493 / #624 · Admin Commerce"
             title="Payment Operations"
-            description="عملیات مالی بدون direct DB edit؛ provider factها append-only می‌مانند و Gift Test Finalize فقط مسیر canonical Commerce را برای تست داخلی اجرا می‌کند."
+            description="عملیات مالی بدون direct DB edit؛ provider factها append-only می‌مانند و لغو renewal entitlement خریداری‌شده را قبل از پایان دوره حذف نمی‌کند."
           />
 
           <section className={styles.statusGrid} aria-label="وضعیت قراردادها">
@@ -194,7 +194,7 @@ export default async function CommerceOperationsPage() {
 
           <footer className={styles.footer}>
             As of {format(snapshot.asOfUtc)} ·{" "}
-            {"هیچ revenue/refund/provider fact یا داده سلامت از UI استنتاج نمی‌شود."}
+            {"هیچ revenue/refund/provider fact از UI استنتاج نمی‌شود."}
           </footer>
         </main>
       </AdminShell>
