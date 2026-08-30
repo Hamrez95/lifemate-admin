@@ -66,6 +66,10 @@ Production promotion is explicitly outside this workflow. Before any production 
 
 A merge to `main` is **not** production-deployment evidence.
 
+## Incident and restore evidence
+
+Operational recovery procedures are maintained in `docs/operations/INCIDENT_AND_RESTORE.md`. Every restore drill must use `docs/operations/RESTORE_DRILL_RECORD.md` (or an equivalent record containing the same evidence) and must keep unknown provider facts explicit. Source code does not establish backup retention, encryption, RPO, RTO, or successful restore evidence by itself.
+
 ## Rollback semantics
 
 For preview/staging artifacts, rollback means rebuilding a previously reviewed Git ref and comparing QA results. No production data or infrastructure mutation is performed by this workflow.
