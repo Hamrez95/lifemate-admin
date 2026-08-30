@@ -18,17 +18,26 @@ function tsxFiles(relativeDir: string): string[] {
 }
 
 describe("Persian calendar UI contract", () => {
-  it("never constructs a Gregorian DateTimeFormat directly inside app routes", () => {
-    const offenders: string[] = [];
+  it("keeps every user-visible app DateTimeFormat on the Persian/Jalali calendar", () => {
+    expect(new Intl.DateTimeFormat("fa-IR").resolvedOptions().calendar).toBe("persian");
 
+    const offenders: string[] = [];
     for (const file of tsxFiles("app")) {
       const source = readFileSync(path.join(root, file), "utf8");
       const formatterCalls = source.matchAll(
-        /new Intl\.DateTimeFormat\(([^\n]*)(?:\n[\s\S]{0,180})?/g,
+        /new Intl\.DateTimeFormat\(([^\n]*)(?:\n[\s\S]{0,320})?/g,
       );
       for (const match of formatterCalls) {
         const snippet = match[0];
-        if (!snippet.includes("u-ca-persian")) offenders.push(file);
+        const isPersianDisplay =
+          snippet.includes('"fa-IR"') ||
+          snippet.includes('"fa-IR-u-ca-persian') ||
+          snippet.includes('calendar: "persian"');
+        const isGregorianMachineInput =
+          snippet.includes('"en-CA"') &&
+          snippet.includes("formatToParts") &&
+          source.includes('type="datetime-local"');
+        if (!isPersianDisplay && !isGregorianMachineInput) offenders.push(file);
       }
     }
 
