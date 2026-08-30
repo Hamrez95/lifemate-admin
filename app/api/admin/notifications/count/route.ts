@@ -36,7 +36,10 @@ function rememberSuccess(key: string, result: SuccessResult) {
   successCache.set(key, { expiresAt: Date.now() + SUCCESS_TTL_MS, result });
 }
 
-async function sessionScopedCount(request: Request, searchParams: URLSearchParams): Promise<CountResult> {
+async function sessionScopedCount(
+  request: Request,
+  searchParams: URLSearchParams,
+): Promise<CountResult> {
   const key = await sessionCacheKey(request, searchParams.get("sources") ?? "");
   if (!key) return countAdminNotifications(searchParams);
 
