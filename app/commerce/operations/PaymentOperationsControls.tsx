@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 
 import {
+  giftTestFinalizeAction,
   initialCommerceOperationsActionState,
   openReconciliationAction,
   renewalIntentAction,
@@ -169,6 +170,59 @@ export function RenewalIntentForm() {
       </label>
       <button type="submit" disabled={pending}>
         {pending ? "در حال ثبت…" : "ثبت Renewal Intent"}
+      </button>
+      <Status state={state} />
+    </form>
+  );
+}
+
+export function GiftTestFinalizeForm() {
+  const [state, action, pending] = useActionState(
+    giftTestFinalizeAction,
+    initialCommerceOperationsActionState,
+  );
+  const idempotencyRef = useIdempotencyInput("gift-test-finalize", state);
+
+  return (
+    <form
+      action={action}
+      className={styles.form}
+      onSubmit={() => ensureIdempotencyKey(idempotencyRef, "gift-test-finalize")}
+    >
+      <input ref={idempotencyRef} type="hidden" name="idempotencyKey" />
+      <label>
+        Gift Intent ID
+        <input name="giftIntentId" required autoComplete="off" />
+      </label>
+      <label>
+        Transaction ID
+        <input name="giftTransactionId" required autoComplete="off" />
+      </label>
+      <label>
+        Claim Token Hash (SHA-256 hex)
+        <input
+          name="claimTokenHash"
+          minLength={64}
+          maxLength={128}
+          pattern="[0-9A-Fa-f]{64,128}"
+          required
+          autoComplete="off"
+          spellCheck={false}
+        />
+      </label>
+      <small className={styles.muted}>
+        فقط hash را وارد کنید؛ raw claim token نباید در Command Center وارد، ذخیره یا لاگ شود.
+      </small>
+      <label>
+        Claim TTL (hours)
+        <input name="claimTtlHours" type="number" min={1} max={720} defaultValue={168} required />
+      </label>
+      <label className={styles.confirm}>
+        <input type="checkbox" name="confirmation" value="confirm-gift-test-finalize" required />
+        این یک Test Finalize داخلی است و هیچ Relationship، Consent یا Health Permission ایجاد نمی‌کند.
+      </label>
+      <button type="submit" disabled={pending}>
+        {pending ? "در حال شبیه‌سازی…" : "Test Finalize Gift"}
       </button>
       <Status state={state} />
     </form>
