@@ -7,7 +7,7 @@ import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createBrowserSupabaseClient } from "@/src/lib/supabase/client";
 
 type Step = "provider" | "mfa-challenge" | "mfa-enroll" | "checking";
-type Mode = "login" | "signup" | "activate";
+type Mode = "login" | "activate";
 
 type Enrollment = {
   factorId: string;
@@ -19,7 +19,7 @@ type WorkforceAuthResponse = {
   ok?: boolean;
   code?: string;
   status?: string;
-  access_state?: "founder_compat" | "mfa_required" | "pending_role";
+  access_state?: "mfa_required" | "pending_role";
   session?: {
     access_token?: string;
     refresh_token?: string;
@@ -28,24 +28,18 @@ type WorkforceAuthResponse = {
 
 function friendlyAuthError(code?: string): string {
   switch (code) {
-    case "username_unavailable":
-      return "این نام کاربری قبلاً استفاده شده است.";
     case "try_again_later":
       return "تعداد تلاش‌ها زیاد شده است. چند دقیقه دیگر دوباره امتحان کنید.";
     case "pending_role":
-      return "حساب شما ثبت شده اما هنوز نقش و دسترسی آن توسط مدیر سیستم فعال نشده است.";
-    case "invalid_registration":
-      return "نام کاربری، نام نمایشی یا رمز عبور معتبر نیست. رمز عبور کارکنان باید حداقل ۸ کاراکتر باشد.";
+      return "این هویت هنوز نقش فعال Command Center ندارد. برای دسترسی باید از مسیر دعوت کارکنان فعال شود.";
     case "invalid_activation":
       return "کد فعال‌سازی یا اطلاعات حساب معتبر نیست.";
     case "activation_already_used":
       return "کد فعال‌سازی قبلاً استفاده شده است. حالا از بخش ورود عادی استفاده کنید.";
     case "activation_unavailable":
       return "فعال‌سازی حساب در حال حاضر کامل نشد. دوباره تلاش کنید.";
-    case "registration_unavailable":
-      return "ثبت‌نام در حال حاضر کامل نشد. دوباره تلاش کنید یا با مدیر سیستم تماس بگیرید.";
     default:
-      return "نام کاربری یا رمز عبور صحیح نیست، یا حساب هنوز برای Command Center فعال نشده است.";
+      return "نام کاربری یا رمز عبور صحیح نیست، یا حساب برای Command Center فعال نشده است.";
   }
 }
 
@@ -56,9 +50,7 @@ export function AdminLoginFlow() {
   const [step, setStep] = useState<Step>("checking");
   const [mode, setMode] = useState<Mode>("login");
   const [username, setUsername] = useState("");
-  const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [activationCode, setActivationCode] = useState("");
   const [code, setCode] = useState("");
   const [factorId, setFactorId] = useState<string | null>(null);
@@ -166,10 +158,9 @@ export function AdminLoginFlow() {
       await supabase.auth.signOut({ scope: "local" });
       throw new Error("pending_role");
     }
-    if (data.access_state === "founder_compat") {
-      continueToCommandCenter();
-      return;
-    }
+
+    // Founder and every other authorized workforce identity follow the exact
+    // same MFA path. There is intentionally no compatibility bypass to AAL2.
     await prepareMfa();
   }
 
@@ -201,35 +192,6 @@ export function AdminLoginFlow() {
       });
       setActivationCode("");
       await applySession(data);
-    } catch (error) {
-      const errorCode = error instanceof Error ? error.message : undefined;
-      setMessage(friendlyAuthError(errorCode));
-    } finally {
-      setPending(false);
-    }
-  }
-
-  async function signUpWithUsername(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setMessage(null);
-    if (password !== confirmPassword) {
-      setMessage("تکرار رمز عبور با رمز عبور یکسان نیست.");
-      return;
-    }
-    setPending(true);
-    try {
-      await callWorkforceAuth({
-        action: "signup",
-        username,
-        displayName: displayName || username,
-        password,
-      });
-      setMode("login");
-      setPassword("");
-      setConfirmPassword("");
-      setMessage(
-        "ثبت‌نام انجام شد. پس از اینکه مدیر سیستم Role شما را فعال کرد می‌توانید وارد شوید.",
-      );
     } catch (error) {
       const errorCode = error instanceof Error ? error.message : undefined;
       setMessage(friendlyAuthError(errorCode));
@@ -271,11 +233,7 @@ export function AdminLoginFlow() {
     <div className="auth-flow">
       {step === "provider" && (
         <>
-          <div
-            className="auth-tabs auth-tabs--three"
-            role="tablist"
-            aria-label="روش ورود Command Center"
-          >
+          <div className="auth-tabs" role="tablist" aria-label="روش ورود Command Center">
             <button
               type="button"
               role="tab"
@@ -287,20 +245,7 @@ export function AdminLoginFlow() {
                 setMessage(null);
               }}
             >
-              ورود
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={mode === "signup"}
-              className="auth-tab"
-              data-active={mode === "signup"}
-              onClick={() => {
-                setMode("signup");
-                setMessage(null);
-              }}
-            >
-              ثبت‌نام
+              ورود کارکنان
             </button>
             <button
               type="button"
@@ -313,7 +258,7 @@ export function AdminLoginFlow() {
                 setMessage(null);
               }}
             >
-              فعال‌سازی مدیر
+              فعال‌سازی Founder
             </button>
           </div>
 
@@ -344,75 +289,20 @@ export function AdminLoginFlow() {
                 disabled={pending}
               />
               <button type="submit" className="primary-button" disabled={pending}>
-                {pending ? "در حال ورود..." : "ورود با نام کاربری"}
+                {pending ? "در حال ورود..." : "ادامه به تأیید دومرحله‌ای"}
               </button>
               <p className="auth-help">
-                ورود هویت را تأیید می‌کند؛ Role و Permission کارکنان فقط توسط مدیر سیستم فعال
-                می‌شود.
-              </p>
-            </form>
-          ) : mode === "signup" ? (
-            <form className="auth-form" onSubmit={signUpWithUsername}>
-              <label htmlFor="admin-display-name">نام نمایشی</label>
-              <input
-                id="admin-display-name"
-                type="text"
-                autoComplete="name"
-                value={displayName}
-                onChange={(event) => setDisplayName(event.target.value)}
-                required
-                disabled={pending}
-              />
-              <label htmlFor="admin-signup-username">نام کاربری</label>
-              <input
-                id="admin-signup-username"
-                type="text"
-                autoComplete="username"
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-                dir="ltr"
-                required
-                disabled={pending}
-              />
-              <label htmlFor="admin-signup-password">رمز عبور</label>
-              <input
-                id="admin-signup-password"
-                type="password"
-                autoComplete="new-password"
-                minLength={8}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                dir="ltr"
-                required
-                disabled={pending}
-              />
-              <label htmlFor="admin-signup-password-confirm">تکرار رمز عبور</label>
-              <input
-                id="admin-signup-password-confirm"
-                type="password"
-                autoComplete="new-password"
-                minLength={8}
-                value={confirmPassword}
-                onChange={(event) => setConfirmPassword(event.target.value)}
-                dir="ltr"
-                required
-                disabled={pending}
-              />
-              <button type="submit" className="primary-button" disabled={pending}>
-                {pending ? "در حال ثبت‌نام..." : "ثبت‌نام با نام کاربری و رمز عبور"}
-              </button>
-              <p className="auth-help">
-                حساب جدید بدون Role ساخته می‌شود و تا زمان تأیید مدیر سیستم هیچ دسترسی مدیریتی
-                ندارد.
+                Command Center ثبت‌نام عمومی ندارد. فقط هویت‌های دعوت‌شده با Role فعال می‌توانند پس
+                از تأیید TOTP و رسیدن نشست به AAL2 وارد شوند.
               </p>
             </form>
           ) : (
             <form className="auth-form" onSubmit={activateFounder}>
               <p className="auth-help">
-                این بخش فقط برای اولین فعال‌سازی حساب Founder است و کد آن پس از یک بار استفاده باطل
-                می‌شود.
+                این مسیر فقط برای اولین فعال‌سازی Founder است. کد یک‌بارمصرف پس از استفاده باطل
+                می‌شود و فعال‌سازی نیز بدون TOTP/AAL2 دسترسی مدیریتی ایجاد نمی‌کند.
               </p>
-              <label htmlFor="admin-activate-username">نام کاربری مدیر</label>
+              <label htmlFor="admin-activate-username">نام کاربری Founder</label>
               <input
                 id="admin-activate-username"
                 type="text"
@@ -447,7 +337,7 @@ export function AdminLoginFlow() {
                 disabled={pending}
               />
               <button type="submit" className="primary-button" disabled={pending}>
-                {pending ? "در حال فعال‌سازی..." : "فعال‌سازی و ورود"}
+                {pending ? "در حال فعال‌سازی..." : "فعال‌سازی و ادامه به MFA"}
               </button>
             </form>
           )}
@@ -461,8 +351,8 @@ export function AdminLoginFlow() {
           </div>
           <h2>تأیید دومرحله‌ای</h2>
           <p className="auth-help">
-            برای حساب‌های کارکنان، Command Center نشست AAL2 را الزامی می‌کند. کد فعلی Authenticator
-            را وارد کنید.
+            Command Center برای همه کارکنان، از جمله Founder، نشست AAL2 را الزامی می‌کند. کد فعلی
+            Authenticator را وارد کنید.
           </p>
           <label htmlFor="admin-mfa-code">کد Authenticator</label>
           <input
@@ -490,7 +380,7 @@ export function AdminLoginFlow() {
           <h2>فعال‌سازی Authenticator</h2>
           <p className="auth-help">
             QR را با Google Authenticator، Microsoft Authenticator، 1Password یا برنامه TOTP مشابه
-            اسکن کنید و سپس کد را وارد کنید.
+            اسکن کنید و سپس کد را وارد کنید. بدون تکمیل این مرحله Command Center باز نمی‌شود.
           </p>
           <div className="mfa-qr">
             {/* eslint-disable-next-line @next/next/no-img-element */}
