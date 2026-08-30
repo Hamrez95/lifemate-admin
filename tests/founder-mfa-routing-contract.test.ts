@@ -20,7 +20,7 @@ describe("Founder access routing contract", () => {
   it("keeps genuine authorization denial on the forbidden route", () => {
     const server = source("src/lib/admin-api/server.ts");
 
-    expect(server).toContain('response.status === 403');
+    expect(server).toContain("response.status === 403");
     expect(server).toContain('return { kind: "forbidden"');
     expect(server).toContain('redirect("/forbidden")');
   });
