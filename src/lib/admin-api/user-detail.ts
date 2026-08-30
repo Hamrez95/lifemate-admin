@@ -2,18 +2,8 @@ import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
 export type UserDetailSectionState = "ready" | "empty" | "forbidden" | "unavailable";
-
-export type UserDetailSection<T> = {
-  state: UserDetailSectionState;
-  data?: T;
-};
-
-export type UserAdminActivityItem = {
-  id: string;
-  action: string;
-  result: string;
-  occurredAtUtc: string;
-};
+export type UserDetailSection<T> = { state: UserDetailSectionState; data?: T };
+export type UserAdminActivityItem = { id: string; action: string; result: string; occurredAtUtc: string };
 
 export type UserDetailResponse = {
   account: UserDetailSection<{ id: string; username: string | null; status: string; createdAtUtc: string }>;
@@ -36,13 +26,13 @@ export type UserActivityResponse = {
   freshness: { status: "fresh" | "stale"; asOfUtc: string };
 };
 
+export type UserDetailUnavailableReason = "transport" | "contract_mismatch" | "backend";
 export type UserDetailResult =
   | { kind: "ok"; data: UserDetailResponse }
   | { kind: "unauthenticated" }
   | { kind: "forbidden" }
   | { kind: "not_found" }
-  | { kind: "contract_mismatch" }
-  | { kind: "unavailable"; correlationId?: string };
+  | { kind: "unavailable"; reason: UserDetailUnavailableReason; correlationId?: string };
 
 export type UserActivityResult =
   | { kind: "ok"; data: UserActivityResponse }
@@ -57,17 +47,13 @@ const USER_ACTIVITY_PAGE_SIZE = 20;
 function hasSectionState(value: unknown): value is UserDetailSectionState {
   return value === "ready" || value === "empty" || value === "forbidden" || value === "unavailable";
 }
-
 function isSection(value: unknown): value is UserDetailSection<unknown> {
-  if (!value || typeof value !== "object") return false;
-  return hasSectionState((value as Record<string, unknown>).state);
+  return Boolean(value && typeof value === "object" && hasSectionState((value as Record<string, unknown>).state));
 }
-
 function isFreshness(value: unknown): value is UserDetailResponse["freshness"] {
   if (!value || typeof value !== "object") return false;
   const freshness = value as Record<string, unknown>;
-  if (freshness.status !== "fresh" && freshness.status !== "stale") return false;
-  return typeof freshness.asOfUtc === "string";
+  return (freshness.status === "fresh" || freshness.status === "stale") && typeof freshness.asOfUtc === "string";
 }
 
 export function parseUserDetailResponse(value: unknown): UserDetailResponse | null {
@@ -76,13 +62,11 @@ export function parseUserDetailResponse(value: unknown): UserDetailResponse | nu
   if (!isSection(body.account) || !isSection(body.person) || !isSection(body.products)) return null;
   if (!isSection(body.commerce) || !isSection(body.relationships) || !isSection(body.adminActivity)) return null;
   if (!isFreshness(body.freshness)) return null;
-
   const account = body.account as UserDetailResponse["account"];
   if (account.state !== "ready" || !account.data) return null;
   if (!UUID_PATTERN.test(account.data.id) || typeof account.data.status !== "string") return null;
   if (typeof account.data.username !== "string" && account.data.username !== null) return null;
   if (typeof account.data.createdAtUtc !== "string") return null;
-
   return body as unknown as UserDetailResponse;
 }
 
@@ -91,7 +75,6 @@ function isActivityItem(value: unknown): value is UserAdminActivityItem {
   const item = value as Record<string, unknown>;
   return typeof item.id === "string" && typeof item.action === "string" && typeof item.result === "string" && typeof item.occurredAtUtc === "string";
 }
-
 function parseActivityResponse(value: unknown): UserActivityResponse | null {
   if (!value || typeof value !== "object") return null;
   const body = value as Record<string, unknown>;
@@ -100,16 +83,12 @@ function parseActivityResponse(value: unknown): UserActivityResponse | null {
   if (!isFreshness(body.freshness)) return null;
   return body as unknown as UserActivityResponse;
 }
-
 async function correlationId(response: Response): Promise<string | undefined> {
   try {
     const body = (await response.json()) as { correlationId?: unknown };
     return typeof body.correlationId === "string" ? body.correlationId : undefined;
-  } catch {
-    return undefined;
-  }
+  } catch { return undefined; }
 }
-
 async function adminAccessToken(): Promise<string | null> {
   const supabase = await createServerSupabaseClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
@@ -122,27 +101,21 @@ export async function getUserDetail(accountId: string): Promise<UserDetailResult
   if (!UUID_PATTERN.test(accountId)) return { kind: "not_found" };
   const token = await adminAccessToken();
   if (!token) return { kind: "unauthenticated" };
-
   const config = getPublicRuntimeConfig();
   let response: Response;
   try {
     response = await fetch(`${config.adminApiUrl}/api/v1/users/${accountId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-      signal: AbortSignal.timeout(10_000),
+      headers: { Authorization: `Bearer ${token}` }, cache: "no-store", signal: AbortSignal.timeout(10_000),
     });
-  } catch {
-    return { kind: "unavailable" };
-  }
-
+  } catch { return { kind: "unavailable", reason: "transport" }; }
   if (response.ok) {
     const parsed = parseUserDetailResponse(await response.json());
-    return parsed ? { kind: "ok", data: parsed } : { kind: "contract_mismatch" };
+    return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable", reason: "contract_mismatch" };
   }
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden" };
   if (response.status === 404) return { kind: "not_found" };
-  return { kind: "unavailable", correlationId: await correlationId(response) };
+  return { kind: "unavailable", reason: "backend", correlationId: await correlationId(response) };
 }
 
 export async function getUserActivity(accountId: string, page: number, pageSize = USER_ACTIVITY_PAGE_SIZE): Promise<UserActivityResult> {
@@ -151,20 +124,14 @@ export async function getUserActivity(accountId: string, page: number, pageSize 
   const safePageSize = Math.min(50, Math.max(5, Math.trunc(pageSize) || USER_ACTIVITY_PAGE_SIZE));
   const token = await adminAccessToken();
   if (!token) return { kind: "unauthenticated" };
-
   const config = getPublicRuntimeConfig();
   const search = new URLSearchParams({ page: String(safePage), pageSize: String(safePageSize) });
   let response: Response;
   try {
     response = await fetch(`${config.adminApiUrl}/api/v1/users/${accountId}/activity?${search.toString()}`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-      signal: AbortSignal.timeout(10_000),
+      headers: { Authorization: `Bearer ${token}` }, cache: "no-store", signal: AbortSignal.timeout(10_000),
     });
-  } catch {
-    return { kind: "unavailable" };
-  }
-
+  } catch { return { kind: "unavailable" }; }
   if (response.ok) {
     const parsed = parseActivityResponse(await response.json());
     return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
