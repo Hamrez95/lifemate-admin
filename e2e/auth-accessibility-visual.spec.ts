@@ -82,9 +82,7 @@ test("network failure stays fail-closed and shows an accessible error status", a
   await page.goto("/login");
   await page.getByLabel("نام کاربری", { exact: true }).fill("staff.test");
   await page.getByLabel("رمز عبور", { exact: true }).fill("qa-password");
-  await page
-    .getByRole("button", { name: "ادامه به تأیید دومرحله‌ای", exact: true })
-    .click();
+  await page.getByRole("button", { name: "ادامه به تأیید دومرحله‌ای", exact: true }).click();
 
   const status = page.locator(".auth-message");
   await expect(status).toBeVisible();
