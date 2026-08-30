@@ -7,6 +7,7 @@ import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
 import { CommerceWorkspaceHeader, CoreDependencyNotice } from "../CommerceWorkspaceHeader";
 import {
+  GiftTestFinalizeForm,
   ReconciliationForm,
   RefundRequestForm,
   RenewalIntentForm,
@@ -31,6 +32,7 @@ export default async function CommerceOperationsPage() {
     "commerce.reconciliation.write",
     "commerce.churn.read",
     "commerce.churn.write",
+    "commerce.entitlement.adjust.execute",
   ];
   if (!relevant.some((permission) => admin.permissions.includes(permission))) {
     redirect("/forbidden");
@@ -39,18 +41,19 @@ export default async function CommerceOperationsPage() {
   const canRefund = admin.permissions.includes("commerce.refund.request");
   const canReconcile = admin.permissions.includes("commerce.reconciliation.write");
   const canChurn = admin.permissions.includes("commerce.churn.write");
+  const canGiftTestFinalize = admin.permissions.includes("commerce.entitlement.adjust.execute");
 
   return (
     <AdminSessionProvider admin={admin}>
       <AdminShell
         activeSlug="commerce"
         title="عملیات مالی و Churn"
-        subtitle="Refund، Reconciliation و Renewal Intent از قرارداد canonical Core"
+        subtitle="Refund، Reconciliation، Renewal Intent و Gift Test Finalize از قرارداد canonical Core"
       >
         <main className={styles.page} dir="rtl">
           <CommerceWorkspaceHeader
             active="operations"
-            eyebrow="Core #493 · Admin #183"
+            eyebrow="Core #493 / #624 · Admin Commerce"
             title="Payment Operations"
             description="عملیات مالی بدون direct DB edit؛ provider factها append-only می‌مانند و لغو renewal entitlement خریداری‌شده را قبل از پایان دوره حذف نمی‌کند."
           />
@@ -164,6 +167,27 @@ export default async function CommerceOperationsPage() {
                 <RenewalIntentForm />
               ) : (
                 <p className={styles.muted}>permission: commerce.churn.write لازم است.</p>
+              )}
+            </article>
+
+            <article className={styles.panel}>
+              <header>
+                <div>
+                  <p className="eyebrow">Gift · Internal test</p>
+                  <h3>Test Finalize Gift</h3>
+                </div>
+                <span>Test</span>
+              </header>
+              <p className={styles.muted}>
+                شبیه‌سازی پرداخت Gift فقط از endpoint امن Core انجام می‌شود. این عملیات هیچ رابطه،
+                رضایت دسترسی یا مجوز سلامت ایجاد نمی‌کند و داده حساس سلامت را نمایش نمی‌دهد.
+              </p>
+              {canGiftTestFinalize ? (
+                <GiftTestFinalizeForm />
+              ) : (
+                <p className={styles.muted}>
+                  permission: commerce.entitlement.adjust.execute لازم است.
+                </p>
               )}
             </article>
           </section>

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { finalizeGiftForInternalTest } from "@/src/lib/admin-api/commerce-gift-test-finalize";
 import {
   openCommerceReconciliationCase,
   requestCommerceRefund,
@@ -21,6 +22,7 @@ export const initialCommerceOperationsActionState: CommerceOperationsActionState
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const IDEMPOTENCY = /^[A-Za-z0-9._:-]{8,180}$/;
 const KEY = /^[a-z][a-z0-9._-]{2,79}$/;
+const CLAIM_TOKEN_HASH = /^[0-9a-f]{64,128}$/;
 const MAX_BIGINT = 9223372036854775807n;
 
 function text(formData: FormData, key: string): string {
@@ -203,6 +205,51 @@ export async function renewalIntentAction(
     cancelAtPeriodEnd
       ? "تمدید خودکار متوقف شد؛ entitlement تا پایان دوره معتبر می‌ماند."
       : "Renewal intent برای ادامه تمدید ثبت شد.",
+  );
+  if (state.status === "success") refresh();
+  return state;
+}
+
+export async function giftTestFinalizeAction(
+  _previous: CommerceOperationsActionState,
+  formData: FormData,
+): Promise<CommerceOperationsActionState> {
+  const idempotencyKey = idempotency(formData);
+  if (!idempotencyKey) {
+    return { status: "invalid", message: "شناسه یکتای Test Finalize معتبر نیست." };
+  }
+
+  const giftIntentId = text(formData, "giftIntentId");
+  const transactionId = text(formData, "giftTransactionId");
+  const claimTokenHash = text(formData, "claimTokenHash").toLowerCase();
+  const claimTtlHoursRaw = text(formData, "claimTtlHours");
+
+  if (!UUID.test(giftIntentId) || !UUID.test(transactionId)) {
+    return { status: "invalid", message: "Gift Intent ID و Transaction ID باید UUID معتبر باشند." };
+  }
+  if (!CLAIM_TOKEN_HASH.test(claimTokenHash)) {
+    return { status: "invalid", message: "Claim Token Hash باید ۶۴ تا ۱۲۸ نویسه hex باشد." };
+  }
+  if (!/^\d{1,3}$/.test(claimTtlHoursRaw)) {
+    return { status: "invalid", message: "Claim TTL معتبر نیست." };
+  }
+  const claimTtlHours = Number(claimTtlHoursRaw);
+  if (!Number.isInteger(claimTtlHours) || claimTtlHours < 1 || claimTtlHours > 720) {
+    return { status: "invalid", message: "Claim TTL باید بین ۱ تا ۷۲۰ ساعت باشد." };
+  }
+  if (text(formData, "confirmation") !== "confirm-gift-test-finalize") {
+    return { status: "invalid", message: "تأیید صریح شبیه‌سازی پرداخت Gift لازم است." };
+  }
+
+  const state = mapped(
+    await finalizeGiftForInternalTest({
+      giftIntentId,
+      transactionId,
+      claimTokenHash,
+      claimTtlHours,
+      idempotencyKey,
+    }),
+    "Gift برای تست داخلی final شد؛ فقط entitlement تجاری و claim hash canonical استفاده شد.",
   );
   if (state.status === "success") refresh();
   return state;
