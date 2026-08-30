@@ -23,11 +23,12 @@ test("active staff completes username/password then TOTP MFA before an authorize
   await page.getByLabel("رمز عبور", { exact: true }).fill("qa-password");
 
   const loginRequest = page.waitForResponse(workforceAuthRequest);
-  await page.getByRole("button", { name: "ورود با نام کاربری" }).click();
+  await page.getByRole("button", { name: "ادامه به تأیید دومرحله‌ای" }).click();
   expect((await loginRequest).ok()).toBe(true);
 
   await expect(page.getByRole("heading", { name: "تأیید دومرحله‌ای" })).toBeVisible();
-  await expect(page.getByText(/Command Center نشست AAL2 را الزامی می‌کند/)).toBeVisible();
+  await expect(page.getByText(/نشست AAL2 را الزامی می‌کند/)).toBeVisible();
+  await expect(page.getByText(/از جمله Founder/)).toBeVisible();
 
   await page.getByLabel("کد Authenticator").fill("654321");
   await page.getByRole("button", { name: "ورود امن" }).click();
