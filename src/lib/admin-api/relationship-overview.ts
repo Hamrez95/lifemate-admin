@@ -71,7 +71,9 @@ function validItem(value: unknown): value is RelationshipOverviewItem {
   );
 }
 
-function parseResponse(value: unknown): RelationshipOverviewResponse | null {
+export function parseRelationshipOverviewResponse(
+  value: unknown,
+): RelationshipOverviewResponse | null {
   if (!value || typeof value !== "object") return null;
   const body = value as Record<string, unknown>;
   if (!Array.isArray(body.summary) || !Array.isArray(body.items)) return null;
@@ -142,7 +144,7 @@ export async function getRelationshipOverview(
   }
 
   if (response.ok) {
-    const parsed = parseResponse(await response.json());
+    const parsed = parseRelationshipOverviewResponse(await response.json());
     return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
   }
   if (response.status === 401) return { kind: "unauthenticated" };
