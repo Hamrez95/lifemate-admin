@@ -46,7 +46,11 @@ describe("ADM-REL-001 Relationship Consent overview", () => {
   it("locks the parser contract to a production-shaped active care payload", () => {
     const client = source("src/lib/admin-api/relationship-overview.ts");
     expect(productionShapedActiveRelationships.items).toHaveLength(5);
-    expect(productionShapedActiveRelationships.summary[0]).toEqual({ kind: "relationship", status: "Active", total: 5 });
+    expect(productionShapedActiveRelationships.summary[0]).toEqual({
+      kind: "relationship",
+      status: "Active",
+      total: 5,
+    });
     expect(client).toContain("parseRelationshipOverviewResponse");
     expect(client).toContain('typeof item.status === "string"');
     expect(client).toContain('(item.type === null || typeof item.type === "string")');
