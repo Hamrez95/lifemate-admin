@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
 import type {
   AdminAccessResult,
@@ -23,7 +24,7 @@ async function parseProblem(response: Response): Promise<AdminApiProblem | null>
   }
 }
 
-export async function getAdminAccess(): Promise<AdminAccessResult> {
+const getAdminAccessForRequest = cache(async (): Promise<AdminAccessResult> => {
   const token = await getServerAdminAccessToken();
   if (!token) return { kind: "unauthenticated" };
 
@@ -59,6 +60,10 @@ export async function getAdminAccess(): Promise<AdminAccessResult> {
     return { kind: "forbidden", code: problem?.code ?? "admin_permission_denied" };
   }
   return { kind: "unavailable", correlationId: problem?.correlationId };
+});
+
+export async function getAdminAccess(): Promise<AdminAccessResult> {
+  return getAdminAccessForRequest();
 }
 
 export async function requireAdminAccess(): Promise<AdminCapabilitySnapshot> {
