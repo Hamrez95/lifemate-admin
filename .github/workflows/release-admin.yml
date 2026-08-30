@@ -1,0 +1,157 @@
+name: Release Admin
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: SemVer action
+        type: choice
+        required: true
+        default: patch
+        options: [patch, minor, major]
+      channel:
+        description: Release channel
+        type: choice
+        required: true
+        default: beta
+        options: [beta, stable]
+      deploy_web:
+        description: Deploy the reviewed Web/PWA build to Vercel production
+        type: boolean
+        required: true
+        default: false
+      release_notes:
+        description: Short release notes
+        type: string
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: admin-release
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+      build_number: ${{ steps.version.outputs.build_number }}
+      source_sha: ${{ steps.source.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - id: source
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - id: version
+        run: |
+          set -euo pipefail
+          previous="$(node -p "require('./package.json').version")"
+          IFS=. read -r major minor patch <<< "$previous"
+          case '${{ inputs.release_type }}' in
+            major) major=$((major+1)); minor=0; patch=0 ;;
+            minor) minor=$((minor+1)); patch=0 ;;
+            patch) patch=$((patch+1)) ;;
+          esac
+          version="$major.$minor.$patch"
+          if [ '${{ inputs.channel }}' = beta ]; then version="$version-beta.1"; fi
+          tag="admin-v$version"
+          ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "build_number=$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
+
+  web:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      NEXT_PUBLIC_RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+      NEXT_PUBLIC_RELEASE_COMMIT: ${{ needs.prepare.outputs.source_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.source_sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run format:check && npm run security:check && npm run lint && npm run typecheck && npm test && npm run build
+      - name: Deploy Web/PWA to Vercel
+        if: ${{ inputs.deploy_web }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$VERCEL_TOKEN" && test -n "$VERCEL_ORG_ID" && test -n "$VERCEL_PROJECT_ID"
+          npx --yes vercel@latest --prod --yes --token "$VERCEL_TOKEN"
+      - run: |
+          mkdir -p release
+          tar -czf "release/LifeMate-Command-Center-Web-${{ needs.prepare.outputs.version }}.tar.gz" .next public package.json package-lock.json
+          (cd release && sha256sum * > SHA256SUMS.txt)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: admin-web-release
+          path: release
+
+  windows:
+    needs: prepare
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.source_sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - shell: pwsh
+        run: |
+          dotnet publish desktop/LifeMateCommandCenter/LifeMateCommandCenter.csproj --configuration Release --runtime win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=false --output dist/launcher
+          $package = "dist/LifeMate-Command-Center-Windows-x64"
+          New-Item -ItemType Directory -Force -Path "$package/app","$package/runtime/node" | Out-Null
+          Copy-Item ".next/standalone/*" "$package/app" -Recurse -Force
+          New-Item -ItemType Directory -Force -Path "$package/app/.next" | Out-Null
+          Copy-Item ".next/static" "$package/app/.next/static" -Recurse -Force
+          Copy-Item public "$package/app/public" -Recurse -Force
+          Copy-Item (Get-Command node).Source "$package/runtime/node/node.exe" -Force
+          Copy-Item dist/launcher/LifeMateCommandCenter.exe "$package/LifeMateCommandCenter.exe" -Force
+          Copy-Item desktop/WINDOWS_README.txt "$package/README.txt" -Force
+          Compress-Archive -Path "$package/*" -DestinationPath "dist/LifeMate-Command-Center-${{ needs.prepare.outputs.version }}-Windows-x64.zip" -CompressionLevel Optimal
+          $hash=(Get-FileHash -Algorithm SHA256 "dist/LifeMate-Command-Center-${{ needs.prepare.outputs.version }}-Windows-x64.zip").Hash.ToLowerInvariant()
+          "$hash  LifeMate-Command-Center-${{ needs.prepare.outputs.version }}-Windows-x64.zip" | Set-Content "dist/SHA256SUMS.txt" -Encoding ascii
+      - uses: actions/upload-artifact@v4
+        with:
+          name: admin-windows-release
+          path: dist/*.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: admin-windows-checksums
+          path: dist/SHA256SUMS.txt
+
+  publish:
+    needs: [prepare, web, windows]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+      - name: Publish immutable GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          args=()
+          if [ '${{ inputs.channel }}' = beta ]; then args+=(--prerelease); fi
+          gh release create '${{ needs.prepare.outputs.tag }}' release/* "${args[@]}" --target '${{ needs.prepare.outputs.source_sha }}' --title "LifeMate Admin ${{ needs.prepare.outputs.version }}" --notes "${{ inputs.release_notes }}\n\nVersion: ${{ needs.prepare.outputs.version }}+${{ needs.prepare.outputs.build_number }}\nCommit: ${{ needs.prepare.outputs.source_sha }}\nWindows artifact: unsigned portable ZIP."
