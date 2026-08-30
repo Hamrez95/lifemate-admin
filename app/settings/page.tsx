@@ -4,6 +4,7 @@ import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider
 import { AdminShell } from "@/src/components/shell/AdminShell";
 import { getCommandCenterPreferences } from "@/src/lib/admin-api/settings-preferences";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
+import { formatPersianDateTime } from "@/src/lib/time-zone";
 
 import styles from "../ops-settings.module.css";
 import { SettingsPreferencesForm } from "./SettingsPreferencesForm";
@@ -89,11 +90,7 @@ export default async function SettingsPage() {
               <p className={styles.helper}>
                 آخرین بروزرسانی canonical:{" "}
                 {result.preferences.updatedAtUtc
-                  ? new Intl.DateTimeFormat("fa-IR", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                      timeZone: "Asia/Tehran",
-                    }).format(new Date(result.preferences.updatedAtUtc))
+                  ? formatPersianDateTime(result.preferences.updatedAtUtc)
                   : "ثبت نشده"}
               </p>
             </section>
