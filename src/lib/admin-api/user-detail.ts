@@ -110,7 +110,8 @@ function isFreshness(value: unknown): value is UserDetailResponse["freshness"] {
 
 function hasValidCommerceContract(section: UserDetailSection<unknown>): boolean {
   if (section.state !== "ready") return true;
-  if (!section.data || typeof section.data !== "object" || Array.isArray(section.data)) return false;
+  if (!section.data || typeof section.data !== "object" || Array.isArray(section.data))
+    return false;
   const commerce = section.data as Record<string, unknown>;
   if (!Array.isArray(commerce.subscriptions) || !Array.isArray(commerce.entitlements)) return false;
   return commerce.entitlements.every((value) => {
