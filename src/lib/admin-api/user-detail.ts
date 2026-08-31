@@ -50,6 +50,7 @@ export type UserDetailResponse = {
       status: string;
       startsAtUtc: string;
       expiresAtUtc: string | null;
+      version: number;
     }>;
   }>;
   relationships: UserDetailSection<
@@ -107,12 +108,35 @@ function isFreshness(value: unknown): value is UserDetailResponse["freshness"] {
   );
 }
 
+function hasValidCommerceContract(section: UserDetailSection<unknown>): boolean {
+  if (section.state !== "ready") return true;
+  if (!section.data || typeof section.data !== "object" || Array.isArray(section.data)) return false;
+  const commerce = section.data as Record<string, unknown>;
+  if (!Array.isArray(commerce.subscriptions) || !Array.isArray(commerce.entitlements)) return false;
+  return commerce.entitlements.every((value) => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+    const entitlement = value as Record<string, unknown>;
+    return (
+      typeof entitlement.id === "string" &&
+      UUID_PATTERN.test(entitlement.id) &&
+      typeof entitlement.featureCode === "string" &&
+      typeof entitlement.source === "string" &&
+      typeof entitlement.status === "string" &&
+      typeof entitlement.startsAtUtc === "string" &&
+      (entitlement.expiresAtUtc === null || typeof entitlement.expiresAtUtc === "string") &&
+      Number.isInteger(entitlement.version) &&
+      Number(entitlement.version) >= 1
+    );
+  });
+}
+
 export function parseUserDetailResponse(value: unknown): UserDetailResponse | null {
   if (!value || typeof value !== "object") return null;
   const body = value as Record<string, unknown>;
   if (!isSection(body.account) || !isSection(body.person) || !isSection(body.products)) return null;
   if (!isSection(body.commerce) || !isSection(body.relationships) || !isSection(body.adminActivity))
     return null;
+  if (!hasValidCommerceContract(body.commerce)) return null;
   if (!isFreshness(body.freshness)) return null;
   const account = body.account as UserDetailResponse["account"];
   if (account.state !== "ready" || !account.data) return null;
