@@ -67,7 +67,11 @@ function HistoryItem({ item }: { item: ManualEntitlementHistoryItem }) {
         <span>{formatDate(item.createdAtUtc)}</span>
         <span>{item.scheduleMode}</span>
         <small>{item.affectedEntitlementIds.length.toLocaleString("fa-IR")} entitlement</small>
-        {item.approvalRequestId ? <small>Approval-linked</small> : <small>Direct policy path</small>}
+        {item.approvalRequestId ? (
+          <small>Approval-linked</small>
+        ) : (
+          <small>Direct policy path</small>
+        )}
       </div>
     </article>
   );
@@ -222,7 +226,9 @@ export default async function EntitlementAdjustmentsPage({ searchParams }: Props
               <AdminPageState
                 state="unavailable"
                 title="تاریخچه در دسترس نیست"
-                description={history.correlationId ? `کد پیگیری: ${history.correlationId}` : undefined}
+                description={
+                  history.correlationId ? `کد پیگیری: ${history.correlationId}` : undefined
+                }
               />
             ) : null}
             {history?.kind === "not_found" ? (
