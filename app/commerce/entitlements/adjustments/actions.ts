@@ -34,6 +34,14 @@ const SCHEDULES = new Set<ManualEntitlementSchedule>([
   "AddMonths",
   "Immediate",
 ]);
+const REASON_CATEGORIES = new Set([
+  "Prize/raffle",
+  "Goodwill",
+  "Support remedy",
+  "Partnership",
+  "Internal beta",
+  "Other",
+]);
 
 function text(formData: FormData, key: string): string {
   const value = formData.get(key);
@@ -127,7 +135,9 @@ function buildInput(
   );
   const exactExpiryLocal = text(formData, "exactExpiresAt");
   const referenceAtUtc = text(formData, "referenceAtUtc");
-  const reason = text(formData, "reason");
+  const reasonCategory = text(formData, "reasonCategory");
+  const reasonText = text(formData, "reason");
+  const reason = `[${reasonCategory}] ${reasonText}`;
   const approvalRequestId = optionalUuid(formData, "approvalRequestId");
   const approvalExpectedVersion = optionalPositiveInt(
     formData,
@@ -141,7 +151,7 @@ function buildInput(
   if (!UUID_PATTERN.test(subjectAccountId) || !UUID_PATTERN.test(targetId)) {
     return {
       ok: false,
-      state: { status: "invalid", message: "Account و Target ID باید UUID معتبر باشند." },
+      state: { status: "invalid", message: "Account و هدف تجاری معتبر نیستند." },
     };
   }
   if (!TARGETS.has(targetTypeRaw) || !OPERATIONS.has(operation) || !SCHEDULES.has(scheduleMode)) {
@@ -150,10 +160,13 @@ function buildInput(
       state: { status: "invalid", message: "نوع هدف، عملیات یا مدل زمان‌بندی معتبر نیست." },
     };
   }
+  if (!REASON_CATEGORIES.has(reasonCategory)) {
+    return { ok: false, state: { status: "invalid", message: "دسته‌بندی دلیل معتبر نیست." } };
+  }
   if (entitlementId === undefined || expectedEntitlementVersion === undefined) {
     return {
       ok: false,
-      state: { status: "invalid", message: "Entitlement ID یا نسخه آن معتبر نیست." },
+      state: { status: "invalid", message: "Entitlement انتخاب‌شده یا نسخه آن معتبر نیست." },
     };
   }
   if (approvalRequestId === undefined || approvalExpectedVersion === undefined) {
@@ -179,7 +192,7 @@ function buildInput(
       ok: false,
       state: {
         status: "invalid",
-        message: "برای تغییر Entitlement موجود، ID و نسخه فعلی لازم است.",
+        message: "برای تغییر دسترسی موجود، یک Entitlement معتبر را انتخاب کنید.",
       },
     };
   }
@@ -207,10 +220,10 @@ function buildInput(
       state: { status: "invalid", message: "Reduce فقط با Exact Expiry انجام می‌شود." },
     };
   }
-  if (reason.length < 10 || reason.length > 1000) {
+  if (reasonText.length < 10 || reason.length > 1000) {
     return {
       ok: false,
-      state: { status: "invalid", message: "دلیل باید بین ۱۰ تا ۱۰۰۰ نویسه باشد." },
+      state: { status: "invalid", message: "توضیح دلیل باید حداقل ۱۰ نویسه باشد." },
     };
   }
   if (!referenceAtUtc || Number.isNaN(Date.parse(referenceAtUtc))) {
@@ -276,6 +289,7 @@ export async function manualEntitlementAdjustmentAction(
   if (state.status === "success") {
     revalidatePath("/commerce");
     revalidatePath("/commerce/entitlements/adjustments");
+    revalidatePath(`/users/${parsed.input.subjectAccountId}`);
   }
   return state;
 }
