@@ -51,7 +51,8 @@ describe("Admin #252 · authorised product access from User 360", () => {
       expect(form).toContain(reason);
       expect(actions).toContain(reason);
     }
-    expect(form).toContain("خرید یا تراکنش پرداخت جعلی ایجاد نمی‌شود");
+    expect(form).toContain("این workflow فقط Entitlement تجاری را تغییر می‌دهد");
+    expect(form).toContain("جعلی ایجاد نمی‌شود");
     expect(actions).toContain("revalidatePath(`/users/${parsed.input.subjectAccountId}`)");
     expect(actions).not.toContain("service_role");
   });
