@@ -125,16 +125,16 @@ export function AdjustmentForm({
         </p>
       </header>
 
-      <form
-        action={formAction}
-        className={styles.form}
-        onChange={rotateRequestKey}
-      >
+      <form action={formAction} className={styles.form} onChange={rotateRequestKey}>
         <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
         <input type="hidden" name="referenceAtUtc" value={referenceAtUtc} />
         <input type="hidden" name="subjectAccountId" value={accountId} />
         <input type="hidden" name="targetType" value="Product" />
-        <input type="hidden" name="entitlementId" value={requiresExisting ? selectedEntitlementId : ""} />
+        <input
+          type="hidden"
+          name="entitlementId"
+          value={requiresExisting ? selectedEntitlementId : ""}
+        />
         <input
           type="hidden"
           name="expectedEntitlementVersion"
