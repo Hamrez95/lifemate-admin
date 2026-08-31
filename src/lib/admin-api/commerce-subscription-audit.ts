@@ -144,6 +144,9 @@ export async function getCommerceSubscriptionAuditSnapshot(): Promise<CommerceSu
   return {
     conversions: conversions.kind === "ok" ? conversions.data : null,
     gifts: gifts.kind === "ok" ? gifts.data : null,
-    access: { conversions: conversions.kind, gifts: gifts.kind },
+    access: {
+      conversions: conversions.kind === "ok" ? "ready" : conversions.kind,
+      gifts: gifts.kind === "ok" ? "ready" : gifts.kind,
+    },
   };
 }
