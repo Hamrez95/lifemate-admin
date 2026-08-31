@@ -17,8 +17,11 @@ export default async function User360Layout({ children, params }: Props) {
   const admin = await requireAdminAccess();
   const canReadVersions = admin.permissions.includes("analytics.product_versions.read");
   const canReadPrivacy = admin.permissions.includes("privacy.consent.read");
+  const canManageProductAccess =
+    admin.permissions.includes("commerce.entitlement.adjust.request") ||
+    admin.permissions.includes("commerce.entitlement.adjust.execute");
 
-  if (!canReadVersions && !canReadPrivacy) return children;
+  if (!canReadVersions && !canReadPrivacy && !canManageProductAccess) return children;
 
   const [versionResult, privacyResult] = await Promise.all([
     canReadVersions ? getAccountProductVersions(accountId) : Promise.resolve(null),
@@ -31,6 +34,26 @@ export default async function User360Layout({ children, params }: Props) {
     <>
       {children}
       <aside className={styles.panel} aria-label="User 360 operational context">
+        {canManageProductAccess ? (
+          <section className={styles.contextSection} aria-label="Manage product access">
+            <header>
+              <div>
+                <span>User 360 · Access & Subscription</span>
+                <strong>مدیریت دسترسی محصول</strong>
+              </div>
+              <Link
+                href={`/commerce/entitlements/adjustments?accountId=${encodeURIComponent(accountId)}&source=user360`}
+              >
+                مدیریت دسترسی →
+              </Link>
+            </header>
+            <p>
+              اعطا، تمدید، کاهش یا لغو Entitlement با Product picker، پیش‌نمایش قبل/بعد، دلیل،
+              idempotency، approval و Audit. این عملیات خرید یا تراکنش پرداخت جعلی ایجاد نمی‌کند.
+            </p>
+          </section>
+        ) : null}
+
         {canReadVersions ? (
           <section className={styles.contextSection} aria-label="Product version context">
             <header>
