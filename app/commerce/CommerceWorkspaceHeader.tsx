@@ -10,6 +10,7 @@ export type CommerceWorkspaceTab =
   | "promotions"
   | "subscriptions"
   | "operations"
+  | "audit"
   | "rewards"
   | "revenue"
   | "adjustments";
@@ -32,6 +33,7 @@ const tabs: readonly {
   { key: "promotions", href: "/commerce/promotions", label: "پروموشن‌ها" },
   { key: "subscriptions", href: "/commerce/subscriptions", label: "اشتراک‌ها" },
   { key: "operations", href: "/commerce/operations", label: "عملیات مالی" },
+  { key: "audit", href: "/commerce/operations/audit", label: "Conversion / Gift Audit" },
   { key: "rewards", href: "/commerce/rewards", label: "Gift / Referral" },
   { key: "adjustments", href: "/commerce/entitlements/adjustments", label: "Adjustment" },
   { key: "revenue", href: "/commerce/revenue", label: "درآمد" },
