@@ -9,8 +9,8 @@ async function source(path: string) {
 describe("Admin #252 · authorised product access from User 360", () => {
   it("exposes the workflow from User 360 only for entitlement-adjust permissions", async () => {
     const layout = await source("app/users/[accountId]/layout.tsx");
-    expect(layout).toContain('commerce.entitlement.adjust.request');
-    expect(layout).toContain('commerce.entitlement.adjust.execute');
+    expect(layout).toContain("commerce.entitlement.adjust.request");
+    expect(layout).toContain("commerce.entitlement.adjust.execute");
     expect(layout).toContain("Manage product access");
     expect(layout).toContain("source=user360");
   });
@@ -52,7 +52,7 @@ describe("Admin #252 · authorised product access from User 360", () => {
       expect(actions).toContain(reason);
     }
     expect(form).toContain("خرید یا تراکنش پرداخت جعلی ایجاد نمی‌شود");
-    expect(actions).toContain('revalidatePath(`/users/${parsed.input.subjectAccountId}`)');
+    expect(actions).toContain("revalidatePath(`/users/${parsed.input.subjectAccountId}`)");
     expect(actions).not.toContain("service_role");
   });
 
