@@ -25,6 +25,8 @@ export function Sidebar({ activeSlug }: SidebarProps) {
   const auditActive = pathname === "/security/audit" || pathname.startsWith("/security/audit/");
   const researchActive = pathname === "/research" || pathname.startsWith("/research/");
   const experimentsActive = pathname === "/experiments" || pathname.startsWith("/experiments/");
+  const circlesActive =
+    pathname === "/relationships/circles" || pathname.startsWith("/relationships/circles/");
   const profileActive = pathname === "/profile" || pathname.startsWith("/profile/");
 
   return (
@@ -36,23 +38,17 @@ export function Sidebar({ activeSlug }: SidebarProps) {
         <ul>
           {visibleWorkspaces.map((workspace) => {
             const active = workspace.slug === activeSlug;
+            const workspaceSubrouteActive =
+              auditActive || researchActive || experimentsActive || circlesActive;
             return (
               <li key={workspace.slug || "command-center"}>
                 <Link
                   className="nav-item"
-                  data-active={
-                    active && !auditActive && !researchActive && !experimentsActive
-                      ? "true"
-                      : "false"
-                  }
+                  data-active={active && !workspaceSubrouteActive ? "true" : "false"}
                   href={workspaceHref(workspace)}
                   prefetch={false}
                   aria-label={workspace.label}
-                  aria-current={
-                    active && !auditActive && !researchActive && !experimentsActive
-                      ? "page"
-                      : undefined
-                  }
+                  aria-current={active && !workspaceSubrouteActive ? "page" : undefined}
                 >
                   <span className="nav-item__symbol" aria-hidden="true">
                     {workspace.symbol}
@@ -60,6 +56,21 @@ export function Sidebar({ activeSlug }: SidebarProps) {
                   <span>{workspace.label}</span>
                   {workspace.slug === "ai" && <span className="nav-item__badge">جدید</span>}
                 </Link>
+                {workspace.slug === "relationships" && active ? (
+                  <Link
+                    className="nav-item nav-item--subroute"
+                    data-active={circlesActive ? "true" : "false"}
+                    href="/relationships/circles"
+                    prefetch={false}
+                    aria-label="Circleهای روابط"
+                    aria-current={circlesActive ? "page" : undefined}
+                  >
+                    <span className="nav-item__symbol" aria-hidden="true">
+                      ↳
+                    </span>
+                    <span>Circleها</span>
+                  </Link>
+                ) : null}
                 {workspace.slug === "analytics" && active && isFounder ? (
                   <Link
                     className="nav-item nav-item--subroute"
