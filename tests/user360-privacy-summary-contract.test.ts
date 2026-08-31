@@ -32,9 +32,11 @@ describe("Admin #185 User 360 privacy summary", () => {
     expect(layout).not.toContain("phone");
   });
 
-  it("does not let release permission gate hide privacy-only access", () => {
+  it("does not let unrelated operational permission gates hide privacy-only access", () => {
     const layout = source("app/users/[accountId]/layout.tsx");
-    expect(layout).toContain("if (!canReadVersions && !canReadPrivacy) return children;");
+    expect(layout).toContain(
+      "if (!canReadVersions && !canReadPrivacy && !canManageProductAccess) return children;",
+    );
     expect(layout).toContain(
       "canReadPrivacy ? getUserPrivacySummary(accountId) : Promise.resolve(null)",
     );
