@@ -258,7 +258,8 @@ function copyFor(metric: GrowthMetric): MetricCopy {
 function MetricCard({ metric, previous }: { metric: GrowthMetric; previous?: GrowthMetric }) {
   const copy = copyFor(metric);
   const metricAvailability = availability(metric);
-  const hasRateParts = metric.unit === "rate" && metric.numerator != null && metric.denominator != null;
+  const hasRateParts =
+    metric.unit === "rate" && metric.numerator != null && metric.denominator != null;
 
   return (
     <article className={styles.metricCard} data-state={metricAvailability}>
