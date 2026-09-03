@@ -66,7 +66,10 @@ async function compareDeploymentToMain(
     `/compare/${encodeURIComponent(deployedSha)}...${encodeURIComponent(mainSha)}`,
   );
   const status = response?.status;
-  return status === "ahead" || status === "behind" || status === "diverged" || status === "identical"
+  return status === "ahead" ||
+    status === "behind" ||
+    status === "diverged" ||
+    status === "identical"
     ? status
     : null;
 }
