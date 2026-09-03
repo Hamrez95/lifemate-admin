@@ -78,8 +78,8 @@ export default async function OperationsPage() {
                 <div>
                   <strong>Telemetry فقط در حد شواهد موجود نمایش داده می‌شود.</strong>
                   <p>
-                    آخرین snapshot در {formatPersianDateTime(result.snapshot.freshness.asOfUtc)} دریافت
-                    شده است. Unknown به معنی سالم بودن سرویس نیست.
+                    آخرین snapshot در {formatPersianDateTime(result.snapshot.freshness.asOfUtc)}{" "}
+                    دریافت شده است. Unknown به معنی سالم بودن سرویس نیست.
                   </p>
                 </div>
               </section>
