@@ -2,9 +2,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
+import { DeploymentParityPanel } from "@/src/components/operations/DeploymentParityPanel";
 import { AdminShell } from "@/src/components/shell/AdminShell";
 import { getOperationsSnapshot } from "@/src/lib/admin-api/operations";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
+import { formatPersianDateTime } from "@/src/lib/time-zone";
 
 import styles from "../ops-settings.module.css";
 
@@ -52,6 +54,8 @@ export default async function OperationsPage() {
             </p>
           </section>
 
+          <DeploymentParityPanel />
+
           {result.kind === "unavailable" ? (
             <section className={styles.banner} role="status" aria-live="polite">
               <span className={styles.bannerIcon} aria-hidden="true">
@@ -74,12 +78,7 @@ export default async function OperationsPage() {
                 <div>
                   <strong>Telemetry فقط در حد شواهد موجود نمایش داده می‌شود.</strong>
                   <p>
-                    آخرین snapshot در{" "}
-                    {new Intl.DateTimeFormat("fa-IR", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                      timeZone: "Asia/Tehran",
-                    }).format(new Date(result.snapshot.freshness.asOfUtc))}{" "}
+                    آخرین snapshot در {formatPersianDateTime(result.snapshot.freshness.asOfUtc)}{" "}
                     دریافت شده است. Unknown به معنی سالم بودن سرویس نیست.
                   </p>
                 </div>

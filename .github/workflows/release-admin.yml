@@ -41,7 +41,7 @@ jobs:
       build_number: ${{ steps.version.outputs.build_number }}
       source_sha: ${{ steps.source.outputs.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: main
           fetch-depth: 0
@@ -73,30 +73,72 @@ jobs:
       NEXT_PUBLIC_RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
       NEXT_PUBLIC_RELEASE_COMMIT: ${{ needs.prepare.outputs.source_sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ needs.prepare.outputs.source_sha }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 24
           cache: npm
       - run: npm ci --no-audit --no-fund
       - run: npm run format:check && npm run security:check && npm run lint && npm run typecheck && npm test && npm run build
-      - name: Deploy Web/PWA to Vercel
+      - name: Deploy and verify exact Web/PWA production
+        id: deploy
         if: ${{ inputs.deploy_web }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          SOURCE_SHA: ${{ needs.prepare.outputs.source_sha }}
+          RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           set -euo pipefail
           test -n "$VERCEL_TOKEN" && test -n "$VERCEL_ORG_ID" && test -n "$VERCEL_PROJECT_ID"
-          npx --yes vercel@latest --prod --yes --token "$VERCEL_TOKEN"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+
+          previous_production="$(
+            curl -fsS \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v13/deployments?projectId=$VERCEL_PROJECT_ID&target=production&limit=1&teamId=$VERCEL_ORG_ID" \
+              | jq -r '.deployments[0].id // .deployments[0].uid // empty' \
+              || true
+          )"
+          deployed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+          deploy_args=(
+            deploy --prod --yes --token "$VERCEL_TOKEN"
+            --meta "releaseSourceSha=$SOURCE_SHA"
+            --meta "releaseVersion=$RELEASE_VERSION"
+            --env "LIFEMATE_ADMIN_RELEASE_SHA=$SOURCE_SHA"
+            --env "LIFEMATE_ADMIN_DEPLOYED_AT_UTC=$deployed_at"
+            --env "LIFEMATE_ADMIN_REPOSITORY=Hamrez95/lifemate-admin"
+          )
+          if [ -n "$previous_production" ]; then
+            deploy_args+=(--env "LIFEMATE_ADMIN_ROLLBACK_REFERENCE=$previous_production")
+          fi
+
+          deployment_url="$(npx --yes vercel@latest "${deploy_args[@]}" | tail -n 1)"
+          test -n "$deployment_url"
+          npx --yes vercel@latest inspect "$deployment_url" --wait --token "$VERCEL_TOKEN" >/dev/null
+
+          deployment_host="${deployment_url#https://}"
+          verification="$(
+            curl -fsS \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v13/deployments/$deployment_host?teamId=$VERCEL_ORG_ID"
+          )"
+          actual_target="$(jq -r '.target // empty' <<< "$verification")"
+          actual_sha="$(jq -r '.meta.releaseSourceSha // .meta.githubCommitSha // empty' <<< "$verification")"
+          test "$actual_target" = "production"
+          test "$actual_sha" = "$SOURCE_SHA"
+
+          echo "url=$deployment_url" >> "$GITHUB_OUTPUT"
+          echo "Production verified: ${SOURCE_SHA:0:8} @ $deployment_host"
       - run: |
           mkdir -p release
           tar -czf "release/LifeMate-Command-Center-Web-${{ needs.prepare.outputs.version }}.tar.gz" .next public package.json package-lock.json
           (cd release && sha256sum * > SHA256SUMS.txt)
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: admin-web-release
           path: release
@@ -106,10 +148,10 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 35
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ needs.prepare.outputs.source_sha }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 24
           cache: npm
@@ -130,11 +172,11 @@ jobs:
           Compress-Archive -Path "$package/*" -DestinationPath "dist/LifeMate-Command-Center-${{ needs.prepare.outputs.version }}-Windows-x64.zip" -CompressionLevel Optimal
           $hash=(Get-FileHash -Algorithm SHA256 "dist/LifeMate-Command-Center-${{ needs.prepare.outputs.version }}-Windows-x64.zip").Hash.ToLowerInvariant()
           "$hash  LifeMate-Command-Center-${{ needs.prepare.outputs.version }}-Windows-x64.zip" | Set-Content "dist/SHA256SUMS.txt" -Encoding ascii
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: admin-windows-release
           path: dist/*.zip
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: admin-windows-checksums
           path: dist/SHA256SUMS.txt
@@ -143,7 +185,7 @@ jobs:
     needs: [prepare, web, windows]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           path: release
           merge-multiple: true
