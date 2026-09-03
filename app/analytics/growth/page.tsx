@@ -194,7 +194,7 @@ function availability(metric: GrowthMetric): GrowthMetricAvailability {
   return metric.availability ?? metric.state;
 }
 
-function isComparable(metric: GrowthMetric | undefined): metric is GrowthMetric {
+function isComparable(metric: GrowthMetric | undefined): boolean {
   return Boolean(metric && metric.state === "ready" && availability(metric) === "ready");
 }
 
@@ -215,7 +215,7 @@ function compareValue(current: GrowthMetric, previous: GrowthMetric | undefined)
     !isComparable(current) ||
     !isComparable(previous) ||
     typeof current.value !== "number" ||
-    typeof previous.value !== "number"
+    typeof previous?.value !== "number"
   ) {
     return "برای مقایسه هنوز داده کامل نداریم";
   }
