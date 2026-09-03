@@ -6,6 +6,7 @@ import { DeploymentParityPanel } from "@/src/components/operations/DeploymentPar
 import { AdminShell } from "@/src/components/shell/AdminShell";
 import { getOperationsSnapshot } from "@/src/lib/admin-api/operations";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
+import { formatPersianDateTime } from "@/src/lib/time-zone";
 
 import styles from "../ops-settings.module.css";
 
@@ -77,13 +78,8 @@ export default async function OperationsPage() {
                 <div>
                   <strong>Telemetry فقط در حد شواهد موجود نمایش داده می‌شود.</strong>
                   <p>
-                    آخرین snapshot در{" "}
-                    {new Intl.DateTimeFormat("fa-IR", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                      timeZone: "Asia/Tehran",
-                    }).format(new Date(result.snapshot.freshness.asOfUtc))}{" "}
-                    دریافت شده است. Unknown به معنی سالم بودن سرویس نیست.
+                    آخرین snapshot در {formatPersianDateTime(result.snapshot.freshness.asOfUtc)} دریافت
+                    شده است. Unknown به معنی سالم بودن سرویس نیست.
                   </p>
                 </div>
               </section>
