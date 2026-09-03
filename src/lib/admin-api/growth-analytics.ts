@@ -6,18 +6,9 @@ import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 export type GrowthWindow = "daily" | "weekly" | "monthly" | "quarterly" | "yearly";
 export type GrowthMetricState = "ready" | "partial" | "unavailable";
 export type GrowthMetricAvailability =
-  | "ready"
-  | "partial"
-  | "not_enough_data"
-  | "not_instrumented"
-  | "delayed"
-  | "unavailable";
+  "ready" | "partial" | "not_enough_data" | "not_instrumented" | "delayed" | "unavailable";
 export type GrowthStage =
-  | "acquisition"
-  | "activation"
-  | "engagement"
-  | "monetization"
-  | "retention";
+  "acquisition" | "activation" | "engagement" | "monetization" | "retention";
 
 export type GrowthMetric = {
   key: string;
@@ -94,7 +85,9 @@ const AVAILABILITY = new Set<GrowthMetricAvailability>([
 const UNITS = new Set<GrowthMetric["unit"]>(["count", "rate", "minor_currency"]);
 
 function nullableNumber(value: unknown): value is number | null | undefined {
-  return value === undefined || value === null || (typeof value === "number" && Number.isFinite(value));
+  return (
+    value === undefined || value === null || (typeof value === "number" && Number.isFinite(value))
+  );
 }
 
 function parseMetric(value: unknown): GrowthMetric | null {
@@ -200,7 +193,10 @@ export function parseGrowthAnalyticsResponse(value: unknown): GrowthAnalyticsRes
     return null;
   }
 
-  if (body.activityCoverage !== undefined && parseActivityCoverage(body.activityCoverage) === null) {
+  if (
+    body.activityCoverage !== undefined &&
+    parseActivityCoverage(body.activityCoverage) === null
+  ) {
     return null;
   }
 
