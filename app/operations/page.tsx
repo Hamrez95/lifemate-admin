@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
+import { DeploymentParityPanel } from "@/src/components/operations/DeploymentParityPanel";
 import { AdminShell } from "@/src/components/shell/AdminShell";
 import { getOperationsSnapshot } from "@/src/lib/admin-api/operations";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
@@ -51,6 +52,8 @@ export default async function OperationsPage() {
               می‌ماند.
             </p>
           </section>
+
+          <DeploymentParityPanel />
 
           {result.kind === "unavailable" ? (
             <section className={styles.banner} role="status" aria-live="polite">
