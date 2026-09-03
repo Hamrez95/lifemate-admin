@@ -82,16 +82,58 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
       - run: npm run format:check && npm run security:check && npm run lint && npm run typecheck && npm test && npm run build
-      - name: Deploy Web/PWA to Vercel
+      - name: Deploy and verify exact Web/PWA production
+        id: deploy
         if: ${{ inputs.deploy_web }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          SOURCE_SHA: ${{ needs.prepare.outputs.source_sha }}
+          RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           set -euo pipefail
           test -n "$VERCEL_TOKEN" && test -n "$VERCEL_ORG_ID" && test -n "$VERCEL_PROJECT_ID"
-          npx --yes vercel@latest --prod --yes --token "$VERCEL_TOKEN"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+
+          previous_production="$(
+            curl -fsS \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v13/deployments?projectId=$VERCEL_PROJECT_ID&target=production&limit=1&teamId=$VERCEL_ORG_ID" \
+              | jq -r '.deployments[0].id // .deployments[0].uid // empty' \
+              || true
+          )"
+          deployed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+          deploy_args=(
+            deploy --prod --yes --token "$VERCEL_TOKEN"
+            --meta "releaseSourceSha=$SOURCE_SHA"
+            --meta "releaseVersion=$RELEASE_VERSION"
+            --env "LIFEMATE_ADMIN_RELEASE_SHA=$SOURCE_SHA"
+            --env "LIFEMATE_ADMIN_DEPLOYED_AT_UTC=$deployed_at"
+            --env "LIFEMATE_ADMIN_REPOSITORY=Hamrez95/lifemate-admin"
+          )
+          if [ -n "$previous_production" ]; then
+            deploy_args+=(--env "LIFEMATE_ADMIN_ROLLBACK_REFERENCE=$previous_production")
+          fi
+
+          deployment_url="$(npx --yes vercel@latest "${deploy_args[@]}" | tail -n 1)"
+          test -n "$deployment_url"
+          npx --yes vercel@latest inspect "$deployment_url" --wait --token "$VERCEL_TOKEN" >/dev/null
+
+          deployment_host="${deployment_url#https://}"
+          verification="$(
+            curl -fsS \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v13/deployments/$deployment_host?teamId=$VERCEL_ORG_ID"
+          )"
+          actual_target="$(jq -r '.target // empty' <<< "$verification")"
+          actual_sha="$(jq -r '.meta.releaseSourceSha // .meta.githubCommitSha // empty' <<< "$verification")"
+          test "$actual_target" = "production"
+          test "$actual_sha" = "$SOURCE_SHA"
+
+          echo "url=$deployment_url" >> "$GITHUB_OUTPUT"
+          echo "Production verified: ${SOURCE_SHA:0:8} @ $deployment_host"
       - run: |
           mkdir -p release
           tar -czf "release/LifeMate-Command-Center-Web-${{ needs.prepare.outputs.version }}.tar.gz" .next public package.json package-lock.json
