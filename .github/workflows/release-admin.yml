@@ -41,7 +41,7 @@ jobs:
       build_number: ${{ steps.version.outputs.build_number }}
       source_sha: ${{ steps.source.outputs.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: main
           fetch-depth: 0
@@ -73,10 +73,10 @@ jobs:
       NEXT_PUBLIC_RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
       NEXT_PUBLIC_RELEASE_COMMIT: ${{ needs.prepare.outputs.source_sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ needs.prepare.outputs.source_sha }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 24
           cache: npm
@@ -138,7 +138,7 @@ jobs:
           mkdir -p release
           tar -czf "release/LifeMate-Command-Center-Web-${{ needs.prepare.outputs.version }}.tar.gz" .next public package.json package-lock.json
           (cd release && sha256sum * > SHA256SUMS.txt)
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: admin-web-release
           path: release
@@ -148,10 +148,10 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 35
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ needs.prepare.outputs.source_sha }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 24
           cache: npm
@@ -172,11 +172,11 @@ jobs:
           Compress-Archive -Path "$package/*" -DestinationPath "dist/LifeMate-Command-Center-${{ needs.prepare.outputs.version }}-Windows-x64.zip" -CompressionLevel Optimal
           $hash=(Get-FileHash -Algorithm SHA256 "dist/LifeMate-Command-Center-${{ needs.prepare.outputs.version }}-Windows-x64.zip").Hash.ToLowerInvariant()
           "$hash  LifeMate-Command-Center-${{ needs.prepare.outputs.version }}-Windows-x64.zip" | Set-Content "dist/SHA256SUMS.txt" -Encoding ascii
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: admin-windows-release
           path: dist/*.zip
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: admin-windows-checksums
           path: dist/SHA256SUMS.txt
@@ -185,7 +185,7 @@ jobs:
     needs: [prepare, web, windows]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           path: release
           merge-multiple: true
