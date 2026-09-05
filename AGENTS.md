@@ -61,6 +61,7 @@ npm run build
 Use focused branches and reviewable pull requests. Do not force-push `main`. Do not deploy a change whose required CI is red.
 
 ## Graphify context optimization
+
 - Project-scoped Graphify skills live at `.agents/skills/graphify/SKILL.md` and `.codex/skills/graphify/SKILL.md`.
 - For codebase architecture, dependency, impact-analysis, and code-navigation questions, use `graphify query`, `graphify path`, or `graphify explain` before broad grep/file reads whenever `graphify-out/graph.json` exists.
 - If the graph is missing, invoke the Graphify skill and build a structural code-only graph with `graphify extract . --code-only` before broad repository exploration.
