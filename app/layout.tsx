@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
 import { PwaRegistrar } from "@/src/components/pwa/PwaRegistrar";
+import { AppearanceBootstrap, AppearanceProvider } from "@/src/components/ui/AppearanceProvider";
 
 import "./globals.css";
 import "./design-system.css";
@@ -32,15 +33,18 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#12343a",
-  colorScheme: "light",
+  colorScheme: "light dark",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="fa" dir="rtl">
       <body>
-        {children}
-        <PwaRegistrar />
+        <AppearanceBootstrap />
+        <AppearanceProvider>
+          {children}
+          <PwaRegistrar />
+        </AppearanceProvider>
       </body>
     </html>
   );

@@ -3,6 +3,7 @@ import { GlobalCommandPalette } from "@/src/components/shell/GlobalCommandPalett
 import { NotificationCenter } from "@/src/components/shell/NotificationCenter";
 import { OperatorMenu } from "@/src/components/shell/OperatorMenu";
 import { PageHeader } from "@/src/components/ui/PageHeader";
+import { AppearanceControl } from "@/src/components/ui/AppearanceControl";
 
 type TopbarProps = { title: string; subtitle?: string };
 
@@ -11,6 +12,7 @@ export function Topbar({ title, subtitle }: TopbarProps) {
     <header className="topbar">
       <PageHeader title={title} subtitle={subtitle} />
       <div className="topbar__actions">
+        <AppearanceControl />
         <InstallPwaButton />
         <GlobalCommandPalette />
         <NotificationCenter />
