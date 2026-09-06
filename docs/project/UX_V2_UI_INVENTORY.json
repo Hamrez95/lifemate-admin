@@ -1,0 +1,617 @@
+{
+  "generatedAt": "2026-09-06T15:17:32.184Z",
+  "scope": [
+    "app",
+    "src"
+  ],
+  "counts": {
+    "sourceFiles": 356,
+    "cssFiles": 74,
+    "cssModules": 66,
+    "globalCssFiles": 8,
+    "rawColorLiterals": 1290
+  },
+  "rawColorHotspots": [
+    {
+      "file": "app/security/security.module.css",
+      "count": 84
+    },
+    {
+      "file": "app/support/[ticketId]/ticket-detail.module.css",
+      "count": 77
+    },
+    {
+      "file": "app/finance/finance.module.css",
+      "count": 63
+    },
+    {
+      "file": "app/users/[accountId]/user-action-menu.module.css",
+      "count": 57
+    },
+    {
+      "file": "app/users/[accountId]/user-detail.module.css",
+      "count": 56
+    },
+    {
+      "file": "app/globals.css",
+      "count": 46
+    },
+    {
+      "file": "app/commerce/transactions/[transactionId]/transaction-detail.module.css",
+      "count": 44
+    },
+    {
+      "file": "app/ops-settings.module.css",
+      "count": 43
+    },
+    {
+      "file": "app/commerce/commerce-reference.module.css",
+      "count": 40
+    },
+    {
+      "file": "app/commerce/transactions/transactions.module.css",
+      "count": 40
+    },
+    {
+      "file": "app/security/roles/[roleCode]/role-detail.module.css",
+      "count": 38
+    },
+    {
+      "file": "app/security/retention/retention.module.css",
+      "count": 37
+    },
+    {
+      "file": "app/commerce/detail.module.css",
+      "count": 36
+    },
+    {
+      "file": "src/components/shell/notification-center.module.css",
+      "count": 36
+    },
+    {
+      "file": "app/design-system.css",
+      "count": 35
+    },
+    {
+      "file": "app/security/audit/audit.module.css",
+      "count": 34
+    },
+    {
+      "file": "app/admin-auth-founder.css",
+      "count": 33
+    },
+    {
+      "file": "app/analytics/analytics.module.css",
+      "count": 33
+    },
+    {
+      "file": "app/security/abuse/abuse.module.css",
+      "count": 30
+    },
+    {
+      "file": "app/relationships/relationships.module.css",
+      "count": 28
+    },
+    {
+      "file": "app/support/support.css",
+      "count": 28
+    },
+    {
+      "file": "app/security/staff/staff.module.css",
+      "count": 26
+    },
+    {
+      "file": "app/relationships/ledger/ledger.module.css",
+      "count": 25
+    },
+    {
+      "file": "src/components/dashboard/FounderOverview.module.css",
+      "count": 25
+    },
+    {
+      "file": "app/admin-auth-enhanced.css",
+      "count": 22
+    },
+    {
+      "file": "app/commerce/commerce.module.css",
+      "count": 22
+    },
+    {
+      "file": "app/offline/offline.module.css",
+      "count": 20
+    },
+    {
+      "file": "app/relationships/relationships-reference.module.css",
+      "count": 20
+    },
+    {
+      "file": "app/support/[ticketId]/support-conversation.module.css",
+      "count": 16
+    },
+    {
+      "file": "src/components/security/security-context-header.module.css",
+      "count": 15
+    },
+    {
+      "file": "app/commerce/operations/operations.module.css",
+      "count": 13
+    },
+    {
+      "file": "app/finance/scenario/scenario-form.module.css",
+      "count": 13
+    },
+    {
+      "file": "app/security/roles/[roleCode]/staff-membership-controls.module.css",
+      "count": 13
+    },
+    {
+      "file": "app/analytics/cohorts/cohorts-reference.module.css",
+      "count": 12
+    },
+    {
+      "file": "app/admin-auth.css",
+      "count": 11
+    },
+    {
+      "file": "app/analytics/cohorts/cohorts.module.css",
+      "count": 11
+    },
+    {
+      "file": "app/security/security-layout.module.css",
+      "count": 11
+    },
+    {
+      "file": "app/analytics/analytics-reference.module.css",
+      "count": 10
+    },
+    {
+      "file": "src/components/admin-data-table/admin-data-table.module.css",
+      "count": 10
+    },
+    {
+      "file": "app/marketing/marketing.module.css",
+      "count": 9
+    },
+    {
+      "file": "app/analytics/funnel/funnel.module.css",
+      "count": 7
+    },
+    {
+      "file": "app/marketing/content-calendar/calendar.module.css",
+      "count": 7
+    },
+    {
+      "file": "app/pwa.css",
+      "count": 7
+    },
+    {
+      "file": "app/users/users.css",
+      "count": 7
+    },
+    {
+      "file": "app/standalone-state.module.css",
+      "count": 6
+    },
+    {
+      "file": "app/users/[accountId]/user-privacy-reference.module.css",
+      "count": 6
+    },
+    {
+      "file": "app/commerce/entitlements/adjustments/adjustments.module.css",
+      "count": 5
+    },
+    {
+      "file": "app/marketing/content-studio/studio.module.css",
+      "count": 4
+    },
+    {
+      "file": "app/commerce/catalog/catalog-v2.module.css",
+      "count": 3
+    },
+    {
+      "file": "app/security/break-glass/break-glass.module.css",
+      "count": 3
+    },
+    {
+      "file": "app/security/elevated-health/elevated-health.module.css",
+      "count": 3
+    },
+    {
+      "file": "app/relationships/access-grant-actions.module.css",
+      "count": 2
+    },
+    {
+      "file": "src/components/ui/design-system.module.css",
+      "count": 2
+    },
+    {
+      "file": "app/commerce/plans/catalog.module.css",
+      "count": 1
+    },
+    {
+      "file": "app/commerce/promotions/promotions.module.css",
+      "count": 1
+    },
+    {
+      "file": "app/privacy/privacy.module.css",
+      "count": 1
+    },
+    {
+      "file": "app/support/[ticketId]/operation-feedback.module.css",
+      "count": 1
+    },
+    {
+      "file": "app/users/[accountId]/product-version-context.module.css",
+      "count": 1
+    },
+    {
+      "file": "src/components/shell/global-command-palette.module.css",
+      "count": 1
+    }
+  ],
+  "componentHitFiles": {
+    "card": [
+      "app/ai/daily-brief/page.tsx",
+      "app/ai/page.tsx",
+      "app/analytics/cohorts/page.tsx",
+      "app/analytics/funnel/page.tsx",
+      "app/analytics/growth/page.tsx",
+      "app/analytics/page.tsx",
+      "app/commerce/catalog/page.tsx",
+      "app/commerce/entitlements/[featureCode]/page.tsx",
+      "app/commerce/page.tsx",
+      "app/commerce/plans/[planId]/page.tsx",
+      "app/commerce/plans/page.tsx",
+      "app/commerce/promotions/[promotionId]/DiscountCodeControls.tsx",
+      "app/commerce/promotions/[promotionId]/page.tsx",
+      "app/commerce/promotions/page.tsx",
+      "app/commerce/revenue/page.tsx",
+      "app/commerce/subscriptions/page.tsx",
+      "app/commerce/transactions/[transactionId]/page.tsx",
+      "app/commerce/transactions/page.tsx",
+      "app/experiments/page.tsx",
+      "app/finance/budget/page.tsx",
+      "app/finance/cash/page.tsx",
+      "app/finance/page.tsx",
+      "app/finance/scenario/page.tsx",
+      "app/login/page.tsx",
+      "app/marketing/campaigns/[campaignId]/executions/page.tsx",
+      "app/marketing/campaigns/page.tsx",
+      "app/marketing/channels/page.tsx",
+      "app/marketing/content-calendar/page.tsx",
+      "app/marketing/content-studio/page.tsx",
+      "app/marketing/page.tsx",
+      "app/not-found.tsx",
+      "app/offline/page.tsx",
+      "app/operations/page.tsx",
+      "app/operations/releases/page.tsx",
+      "app/privacy/preference-purposes/page.tsx",
+      "app/relationships/ledger/page.tsx",
+      "app/relationships/page.tsx",
+      "app/research/page.tsx",
+      "app/security/abuse/page.tsx",
+      "app/security/break-glass/page.tsx",
+      "app/security/page.tsx",
+      "app/security/retention/RetentionControls.tsx",
+      "app/security/retention/page.tsx",
+      "app/security/roles/[roleCode]/page.tsx",
+      "app/security/roles/custom/CustomRoleControls.tsx",
+      "app/security/roles/custom/page.tsx",
+      "app/settings/page.tsx",
+      "app/support/[ticketId]/SupportConversationPanel.tsx",
+      "app/support/[ticketId]/TicketOperations.tsx",
+      "app/support/[ticketId]/page.tsx",
+      "app/users/[accountId]/page.tsx",
+      "src/components/admin-data-table/table-view.tsx",
+      "src/components/auth/ChangePasswordForm.tsx",
+      "src/components/dashboard/FounderOverview.tsx",
+      "src/components/operations/DeploymentParityPanel.tsx",
+      "src/components/ui/DataTable.tsx",
+      "src/components/ui/EmptyState.tsx",
+      "src/components/ui/ErrorState.tsx",
+      "src/components/ui/ForbiddenState.tsx",
+      "src/components/ui/LoadingState.tsx",
+      "src/components/ui/MetricCard.tsx",
+      "src/components/ui/StateCard.tsx",
+      "src/components/ui/SuccessState.tsx",
+      "src/components/ui/index.ts",
+      "src/lib/admin-api/session.ts"
+    ],
+    "button": [
+      "app/ai/error.tsx",
+      "app/ai/page.tsx",
+      "app/analytics/cohorts/page.tsx",
+      "app/analytics/funnel/page.tsx",
+      "app/analytics/growth/page.tsx",
+      "app/analytics/page.tsx",
+      "app/commerce/catalog/CatalogMutationControls.tsx",
+      "app/commerce/entitlements/adjustments/AdjustmentForm.tsx",
+      "app/commerce/entitlements/adjustments/page.tsx",
+      "app/commerce/operations/PaymentOperationsControls.tsx",
+      "app/commerce/plans/PlanCreateForm.tsx",
+      "app/commerce/plans/[planId]/PlanCatalogControls.tsx",
+      "app/commerce/plans/[planId]/PlanFeatureControls.tsx",
+      "app/commerce/promotions/PromotionCreateForm.tsx",
+      "app/commerce/promotions/[promotionId]/DiscountCodeControls.tsx",
+      "app/commerce/promotions/[promotionId]/PromotionOperations.tsx",
+      "app/commerce/revenue/page.tsx",
+      "app/commerce/rewards/GrowthRewardControls.tsx",
+      "app/commerce/transactions/[transactionId]/RefundOperation.tsx",
+      "app/error.tsx",
+      "app/experiments/page.tsx",
+      "app/finance/budget/page.tsx",
+      "app/finance/cash/page.tsx",
+      "app/finance/error.tsx",
+      "app/finance/page.tsx",
+      "app/finance/scenario/ScenarioForm.tsx",
+      "app/marketing/audiences/page.tsx",
+      "app/marketing/campaigns/[campaignId]/executions/page.tsx",
+      "app/marketing/campaigns/[campaignId]/page.tsx",
+      "app/marketing/campaigns/page.tsx",
+      "app/marketing/channels/page.tsx",
+      "app/marketing/content-calendar/page.tsx",
+      "app/marketing/content-studio/page.tsx",
+      "app/marketing/page.tsx",
+      "app/operations/platform-controls/page.tsx",
+      "app/operations/releases/page.tsx",
+      "app/privacy/page.tsx",
+      "app/privacy/preference-purposes/page.tsx",
+      "app/relationships/AccessGrantActions.tsx",
+      "app/relationships/ledger/page.tsx",
+      "app/relationships/page.tsx",
+      "app/research/page.tsx",
+      "app/security/abuse/AbuseControls.tsx",
+      "app/security/audit/page.tsx",
+      "app/security/break-glass/BreakGlassForms.tsx",
+      "app/security/elevated-health/page.tsx",
+      "app/security/page.tsx",
+      "app/security/retention/RetentionControls.tsx",
+      "app/security/roles/[roleCode]/StaffMembershipControls.tsx",
+      "app/security/roles/custom/CustomRoleControls.tsx",
+      "app/security/staff/page.tsx",
+      "app/settings/SettingsPreferencesForm.tsx",
+      "app/support/[ticketId]/SupportConversationPanel.tsx",
+      "app/support/[ticketId]/TicketOperations.tsx",
+      "app/users/[accountId]/UserActionMenu.tsx",
+      "app/users/[accountId]/page.tsx",
+      "src/components/admin-data-table/admin-pagination.tsx",
+      "src/components/admin-data-table/admin-table-filter-bar.tsx",
+      "src/components/auth/AdminLoginFlow.tsx",
+      "src/components/auth/ChangePasswordForm.tsx",
+      "src/components/pwa/InstallPwaButton.tsx",
+      "src/components/shell/GlobalCommandPalette.tsx",
+      "src/components/shell/NotificationCenter.tsx",
+      "src/components/shell/OperatorMenu.tsx",
+      "src/components/shell/Topbar.tsx"
+    ],
+    "formControl": [
+      "app/commerce/catalog/CatalogMutationControls.tsx",
+      "app/commerce/entitlements/adjustments/AdjustmentForm.tsx",
+      "app/commerce/entitlements/adjustments/actions.ts",
+      "app/commerce/operations/PaymentOperationsControls.tsx",
+      "app/commerce/promotions/[promotionId]/PromotionOperations.tsx",
+      "app/commerce/rewards/GrowthRewardControls.tsx",
+      "app/operations/platform-controls/actions.ts",
+      "app/operations/platform-controls/page.tsx",
+      "app/relationships/AccessGrantActions.tsx",
+      "app/security/roles/[roleCode]/StaffMembershipControls.tsx",
+      "src/components/shell/GlobalCommandPalette.tsx",
+      "src/components/shell/NotificationCenter.tsx",
+      "src/lib/admin-api/custom-roles.ts",
+      "src/lib/admin-api/entitlement-adjustments.ts",
+      "src/lib/admin-api/platform-controls.ts",
+      "src/lib/admin-api/relationship-access-grant-actions.ts",
+      "src/lib/deployment-status.ts"
+    ],
+    "tableOrList": [
+      "app/ai/page.tsx",
+      "app/analytics/cohorts/page.tsx",
+      "app/analytics/funnel/page.tsx",
+      "app/analytics/growth/page.tsx",
+      "app/analytics/page.tsx",
+      "app/api/admin/notifications/route.ts",
+      "app/commerce/catalog/page.tsx",
+      "app/commerce/entitlements/[featureCode]/page.tsx",
+      "app/commerce/entitlements/adjustments/AdjustmentForm.tsx",
+      "app/commerce/entitlements/adjustments/page.tsx",
+      "app/commerce/page.tsx",
+      "app/commerce/plans/[planId]/manage/page.tsx",
+      "app/commerce/plans/[planId]/page.tsx",
+      "app/commerce/plans/page.tsx",
+      "app/commerce/promotions/[promotionId]/PromotionOperations.tsx",
+      "app/commerce/promotions/[promotionId]/loading.tsx",
+      "app/commerce/promotions/[promotionId]/page.tsx",
+      "app/commerce/promotions/page.tsx",
+      "app/commerce/revenue/page.tsx",
+      "app/commerce/rewards/page.tsx",
+      "app/commerce/subscriptions/page.tsx",
+      "app/commerce/transactions/[transactionId]/loading.tsx",
+      "app/commerce/transactions/[transactionId]/page.tsx",
+      "app/commerce/transactions/page.tsx",
+      "app/experiments/page.tsx",
+      "app/finance/budget/page.tsx",
+      "app/finance/cash/page.tsx",
+      "app/finance/page.tsx",
+      "app/finance/scenario/ScenarioForm.tsx",
+      "app/finance/scenario/page.tsx",
+      "app/marketing/audiences/actions.ts",
+      "app/marketing/audiences/page.tsx",
+      "app/marketing/campaigns/[campaignId]/executions/page.tsx",
+      "app/marketing/campaigns/[campaignId]/page.tsx",
+      "app/marketing/campaigns/loading.tsx",
+      "app/marketing/campaigns/page.tsx",
+      "app/marketing/channels/page.tsx",
+      "app/marketing/content-calendar/page.tsx",
+      "app/marketing/content-studio/actions.ts",
+      "app/marketing/content-studio/page.tsx",
+      "app/marketing/page.tsx",
+      "app/operations/page.tsx",
+      "app/operations/platform-controls/page.tsx",
+      "app/operations/releases/page.tsx",
+      "app/privacy/page.tsx",
+      "app/privacy/preference-purposes/page.tsx",
+      "app/pwa-icon/[variant]/route.ts",
+      "app/relationships/ledger/page.tsx",
+      "app/relationships/page.tsx",
+      "app/research/actions.ts",
+      "app/research/page.tsx",
+      "app/security/abuse/page.tsx",
+      "app/security/audit/page.tsx",
+      "app/security/break-glass/page.tsx",
+      "app/security/elevated-health/page.tsx",
+      "app/security/page.tsx",
+      "app/security/retention/page.tsx",
+      "app/security/roles/[roleCode]/StaffMembershipControls.tsx",
+      "app/security/roles/[roleCode]/page.tsx",
+      "app/security/roles/custom/CustomRoleControls.tsx",
+      "app/security/roles/custom/page.tsx",
+      "app/security/staff/page.tsx",
+      "app/settings/page.tsx",
+      "app/support/[ticketId]/SupportConversationPanel.tsx",
+      "app/support/[ticketId]/conversation/page.tsx",
+      "app/support/[ticketId]/page.tsx",
+      "app/support/page.tsx",
+      "app/users/[accountId]/page.tsx",
+      "app/users/page.tsx",
+      "src/components/admin-data-table/admin-page-state.tsx",
+      "src/components/admin-data-table/admin-pagination.tsx",
+      "src/components/admin-data-table/admin-table-filter-bar.tsx",
+      "src/components/admin-data-table/index.ts",
+      "src/components/admin-data-table/table-query.ts",
+      "src/components/admin-data-table/table-view.tsx",
+      "src/components/auth/AdminLoginFlow.tsx",
+      "src/components/dashboard/FounderOverview.tsx",
+      "src/components/operations/DeploymentParityPanel.tsx",
+      "src/components/pwa/InstallPwaButton.tsx",
+      "src/components/security/SecurityContextHeader.tsx",
+      "src/components/shell/GlobalCommandPalette.tsx",
+      "src/components/shell/NotificationCenter.tsx",
+      "src/components/ui/DataTable.tsx",
+      "src/components/ui/index.ts",
+      "src/lib/admin-api/break-glass.ts",
+      "src/lib/admin-api/campaign-executions.ts",
+      "src/lib/admin-api/commerce-discount-codes.ts",
+      "src/lib/admin-api/commerce-overview.ts",
+      "src/lib/admin-api/commerce-payment-operations-v2.ts",
+      "src/lib/admin-api/commerce-plan-features.ts",
+      "src/lib/admin-api/commerce-promotions.ts",
+      "src/lib/admin-api/custom-roles.ts",
+      "src/lib/admin-api/experiments-feedback-contract.test.ts",
+      "src/lib/admin-api/experiments-feedback.ts",
+      "src/lib/admin-api/founder-overview.ts",
+      "src/lib/admin-api/growth-analytics-contract.test.ts",
+      "src/lib/admin-api/growth-rewards.ts",
+      "src/lib/admin-api/marketing-ai-content.ts",
+      "src/lib/admin-api/marketing-campaigns.ts",
+      "src/lib/admin-api/marketing-channels.ts",
+      "src/lib/admin-api/notifications.ts",
+      "src/lib/admin-api/platform-controls.ts",
+      "src/lib/admin-api/privacy-idempotency.ts",
+      "src/lib/admin-api/privacy-preference-policies.ts",
+      "src/lib/admin-api/privacy-user-summary.ts",
+      "src/lib/admin-api/research-studio-contract.test.ts",
+      "src/lib/admin-api/research-studio.ts",
+      "src/lib/admin-api/settings-preferences-contract.test.ts",
+      "src/lib/admin-api/settings-preferences-contract.ts",
+      "src/lib/admin-api/staff-actions.ts",
+      "src/lib/deployment-status.ts"
+    ],
+    "overlay": [
+      "app/security/roles/[roleCode]/StaffMembershipControls.tsx",
+      "app/users/[accountId]/UserActionMenu.tsx",
+      "app/users/[accountId]/page.tsx",
+      "src/components/shell/GlobalCommandPalette.tsx",
+      "src/components/shell/NotificationCenter.tsx",
+      "src/components/shell/OperatorMenu.tsx",
+      "src/components/shell/Topbar.tsx"
+    ],
+    "state": [
+      "app/ai/error.tsx",
+      "app/ai/loading.tsx",
+      "app/analytics/funnel/page.tsx",
+      "app/api/admin/notifications/count/route.ts",
+      "app/api/auth/workforce/route.ts",
+      "app/commerce/catalog/actions.ts",
+      "app/commerce/operations/PaymentOperationsControls.tsx",
+      "app/commerce/operations/actions.ts",
+      "app/commerce/promotions/[promotionId]/loading.tsx",
+      "app/commerce/rewards/GrowthRewardControls.tsx",
+      "app/commerce/rewards/actions.ts",
+      "app/commerce/transactions/[transactionId]/loading.tsx",
+      "app/error.tsx",
+      "app/finance/error.tsx",
+      "app/finance/loading.tsx",
+      "app/finance/scenario/actions.ts",
+      "app/forbidden/page.tsx",
+      "app/loading.tsx",
+      "app/marketing/campaigns/loading.tsx",
+      "app/marketing/page.tsx",
+      "app/security/audit/loading.tsx",
+      "app/security/loading.tsx",
+      "app/security/roles/[roleCode]/loading.tsx",
+      "app/users/[accountId]/page.tsx",
+      "src/components/admin-data-table/admin-page-state.tsx",
+      "src/components/auth/AdminLoginFlow.tsx",
+      "src/components/auth/AdminSessionProvider.tsx",
+      "src/components/dashboard/FounderOverview.tsx",
+      "src/components/shell/GlobalCommandPalette.tsx",
+      "src/components/ui/EmptyState.tsx",
+      "src/components/ui/ErrorState.tsx",
+      "src/components/ui/ForbiddenState.tsx",
+      "src/components/ui/LoadingState.tsx",
+      "src/components/ui/SuccessState.tsx",
+      "src/components/ui/index.ts",
+      "src/lib/admin-api/ai-daily-brief.ts",
+      "src/lib/admin-api/analytics-catalog.ts",
+      "src/lib/admin-api/analytics-cohorts.ts",
+      "src/lib/admin-api/audit-log.ts",
+      "src/lib/admin-api/commerce-catalog.ts",
+      "src/lib/admin-api/commerce-detail.ts",
+      "src/lib/admin-api/commerce-discount-codes.ts",
+      "src/lib/admin-api/commerce-payment-operations-v2.ts",
+      "src/lib/admin-api/commerce-plan-features.ts",
+      "src/lib/admin-api/commerce-promotions.ts",
+      "src/lib/admin-api/commerce-transaction-detail.ts",
+      "src/lib/admin-api/commerce-transactions.ts",
+      "src/lib/admin-api/finance-budget.ts",
+      "src/lib/admin-api/finance-cash.ts",
+      "src/lib/admin-api/finance-profit-loss.ts",
+      "src/lib/admin-api/finance-scenarios.ts",
+      "src/lib/admin-api/marketing-overview.ts",
+      "src/lib/admin-api/operations-contract.ts",
+      "src/lib/admin-api/operations.ts",
+      "src/lib/admin-api/relationship-access-grant-actions.ts",
+      "src/lib/admin-api/relationship-ledger.ts",
+      "src/lib/admin-api/security-rbac-contract.ts",
+      "src/lib/admin-api/security-rbac.ts",
+      "src/lib/admin-api/security-role-detail-contract.ts",
+      "src/lib/admin-api/security-role-detail.ts",
+      "src/lib/admin-api/server.ts",
+      "src/lib/admin-api/session.ts",
+      "src/lib/admin-api/settings-preferences.ts",
+      "src/lib/admin-api/support-conversation.ts",
+      "src/lib/admin-api/support-queue.ts",
+      "src/lib/admin-api/support-ticket.ts",
+      "src/lib/admin-api/user-actions.ts",
+      "src/lib/admin-api/user-detail.ts",
+      "src/lib/admin-api/user-directory.ts",
+      "src/lib/runtime-config.ts",
+      "src/lib/time-zone.ts"
+    ],
+    "navigation": [
+      "app/ai/daily-brief/page.tsx",
+      "app/ai/page.tsx",
+      "app/relationships/page.tsx",
+      "app/settings/page.tsx",
+      "app/users/[accountId]/page.tsx",
+      "src/components/dashboard/FounderOverview.tsx",
+      "src/components/shell/AdminShell.tsx",
+      "src/components/shell/Sidebar.tsx",
+      "src/components/shell/Topbar.tsx",
+      "src/components/ui/AppShell.tsx",
+      "src/components/ui/index.ts",
+      "src/lib/admin-api/experiments-feedback-contract.test.ts",
+      "src/lib/admin-api/research-studio-contract.test.ts"
+    ]
+  }
+}
