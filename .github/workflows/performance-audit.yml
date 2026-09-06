@@ -1,0 +1,65 @@
+name: admin-performance-audit
+
+on:
+  pull_request:
+    paths:
+      - "app/**"
+      - "src/**"
+      - "e2e/performance-baseline.spec.ts"
+      - "e2e/helpers/sign-in.ts"
+      - "scripts/qa/**"
+      - "playwright.performance.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/performance-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: admin-performance-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  production-build-baseline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: qa_publishable_key_only
+      NEXT_PUBLIC_ADMIN_API_URL: http://127.0.0.1:54321
+      NEXT_PUBLIC_ADMIN_AUTH_URL: http://127.0.0.1:54322/functions/v1/lifemate-admin-auth
+      NEXT_PUBLIC_PWA_TEST: "1"
+      LIFEMATE_PERFORMANCE_FIXTURE: synthetic
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          show-progress: false
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install pinned Chromium headless shell for Playwright
+        run: npx playwright install --only-shell chromium
+
+      - name: Build production Command Center
+        run: npm run build
+
+      - name: Capture authenticated production-build performance baseline
+        run: npx playwright test --config=playwright.performance.config.ts
+
+      - name: Upload performance evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: command-center-performance-${{ github.run_id }}
+          path: artifacts/performance
+          if-no-files-found: warn
+          retention-days: 14
