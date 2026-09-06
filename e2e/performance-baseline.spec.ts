@@ -6,6 +6,7 @@ import { test, type Page, type Request, type Response } from "@playwright/test";
 import { signInWithMfa } from "./helpers/sign-in";
 
 const SYNTHETIC_ACCOUNT_ID = "11111111-1111-4111-8111-111111111111";
+const RESOURCE_SETTLE_MS = 250;
 
 const routes = [
   { name: "dashboard", path: "/" },
@@ -69,11 +70,7 @@ function duplicateKeys(requests: RequestSample[]) {
     .sort();
 }
 
-async function measureRoute(
-  page: Page,
-  route: (typeof routes)[number],
-  run: "cold" | "warm",
-) {
+async function measureRoute(page: Page, route: (typeof routes)[number], run: "cold" | "warm") {
   const requests: RequestSample[] = [];
   const responses: ResponseSample[] = [];
 
@@ -99,15 +96,14 @@ async function measureRoute(
   page.on("response", onResponse);
   const startedAt = performance.now();
   await page.goto(route.path, { waitUntil: "domcontentloaded" });
-  await page.waitForLoadState("networkidle", { timeout: 5_000 }).catch(() => undefined);
   const wallMs = performance.now() - startedAt;
+  await page.waitForTimeout(RESOURCE_SETTLE_MS);
   page.off("request", onRequest);
   page.off("response", onResponse);
 
   const browserMetrics = await page.evaluate(() => {
     const navigation = performance.getEntriesByType("navigation")[0] as
-      | PerformanceNavigationTiming
-      | undefined;
+      PerformanceNavigationTiming | undefined;
     const resources = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
     const js = resources.filter((entry) => entry.initiatorType === "script");
     const nextData = resources.filter(
@@ -129,10 +125,7 @@ async function measureRoute(
         jsCount: js.length,
         jsTransferBytes: js.reduce((total, entry) => total + entry.transferSize, 0),
         nextDataCount: nextData.length,
-        nextDataTransferBytes: nextData.reduce(
-          (total, entry) => total + entry.transferSize,
-          0,
-        ),
+        nextDataTransferBytes: nextData.reduce((total, entry) => total + entry.transferSize, 0),
       },
     };
   });
@@ -164,45 +157,43 @@ async function measureRoute(
 }
 
 test.describe("PERF-01 authenticated production-build baseline", () => {
-  test(
-    "captures cold/warm route timing and request fanout without real-user data",
-    async ({ page }, testInfo) => {
-      await signInWithMfa(page);
+  test("captures cold/warm route timing and request fanout without real-user data", async ({
+    page,
+  }, testInfo) => {
+    await signInWithMfa(page);
 
-      const samples: RunSample[] = [];
-      for (const route of routes) {
-        samples.push(await measureRoute(page, route, "cold"));
-        samples.push(await measureRoute(page, route, "warm"));
-      }
+    const samples: RunSample[] = [];
+    for (const route of routes) {
+      samples.push(await measureRoute(page, route, "cold"));
+      samples.push(await measureRoute(page, route, "warm"));
+    }
 
-      const report = {
-        schemaVersion: 1,
-        generatedAtUtc: new Date().toISOString(),
-        environment: "synthetic-authenticated-production-build",
-        project: testInfo.project.name,
-        fixture: {
-          containsRealUserData: false,
-          accountId: SYNTHETIC_ACCOUNT_ID,
-          auth: "synthetic AAL2 QA fixture",
-        },
-        limitations: [
-          "This harness measures a local production build against synthetic QA services; it is not production traffic latency.",
-          "Browser PerformanceResourceTiming may report zero transfer sizes for resources whose timing data is unavailable.",
-          "Hydration/React commit cost and INP require a separate controlled trace; this report does not infer them from navigation timing.",
-        ],
-        samples,
-      };
+    const report = {
+      schemaVersion: 1,
+      generatedAtUtc: new Date().toISOString(),
+      environment: "synthetic-authenticated-production-build",
+      project: testInfo.project.name,
+      fixture: {
+        containsRealUserData: false,
+        accountId: SYNTHETIC_ACCOUNT_ID,
+        auth: "synthetic AAL2 QA fixture",
+      },
+      limitations: [
+        "This harness measures a local production build against synthetic QA services; it is not production traffic latency.",
+        "Browser PerformanceResourceTiming may report zero transfer sizes for resources whose timing data is unavailable.",
+        "Hydration/React commit cost and INP require a separate controlled trace; this report does not infer them from navigation timing.",
+        `Request fanout is observed for ${RESOURCE_SETTLE_MS}ms after DOMContentLoaded rather than waiting for network-idle, because persistent shell polling is intentionally allowed.`,
+      ],
+      samples,
+    };
 
-      const directory = path.resolve("artifacts/performance");
-      await mkdir(directory, { recursive: true });
-      const safeProject = testInfo.project.name
-        .replace(/[^a-z0-9-]+/gi, "-")
-        .toLowerCase();
-      await writeFile(
-        path.join(directory, `performance-baseline-${safeProject}.json`),
-        `${JSON.stringify(report, null, 2)}\n`,
-        "utf8",
-      );
-    },
-  );
+    const directory = path.resolve("artifacts/performance");
+    await mkdir(directory, { recursive: true });
+    const safeProject = testInfo.project.name.replace(/[^a-z0-9-]+/gi, "-").toLowerCase();
+    await writeFile(
+      path.join(directory, `performance-baseline-${safeProject}.json`),
+      `${JSON.stringify(report, null, 2)}\n`,
+      "utf8",
+    );
+  });
 });
