@@ -6,8 +6,11 @@ import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider
 import { AdminShell } from "@/src/components/shell/AdminShell";
 import {
   getMarketingChannels,
+  type MarketingCapabilityState,
   type MarketingChannel,
   type MarketingChannelSetupStatus,
+  type MarketingConfigurationCompleteness,
+  type MarketingProviderConnectivity,
 } from "@/src/lib/admin-api/marketing-channels";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
@@ -30,8 +33,76 @@ const setupLabels: Record<MarketingChannelSetupStatus, string> = {
   Disabled: "غیرفعال",
 };
 
+const connectivityLabels: Record<MarketingProviderConnectivity, string> = {
+  NotVerified: "بررسی نشده",
+  Unsupported: "پشتیبانی نمی‌شود",
+  VerificationPending: "در حال بررسی",
+  Verified: "تأییدشده",
+  VerificationStale: "تأیید منقضی/قدیمی",
+  ReconnectRequired: "نیازمند اتصال مجدد",
+  CredentialExpired: "Credential منقضی",
+  RateLimited: "محدودیت Provider",
+  Degraded: "اختلال نسبی",
+  Disabled: "غیرفعال",
+  Unavailable: "در دسترس نیست",
+};
+
+const capabilityLabels: Record<MarketingCapabilityState, string> = {
+  Supported: "قابل استفاده و تأییدشده",
+  Unsupported: "پشتیبانی نمی‌شود",
+  NotVerified: "قابل تأیید نیست",
+};
+
+const completenessLabels: Record<MarketingConfigurationCompleteness, string> = {
+  complete: "کامل",
+  partial: "ناقص",
+  missing: "تنظیم نشده",
+  unknown: "گزارش نشده",
+};
+
 function one(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
+}
+
+function instantLabel(value: string | undefined): string {
+  return value ? dateFormat.format(new Date(value)) : "از API گزارش نشده";
+}
+
+function capabilityLabel(value: MarketingCapabilityState | undefined): string {
+  return value ? capabilityLabels[value] : "از API گزارش نشده";
+}
+
+function actionRequired(channel: MarketingChannel): string {
+  if (channel.operatorStatus === "Disabled") {
+    return "کانال operational غیرفعال است؛ قبل از هر انتشار باید وضعیت و provider دوباره بررسی شود.";
+  }
+  if (!channel.credentialAvailable) {
+    return "Credential امن در server/Vault تنظیم نشده است؛ عملیات provider باید fail-closed بماند.";
+  }
+  switch (channel.providerConnectivity) {
+    case "Verified":
+      return channel.capabilities?.publishing || channel.capabilities?.analytics
+        ? "اتصال تأیید شده است؛ فقط capability لازم برای هر عملیات را جداگانه ملاک قرار دهید."
+        : "اتصال تأیید شده، اما ماتریس capability هنوز از API گزارش نشده است.";
+    case "ReconnectRequired":
+    case "CredentialExpired":
+      return "Credential باید از مسیر امن provider دوباره authorize/refresh شود.";
+    case "VerificationStale":
+      return "Health check تازه لازم است؛ تأیید قدیمی نباید مجوز انتشار یا ingestion بدهد.";
+    case "RateLimited":
+      return "Provider rate limit فعال است؛ عملیات تا بازگشت ظرفیت باید متوقف یا محدود شود.";
+    case "Degraded":
+    case "Unavailable":
+      return "Provider سالم تأیید نشده است؛ خطای نرمال‌شده را بررسی و عملیات خارجی را متوقف کنید.";
+    case "Unsupported":
+      return "این provider برای API automation پشتیبانی نمی‌شود؛ فقط مسیر manual fallback مجاز است.";
+    case "VerificationPending":
+      return "تأیید provider هنوز کامل نشده است؛ تا نتیجه نهایی عملیات خارجی مجاز نیست.";
+    case "Disabled":
+      return "Provider در backend غیرفعال گزارش شده است؛ عملیات خارجی مجاز نیست.";
+    case "NotVerified":
+      return "Server-side health/capability verification هنوز evidence قابل اتکا نداده است.";
+  }
 }
 
 function ChannelCard({ channel, canControl }: { channel: MarketingChannel; canControl: boolean }) {
@@ -45,6 +116,9 @@ function ChannelCard({ channel, canControl }: { channel: MarketingChannel; canCo
         <div>
           <h3>{channel.displayName}</h3>
           <code>{channel.providerCode}</code>
+          {channel.providerIdentity ? (
+            <p className={styles.readOnlyNote}>{channel.providerIdentity}</p>
+          ) : null}
         </div>
         <span className={styles.stateBadge}>{setupLabels[channel.setupStatus]}</span>
       </div>
@@ -60,20 +134,55 @@ function ChannelCard({ channel, canControl }: { channel: MarketingChannel; canCo
         </div>
         <div>
           <dt>Provider connectivity</dt>
-          <dd>بررسی نشده</dd>
+          <dd>{connectivityLabels[channel.providerConnectivity]}</dd>
+        </div>
+        <div>
+          <dt>کامل بودن تنظیمات</dt>
+          <dd>
+            {channel.configurationCompleteness
+              ? completenessLabels[channel.configurationCompleteness]
+              : "از API گزارش نشده"}
+          </dd>
+        </div>
+        <div>
+          <dt>آخرین health check</dt>
+          <dd>{instantLabel(channel.lastHealthCheckAtUtc)}</dd>
+        </div>
+        <div>
+          <dt>آخرین تأیید موفق</dt>
+          <dd>{instantLabel(channel.lastVerifiedAtUtc)}</dd>
+        </div>
+        <div>
+          <dt>آخرین خطای نرمال‌شده</dt>
+          <dd>{channel.healthFailureCode ?? "از API گزارش نشده"}</dd>
         </div>
         <div>
           <dt>آخرین تغییر</dt>
           <dd>{dateFormat.format(new Date(channel.updatedAtUtc))}</dd>
         </div>
+        <div>
+          <dt>آمادگی انتشار</dt>
+          <dd>{capabilityLabel(channel.capabilities?.publishing)}</dd>
+        </div>
+        <div>
+          <dt>آمادگی Analytics</dt>
+          <dd>{capabilityLabel(channel.capabilities?.analytics)}</dd>
+        </div>
       </dl>
 
       <div className={styles.truthBox}>
-        {channel.setupStatus === "CredentialAvailable"
-          ? "Credential روی سرور موجود است؛ این به معنی اتصال یا سلامت API شبکه اجتماعی نیست."
-          : channel.setupStatus === "SetupRequired"
-            ? "هیچ Credential قابل استفاده‌ای در Vault شناسایی نشده است؛ انتشار باید fail-closed بماند."
-            : "کانال توسط اپراتور غیرفعال است؛ حتی وجود Credential نیز اجازه انتشار نمی‌دهد."}
+        <strong>اقدام لازم: </strong>
+        {actionRequired(channel)}
+      </div>
+
+      <div className={styles.truthBox}>
+        {channel.providerConnectivity === "Verified"
+          ? "Connected فقط به دلیل provider evidence معتبر نمایش داده شده است؛ readiness هر عملیات همچنان از capability همان عملیات می‌آید."
+          : channel.setupStatus === "CredentialAvailable"
+            ? "Credential روی سرور موجود است؛ این به معنی اتصال یا سلامت API provider نیست."
+            : channel.setupStatus === "SetupRequired"
+              ? "هیچ Credential قابل استفاده‌ای در Vault شناسایی نشده است؛ انتشار باید fail-closed بماند."
+              : "کانال توسط اپراتور غیرفعال است؛ حتی وجود Credential نیز اجازه انتشار نمی‌دهد."}
       </div>
 
       {canControl ? (
@@ -134,8 +243,9 @@ export default async function MarketingChannelsPage({ searchParams }: ChannelPag
               <p className={styles.eyebrow}>Secure channel boundary</p>
               <h2>قبل از Publish، اول باید بدانیم واقعاً چه چیزی آماده است.</h2>
               <p>
-                این صفحه فقط وضعیت operational و وجود Credential را نشان می‌دهد. مقدار Credential،
-                OAuth token و provider payload هرگز به مرورگر فرستاده نمی‌شود و «Credential موجود»
+                این صفحه وضعیت operational، وجود Credential و فقط health/capability evidence
+                نرمال‌شده‌ای را نشان می‌دهد که سرور واقعاً گزارش کرده باشد. مقدار Credential، OAuth
+                token و raw provider payload هرگز به مرورگر فرستاده نمی‌شود و «Credential موجود»
                 مساوی «Connected» نیست.
               </p>
             </div>
@@ -175,8 +285,8 @@ export default async function MarketingChannelsPage({ searchParams }: ChannelPag
               <div className={styles.legend} aria-label="تعریف وضعیت کانال‌ها">
                 <span>SetupRequired = Credential وجود ندارد</span>
                 <span>CredentialAvailable = secret فقط روی سرور موجود است</span>
-                <span>Disabled = kill switch عملیاتی فعال است</span>
-                <span>Provider connectivity = هنوز verify نشده</span>
+                <span>Verified = فقط با provider evidence معتبر</span>
+                <span>Capability گزارش‌نشده = قابل استفاده فرض نمی‌شود</span>
               </div>
               <section className={styles.grid} aria-label="وضعیت کانال‌های Marketing">
                 {result.data.items.map((channel) => (

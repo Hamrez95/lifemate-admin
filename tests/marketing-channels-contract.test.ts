@@ -22,9 +22,29 @@ describe("ADM-MKT-005 secure channel boundary", () => {
     expect(actions).not.toMatch(/accessToken|refreshToken|secretValue/);
   });
 
-  it("keeps connectivity truthful instead of claiming Connected", () => {
-    expect(client).toContain('providerConnectivity: "NotVerified"');
-    expect(page).toContain("بررسی نشده");
+  it("accepts only normalized provider evidence and never upgrades credential presence to Connected", () => {
+    expect(client).toContain("MarketingProviderConnectivity");
+    expect(client).toContain('"Verified"');
+    expect(client).toContain('"VerificationStale"');
+    expect(client).toContain('"ReconnectRequired"');
+    expect(client).toContain("CONNECTIVITY_STATES.has");
+    expect(client).toContain("CAPABILITY_STATES.has");
+    expect(page).toContain("Verified = فقط با provider evidence معتبر");
+    expect(page).toContain("Credential روی سرور موجود است؛ این به معنی اتصال");
     expect(page).not.toContain('providerConnectivity: "Connected"');
+  });
+
+  it("surfaces health, failure, configuration and operation readiness without inventing missing data", () => {
+    expect(page).toContain("آخرین health check");
+    expect(page).toContain("آخرین تأیید موفق");
+    expect(page).toContain("آخرین خطای نرمال‌شده");
+    expect(page).toContain("کامل بودن تنظیمات");
+    expect(page).toContain("آمادگی انتشار");
+    expect(page).toContain("آمادگی Analytics");
+    expect(page).toContain("اقدام لازم");
+    expect(page).toContain("از API گزارش نشده");
+    expect(client).toContain("healthFailureCode");
+    expect(client).toContain("configurationCompleteness");
+    expect(client).toContain("capabilities");
   });
 });
