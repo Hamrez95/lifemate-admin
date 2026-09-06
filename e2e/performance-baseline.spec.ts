@@ -152,8 +152,7 @@ async function measureRoute(
   const serverRequests = await readServerTrace();
   const browserMetrics = await page.evaluate(() => {
     const navigation = performance.getEntriesByType("navigation")[0] as
-      | PerformanceNavigationTiming
-      | undefined;
+      PerformanceNavigationTiming | undefined;
     const resources = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
     const js = resources.filter((entry) => entry.initiatorType === "script");
     const nextData = resources.filter(
