@@ -3,6 +3,30 @@ import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
 export type MarketingChannelSetupStatus = "SetupRequired" | "CredentialAvailable" | "Disabled";
 export type MarketingChannelOperatorStatus = "Enabled" | "Disabled";
+export type MarketingProviderConnectivity =
+  | "NotVerified"
+  | "Unsupported"
+  | "VerificationPending"
+  | "Verified"
+  | "VerificationStale"
+  | "ReconnectRequired"
+  | "CredentialExpired"
+  | "RateLimited"
+  | "Degraded"
+  | "Disabled"
+  | "Unavailable";
+export type MarketingCapabilityState = "Supported" | "Unsupported" | "NotVerified";
+export type MarketingConfigurationCompleteness = "complete" | "partial" | "missing" | "unknown";
+
+export type MarketingChannelCapabilities = {
+  publishing?: MarketingCapabilityState;
+  analytics?: MarketingCapabilityState;
+  textPost?: MarketingCapabilityState;
+  imagePost?: MarketingCapabilityState;
+  videoPost?: MarketingCapabilityState;
+  scheduling?: MarketingCapabilityState;
+  metricRead?: MarketingCapabilityState;
+};
 
 export type MarketingChannel = {
   providerCode: string;
@@ -10,7 +34,13 @@ export type MarketingChannel = {
   operatorStatus: MarketingChannelOperatorStatus;
   setupStatus: MarketingChannelSetupStatus;
   credentialAvailable: boolean;
-  providerConnectivity: "NotVerified";
+  providerConnectivity: MarketingProviderConnectivity;
+  providerIdentity?: string;
+  lastVerifiedAtUtc?: string;
+  lastHealthCheckAtUtc?: string;
+  healthFailureCode?: string;
+  configurationCompleteness?: MarketingConfigurationCompleteness;
+  capabilities?: MarketingChannelCapabilities;
   updatedAtUtc: string;
 };
 
@@ -40,6 +70,40 @@ type Problem = {
 
 const PROVIDER_PATTERN = /^[a-z0-9][a-z0-9_.:-]{0,63}$/;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
+const FAILURE_CODE_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$/;
+const CONNECTIVITY_STATES = new Set<MarketingProviderConnectivity>([
+  "NotVerified",
+  "Unsupported",
+  "VerificationPending",
+  "Verified",
+  "VerificationStale",
+  "ReconnectRequired",
+  "CredentialExpired",
+  "RateLimited",
+  "Degraded",
+  "Disabled",
+  "Unavailable",
+]);
+const CAPABILITY_STATES = new Set<MarketingCapabilityState>([
+  "Supported",
+  "Unsupported",
+  "NotVerified",
+]);
+const COMPLETENESS_STATES = new Set<MarketingConfigurationCompleteness>([
+  "complete",
+  "partial",
+  "missing",
+  "unknown",
+]);
+const CAPABILITY_KEYS = [
+  "publishing",
+  "analytics",
+  "textPost",
+  "imagePost",
+  "videoPost",
+  "scheduling",
+  "metricRead",
+] as const satisfies readonly (keyof MarketingChannelCapabilities)[];
 
 function record(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" && !Array.isArray(value)
@@ -51,6 +115,35 @@ function instant(value: unknown): value is string {
   return typeof value === "string" && !Number.isNaN(Date.parse(value));
 }
 
+function optionalInstant(value: unknown): string | undefined | null {
+  if (value === undefined || value === null) return undefined;
+  return instant(value) ? value : null;
+}
+
+function optionalText(value: unknown, maxLength: number): string | undefined | null {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value !== "string") return null;
+  const normalized = value.trim();
+  if (!normalized || normalized.length > maxLength) return null;
+  return normalized;
+}
+
+function parseCapabilities(value: unknown): MarketingChannelCapabilities | undefined | null {
+  if (value === undefined || value === null) return undefined;
+  const raw = record(value);
+  if (!raw) return null;
+  const capabilities: MarketingChannelCapabilities = {};
+  for (const key of CAPABILITY_KEYS) {
+    const state = raw[key];
+    if (state === undefined || state === null) continue;
+    if (typeof state !== "string" || !CAPABILITY_STATES.has(state as MarketingCapabilityState)) {
+      return null;
+    }
+    capabilities[key] = state as MarketingCapabilityState;
+  }
+  return capabilities;
+}
+
 function parseChannel(value: unknown): MarketingChannel | null {
   const item = record(value);
   if (!item) return null;
@@ -58,15 +151,71 @@ function parseChannel(value: unknown): MarketingChannel | null {
     typeof item.providerCode !== "string" ||
     !PROVIDER_PATTERN.test(item.providerCode) ||
     typeof item.displayName !== "string" ||
+    !item.displayName.trim() ||
+    item.displayName.length > 120 ||
     (item.operatorStatus !== "Enabled" && item.operatorStatus !== "Disabled") ||
     !["SetupRequired", "CredentialAvailable", "Disabled"].includes(String(item.setupStatus)) ||
     typeof item.credentialAvailable !== "boolean" ||
-    item.providerConnectivity !== "NotVerified" ||
+    typeof item.providerConnectivity !== "string" ||
+    !CONNECTIVITY_STATES.has(item.providerConnectivity as MarketingProviderConnectivity) ||
     !instant(item.updatedAtUtc)
   ) {
     return null;
   }
-  return item as MarketingChannel;
+
+  const providerIdentity = optionalText(item.providerIdentity, 160);
+  const lastVerifiedAtUtc = optionalInstant(item.lastVerifiedAtUtc);
+  const lastHealthCheckAtUtc = optionalInstant(item.lastHealthCheckAtUtc);
+  const capabilities = parseCapabilities(item.capabilities);
+  if (
+    providerIdentity === null ||
+    lastVerifiedAtUtc === null ||
+    lastHealthCheckAtUtc === null ||
+    capabilities === null
+  ) {
+    return null;
+  }
+
+  let healthFailureCode: string | undefined;
+  if (item.healthFailureCode !== undefined && item.healthFailureCode !== null) {
+    if (
+      typeof item.healthFailureCode !== "string" ||
+      !FAILURE_CODE_PATTERN.test(item.healthFailureCode)
+    ) {
+      return null;
+    }
+    healthFailureCode = item.healthFailureCode;
+  }
+
+  let configurationCompleteness: MarketingConfigurationCompleteness | undefined;
+  if (item.configurationCompleteness !== undefined && item.configurationCompleteness !== null) {
+    if (
+      typeof item.configurationCompleteness !== "string" ||
+      !COMPLETENESS_STATES.has(
+        item.configurationCompleteness as MarketingConfigurationCompleteness,
+      )
+    ) {
+      return null;
+    }
+    configurationCompleteness =
+      item.configurationCompleteness as MarketingConfigurationCompleteness;
+  }
+
+  return {
+    providerCode: item.providerCode,
+    displayName: item.displayName.trim(),
+    operatorStatus: item.operatorStatus,
+    setupStatus: item.setupStatus as MarketingChannelSetupStatus,
+    credentialAvailable: item.credentialAvailable,
+    providerConnectivity: item.providerConnectivity as MarketingProviderConnectivity,
+    providerIdentity,
+    lastVerifiedAtUtc,
+    lastHealthCheckAtUtc,
+    healthFailureCode,
+    configurationCompleteness,
+    capabilities,
+    updatedAtUtc: item.updatedAtUtc,
+  };
 }
 
 function parseList(value: unknown): MarketingChannelList | null {
