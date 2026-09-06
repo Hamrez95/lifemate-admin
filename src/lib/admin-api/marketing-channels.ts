@@ -191,9 +191,7 @@ function parseChannel(value: unknown): MarketingChannel | null {
   if (item.configurationCompleteness !== undefined && item.configurationCompleteness !== null) {
     if (
       typeof item.configurationCompleteness !== "string" ||
-      !COMPLETENESS_STATES.has(
-        item.configurationCompleteness as MarketingConfigurationCompleteness,
-      )
+      !COMPLETENESS_STATES.has(item.configurationCompleteness as MarketingConfigurationCompleteness)
     ) {
       return null;
     }
