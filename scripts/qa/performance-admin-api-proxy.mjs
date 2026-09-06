@@ -26,7 +26,8 @@ function copyRequestHeaders(request) {
 
 function copyResponseHeaders(response, upstreamHeaders, contentLength) {
   for (const [name, value] of upstreamHeaders.entries()) {
-    if (name === "content-length" || name === "transfer-encoding" || name === "connection") continue;
+    if (name === "content-length" || name === "transfer-encoding" || name === "connection")
+      continue;
     response.setHeader(name, value);
   }
   response.setHeader("content-length", String(contentLength));
@@ -61,7 +62,10 @@ export function startPerformanceAdminApiProxy(targetOrigin) {
       const upstream = await fetch(targetUrl, {
         method: request.method,
         headers: copyRequestHeaders(request),
-        body: body.byteLength > 0 && request.method !== "GET" && request.method !== "HEAD" ? body : undefined,
+        body:
+          body.byteLength > 0 && request.method !== "GET" && request.method !== "HEAD"
+            ? body
+            : undefined,
         redirect: "manual",
       });
       const responseBody = Buffer.from(await upstream.arrayBuffer());
