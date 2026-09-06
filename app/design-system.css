@@ -78,9 +78,26 @@
   --lm-focus-ring: 0 0 0 3px rgb(123 168 255 / 52%);
 }
 
+[dir="rtl"] {
+  direction: rtl;
+}
+[dir="ltr"] {
+  direction: ltr;
+}
+
 @media (max-width: 1024px) {
   :root {
     --lm-sidebar-width: 210px;
+  }
+}
+@media (max-width: 768px) {
+  :root {
+    --lm-space-6: 20px;
+  }
+}
+@media (max-width: 390px) {
+  :root {
+    --lm-space-6: 16px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
