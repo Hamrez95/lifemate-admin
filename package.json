@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "security:check": "node scripts/security-check.mjs",
+    "ui:inventory": "node scripts/ui-inventory.mjs",
     "delivery:check": "node scripts/delivery-contract-check.mjs",
     "workflow:check": "node scripts/workflow-supply-chain-check.mjs",
     "test:e2e": "playwright test",
