@@ -28,7 +28,7 @@ jobs:
     env:
       NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: qa_publishable_key_only
-      NEXT_PUBLIC_ADMIN_API_URL: http://127.0.0.1:54321
+      NEXT_PUBLIC_ADMIN_API_URL: http://127.0.0.1:54323
       NEXT_PUBLIC_ADMIN_AUTH_URL: http://127.0.0.1:54322/functions/v1/lifemate-admin-auth
       NEXT_PUBLIC_PWA_TEST: "1"
       LIFEMATE_PERFORMANCE_FIXTURE: synthetic
