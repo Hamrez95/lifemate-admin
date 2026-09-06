@@ -1,4 +1,5 @@
 export { AppShell } from "./AppShell";
+export { Button, FormField, Input, Surface } from "./Primitives";
 export { AppearanceBootstrap, AppearanceProvider, useAppearance } from "./AppearanceProvider";
 export { DataTable } from "./DataTable";
 export { EmptyState } from "./EmptyState";
