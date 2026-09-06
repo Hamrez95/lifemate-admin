@@ -152,7 +152,8 @@ async function measureRoute(
   const serverRequests = await readServerTrace();
   const browserMetrics = await page.evaluate(() => {
     const navigation = performance.getEntriesByType("navigation")[0] as
-      PerformanceNavigationTiming | undefined;
+      | PerformanceNavigationTiming
+      | undefined;
     const resources = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
     const js = resources.filter((entry) => entry.initiatorType === "script");
     const nextData = resources.filter(
@@ -239,8 +240,9 @@ async function observeSidebarPrefetch(page: Page) {
     interaction: "hover+focus",
     observationMs: PREFETCH_OBSERVATION_MS,
     requests: observedRequests,
-    rscRequestCount: observedRequests.filter((request) => new URL(request.url).searchParams.has("_rsc"))
-      .length,
+    rscRequestCount: observedRequests.filter((request) =>
+      new URL(request.url).searchParams.has("_rsc"),
+    ).length,
   };
 }
 
@@ -255,9 +257,8 @@ test.describe("PERF-01 authenticated production-build baseline", () => {
       for (const run of runs) samples.push(await measureRoute(page, route, run));
     }
 
-    const prefetchObservation = testInfo.project.name === "desktop-chromium"
-      ? await observeSidebarPrefetch(page)
-      : null;
+    const prefetchObservation =
+      testInfo.project.name === "desktop-chromium" ? await observeSidebarPrefetch(page) : null;
 
     const report = {
       schemaVersion: 2,
