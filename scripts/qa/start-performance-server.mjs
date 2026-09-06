@@ -1,4 +1,6 @@
 import { spawn } from "node:child_process";
+import { cp, mkdir } from "node:fs/promises";
+import path from "node:path";
 
 import { startQaMockServices } from "./mock-services.mjs";
 import { startQaWorkforceAuth } from "./mock-workforce-auth.mjs";
@@ -6,23 +8,29 @@ import { startQaWorkforceAuth } from "./mock-workforce-auth.mjs";
 const { server: mockServer, origin: canonicalOrigin } = await startQaMockServices();
 const { server: workforceAuthServer, origin: workforceAuthOrigin } = await startQaWorkforceAuth();
 
-const child = spawn(
-  process.platform === "win32" ? "npm.cmd" : "npm",
-  ["run", "start", "--", "--hostname", "127.0.0.1", "--port", "3100"],
-  {
-    stdio: "inherit",
-    env: {
-      ...process.env,
-      NODE_ENV: "production",
-      NEXT_PUBLIC_SUPABASE_URL: canonicalOrigin,
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "qa_publishable_key_only",
-      NEXT_PUBLIC_ADMIN_API_URL: canonicalOrigin,
-      NEXT_PUBLIC_ADMIN_AUTH_URL: `${workforceAuthOrigin}/functions/v1/lifemate-admin-auth`,
-      NEXT_PUBLIC_PWA_TEST: "1",
-      LIFEMATE_PERFORMANCE_FIXTURE: "synthetic",
-    },
+const standaloneRoot = path.resolve(".next/standalone");
+await mkdir(path.join(standaloneRoot, ".next"), { recursive: true });
+await cp(path.resolve(".next/static"), path.join(standaloneRoot, ".next/static"), {
+  recursive: true,
+});
+await cp(path.resolve("public"), path.join(standaloneRoot, "public"), { recursive: true });
+
+const child = spawn(process.execPath, [path.join(standaloneRoot, "server.js")], {
+  stdio: "inherit",
+  cwd: standaloneRoot,
+  env: {
+    ...process.env,
+    NODE_ENV: "production",
+    HOSTNAME: "127.0.0.1",
+    PORT: "3100",
+    NEXT_PUBLIC_SUPABASE_URL: canonicalOrigin,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "qa_publishable_key_only",
+    NEXT_PUBLIC_ADMIN_API_URL: canonicalOrigin,
+    NEXT_PUBLIC_ADMIN_AUTH_URL: `${workforceAuthOrigin}/functions/v1/lifemate-admin-auth`,
+    NEXT_PUBLIC_PWA_TEST: "1",
+    LIFEMATE_PERFORMANCE_FIXTURE: "synthetic",
   },
-);
+});
 
 let shuttingDown = false;
 async function closeServer(server) {
