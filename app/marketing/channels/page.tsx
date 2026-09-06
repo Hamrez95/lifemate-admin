@@ -116,7 +116,9 @@ function ChannelCard({ channel, canControl }: { channel: MarketingChannel; canCo
         <div>
           <h3>{channel.displayName}</h3>
           <code>{channel.providerCode}</code>
-          {channel.providerIdentity ? <p className={styles.readOnlyNote}>{channel.providerIdentity}</p> : null}
+          {channel.providerIdentity ? (
+            <p className={styles.readOnlyNote}>{channel.providerIdentity}</p>
+          ) : null}
         </div>
         <span className={styles.stateBadge}>{setupLabels[channel.setupStatus]}</span>
       </div>
@@ -241,9 +243,10 @@ export default async function MarketingChannelsPage({ searchParams }: ChannelPag
               <p className={styles.eyebrow}>Secure channel boundary</p>
               <h2>قبل از Publish، اول باید بدانیم واقعاً چه چیزی آماده است.</h2>
               <p>
-                این صفحه وضعیت operational، وجود Credential و فقط health/capability evidence نرمال‌شده‌ای
-                را نشان می‌دهد که سرور واقعاً گزارش کرده باشد. مقدار Credential، OAuth token و raw provider
-                payload هرگز به مرورگر فرستاده نمی‌شود و «Credential موجود» مساوی «Connected» نیست.
+                این صفحه وضعیت operational، وجود Credential و فقط health/capability evidence
+                نرمال‌شده‌ای را نشان می‌دهد که سرور واقعاً گزارش کرده باشد. مقدار Credential، OAuth
+                token و raw provider payload هرگز به مرورگر فرستاده نمی‌شود و «Credential موجود»
+                مساوی «Connected» نیست.
               </p>
             </div>
             <div className={styles.heroActions}>
