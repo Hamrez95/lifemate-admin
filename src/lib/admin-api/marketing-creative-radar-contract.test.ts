@@ -72,9 +72,7 @@ describe("Creative Radar contract", () => {
     expect(parsed.kind).toBe("valid");
     if (parsed.kind !== "valid") return;
     expect(parsed.data.sourceUrl).toBe("https://instagram.com/reel/abc");
-    expect(parsed.data.normalizedSourceIdentity).toBe(
-      "public-url:https://instagram.com/reel/abc",
-    );
+    expect(parsed.data.normalizedSourceIdentity).toBe("public-url:https://instagram.com/reel/abc");
     expect(parsed.data.title).toBe("Interesting couple scenario");
     expect(parsed.data.tags).toEqual(["Couple", "Launch"]);
     expect(parsed.data.referenceAssets).toEqual([
@@ -118,7 +116,8 @@ describe("Creative Radar contract", () => {
       ctaStyle: "save for later",
       productionEffort: "low",
       riskFlags: ["health_claim"],
-      lifeMateRelevance: "Useful as a planning education format without diagnosing or promising outcomes.",
+      lifeMateRelevance:
+        "Useful as a planning education format without diagnosing or promising outcomes.",
       originalLifeMateAdaptations: [
         "Use a medication-planning scenario with generic fictional data.",
         "Use a caregiver coordination scenario with no real user information.",
