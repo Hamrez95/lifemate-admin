@@ -12,6 +12,7 @@ export {
 } from "./Primitives";
 export { AppearanceBootstrap, AppearanceProvider, useAppearance } from "./AppearanceProvider";
 export { DataTable } from "./DataTable";
+export { DirectionBootstrap, DirectionProvider, useDirection } from "./DirectionProvider";
 export { EmptyState } from "./EmptyState";
 export { ErrorState } from "./ErrorState";
 export { ForbiddenState } from "./ForbiddenState";
