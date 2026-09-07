@@ -1,14 +1,20 @@
 export { AppShell } from "./AppShell";
 export {
   Button,
+  FilterBar,
   FormField,
   IconButton,
   Input,
   Select,
+  Page,
+  Section,
+  SplitPane,
   StatusBadge,
   Surface,
   Tabs,
   Textarea,
+  Toolbar,
+  Workspace,
 } from "./Primitives";
 export { AppearanceBootstrap, AppearanceProvider, useAppearance } from "./AppearanceProvider";
 export { DataTable } from "./DataTable";
