@@ -49,15 +49,15 @@
 }
 
 .freshness[data-status="fresh"] {
-  border-color: #cdebdc;
+  border-color: color-mix(in srgb, var(--lm-green) 30%, var(--lm-border));
   background: var(--lm-green-soft);
   color: var(--lm-green-deep);
 }
 
 .freshness[data-status="stale"] {
-  border-color: #f2d7ba;
+  border-color: color-mix(in srgb, var(--lm-orange) 30%, var(--lm-border));
   background: var(--lm-orange-soft);
-  color: #8a511d;
+  color: var(--lm-orange);
 }
 
 .filterBar {
@@ -101,7 +101,7 @@
 .primaryButton {
   border: 1px solid var(--lm-green);
   background: var(--lm-green);
-  color: #fff;
+  color: var(--lm-text-inverse);
   cursor: pointer;
 }
 
@@ -177,18 +177,18 @@
 }
 
 .statePanel[data-state="success"] {
-  border-color: #cdebdc;
+  border-color: color-mix(in srgb, var(--lm-green) 30%, var(--lm-border));
   background: var(--lm-green-soft);
 }
 
 .statePanel[data-state="error"],
 .statePanel[data-state="forbidden"] {
-  border-color: rgba(234, 81, 87, 0.32);
-  background: #fff5f5;
+  border-color: color-mix(in srgb, var(--lm-danger) 34%, var(--lm-border));
+  background: color-mix(in srgb, var(--lm-danger) 8%, var(--lm-surface-raised));
 }
 
 .statePanel[data-state="stale"] {
-  border-color: #f2d7ba;
+  border-color: color-mix(in srgb, var(--lm-orange) 30%, var(--lm-border));
   background: var(--lm-orange-soft);
 }
 
@@ -232,7 +232,7 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  background: #f7f8f5;
+  background: var(--lm-surface-soft);
   color: var(--lm-text-muted);
   font-size: 0.75rem;
   font-weight: 700;
@@ -259,7 +259,7 @@
 }
 
 .table tbody tr:hover {
-  background: rgba(23, 173, 104, 0.035);
+  background: color-mix(in srgb, var(--lm-green) 5%, var(--lm-surface-raised));
 }
 
 .sortLink {
