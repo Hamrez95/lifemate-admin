@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-
 export const marketingAspectFamilies = ["square_1_1", "portrait_4_5", "vertical_9_16"] as const;
 export const marketingDirectionModes = ["auto", "rtl", "ltr"] as const;
 export const marketingTemplateStates = ["current", "deprecated"] as const;
@@ -99,7 +97,7 @@ export type MarketingRenderRequest = {
 };
 
 export type MarketingRenderValidation =
-  | { kind: "valid"; fingerprint: string }
+  | { kind: "valid" }
   | {
       kind: "invalid";
       code:
@@ -114,7 +112,7 @@ export type MarketingRenderValidation =
         | "invalid_identifier"
         | "missing_font";
     }
-  | { kind: "needs_review"; code: "text_overflow"; fingerprint: string };
+  | { kind: "needs_review"; code: "text_overflow" };
 
 export type MarketingRenderJob = {
   jobId: string;
@@ -177,8 +175,8 @@ function stableStringify(value: unknown): string {
     .join(",")}}`;
 }
 
-export function buildMarketingRenderFingerprint(request: MarketingRenderRequest): string {
-  const canonical = stableStringify({
+export function buildMarketingRenderCanonicalPayload(request: MarketingRenderRequest): string {
+  return stableStringify({
     templateId: request.templateId,
     templateVersion: request.templateVersion,
     brandKitVersion: request.brandKitVersion,
@@ -187,7 +185,6 @@ export function buildMarketingRenderFingerprint(request: MarketingRenderRequest)
     inputs: request.inputs,
     outputScale: request.outputScale,
   });
-  return createHash("sha256").update(canonical, "utf8").digest("hex");
 }
 
 export function parseMarketingBrandKit(value: unknown): MarketingBrandKit | null {
@@ -311,7 +308,10 @@ export function parseMarketingCreativeTemplate(value: unknown): MarketingCreativ
     return null;
   }
   if (value.overflowPolicy !== "block" && value.overflowPolicy !== "needs_review") return null;
-  if (value.arbitraryRemoteFetchAllowed !== false || value.arbitraryExecutableTemplateAllowed !== false) {
+  if (
+    value.arbitraryRemoteFetchAllowed !== false ||
+    value.arbitraryExecutableTemplateAllowed !== false
+  ) {
     return null;
   }
   if (!Array.isArray(value.slots) || value.slots.length === 0 || value.slots.length > 32) return null;
@@ -387,9 +387,8 @@ export function validateMarketingRenderRequest(
     if (value.kind === "text") {
       const maxCharacters = slot.maxCharacters ?? MAX_SHORT_TEXT;
       if (value.value.length > maxCharacters) {
-        const fingerprint = buildMarketingRenderFingerprint(request);
         return template.overflowPolicy === "needs_review"
-          ? { kind: "needs_review", code: "text_overflow", fingerprint }
+          ? { kind: "needs_review", code: "text_overflow" }
           : { kind: "invalid", code: "text_overflow" };
       }
     }
@@ -412,7 +411,7 @@ export function validateMarketingRenderRequest(
     return { kind: "invalid", code: "missing_font" };
   }
 
-  return { kind: "valid", fingerprint: buildMarketingRenderFingerprint(request) };
+  return { kind: "valid" };
 }
 
 export function parseMarketingRenderJob(value: unknown): MarketingRenderJob | null {
@@ -450,17 +449,26 @@ export function parseMarketingRenderJob(value: unknown): MarketingRenderJob | nu
   ) {
     return null;
   }
-  if (value.outputAssetId !== null && (typeof value.outputAssetId !== "string" || !UUID_PATTERN.test(value.outputAssetId))) {
+  if (
+    value.outputAssetId !== null &&
+    (typeof value.outputAssetId !== "string" || !UUID_PATTERN.test(value.outputAssetId))
+  ) {
     return null;
   }
   if (
     value.outputChecksumSha256 !== null &&
-    (typeof value.outputChecksumSha256 !== "string" || !SHA256_PATTERN.test(value.outputChecksumSha256))
+    (typeof value.outputChecksumSha256 !== "string" ||
+      !SHA256_PATTERN.test(value.outputChecksumSha256))
   ) {
     return null;
   }
   if (value.failureCode !== null && !boundedText(value.failureCode, 120)) return null;
-  if (value.status === "ready" && (value.outputAssetId === null || value.outputChecksumSha256 === null)) return null;
+  if (
+    value.status === "ready" &&
+    (value.outputAssetId === null || value.outputChecksumSha256 === null)
+  ) {
+    return null;
+  }
   if (value.status !== "ready" && value.outputChecksumSha256 !== null) return null;
 
   return value as MarketingRenderJob;
@@ -483,12 +491,28 @@ export function parseMarketingInteractiveCreativeSpec(
   if (value.kind === "quiz" || value.kind === "this_or_that") {
     if (value.options.length < 2) return null;
   }
-  if (value.kind === "puzzle" || value.kind === "hidden_object" || value.kind === "spot_difference") {
+  if (
+    value.kind === "puzzle" ||
+    value.kind === "hidden_object" ||
+    value.kind === "spot_difference"
+  ) {
     if (value.answer === null && value.answerAssetId === null) return null;
   }
   if (value.answer !== null && !boundedText(value.answer, MAX_SHORT_TEXT)) return null;
-  if (value.answerAssetId !== null && (typeof value.answerAssetId !== "string" || !UUID_PATTERN.test(value.answerAssetId))) return null;
-  if (value.difficulty !== null && value.difficulty !== "easy" && value.difficulty !== "medium" && value.difficulty !== "hard") return null;
+  if (
+    value.answerAssetId !== null &&
+    (typeof value.answerAssetId !== "string" || !UUID_PATTERN.test(value.answerAssetId))
+  ) {
+    return null;
+  }
+  if (
+    value.difficulty !== null &&
+    value.difficulty !== "easy" &&
+    value.difficulty !== "medium" &&
+    value.difficulty !== "hard"
+  ) {
+    return null;
+  }
   if (
     value.timerPromptSeconds !== null &&
     (!Number.isInteger(value.timerPromptSeconds) ||
