@@ -286,7 +286,8 @@ export function parseMarketingCreativeTemplate(value: unknown): MarketingCreativ
   if (!isRecord(value)) return null;
   if (!boundedText(value.templateId, 96) || !CODE_PATTERN.test(value.templateId)) return null;
   if (!Number.isInteger(value.version) || Number(value.version) < 1) return null;
-  if (!boundedText(value.brandKitVersion, 80) || !VERSION_PATTERN.test(value.brandKitVersion)) return null;
+  if (!boundedText(value.brandKitVersion, 80) || !VERSION_PATTERN.test(value.brandKitVersion))
+    return null;
   if (!boundedText(value.productScope, 96) || !CODE_PATTERN.test(value.productScope)) return null;
   if (!boundedText(value.formatCode, 96) || !CODE_PATTERN.test(value.formatCode)) return null;
   if (!boundedText(value.rendererCode, 96) || !CODE_PATTERN.test(value.rendererCode)) return null;
@@ -301,10 +302,7 @@ export function parseMarketingCreativeTemplate(value: unknown): MarketingCreativ
   ) {
     return null;
   }
-  if (
-    value.fontFallbackPolicy !== "block" &&
-    value.fontFallbackPolicy !== "approved_fallback"
-  ) {
+  if (value.fontFallbackPolicy !== "block" && value.fontFallbackPolicy !== "approved_fallback") {
     return null;
   }
   if (value.overflowPolicy !== "block" && value.overflowPolicy !== "needs_review") return null;
@@ -314,7 +312,8 @@ export function parseMarketingCreativeTemplate(value: unknown): MarketingCreativ
   ) {
     return null;
   }
-  if (!Array.isArray(value.slots) || value.slots.length === 0 || value.slots.length > 32) return null;
+  if (!Array.isArray(value.slots) || value.slots.length === 0 || value.slots.length > 32)
+    return null;
   const slots = value.slots.map(parseTemplateSlot);
   if (slots.some((slot) => slot === null)) return null;
   const concreteSlots = slots as MarketingTemplateSlot[];
@@ -528,8 +527,7 @@ export function parseMarketingInteractiveCreativeSpec(
     answer: value.answer === null ? null : String(value.answer).trim(),
     answerAssetId: value.answerAssetId as string | null,
     difficulty: value.difficulty as MarketingInteractiveCreativeSpec["difficulty"],
-    timerPromptSeconds:
-      value.timerPromptSeconds === null ? null : Number(value.timerPromptSeconds),
+    timerPromptSeconds: value.timerPromptSeconds === null ? null : Number(value.timerPromptSeconds),
   };
 }
 
