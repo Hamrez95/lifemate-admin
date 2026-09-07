@@ -11,12 +11,12 @@
   align-items: center;
   gap: 24px;
   overflow: hidden;
-  border: 1px solid rgba(23, 173, 104, 0.14);
+  border: 1px solid color-mix(in srgb, var(--lm-green) 20%, var(--lm-border));
   border-radius: 26px;
   background:
-    radial-gradient(circle at 8% 12%, rgba(118, 87, 232, 0.08), transparent 28%),
-    linear-gradient(135deg, #fffdfa, #f3faf7 55%, #fff7ee);
-  box-shadow: 0 12px 30px rgba(34, 48, 68, 0.05);
+    radial-gradient(circle at 8% 12%, color-mix(in srgb, var(--lm-violet) 10%, transparent), transparent 28%),
+    linear-gradient(135deg, var(--lm-surface-raised), var(--lm-green-soft) 55%, var(--lm-orange-soft));
+  box-shadow: var(--lm-shadow);
   padding: 24px 26px;
 }
 
@@ -80,7 +80,7 @@
   align-items: center;
   border: 1px solid var(--lm-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.82);
+  background: color-mix(in srgb, var(--lm-surface-raised) 88%, transparent);
   color: var(--lm-text-muted);
   padding: 5px 10px;
   font-size: 9px;
@@ -170,7 +170,7 @@
 }
 
 .support-queue__product {
-  border: 1px solid rgba(52, 120, 246, 0.14);
+  border: 1px solid color-mix(in srgb, var(--lm-blue) 20%, var(--lm-border));
   background: var(--lm-blue-soft);
   color: var(--lm-blue);
 }
@@ -178,63 +178,63 @@
 .support-queue__priority {
   border: 1px solid var(--lm-border);
   background: var(--lm-surface-soft);
-  color: #657080;
+  color: var(--lm-text-secondary);
 }
 
 .support-queue__priority[data-priority="Urgent"] {
-  border-color: rgba(203, 57, 66, 0.2);
-  background: #fff0f1;
-  color: #a42d36;
+  border-color: color-mix(in srgb, var(--lm-danger) 28%, var(--lm-border));
+  background: color-mix(in srgb, var(--lm-danger) 14%, var(--lm-surface-raised));
+  color: var(--lm-danger);
 }
 
 .support-queue__priority[data-priority="High"] {
-  border-color: rgba(238, 139, 49, 0.22);
+  border-color: color-mix(in srgb, var(--lm-orange) 30%, var(--lm-border));
   background: var(--lm-orange-soft);
-  color: #8c531d;
+  color: var(--lm-orange);
 }
 
 .support-queue__priority[data-priority="Normal"] {
-  border-color: rgba(52, 120, 246, 0.15);
+  border-color: color-mix(in srgb, var(--lm-blue) 22%, var(--lm-border));
   background: var(--lm-blue-soft);
-  color: #2d65b8;
+  color: var(--lm-blue);
 }
 
 .support-queue__priority[data-priority="Low"] {
-  border-color: rgba(23, 173, 104, 0.14);
+  border-color: color-mix(in srgb, var(--lm-green) 20%, var(--lm-border));
   background: var(--lm-green-soft);
   color: var(--lm-green-deep);
 }
 
 .support-queue__status {
-  border: 1px solid rgba(118, 87, 232, 0.15);
+  border: 1px solid color-mix(in srgb, var(--lm-violet) 22%, var(--lm-border));
   background: var(--lm-violet-soft);
   color: var(--lm-violet);
 }
 
 .support-queue__status[data-status="Resolved"],
 .support-queue__status[data-status="Closed"] {
-  border-color: rgba(23, 173, 104, 0.15);
+  border-color: color-mix(in srgb, var(--lm-green) 22%, var(--lm-border));
   background: var(--lm-green-soft);
   color: var(--lm-green-deep);
 }
 
 .support-queue__sla-label {
   gap: 6px;
-  border: 1px solid rgba(23, 173, 104, 0.14);
+  border: 1px solid color-mix(in srgb, var(--lm-green) 20%, var(--lm-border));
   background: var(--lm-green-soft);
   color: var(--lm-green-deep);
 }
 
 .support-queue__sla[data-sla="DueSoon"] .support-queue__sla-label {
-  border-color: rgba(238, 139, 49, 0.2);
+  border-color: color-mix(in srgb, var(--lm-orange) 28%, var(--lm-border));
   background: var(--lm-orange-soft);
-  color: #8b531e;
+  color: var(--lm-orange);
 }
 
 .support-queue__sla[data-sla="Breached"] .support-queue__sla-label {
-  border-color: rgba(203, 57, 66, 0.2);
-  background: #fff0f1;
-  color: #a42d36;
+  border-color: color-mix(in srgb, var(--lm-danger) 28%, var(--lm-border));
+  background: color-mix(in srgb, var(--lm-danger) 14%, var(--lm-surface-raised));
+  color: var(--lm-danger);
 }
 
 .support-queue__sla[data-sla="Completed"] .support-queue__sla-label {
@@ -256,7 +256,7 @@
   min-height: 36px;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(23, 173, 104, 0.18);
+  border: 1px solid color-mix(in srgb, var(--lm-green) 24%, var(--lm-border));
   border-radius: 11px;
   background: var(--lm-green-soft);
   color: var(--lm-green-deep);
@@ -267,7 +267,7 @@
 }
 
 .support-queue__detail-link:focus-visible {
-  outline: 3px solid rgba(52, 120, 246, 0.24);
+  outline: 3px solid var(--lm-focus);
   outline-offset: 2px;
 }
 
