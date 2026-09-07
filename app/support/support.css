@@ -14,8 +14,17 @@
   border: 1px solid color-mix(in srgb, var(--lm-green) 20%, var(--lm-border));
   border-radius: 26px;
   background:
-    radial-gradient(circle at 8% 12%, color-mix(in srgb, var(--lm-violet) 10%, transparent), transparent 28%),
-    linear-gradient(135deg, var(--lm-surface-raised), var(--lm-green-soft) 55%, var(--lm-orange-soft));
+    radial-gradient(
+      circle at 8% 12%,
+      color-mix(in srgb, var(--lm-violet) 10%, transparent),
+      transparent 28%
+    ),
+    linear-gradient(
+      135deg,
+      var(--lm-surface-raised),
+      var(--lm-green-soft) 55%,
+      var(--lm-orange-soft)
+    );
   box-shadow: var(--lm-shadow);
   padding: 24px 26px;
 }
