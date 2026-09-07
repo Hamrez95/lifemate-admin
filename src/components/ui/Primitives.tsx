@@ -31,6 +31,92 @@ export function Surface({
   );
 }
 
+export function Page({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <div className={`${styles.page} ${className}`}>{children}</div>;
+}
+
+export function Workspace({
+  children,
+  className = "",
+  labelledBy,
+}: {
+  children: ReactNode;
+  className?: string;
+  labelledBy?: string;
+}) {
+  return (
+    <section className={`${styles.workspace} ${className}`} aria-labelledby={labelledBy}>
+      {children}
+    </section>
+  );
+}
+
+export function Section({
+  children,
+  className = "",
+  title,
+  description,
+  actions,
+}: {
+  children: ReactNode;
+  className?: string;
+  title?: string;
+  description?: string;
+  actions?: ReactNode;
+}) {
+  return (
+    <section className={`${styles.section} ${className}`}>
+      {title ? (
+        <header className={styles.sectionHeader}>
+          <div>
+            <h2>{title}</h2>
+            {description ? <p>{description}</p> : null}
+          </div>
+          {actions ? <div className={styles.sectionActions}>{actions}</div> : null}
+        </header>
+      ) : null}
+      {children}
+    </section>
+  );
+}
+
+export function Toolbar({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <div className={`${styles.toolbar} ${className}`}>{children}</div>;
+}
+
+export function FilterBar({
+  children,
+  action,
+  className = "",
+}: {
+  children: ReactNode;
+  action: string;
+  className?: string;
+}) {
+  return (
+    <form className={`${styles.filterBar} ${className}`} action={action} method="get" role="search">
+      {children}
+    </form>
+  );
+}
+
+export function SplitPane({
+  primary,
+  secondary,
+  className = "",
+}: {
+  primary: ReactNode;
+  secondary: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`${styles.splitPane} ${className}`}>
+      <div>{primary}</div>
+      <aside>{secondary}</aside>
+    </div>
+  );
+}
+
 export function Button({
   children,
   variant = "secondary",

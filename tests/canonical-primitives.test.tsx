@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { FormField, Input, StatusBadge, Tabs } from "../src/components/ui";
+import { FilterBar, FormField, Input, SplitPane, StatusBadge, Tabs } from "../src/components/ui";
 
 describe("canonical UX v2 primitives", () => {
   it("connects a form control to its label and truthful validation copy", () => {
@@ -27,5 +27,21 @@ describe("canonical UX v2 primitives", () => {
 
     expect(html).toContain('aria-current="page"');
     expect(html).toContain('data-tone="warning"');
+  });
+
+  it("provides shared filter and responsive split-workspace composition", () => {
+    const html = renderToStaticMarkup(
+      <>
+        <FilterBar action="/users">
+          <Input name="q" aria-label="جست‌وجو" />
+        </FilterBar>
+        <SplitPane primary={<p>فهرست</p>} secondary={<p>جزئیات</p>} />
+      </>,
+    );
+
+    expect(html).toContain('method="get"');
+    expect(html).toContain('role="search"');
+    expect(html).toContain("فهرست");
+    expect(html).toContain("جزئیات");
   });
 });

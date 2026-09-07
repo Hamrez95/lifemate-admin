@@ -8,6 +8,66 @@
 .surface[data-density="compact"] {
   padding: var(--lm-space-4);
 }
+.page {
+  display: grid;
+  gap: var(--lm-space-6);
+  min-width: 0;
+}
+.workspace,
+.section {
+  display: grid;
+  gap: var(--lm-space-4);
+  min-width: 0;
+}
+.sectionHeader,
+.toolbar,
+.filterBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lm-space-3);
+}
+.sectionHeader h2,
+.sectionHeader p {
+  margin: 0;
+}
+.sectionHeader h2 {
+  color: var(--lm-text);
+  font-size: 16px;
+  letter-spacing: -0.02em;
+}
+.sectionHeader p {
+  margin-top: 3px;
+  color: var(--lm-text-muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+.sectionActions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: var(--lm-space-2);
+}
+.toolbar,
+.filterBar {
+  flex-wrap: wrap;
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-md);
+  background: var(--lm-surface);
+  padding: var(--lm-space-3);
+}
+.filterBar {
+  justify-content: flex-start;
+}
+.splitPane {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.42fr);
+  gap: var(--lm-space-4);
+  min-width: 0;
+}
+.splitPane > * {
+  min-width: 0;
+}
 .button {
   display: inline-flex;
   min-height: 40px;
@@ -161,4 +221,12 @@
 .statusBadge[data-tone="danger"] {
   background: var(--lm-danger);
   color: var(--lm-text-inverse);
+}
+@media (max-width: 768px) {
+  .sectionHeader {
+    align-items: flex-start;
+  }
+  .splitPane {
+    grid-template-columns: 1fr;
+  }
 }
