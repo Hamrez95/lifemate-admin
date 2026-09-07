@@ -9,18 +9,26 @@
 .panel,
 .card,
 .banner {
-  border: 1px solid var(--line, #e8e2d8);
+  border: 1px solid var(--lm-border);
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 12px 34px rgba(65, 54, 44, 0.06);
+  background: var(--lm-surface-raised);
+  box-shadow: var(--lm-shadow);
 }
 
 .hero {
   padding: 1.25rem 1.4rem;
   background:
-    radial-gradient(circle at 12% 18%, rgba(116, 214, 178, 0.16), transparent 30%),
-    radial-gradient(circle at 84% 24%, rgba(149, 169, 235, 0.14), transparent 34%),
-    rgba(255, 255, 255, 0.96);
+    radial-gradient(
+      circle at 12% 18%,
+      color-mix(in srgb, var(--lm-green) 16%, transparent),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 84% 24%,
+      color-mix(in srgb, var(--lm-blue) 14%, transparent),
+      transparent 34%
+    ),
+    var(--lm-surface-raised);
 }
 
 .hero h2,
@@ -35,7 +43,7 @@
 .banner p,
 .helper {
   margin: 0;
-  color: #6e6861;
+  color: var(--lm-text-muted);
   line-height: 1.85;
   overflow-wrap: anywhere;
 }
@@ -61,15 +69,15 @@
 }
 
 .actions a {
-  border: 1px solid #d9d2c7;
-  background: #faf7f1;
-  color: #4f4942;
+  border: 1px solid var(--lm-border);
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-secondary);
 }
 
 .actions button {
-  border: 1px solid #d8d2ca;
-  background: #f2efea;
-  color: #8b857e;
+  border: 1px solid var(--lm-border);
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
   cursor: not-allowed;
 }
 
@@ -78,8 +86,8 @@
   align-items: flex-start;
   gap: 0.8rem;
   padding: 1rem 1.1rem;
-  background: #fffaf0;
-  border-color: #f1dfb3;
+  background: var(--lm-orange-soft);
+  border-color: var(--lm-orange);
 }
 
 .bannerIcon {
@@ -89,8 +97,8 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: #ffe9b8;
-  color: #805f15;
+  background: var(--lm-surface-raised);
+  color: var(--lm-orange);
   font-weight: 900;
 }
 
@@ -127,9 +135,9 @@
   min-height: 28px;
   padding: 0.2rem 0.58rem;
   border-radius: 999px;
-  border: 1px solid #ded7cc;
-  background: #faf7f1;
-  color: #6d665f;
+  border: 1px solid var(--lm-border);
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
   font-size: 0.74rem;
   font-weight: 800;
   white-space: nowrap;
@@ -147,7 +155,7 @@
 .row {
   padding: 0.75rem 0.8rem;
   border-radius: 14px;
-  background: #fbfaf7;
+  background: var(--lm-surface-soft);
 }
 
 .list strong,
@@ -167,9 +175,9 @@
   min-width: 0;
   padding: 0.85rem;
   border-radius: 14px;
-  border: 1px solid #e6e0d7;
-  background: #fbfaf7;
-  color: #3f5f50;
+  border: 1px solid var(--lm-border);
+  background: var(--lm-surface-soft);
+  color: var(--lm-green-deep);
   text-decoration: none;
   font-weight: 800;
   overflow-wrap: anywhere;
@@ -184,9 +192,9 @@
 .settingsNav span {
   padding: 0.45rem 0.75rem;
   border-radius: 999px;
-  border: 1px solid #e1dad0;
-  background: #fff;
-  color: #655f58;
+  border: 1px solid var(--lm-border);
+  background: var(--lm-surface-raised);
+  color: var(--lm-text-secondary);
   font-size: 0.82rem;
   font-weight: 750;
 }
@@ -204,7 +212,7 @@
 }
 
 .field label {
-  color: #5f5952;
+  color: var(--lm-text-secondary);
   font-size: 0.78rem;
   font-weight: 800;
 }
@@ -214,10 +222,10 @@
 .field textarea {
   min-height: 42px;
   width: 100%;
-  border: 1px solid #ddd5ca;
+  border: 1px solid var(--lm-border);
   border-radius: 12px;
-  background: #fff;
-  color: #514b45;
+  background: var(--lm-surface-raised);
+  color: var(--lm-text);
   padding: 0.45rem 0.7rem;
   font: inherit;
 }
@@ -231,20 +239,20 @@
 .field select:disabled,
 .field textarea:disabled,
 .field input[readonly] {
-  background: #f7f4ef;
-  color: #807970;
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
 }
 
 .confirmation {
   margin-top: 0.9rem;
   padding: 0.85rem;
   border-radius: 14px;
-  border: 1px solid #f0c9c4;
-  background: #fff7f6;
+  border: 1px solid var(--lm-danger);
+  background: color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised));
 }
 
 .confirmation strong {
-  color: #8b3d35;
+  color: var(--lm-danger);
 }
 
 .saveState {
@@ -257,10 +265,10 @@
 
 .saveState button {
   min-height: 42px;
-  border: 1px solid #315e4a;
+  border: 1px solid var(--lm-green);
   border-radius: 12px;
-  background: #315e4a;
-  color: #fff;
+  background: var(--lm-green);
+  color: var(--lm-text-inverse);
   padding: 0.45rem 0.95rem;
   font: inherit;
   font-weight: 800;
@@ -268,14 +276,14 @@
 }
 
 .saveState button:disabled {
-  border-color: #d8d2ca;
-  background: #f2efea;
-  color: #8b857e;
+  border-color: var(--lm-border);
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
   cursor: not-allowed;
 }
 
 .saveState span {
-  color: #6e6861;
+  color: var(--lm-text-muted);
   font-size: 0.84rem;
 }
 
