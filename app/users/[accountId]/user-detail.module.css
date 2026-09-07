@@ -7,12 +7,25 @@
 .hero {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(23, 173, 104, 0.18);
+  border: 1px solid color-mix(in srgb, var(--lm-green) 22%, var(--lm-border));
   border-radius: 26px;
   background:
-    radial-gradient(circle at 12% 18%, rgba(118, 87, 232, 0.11), transparent 28%),
-    radial-gradient(circle at 88% 18%, rgba(238, 139, 49, 0.12), transparent 30%),
-    linear-gradient(135deg, var(--lm-surface-raised), #f3fcf7 58%, #fff8f1);
+    radial-gradient(
+      circle at 12% 18%,
+      color-mix(in srgb, var(--lm-violet) 12%, transparent),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 88% 18%,
+      color-mix(in srgb, var(--lm-orange) 13%, transparent),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      var(--lm-surface-raised),
+      var(--lm-green-soft) 58%,
+      var(--lm-orange-soft)
+    );
   box-shadow: var(--lm-shadow);
   padding: 26px;
 }
@@ -24,7 +37,7 @@
   width: 220px;
   height: 220px;
   border-radius: 50%;
-  background: rgba(52, 120, 246, 0.035);
+  background: color-mix(in srgb, var(--lm-blue) 5%, transparent);
   content: "";
   pointer-events: none;
 }
@@ -35,7 +48,7 @@
   bottom: -62px;
   width: 180px;
   height: 180px;
-  border: 24px solid rgba(23, 173, 104, 0.055);
+  border: 24px solid color-mix(in srgb, var(--lm-green) 7%, transparent);
   border-radius: 50%;
   content: "";
   pointer-events: none;
@@ -67,7 +80,7 @@
 .eyebrow {
   width: max-content;
   border-radius: 999px;
-  background: linear-gradient(100deg, rgba(23, 173, 104, 0.11), rgba(52, 120, 246, 0.08));
+  background: linear-gradient(100deg, var(--lm-green-soft), var(--lm-blue-soft));
   color: var(--lm-green-deep);
   padding: 5px 9px;
   font-size: 10px;
@@ -102,7 +115,7 @@
 }
 
 .backLink {
-  background: rgba(23, 173, 104, 0.08);
+  background: color-mix(in srgb, var(--lm-green) 10%, transparent);
   color: var(--lm-green-deep);
   padding: 6px 10px;
 }
@@ -118,7 +131,7 @@
 }
 
 .backLink:hover {
-  background: rgba(23, 173, 104, 0.14);
+  background: color-mix(in srgb, var(--lm-green) 16%, transparent);
 }
 
 .inlineLink {
@@ -128,7 +141,7 @@
 }
 
 .inlineLink:hover {
-  background: rgba(52, 120, 246, 0.14);
+  background: color-mix(in srgb, var(--lm-blue) 16%, transparent);
 }
 
 .metaRow,
@@ -154,38 +167,38 @@
 }
 
 .badge {
-  border: 1px solid rgba(23, 173, 104, 0.2);
+  border: 1px solid color-mix(in srgb, var(--lm-green) 25%, var(--lm-border));
   background: var(--lm-green-soft);
   color: var(--lm-green-deep);
 }
 
 .badge[data-status="Disabled"],
 .badge[data-status="Suspended"] {
-  border-color: rgba(234, 81, 87, 0.2);
-  background: #fff0f1;
-  color: #a6353d;
+  border-color: color-mix(in srgb, var(--lm-danger) 25%, var(--lm-border));
+  background: color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised));
+  color: var(--lm-danger);
 }
 
 .badge[data-status="DeletionPending"],
 .badge[data-status="PastDue"] {
-  border-color: rgba(238, 139, 49, 0.24);
+  border-color: color-mix(in srgb, var(--lm-orange) 28%, var(--lm-border));
   background: var(--lm-orange-soft);
-  color: #8b531e;
+  color: var(--lm-orange);
 }
 
 .softBadge {
   border: 1px solid var(--lm-border);
-  background: rgba(255, 255, 255, 0.76);
-  color: #536174;
+  background: var(--lm-surface-raised);
+  color: var(--lm-text-secondary);
 }
 
 .notice {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(118, 87, 232, 0.17);
+  border: 1px solid color-mix(in srgb, var(--lm-violet) 22%, var(--lm-border));
   border-radius: 18px;
   background:
-    linear-gradient(100deg, rgba(241, 237, 255, 0.82), rgba(255, 253, 249, 0.92)), var(--lm-surface);
+    linear-gradient(100deg, var(--lm-violet-soft), var(--lm-surface-raised)), var(--lm-surface);
   padding: 15px 17px;
 }
 
@@ -201,7 +214,7 @@
 .notice strong {
   display: block;
   margin-bottom: 4px;
-  color: #4e3fa0;
+  color: var(--lm-violet);
   font-size: 12px;
 }
 
@@ -219,10 +232,10 @@
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 7px;
-  border: 1px solid rgba(229, 224, 215, 0.9);
+  border: 1px solid var(--lm-border);
   border-radius: 19px;
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 11px 30px rgba(34, 48, 68, 0.07);
+  background: color-mix(in srgb, var(--lm-surface-raised) 90%, transparent);
+  box-shadow: var(--lm-shadow);
   padding: 7px;
   backdrop-filter: blur(16px);
 }
