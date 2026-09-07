@@ -1,5 +1,15 @@
 export { AppShell } from "./AppShell";
-export { Button, FormField, Input, Surface } from "./Primitives";
+export {
+  Button,
+  FormField,
+  IconButton,
+  Input,
+  Select,
+  StatusBadge,
+  Surface,
+  Tabs,
+  Textarea,
+} from "./Primitives";
 export { AppearanceBootstrap, AppearanceProvider, useAppearance } from "./AppearanceProvider";
 export { DataTable } from "./DataTable";
 export { EmptyState } from "./EmptyState";
@@ -9,3 +19,4 @@ export { LoadingState } from "./LoadingState";
 export { MetricCard } from "./MetricCard";
 export { PageHeader } from "./PageHeader";
 export { SuccessState } from "./SuccessState";
+export { StateCard } from "./StateCard";
