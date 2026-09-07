@@ -5,6 +5,7 @@ import type {
   ExecutiveValueState,
   FounderOverviewData,
 } from "@/src/lib/admin-api/founder-overview";
+import { Page, StatusBadge } from "../ui/Primitives";
 
 import styles from "./FounderOverview.module.css";
 
@@ -47,6 +48,13 @@ function metricValue(value: number | null): string {
   return value === null ? "—" : numberFormat.format(value);
 }
 
+function stateTone(state: ExecutiveValueState): "success" | "warning" | "danger" | "neutral" {
+  if (state === "ready" || state === "empty") return "success";
+  if (state === "partial" || state === "not_instrumented") return "warning";
+  if (state === "unavailable") return "danger";
+  return "neutral";
+}
+
 function EmptyPanel({ title, detail }: { title: string; detail: string }) {
   return (
     <div className={styles.emptyPanel} role="status">
@@ -58,7 +66,7 @@ function EmptyPanel({ title, detail }: { title: string; detail: string }) {
 
 export function FounderOverview({ data }: { data: FounderOverviewData }) {
   return (
-    <div className={styles.dashboard}>
+    <Page className={styles.dashboard}>
       <section className={styles.hero} aria-labelledby="founder-pulse-title">
         <div className={styles.heroCopy}>
           <p className="eyebrow">Founder Command Center</p>
@@ -101,9 +109,9 @@ export function FounderOverview({ data }: { data: FounderOverviewData }) {
                 <article className={styles.metricCard} data-tone={metric.tone}>
                   <div className={styles.metricTopline}>
                     <span>{metric.label}</span>
-                    <span className={styles.stateBadge} data-state={metric.state}>
+                    <StatusBadge tone={stateTone(metric.state)}>
                       {stateLabel(metric.state)}
-                    </span>
+                    </StatusBadge>
                   </div>
                   <strong className={styles.metricValue}>{metricValue(metric.value)}</strong>
                   <p>{metric.note ?? metric.source}</p>
@@ -128,9 +136,9 @@ export function FounderOverview({ data }: { data: FounderOverviewData }) {
               <h2 id="priority-alerts-title">نیازمند توجه</h2>
             </div>
             {data.alerts ? (
-              <span className={styles.stateBadge} data-state={data.alerts.state}>
+              <StatusBadge tone={stateTone(data.alerts.state)}>
                 {stateLabel(data.alerts.state)}
-              </span>
+              </StatusBadge>
             ) : null}
           </div>
 
@@ -205,9 +213,9 @@ export function FounderOverview({ data }: { data: FounderOverviewData }) {
               <h2 id="activity-title">فعالیت‌های اخیر</h2>
             </div>
             {data.activity ? (
-              <span className={styles.stateBadge} data-state={data.activity.state}>
+              <StatusBadge tone={stateTone(data.activity.state)}>
                 {stateLabel(data.activity.state)}
-              </span>
+              </StatusBadge>
             ) : null}
           </div>
 
@@ -253,9 +261,9 @@ export function FounderOverview({ data }: { data: FounderOverviewData }) {
               <h2 id="products-title">وضعیت محصولات</h2>
             </div>
             {data.products ? (
-              <span className={styles.stateBadge} data-state={data.products.state}>
+              <StatusBadge tone={stateTone(data.products.state)}>
                 {stateLabel(data.products.state)}
-              </span>
+              </StatusBadge>
             ) : null}
           </div>
 
@@ -297,9 +305,9 @@ export function FounderOverview({ data }: { data: FounderOverviewData }) {
               <p className="eyebrow">Service status</p>
               <h2 id="services-title">وضعیت سرویس‌ها</h2>
             </div>
-            <span className={styles.stateBadge} data-state={data.services.state}>
+            <StatusBadge tone={stateTone(data.services.state)}>
               {stateLabel(data.services.state)}
-            </span>
+            </StatusBadge>
           </div>
           <EmptyPanel title="وضعیت سرویس‌ها فعلاً در دسترس نیست." detail={data.services.reason} />
         </section>
@@ -328,6 +336,6 @@ export function FounderOverview({ data }: { data: FounderOverviewData }) {
           />
         )}
       </section>
-    </div>
+    </Page>
   );
 }

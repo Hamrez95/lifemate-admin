@@ -28,7 +28,7 @@
   align-items: center;
   border: 1px solid var(--lm-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
+  background: color-mix(in srgb, var(--lm-surface-raised) 80%, transparent);
   color: var(--lm-text-muted);
   padding: 4px 9px;
   font-size: 9px;
@@ -49,18 +49,18 @@
   border: 1px solid var(--lm-border);
   border-radius: 18px;
   background: var(--lm-surface-raised);
-  box-shadow: 0 8px 22px rgba(34, 48, 68, 0.04);
+  box-shadow: var(--lm-shadow);
   padding: 15px;
 }
 
 .policyGrid article[data-tone="green"] {
-  border-color: rgba(23, 173, 104, 0.18);
-  background: linear-gradient(135deg, rgba(235, 251, 243, 0.92), var(--lm-surface-raised));
+  border-color: color-mix(in srgb, var(--lm-green) 24%, var(--lm-border));
+  background: linear-gradient(135deg, var(--lm-green-soft), var(--lm-surface-raised));
 }
 
 .policyGrid article[data-tone="blue"] {
-  border-color: rgba(52, 120, 246, 0.17);
-  background: linear-gradient(135deg, rgba(238, 246, 255, 0.94), var(--lm-surface-raised));
+  border-color: color-mix(in srgb, var(--lm-blue) 23%, var(--lm-border));
+  background: linear-gradient(135deg, var(--lm-blue-soft), var(--lm-surface-raised));
 }
 
 .policyGrid strong {
@@ -83,7 +83,7 @@
   height: 42px;
   place-items: center;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.8);
+  background: color-mix(in srgb, var(--lm-surface-raised) 88%, transparent);
   color: var(--lm-green-deep);
   font-size: 20px;
   font-weight: 900;
@@ -95,8 +95,8 @@
   gap: 6px;
   border: 1px solid var(--lm-border);
   border-radius: 17px;
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 8px 22px rgba(34, 48, 68, 0.04);
+  background: color-mix(in srgb, var(--lm-surface-raised) 94%, transparent);
+  box-shadow: var(--lm-shadow);
   padding: 6px;
 }
 
@@ -114,7 +114,7 @@
 
 .tabs a:hover,
 .tabs a:focus-visible {
-  border-color: rgba(52, 120, 246, 0.16);
+  border-color: color-mix(in srgb, var(--lm-blue) 22%, var(--lm-border));
   background: var(--lm-blue-soft);
   color: var(--lm-blue);
 }
@@ -125,10 +125,10 @@
 }
 
 .tabs a[data-active="true"] {
-  border-color: rgba(52, 120, 246, 0.2);
-  background: linear-gradient(135deg, var(--lm-blue-soft), rgba(255, 255, 255, 0.94));
+  border-color: color-mix(in srgb, var(--lm-blue) 28%, var(--lm-border));
+  background: linear-gradient(135deg, var(--lm-blue-soft), var(--lm-surface-raised));
   color: var(--lm-blue);
-  box-shadow: 0 6px 14px rgba(52, 120, 246, 0.08);
+  box-shadow: 0 6px 14px color-mix(in srgb, var(--lm-blue) 12%, transparent);
 }
 
 .workspaceGrid {
@@ -155,7 +155,7 @@
   border: 1px solid var(--lm-border);
   border-radius: 20px;
   background: linear-gradient(160deg, var(--lm-surface-raised), var(--lm-surface));
-  box-shadow: 0 9px 26px rgba(34, 48, 68, 0.045);
+  box-shadow: var(--lm-shadow);
   padding: 16px;
 }
 
@@ -204,7 +204,7 @@
 }
 
 .metricGrid > div[data-tone="orange"] strong {
-  color: #a45b14;
+  color: var(--lm-orange);
 }
 
 .metricGrid > div[data-tone="blue"] strong {
@@ -212,7 +212,7 @@
 }
 
 .metricGrid > div[data-tone="red"] strong {
-  color: #a33c43;
+  color: var(--lm-danger);
 }
 
 .summaryRow {
@@ -262,9 +262,9 @@
 }
 
 .failClosedBadge {
-  border-color: rgba(238, 139, 49, 0.2);
+  border-color: color-mix(in srgb, var(--lm-orange) 28%, var(--lm-border));
   background: var(--lm-orange-soft);
-  color: #8b531e;
+  color: var(--lm-orange);
 }
 
 .actionGrid {
@@ -313,8 +313,8 @@
   margin-top: auto;
   border: 1px solid var(--lm-border);
   border-radius: 10px;
-  background: #efefec;
-  color: #8a8d92;
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
   padding: 7px;
   font: inherit;
   font-size: 9px;
