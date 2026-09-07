@@ -11,16 +11,20 @@ export function ChangePasswordForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [messageTone, setMessageTone] = useState<"error" | "success" | null>(null);
 
   async function changePassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage(null);
+    setMessageTone(null);
     if (newPassword.length < 8) {
       setMessage("رمز عبور جدید باید حداقل ۸ کاراکتر باشد.");
+      setMessageTone("error");
       return;
     }
     if (newPassword !== confirmPassword) {
       setMessage("تکرار رمز عبور با رمز عبور جدید یکسان نیست.");
+      setMessageTone("error");
       return;
     }
 
@@ -35,8 +39,10 @@ export function ChangePasswordForm() {
       setNewPassword("");
       setConfirmPassword("");
       setMessage("رمز عبور با موفقیت تغییر کرد.");
+      setMessageTone("success");
     } catch {
       setMessage("تغییر رمز عبور انجام نشد. رمز فعلی را بررسی کنید و دوباره تلاش کنید.");
+      setMessageTone("error");
     } finally {
       setPending(false);
     }
@@ -92,8 +98,13 @@ export function ChangePasswordForm() {
           {pending ? "در حال تغییر..." : "تغییر رمز عبور"}
         </button>
       </form>
-      {message && (
-        <p className="profile-password-message" role="status" aria-live="polite">
+      {message && messageTone && (
+        <p
+          className="profile-password-message"
+          data-tone={messageTone}
+          role={messageTone === "error" ? "alert" : "status"}
+          aria-live={messageTone === "error" ? "assertive" : "polite"}
+        >
           {message}
         </p>
       )}

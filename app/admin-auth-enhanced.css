@@ -197,7 +197,7 @@
 }
 
 .profile-password-form label {
-  color: #354154;
+  color: var(--lm-text-secondary);
   font-size: 12px;
   font-weight: 700;
 }
@@ -206,12 +206,14 @@
   min-height: 48px;
   border: 1px solid var(--lm-border-strong);
   border-radius: 12px;
-  background: #fff;
+  background: var(--lm-surface-raised);
+  color: var(--lm-text);
   padding: 10px 13px;
 }
 
 .profile-password-message {
   margin: 2px 0 0;
+  border: 1px solid color-mix(in srgb, var(--lm-green) 24%, var(--lm-border));
   border-radius: 10px;
   background: var(--lm-green-soft);
   color: var(--lm-green-deep);
@@ -220,11 +222,17 @@
   line-height: 1.8;
 }
 
+.profile-password-message[data-tone="error"] {
+  border-color: color-mix(in srgb, var(--lm-danger) 28%, var(--lm-border));
+  background: color-mix(in srgb, var(--lm-danger) 12%, var(--lm-surface-raised));
+  color: var(--lm-danger);
+}
+
 .operator-chip__profile {
   min-height: 30px;
   border: 1px solid var(--lm-border);
   border-radius: 9px;
-  background: #fff;
+  background: var(--lm-surface-raised);
   color: var(--lm-text-muted);
   padding: 5px 8px;
   font-size: 9px;
