@@ -222,9 +222,11 @@ describe("Idea Engine contract", () => {
       kind: "invalid",
       code: "invalid_identifier",
     });
-    expect(parseMarketingCreativeIdea({ ...validIdea(), estimatedDurationSeconds: 9_999 })).toEqual({
-      kind: "invalid",
-      code: "invalid_duration",
-    });
+    expect(parseMarketingCreativeIdea({ ...validIdea(), estimatedDurationSeconds: 9_999 })).toEqual(
+      {
+        kind: "invalid",
+        code: "invalid_duration",
+      },
+    );
   });
 });
