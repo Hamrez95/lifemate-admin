@@ -383,10 +383,7 @@ export function parseMarketingScriptDraft(value: unknown): MarketingScriptParseR
   ) {
     return { kind: "invalid", code: "unsafe_generation_metadata" };
   }
-  if (
-    value.generationMode === "manual" &&
-    (value.provider !== null || value.model !== null)
-  ) {
+  if (value.generationMode === "manual" && (value.provider !== null || value.model !== null)) {
     return { kind: "invalid", code: "unsafe_generation_metadata" };
   }
   if (
@@ -462,7 +459,9 @@ export function scoreMarketingIdeaHeuristic(
 }
 
 function shootGroupKey(candidate: ShootPlanCandidate): string {
-  const actors = [...candidate.actors].map((actor) => actor.trim().toLocaleLowerCase("en-US")).sort();
+  const actors = [...candidate.actors]
+    .map((actor) => actor.trim().toLocaleLowerCase("en-US"))
+    .sort();
   const location = candidate.location?.trim().toLocaleLowerCase("en-US") ?? "none";
   const clothing = candidate.clothingContinuityKey?.trim().toLocaleLowerCase("en-US") ?? "none";
   return `${actors.join("+")}|${location}|${clothing}`;
