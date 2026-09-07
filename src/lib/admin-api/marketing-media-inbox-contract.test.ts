@@ -102,7 +102,9 @@ describe("Raw Media Inbox contract", () => {
   it("accepts only opaque marketing storage keys", () => {
     expect(isOpaqueMarketingMediaObjectKey(`marketing-media/${RAW_ID}/${RAW_ID}.mp4`)).toBe(true);
     expect(isOpaqueMarketingMediaObjectKey("marketing-media/hamid/video.mp4")).toBe(false);
-    expect(isOpaqueMarketingMediaObjectKey("health-records/user@example.com/video.mp4")).toBe(false);
+    expect(isOpaqueMarketingMediaObjectKey("health-records/user@example.com/video.mp4")).toBe(
+      false,
+    );
   });
 
   it("keeps raw assets immutable and requires derivatives to retain lineage", () => {
