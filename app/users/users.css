@@ -13,8 +13,16 @@
   border: 1px solid color-mix(in srgb, var(--lm-green) 20%, var(--lm-border));
   border-radius: 24px;
   background:
-    radial-gradient(circle at 12% 10%, rgba(52, 120, 246, 0.06), transparent 32%),
-    radial-gradient(circle at 90% 90%, rgba(23, 173, 104, 0.08), transparent 34%),
+    radial-gradient(
+      circle at 12% 10%,
+      color-mix(in srgb, var(--lm-blue) 8%, transparent),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 90% 90%,
+      color-mix(in srgb, var(--lm-green) 10%, transparent),
+      transparent 34%
+    ),
     var(--lm-surface-raised);
   box-shadow: var(--lm-shadow);
   padding: 22px;
@@ -87,7 +95,7 @@
   min-height: 30px;
   border: 1px solid var(--lm-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.78);
+  background: var(--lm-surface-raised);
   color: var(--lm-text-muted);
   padding: 4px 9px;
   font-size: 10px;
@@ -98,7 +106,7 @@
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  border: 1px solid rgba(52, 120, 246, 0.15);
+  border: 1px solid color-mix(in srgb, var(--lm-blue) 22%, var(--lm-border));
   border-radius: 16px;
   background: color-mix(in srgb, var(--lm-blue-soft) 60%, var(--lm-surface));
   padding: 12px 14px;
@@ -212,13 +220,13 @@
 }
 
 .user-directory__status[data-status="Disabled"] {
-  background: #fff1f1;
-  color: #a63d43;
+  background: color-mix(in srgb, var(--lm-danger) 11%, var(--lm-surface-raised));
+  color: var(--lm-danger);
 }
 
 .user-directory__status[data-status="DeletionPending"] {
   background: var(--lm-orange-soft);
-  color: #8a511d;
+  color: var(--lm-orange);
 }
 
 .user-directory__detail-link {
