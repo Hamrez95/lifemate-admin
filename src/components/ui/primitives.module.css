@@ -40,6 +40,20 @@
   cursor: not-allowed;
   opacity: 0.62;
 }
+.iconButton {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-sm);
+  background: var(--lm-surface-raised);
+  color: var(--lm-text);
+  cursor: pointer;
+}
+.iconButton:hover:not(:disabled) {
+  background: var(--lm-surface-soft);
+}
 .field {
   display: grid;
   gap: var(--lm-space-2);
@@ -64,8 +78,87 @@
   padding-inline: var(--lm-space-3);
   font: inherit;
 }
+.textarea,
+.select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-sm);
+  background: var(--lm-surface-raised);
+  color: var(--lm-text);
+  padding-block: var(--lm-space-2);
+  padding-inline: var(--lm-space-3);
+  font: inherit;
+}
+.textarea {
+  min-height: 104px;
+  resize: vertical;
+}
 .input:focus-visible,
-.button:focus-visible {
+.button:focus-visible,
+.iconButton:focus-visible,
+.textarea:focus-visible,
+.select:focus-visible,
+.tabs a:focus-visible {
   outline: none;
   box-shadow: var(--lm-focus);
+}
+.tabs {
+  display: flex;
+  width: max-content;
+  max-width: 100%;
+  gap: 2px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--lm-border);
+}
+.tabs a {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 2px solid transparent;
+  color: var(--lm-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  padding-block: 10px 8px;
+  padding-inline: 12px;
+  text-decoration: none;
+}
+.tabs a[aria-current="page"] {
+  border-color: var(--lm-green);
+  color: var(--lm-green-deep);
+}
+.tabs span {
+  border-radius: 999px;
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
+  font-size: 10px;
+  padding-inline: 6px;
+}
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  border-radius: 999px;
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-secondary);
+  font-size: 10px;
+  font-weight: 800;
+  padding-inline: 8px;
+}
+.statusBadge[data-tone="success"] {
+  background: var(--lm-green-soft);
+  color: var(--lm-green-deep);
+}
+.statusBadge[data-tone="info"] {
+  background: var(--lm-blue-soft);
+  color: var(--lm-blue);
+}
+.statusBadge[data-tone="warning"] {
+  background: var(--lm-orange-soft);
+  color: var(--lm-orange);
+}
+.statusBadge[data-tone="danger"] {
+  background: var(--lm-danger);
+  color: var(--lm-text-inverse);
 }

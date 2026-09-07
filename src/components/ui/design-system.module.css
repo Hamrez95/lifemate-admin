@@ -54,7 +54,7 @@
   border: 1px solid var(--lm-border);
   border-radius: 18px;
   background: var(--lm-surface-raised);
-  box-shadow: 0 10px 30px rgba(28, 45, 61, 0.055);
+  box-shadow: var(--lm-shadow);
 }
 
 .metricCard {
@@ -107,7 +107,7 @@
 }
 
 .table th {
-  background: #faf9f6;
+  background: var(--lm-surface-soft);
   color: var(--lm-text-muted);
   font-size: 10px;
   font-weight: 800;
