@@ -1,6 +1,19 @@
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from "react";
+import { cloneElement, useId, type ReactElement } from "react";
+import type {
+  ButtonHTMLAttributes,
+  InputHTMLAttributes,
+  ReactNode,
+  SelectHTMLAttributes,
+  TextareaHTMLAttributes,
+} from "react";
 
 import styles from "./primitives.module.css";
+
+type FieldControlProps = {
+  id?: string;
+  "aria-describedby"?: string;
+  "aria-invalid"?: boolean | "true" | "false";
+};
 
 export function Surface({
   children,
@@ -42,6 +55,19 @@ export function Button({
   );
 }
 
+export function IconButton({
+  label,
+  children,
+  className = "",
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement> & { label: string }) {
+  return (
+    <button {...props} className={`${styles.iconButton} ${className}`} aria-label={label}>
+      {children}
+    </button>
+  );
+}
+
 export function FormField({
   label,
   hint,
@@ -51,16 +77,24 @@ export function FormField({
   label: string;
   hint?: string;
   error?: string;
-  children: ReactNode;
+  children: ReactElement;
 }) {
-  const id = `field-${label.replace(/\s+/g, "-")}`;
+  const id = `field-${useId()}`;
+  const hintId = `${id}-hint`;
+  const errorId = `${id}-error`;
+  const describedBy = [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(" ");
+  const control = cloneElement(children as ReactElement<FieldControlProps>, {
+    id,
+    "aria-describedby": describedBy || undefined,
+    "aria-invalid": error ? true : undefined,
+  });
   return (
     <label className={styles.field} htmlFor={id}>
       <span>{label}</span>
-      {children}
-      {hint ? <small>{hint}</small> : null}
+      {control}
+      {hint ? <small id={hintId}>{hint}</small> : null}
       {error ? (
-        <small role="alert" data-error="true">
+        <small id={errorId} role="alert" data-error="true">
           {error}
         </small>
       ) : null}
@@ -70,4 +104,47 @@ export function FormField({
 
 export function Input(props: InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={`${styles.input} ${props.className ?? ""}`} />;
+}
+
+export function Textarea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return <textarea {...props} className={`${styles.textarea} ${props.className ?? ""}`} />;
+}
+
+export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
+  return <select {...props} className={`${styles.select} ${props.className ?? ""}`} />;
+}
+
+export function Tabs({
+  label,
+  tabs,
+  className = "",
+}: {
+  label: string;
+  tabs: readonly { label: string; href: string; current?: boolean; count?: number }[];
+  className?: string;
+}) {
+  return (
+    <nav className={`${styles.tabs} ${className}`} aria-label={label}>
+      {tabs.map((tab) => (
+        <a key={tab.href} href={tab.href} aria-current={tab.current ? "page" : undefined}>
+          {tab.label}
+          {typeof tab.count === "number" ? <span>{tab.count.toLocaleString("fa-IR")}</span> : null}
+        </a>
+      ))}
+    </nav>
+  );
+}
+
+export function StatusBadge({
+  children,
+  tone = "neutral",
+}: {
+  children: ReactNode;
+  tone?: "neutral" | "success" | "info" | "warning" | "danger";
+}) {
+  return (
+    <span className={styles.statusBadge} data-tone={tone}>
+      {children}
+    </span>
+  );
 }
