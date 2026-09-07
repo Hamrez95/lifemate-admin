@@ -56,12 +56,12 @@ input:focus-visible,
 .skip-link {
   position: fixed;
   top: 12px;
-  right: 12px;
+  inset-inline-end: 12px;
   z-index: 100;
   transform: translateY(-180%);
   border-radius: 10px;
   background: var(--lm-text);
-  color: #fff;
+  color: var(--lm-text-inverse);
   padding: 10px 14px;
   text-decoration: none;
 }
@@ -76,6 +76,18 @@ input:focus-visible,
   min-height: 100vh;
 }
 
+.app-shell[data-direction="rtl"] {
+  grid-template-columns: minmax(0, 1fr) var(--lm-sidebar-width);
+}
+
+.app-shell[data-direction="rtl"] > .sidebar {
+  grid-column: 2;
+}
+
+.app-shell[data-direction="rtl"] > .app-shell__content {
+  grid-column: 1;
+}
+
 .sidebar {
   position: sticky;
   top: 0;
@@ -85,8 +97,8 @@ input:focus-visible,
   width: var(--lm-sidebar-width);
   height: 100vh;
   overflow: auto;
-  border-left: 1px solid var(--lm-border);
-  background: rgba(255, 253, 249, 0.96);
+  border-inline-end: 1px solid var(--lm-border);
+  background: color-mix(in srgb, var(--lm-surface) 94%, transparent);
   backdrop-filter: blur(16px);
 }
 
@@ -149,7 +161,7 @@ input:focus-visible,
   border: 1px solid transparent;
   border-radius: 11px;
   padding: 9px 11px;
-  color: #354154;
+  color: var(--lm-text-secondary);
   font-size: 13px;
   text-decoration: none;
   transition:
@@ -245,7 +257,7 @@ input:focus-visible,
   gap: 24px;
   min-height: 96px;
   border-bottom: 1px solid var(--lm-border);
-  background: rgba(248, 247, 244, 0.88);
+  background: color-mix(in srgb, var(--lm-canvas) 88%, transparent);
   padding: 17px clamp(18px, 3vw, 38px);
   backdrop-filter: blur(18px);
 }
@@ -282,6 +294,35 @@ input:focus-visible,
   display: flex;
   align-items: center;
   gap: 9px;
+}
+
+.direction-control {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid var(--lm-border);
+  border-radius: 12px;
+  background: var(--lm-surface-raised);
+}
+
+.direction-control button {
+  min-width: 34px;
+  min-height: 40px;
+  border: 0;
+  background: transparent;
+  color: var(--lm-text-muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.direction-control button[data-active="true"] {
+  background: var(--lm-green-soft);
+  color: var(--lm-green-deep);
+}
+
+.direction-control button:focus-visible {
+  position: relative;
+  outline: none;
+  box-shadow: inset var(--lm-focus);
 }
 
 .search-control {
@@ -827,6 +868,10 @@ input:focus-visible,
 @media (max-width: 900px) {
   .app-shell {
     grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .app-shell[data-direction="rtl"] {
+    grid-template-columns: minmax(0, 1fr) 72px;
   }
 
   .sidebar {

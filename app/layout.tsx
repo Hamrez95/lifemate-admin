@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { PwaRegistrar } from "@/src/components/pwa/PwaRegistrar";
 import { AppearanceBootstrap, AppearanceProvider } from "@/src/components/ui/AppearanceProvider";
+import { DirectionBootstrap, DirectionProvider } from "@/src/components/ui/DirectionProvider";
 
 import "./globals.css";
 import "./design-system.css";
@@ -41,10 +42,13 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html lang="fa" dir="rtl">
       <body>
         <AppearanceBootstrap />
-        <AppearanceProvider>
-          {children}
-          <PwaRegistrar />
-        </AppearanceProvider>
+        <DirectionBootstrap />
+        <DirectionProvider>
+          <AppearanceProvider>
+            {children}
+            <PwaRegistrar />
+          </AppearanceProvider>
+        </DirectionProvider>
       </body>
     </html>
   );

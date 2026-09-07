@@ -1,4 +1,8 @@
+"use client";
+
 import type { ReactNode } from "react";
+
+import { useDirection } from "./DirectionProvider";
 
 type AppShellProps = {
   sidebar: ReactNode;
@@ -7,8 +11,9 @@ type AppShellProps = {
 };
 
 export function AppShell({ sidebar, header, children }: AppShellProps) {
+  const { direction } = useDirection();
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-direction={direction}>
       {sidebar}
       <div className="app-shell__content">
         {header}
