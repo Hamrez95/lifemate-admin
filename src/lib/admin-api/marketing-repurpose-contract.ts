@@ -127,7 +127,10 @@ export type MarketingDerivativeGenerationJob = {
 
 export type MarketingPublishReadiness =
   | { kind: "api_ready"; provider: string }
-  | { kind: "manual_required"; reason: "provider_unverified" | "format_unsupported" | "api_publish_unsupported" }
+  | {
+      kind: "manual_required";
+      reason: "provider_unverified" | "format_unsupported" | "api_publish_unsupported";
+    }
   | { kind: "unavailable"; reason: "manual_fallback_disabled" | "blocked_claim" };
 
 export type MarketingManualPublishReconciliation = {
@@ -281,7 +284,9 @@ export function parseMarketingDerivative(value: unknown): MarketingDerivativePar
   }
   if (
     typeof value.destination !== "string" ||
-    !marketingDerivativeDestinations.includes(value.destination as MarketingDerivativeDestination) ||
+    !marketingDerivativeDestinations.includes(
+      value.destination as MarketingDerivativeDestination,
+    ) ||
     typeof value.provenance !== "string" ||
     !marketingDerivativeProvenance.includes(value.provenance as MarketingDerivativeProvenance) ||
     typeof value.state !== "string" ||
@@ -351,10 +356,7 @@ export function parseMarketingDerivative(value: unknown): MarketingDerivativePar
   if (value.provider !== null && value.provider !== capabilities.provider) {
     return { kind: "invalid", code: "invalid_shape" };
   }
-  if (
-    value.provenance === "manual" &&
-    (value.provider !== null || value.model !== null)
-  ) {
+  if (value.provenance === "manual" && (value.provider !== null || value.model !== null)) {
     return { kind: "invalid", code: "unsafe_generation_metadata" };
   }
   if (
@@ -363,10 +365,7 @@ export function parseMarketingDerivative(value: unknown): MarketingDerivativePar
   ) {
     return { kind: "invalid", code: "unsafe_generation_metadata" };
   }
-  if (
-    value.provenance === "mechanical_transform" &&
-    value.model !== null
-  ) {
+  if (value.provenance === "mechanical_transform" && value.model !== null) {
     return { kind: "invalid", code: "unsafe_generation_metadata" };
   }
 
@@ -452,7 +451,10 @@ export function derivativeMutationInvalidatesApproval(
   before: MarketingDerivative,
   after: MarketingDerivative,
 ): boolean {
-  return buildMarketingDerivativeMaterialIdentity(before) !== buildMarketingDerivativeMaterialIdentity(after);
+  return (
+    buildMarketingDerivativeMaterialIdentity(before) !==
+    buildMarketingDerivativeMaterialIdentity(after)
+  );
 }
 
 export function resolveMarketingPublishReadiness(
@@ -539,7 +541,9 @@ export function parseMarketingDerivativeGenerationJob(
     !Number.isInteger(value.sourceCreativeRevision) ||
     Number(value.sourceCreativeRevision) < 1 ||
     typeof value.destination !== "string" ||
-    !marketingDerivativeDestinations.includes(value.destination as MarketingDerivativeDestination) ||
+    !marketingDerivativeDestinations.includes(
+      value.destination as MarketingDerivativeDestination,
+    ) ||
     typeof value.idempotencyKey !== "string" ||
     !IDEMPOTENCY_PATTERN.test(value.idempotencyKey) ||
     !Number.isInteger(value.attempt) ||
@@ -599,7 +603,10 @@ export function parseMarketingManualPublishReconciliation(
   ) {
     return null;
   }
-  if (!nullableBoundedText(value.externalPostId, 240) || !nullableBoundedText(value.externalUrl, 2_048)) {
+  if (
+    !nullableBoundedText(value.externalPostId, 240) ||
+    !nullableBoundedText(value.externalUrl, 2_048)
+  ) {
     return null;
   }
   if (value.externalPostId === null && value.externalUrl === null) return null;
