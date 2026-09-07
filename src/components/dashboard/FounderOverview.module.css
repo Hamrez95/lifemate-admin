@@ -10,7 +10,7 @@
   border: 1px solid var(--lm-border);
   border-radius: 18px;
   background: var(--lm-surface);
-  box-shadow: 0 10px 30px rgba(63, 52, 38, 0.055);
+  box-shadow: var(--lm-shadow);
 }
 
 .hero {
@@ -19,8 +19,12 @@
   min-height: 270px;
   overflow: hidden;
   background:
-    radial-gradient(circle at 12% 15%, rgba(23, 173, 104, 0.11), transparent 33%),
-    linear-gradient(115deg, #fffdf8 0%, #f5faf6 100%);
+    radial-gradient(
+      circle at 12% 15%,
+      color-mix(in srgb, var(--lm-green) 12%, transparent),
+      transparent 33%
+    ),
+    linear-gradient(115deg, var(--lm-surface) 0%, var(--lm-green-soft) 100%);
 }
 
 .heroCopy {
@@ -37,7 +41,7 @@
 
 .heroCopy h2 {
   max-width: 720px;
-  color: #18362a;
+  color: var(--lm-text);
   font-size: clamp(24px, 3.2vw, 38px);
   line-height: 1.42;
   letter-spacing: -0.04em;
@@ -71,7 +75,7 @@
   width: min(100%, 360px);
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 20px 28px rgba(18, 124, 75, 0.08));
+  filter: drop-shadow(0 20px 28px color-mix(in srgb, var(--lm-green-deep) 14%, transparent));
 }
 
 .kpiSection,
@@ -136,19 +140,19 @@
 }
 
 .metricCard[data-tone="green"] {
-  background: linear-gradient(145deg, #f7fff9, #fffdfa);
+  background: linear-gradient(145deg, var(--lm-green-soft), var(--lm-surface-raised));
 }
 
 .metricCard[data-tone="blue"] {
-  background: linear-gradient(145deg, #f8fbff, #fffdfa);
+  background: linear-gradient(145deg, var(--lm-blue-soft), var(--lm-surface-raised));
 }
 
 .metricCard[data-tone="violet"] {
-  background: linear-gradient(145deg, #fbf9ff, #fffdfa);
+  background: linear-gradient(145deg, var(--lm-violet-soft), var(--lm-surface-raised));
 }
 
 .metricCard[data-tone="orange"] {
-  background: linear-gradient(145deg, #fffaf5, #fffdfa);
+  background: linear-gradient(145deg, var(--lm-orange-soft), var(--lm-surface-raised));
 }
 
 .metricTopline,
@@ -163,13 +167,13 @@
 }
 
 .metricTopline > span:first-child {
-  color: #31453c;
+  color: var(--lm-text-secondary);
   font-size: 11px;
   font-weight: 800;
 }
 
 .metricValue {
-  color: #18362a;
+  color: var(--lm-text);
   font-size: clamp(26px, 3vw, 34px);
   line-height: 1.2;
   letter-spacing: -0.04em;
@@ -181,35 +185,6 @@
   color: var(--lm-text-muted);
   font-size: 9px;
   line-height: 1.75;
-}
-
-.stateBadge {
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  border-radius: 999px;
-  background: var(--lm-surface-soft);
-  color: var(--lm-text-muted);
-  padding: 4px 7px;
-  font-size: 8px;
-  font-weight: 800;
-}
-
-.stateBadge[data-state="ready"],
-.stateBadge[data-state="empty"] {
-  background: var(--lm-green-soft);
-  color: var(--lm-green-deep);
-}
-
-.stateBadge[data-state="partial"],
-.stateBadge[data-state="not_instrumented"] {
-  background: var(--lm-orange-soft);
-  color: #8c4b12;
-}
-
-.stateBadge[data-state="unavailable"] {
-  background: #fff0f0;
-  color: #9a3137;
 }
 
 .monitorGrid {
@@ -243,15 +218,15 @@
 }
 
 .alertCard[data-severity="critical"] {
-  border-inline-start: 3px solid #d65a5a;
+  border-inline-start: 3px solid var(--lm-danger);
 }
 
 .alertCard[data-severity="warning"] {
-  border-inline-start: 3px solid #e49a43;
+  border-inline-start: 3px solid var(--lm-orange);
 }
 
 .alertCard[data-severity="info"] {
-  border-inline-start: 3px solid #6e9bd8;
+  border-inline-start: 3px solid var(--lm-blue);
 }
 
 .alertTop strong {
@@ -329,8 +304,8 @@
 
 .elevated {
   border-radius: 999px;
-  background: #fff1df;
-  color: #8a5118 !important;
+  background: var(--lm-orange-soft);
+  color: var(--lm-orange) !important;
   padding: 3px 6px;
   font-weight: 800;
 }
@@ -404,7 +379,7 @@
 }
 
 .shortcutCard strong {
-  color: #244137;
+  color: var(--lm-text);
   font-size: 10px;
 }
 
@@ -562,9 +537,5 @@
 
   .metricTopline {
     display: grid;
-  }
-
-  .stateBadge {
-    justify-self: start;
   }
 }
