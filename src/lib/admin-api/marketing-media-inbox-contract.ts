@@ -106,11 +106,7 @@ export type MarketingMediaPublishEligibility =
   | { kind: "eligible" }
   | {
       kind: "blocked";
-      code:
-        | "asset_not_ready"
-        | "restricted_release"
-        | "raw_asset_not_reviewed"
-        | "lineage_invalid";
+      code: "asset_not_ready" | "restricted_release" | "raw_asset_not_reviewed" | "lineage_invalid";
     };
 
 export const marketingMediaTelemetryBoundary = {
@@ -124,7 +120,8 @@ export const marketingMediaTelemetryBoundary = {
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
-const OPAQUE_OBJECT_KEY_PATTERN = /^marketing-media\/[0-9a-f-]{36}\/[0-9a-f-]{36}(?:\.[a-z0-9]{1,10})?$/i;
+const OPAQUE_OBJECT_KEY_PATTERN =
+  /^marketing-media\/[0-9a-f-]{36}\/[0-9a-f-]{36}(?:\.[a-z0-9]{1,10})?$/i;
 
 function isFinitePositive(value: number): boolean {
   return Number.isFinite(value) && value > 0;
@@ -206,7 +203,11 @@ export function getMarketingMediaPublishEligibility(
   if (!validateMarketingMediaLineage(asset)) {
     return { kind: "blocked", code: "lineage_invalid" };
   }
-  if (asset.releaseState === "restricted" || asset.releaseState === "expired" || asset.publishBlocked) {
+  if (
+    asset.releaseState === "restricted" ||
+    asset.releaseState === "expired" ||
+    asset.publishBlocked
+  ) {
     return { kind: "blocked", code: "restricted_release" };
   }
   if (asset.state !== "ready") {
@@ -218,7 +219,9 @@ export function getMarketingMediaPublishEligibility(
   return { kind: "eligible" };
 }
 
-export function parseMarketingMediaProcessingJob(value: unknown): MarketingMediaProcessingJob | null {
+export function parseMarketingMediaProcessingJob(
+  value: unknown,
+): MarketingMediaProcessingJob | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const item = value as Record<string, unknown>;
   if (
@@ -227,7 +230,9 @@ export function parseMarketingMediaProcessingJob(value: unknown): MarketingMedia
     typeof item.assetId !== "string" ||
     !UUID_PATTERN.test(item.assetId) ||
     typeof item.operation !== "string" ||
-    !marketingMediaProcessingOperations.includes(item.operation as MarketingMediaProcessingOperation) ||
+    !marketingMediaProcessingOperations.includes(
+      item.operation as MarketingMediaProcessingOperation,
+    ) ||
     typeof item.status !== "string" ||
     !["queued", "processing", "ready", "failed", "needs_review"].includes(item.status) ||
     typeof item.idempotencyKey !== "string" ||
