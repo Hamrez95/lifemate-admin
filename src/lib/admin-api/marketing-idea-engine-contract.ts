@@ -407,8 +407,8 @@ export function parseMarketingScriptDraft(value: unknown): MarketingScriptParseR
       brandContextVersion: value.brandContextVersion.trim(),
       policyVersion: value.policyVersion.trim(),
       generationMode: value.generationMode,
-      provider: value.provider,
-      model: value.model,
+      provider: value.provider === null ? null : String(value.provider),
+      model: value.model === null ? null : String(value.model),
       generatedAtUtc: value.generatedAtUtc,
       publishAllowed: false,
     },
@@ -490,7 +490,7 @@ export function groupShootPlanCandidates(candidates: ShootPlanCandidate[]): Shoo
   }
 
   return [...groups.entries()].map(([groupKey, items]) => {
-    const first = items[0];
+    const first = items[0]!;
     const propCounts = new Map<string, number>();
     for (const item of items) {
       for (const prop of item.props) {
