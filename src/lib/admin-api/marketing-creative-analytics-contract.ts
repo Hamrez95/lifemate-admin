@@ -162,8 +162,10 @@ function validWindow(window: MarketingMetricWindow): boolean {
   if (window.startAtUtc !== null && window.endAtUtc !== null) {
     if (Date.parse(window.endAtUtc) <= Date.parse(window.startAtUtc)) return false;
   }
-  if (window.providerWindowCode !== null && !boundedText(window.providerWindowCode, 96)) return false;
-  if (window.kind === "calendar" && (window.startAtUtc === null || window.endAtUtc === null)) return false;
+  if (window.providerWindowCode !== null && !boundedText(window.providerWindowCode, 96))
+    return false;
+  if (window.kind === "calendar" && (window.startAtUtc === null || window.endAtUtc === null))
+    return false;
   return true;
 }
 
@@ -186,14 +188,19 @@ export function validateMarketingCreativeMetricObservation(
   if (!boundedText(value.semanticVersion, 96) || !VERSION_PATTERN.test(value.semanticVersion)) {
     return false;
   }
-  if (!validWindow(value.window) || !instant(value.asOfUtc) || !nullableInstant(value.freshUntilUtc)) {
+  if (
+    !validWindow(value.window) ||
+    !instant(value.asOfUtc) ||
+    !nullableInstant(value.freshUntilUtc)
+  ) {
     return false;
   }
   if (value.freshUntilUtc !== null && Date.parse(value.freshUntilUtc) < Date.parse(value.asOfUtc)) {
     return false;
   }
   if (!Array.isArray(value.limitations) || value.limitations.length > MAX_LIMITATIONS) return false;
-  if (value.limitations.some((limitation) => !boundedText(limitation, MAX_LIMITATION))) return false;
+  if (value.limitations.some((limitation) => !boundedText(limitation, MAX_LIMITATION)))
+    return false;
   if (value.availability === "unavailable") return value.value === null;
   if (value.value === null || !Number.isFinite(value.value) || value.value < 0) return false;
   if ((value.unit === "ratio" || value.unit === "percent") && value.value > 100) return false;
@@ -308,7 +315,11 @@ export function validateMarketingCreativeLearningMetadata(
     value.ctaTypeCode,
     value.creativeClassCode,
   ];
-  if (optionalCodes.some((code) => code !== null && (!boundedText(code, 128) || !CODE_PATTERN.test(code)))) {
+  if (
+    optionalCodes.some(
+      (code) => code !== null && (!boundedText(code, 128) || !CODE_PATTERN.test(code)),
+    )
+  ) {
     return false;
   }
   if (
@@ -369,18 +380,25 @@ export function validateMarketingCreativeLearning(value: MarketingCreativeLearni
     return false;
   }
   if (!Number.isInteger(value.sampleSize) || value.sampleSize < 1) return false;
-  if (!instant(value.periodStartUtc) || !instant(value.periodEndUtc) || !instant(value.generatedAtUtc)) {
+  if (
+    !instant(value.periodStartUtc) ||
+    !instant(value.periodEndUtc) ||
+    !instant(value.generatedAtUtc)
+  ) {
     return false;
   }
   if (Date.parse(value.periodEndUtc) <= Date.parse(value.periodStartUtc)) return false;
   if (value.source !== "operator" && value.source !== "model") return false;
   if (value.source === "operator" && value.model !== null) return false;
   if (value.source === "model" && !boundedText(value.model, 120)) return false;
-  if (!boundedText(value.policyVersion, 96) || !VERSION_PATTERN.test(value.policyVersion)) return false;
+  if (!boundedText(value.policyVersion, 96) || !VERSION_PATTERN.test(value.policyVersion))
+    return false;
   return value.causalClaim === false;
 }
 
-export function validateMarketingMetricSyncCheckpoint(value: MarketingMetricSyncCheckpoint): boolean {
+export function validateMarketingMetricSyncCheckpoint(
+  value: MarketingMetricSyncCheckpoint,
+): boolean {
   if (!boundedText(value.provider, 96) || !CODE_PATTERN.test(value.provider)) return false;
   if (!boundedText(value.providerAccountRef, 180)) return false;
   if (value.cursor !== null && !boundedText(value.cursor, 1_000)) return false;
@@ -389,7 +407,8 @@ export function validateMarketingMetricSyncCheckpoint(value: MarketingMetricSync
     return false;
   }
   if (!IDEMPOTENCY_PATTERN.test(value.idempotencyKey)) return false;
-  if (!nullableInstant(value.lastAttemptAtUtc) || !nullableInstant(value.lastSuccessAtUtc)) return false;
+  if (!nullableInstant(value.lastAttemptAtUtc) || !nullableInstant(value.lastSuccessAtUtc))
+    return false;
   return ["idle", "syncing", "rate_limited", "failed", "unavailable"].includes(value.state);
 }
 
