@@ -373,8 +373,14 @@ export function marketingWeeklyPlanIdempotencyKey(
   if (!validDate(weekStartDate) || !boundedText(timezone, 80) || !boundedText(policyVersion, 80)) {
     return null;
   }
-  const normalizedTimezone = timezone.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  const normalizedPolicy = policyVersion.trim().toLowerCase().replace(/[^a-z0-9._:-]+/g, "-");
+  const normalizedTimezone = timezone
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-");
+  const normalizedPolicy = policyVersion
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9._:-]+/g, "-");
   return `marketing-week:${weekStartDate}:${normalizedTimezone}:${normalizedPolicy}`;
 }
 
@@ -398,7 +404,8 @@ export function resolveMarketingAutomationDecision(
   providerAvailable = true,
 ): MarketingAutomationDecision {
   const family = familyForAction(action);
-  if (policy.disabledFamilies.includes(family)) return { kind: "blocked", reason: "family_disabled" };
+  if (policy.disabledFamilies.includes(family))
+    return { kind: "blocked", reason: "family_disabled" };
   if (action === "approve_content") return { kind: "blocked", reason: "human_review_required" };
   if (action === "publish_external") return { kind: "blocked", reason: "human_publish_required" };
   if (action === "create_publish_execution" && !providerAvailable) {
@@ -435,8 +442,7 @@ export function validateMarketingOrchestratorEvent(value: MarketingOrchestratorE
 }
 
 export function buildMarketingWeeklyBrief(input: MarketingWeeklyBriefInput): MarketingWeeklyBrief {
-  const safeCount = (value: number) =>
-    Number.isInteger(value) && value >= 0 ? value : 0;
+  const safeCount = (value: number) => (Number.isInteger(value) && value >= 0 ? value : 0);
   return {
     selectedCount: safeCount(input.selectedCount),
     unrecordedCount: safeCount(input.unrecordedCount),
@@ -447,7 +453,9 @@ export function buildMarketingWeeklyBrief(input: MarketingWeeklyBriefInput): Mar
     metricsAvailability: input.metricsAvailability,
     learningAvailability: input.learningAvailability,
     providerWarning:
-      input.providerAvailability === "available" ? input.providerWarning : input.providerWarning ?? "unavailable",
+      input.providerAvailability === "available"
+        ? input.providerWarning
+        : (input.providerWarning ?? "unavailable"),
     evidenceLearning:
       input.learningAvailability === "available" && input.metricsAvailability === "available"
         ? input.evidenceLearning
@@ -515,7 +523,8 @@ export function marketingNudgeDedupeKey(
   windowDate: string,
 ): string | null {
   if (!marketingAutomationFamilies.includes(family)) return null;
-  if (!boundedText(subjectId, 120) || !boundedText(reasonCode, 80) || !validDate(windowDate)) return null;
+  if (!boundedText(subjectId, 120) || !boundedText(reasonCode, 80) || !validDate(windowDate))
+    return null;
   const subject = subjectId.trim().replace(/[^A-Za-z0-9._:-]+/g, "-");
   const reason = reasonCode.trim().replace(/[^A-Za-z0-9._:-]+/g, "-");
   return `marketing-nudge:${family}:${subject}:${reason}:${windowDate}`;
