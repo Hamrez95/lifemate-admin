@@ -28,7 +28,7 @@ describe("Support conversation workspace contract", () => {
     expect(page).toContain('admin.permissions.includes("support.read")');
     expect(page).toContain('admin.permissions.includes("support.write")');
     expect(page).toContain("requireAdminAccess()");
-    expect(actions).toContain("revalidatePath(`/support/${ticketId}`)");
+    expect(actions).toContain("revalidatePath(\`/support/${ticketId}\`)");
   });
 
   it("does not invent realtime or public attachment access", () => {
@@ -46,5 +46,20 @@ describe("Support conversation workspace contract", () => {
     expect(panel).toContain('name="idempotencyKey"');
     expect(panel).toContain('name="targetRoleCode"');
     expect(panel).toContain('name="referenceCode"');
+  });
+
+  it("uses the shared semantic tokens and keeps the workspace keyboard-safe", () => {
+    const css = readFileSync(
+      join(root, "app/support/[ticketId]/support-conversation.module.css"),
+      "utf8",
+    );
+
+    expect(css).toContain("var(--lm-surface-raised)");
+    expect(css).toContain("var(--lm-border)");
+    expect(css).toContain("var(--lm-focus)");
+    expect(css).toContain(":focus-visible");
+    expect(css).toContain("prefers-reduced-motion");
+    expect(css).not.toContain("var(--surface");
+    expect(css).not.toContain("var(--text-muted");
   });
 });
