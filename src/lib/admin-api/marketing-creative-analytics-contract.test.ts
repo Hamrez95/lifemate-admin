@@ -56,12 +56,20 @@ describe("marketing creative analytics evidence contract", () => {
     expect(validateMarketingCreativeMetricObservation(metric({ value: 0 }))).toBe(true);
     expect(
       validateMarketingCreativeMetricObservation(
-        metric({ availability: "unavailable", value: null, limitations: ["Not exposed by provider."] }),
+        metric({
+          availability: "unavailable",
+          value: null,
+          limitations: ["Not exposed by provider."],
+        }),
       ),
     ).toBe(true);
     expect(
       validateMarketingCreativeMetricObservation(
-        metric({ availability: "unavailable", value: 0, limitations: ["Not exposed by provider."] }),
+        metric({
+          availability: "unavailable",
+          value: 0,
+          limitations: ["Not exposed by provider."],
+        }),
       ),
     ).toBe(false);
   });
@@ -100,7 +108,11 @@ describe("marketing creative analytics evidence contract", () => {
     expect(
       compareMarketingMetricEvidence(
         metric(),
-        metric({ observationId: OBSERVATION_B, creativeId: CREATIVE_B, source: "manual_observation" }),
+        metric({
+          observationId: OBSERVATION_B,
+          creativeId: CREATIVE_B,
+          source: "manual_observation",
+        }),
         NOW,
       ),
     ).toEqual({ kind: "not_comparable", reason: "manual_observation" });
@@ -130,7 +142,11 @@ describe("marketing creative analytics evidence contract", () => {
 
   it("never divides by a true zero denominator", () => {
     expect(
-      deriveMarketingMetricRate(metric({ value: 2 }), metric({ metricKey: "reach", value: 0 }), NOW),
+      deriveMarketingMetricRate(
+        metric({ value: 2 }),
+        metric({ metricKey: "reach", value: 0 }),
+        NOW,
+      ),
     ).toEqual({ kind: "unavailable", reason: "zero_denominator" });
   });
 
@@ -151,8 +167,16 @@ describe("marketing creative analytics evidence contract", () => {
       evaluateMarketingLearningEvidence(
         [
           metric({ observationId: OBSERVATION_A, creativeId: CREATIVE_A }),
-          metric({ observationId: OBSERVATION_B, creativeId: CREATIVE_B, providerContentId: "media:200" }),
-          metric({ observationId: OBSERVATION_C, creativeId: CREATIVE_C, providerContentId: "media:300" }),
+          metric({
+            observationId: OBSERVATION_B,
+            creativeId: CREATIVE_B,
+            providerContentId: "media:200",
+          }),
+          metric({
+            observationId: OBSERVATION_C,
+            creativeId: CREATIVE_C,
+            providerContentId: "media:300",
+          }),
         ],
         NOW,
       ),
