@@ -1,5 +1,13 @@
 import "server-only";
 
+import {
+  classifyEntitlementConflict,
+  classifyEntitlementForbidden,
+  parseEntitlementAdjustmentSuccess,
+  type EntitlementAdjustmentSuccess,
+  type EntitlementConflictKind,
+  type EntitlementForbiddenReason,
+} from "@/src/lib/admin-api/entitlement-adjustments-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -51,12 +59,22 @@ export type ManualEntitlementHistory = {
 };
 
 export type EntitlementAdjustmentResult =
-  | { kind: "ok"; data: Record<string, unknown> }
+  | { kind: "ok"; data: EntitlementAdjustmentSuccess }
   | { kind: "unauthenticated" }
-  | { kind: "forbidden"; message?: string }
+  | {
+      kind: "forbidden";
+      code?: string;
+      reason: EntitlementForbiddenReason;
+      message?: string;
+    }
   | { kind: "not_found"; message?: string }
   | { kind: "invalid"; code?: string; message?: string }
-  | { kind: "conflict"; code?: string; message?: string }
+  | {
+      kind: "conflict";
+      code?: string;
+      conflictKind: EntitlementConflictKind;
+      message?: string;
+    }
   | { kind: "unavailable"; correlationId?: string };
 
 export type EntitlementAdjustmentHistoryResult =
@@ -108,10 +126,23 @@ function classifyFailure(
   issue: Awaited<ReturnType<typeof problem>>,
 ): EntitlementAdjustmentResult {
   if (response.status === 401) return { kind: "unauthenticated" };
-  if (response.status === 403) return { kind: "forbidden", message: issue.message };
+  if (response.status === 403) {
+    return {
+      kind: "forbidden",
+      code: issue.code,
+      reason: classifyEntitlementForbidden(issue.code),
+      message: issue.message,
+    };
+  }
   if (response.status === 404) return { kind: "not_found", message: issue.message };
-  if (response.status === 409)
-    return { kind: "conflict", code: issue.code, message: issue.message };
+  if (response.status === 409) {
+    return {
+      kind: "conflict",
+      code: issue.code,
+      conflictKind: classifyEntitlementConflict(issue.code),
+      message: issue.message,
+    };
+  }
   if (response.status === 400) return { kind: "invalid", code: issue.code, message: issue.message };
   return { kind: "unavailable", correlationId: issue.correlationId };
 }
@@ -141,9 +172,8 @@ async function mutate(
   if (!response.ok) return classifyFailure(response, await problem(response));
   try {
     const value = (await response.json()) as unknown;
-    return value && typeof value === "object" && !Array.isArray(value)
-      ? { kind: "ok", data: value as Record<string, unknown> }
-      : { kind: "unavailable" };
+    const data = parseEntitlementAdjustmentSuccess(value);
+    return data ? { kind: "ok", data } : { kind: "unavailable" };
   } catch {
     return { kind: "unavailable" };
   }
@@ -224,14 +254,17 @@ export async function getEntitlementAdjustmentHistory(
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden" };
   if (response.status === 404) return { kind: "not_found" };
-  if (!response.ok)
+  if (!response.ok) {
     return { kind: "unavailable", correlationId: (await problem(response)).correlationId };
+  }
   try {
     const body = (await response.json()) as Record<string, unknown>;
-    if (body.subjectAccountId !== accountId || !Array.isArray(body.items))
+    if (body.subjectAccountId !== accountId || !Array.isArray(body.items)) {
       return { kind: "unavailable" };
-    if (!Number.isInteger(body.limit) || !body.freshness || typeof body.freshness !== "object")
+    }
+    if (!Number.isInteger(body.limit) || !body.freshness || typeof body.freshness !== "object") {
       return { kind: "unavailable" };
+    }
     const freshness = body.freshness as Record<string, unknown>;
     if (
       (freshness.status !== "fresh" && freshness.status !== "stale") ||
