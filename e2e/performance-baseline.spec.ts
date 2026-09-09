@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { test, type Page, type Request, type Response } from "@playwright/test";
+import { expect, test, type Page, type Request, type Response } from "@playwright/test";
 
 import { signInWithMfa } from "./helpers/sign-in";
 
@@ -255,6 +255,16 @@ test.describe("PERF-01 authenticated production-build baseline", () => {
     for (const route of routes) {
       for (const run of runs) samples.push(await measureRoute(page, route, run));
     }
+
+    const missingFixtureRoutes = samples.flatMap((sample) =>
+      sample.serverFailedResponses
+        .filter((response) => response.status === 404)
+        .map((response) => `${sample.route}/${sample.run}: ${response.method} ${response.path}`),
+    );
+    expect(
+      missingFixtureRoutes,
+      `Synthetic performance baseline must not measure missing QA mock routes:\n${missingFixtureRoutes.join("\n")}`,
+    ).toEqual([]);
 
     const prefetchObservation =
       testInfo.project.name === "desktop-chromium" ? await observeSidebarPrefetch(page) : null;
