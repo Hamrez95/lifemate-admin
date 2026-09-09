@@ -12,10 +12,7 @@ export type EntitlementConflictKind =
   | "other";
 
 export type EntitlementForbiddenReason =
-  | "aal2_required"
-  | "abuse_denied"
-  | "permission_denied"
-  | "other";
+  "aal2_required" | "abuse_denied" | "permission_denied" | "other";
 
 export function parseEntitlementAdjustmentSuccess(
   value: unknown,
