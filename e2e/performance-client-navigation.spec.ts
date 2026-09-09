@@ -163,7 +163,10 @@ async function measureClientTransition(
   const link = page.locator(`aside.sidebar a.nav-item[href="${route.path}"]`).first();
   await expect(link).toBeVisible();
   const startedAt = performance.now();
-  await Promise.all([page.waitForURL(new RegExp(`${route.path.replaceAll("/", "\\/")}$`)), link.click()]);
+  await Promise.all([
+    page.waitForURL(new RegExp(`${route.path.replaceAll("/", "\\/")}$`)),
+    link.click(),
+  ]);
   const clickToUrlMs = performance.now() - startedAt;
 
   const activeLink = page.locator(
@@ -178,9 +181,7 @@ async function measureClientTransition(
 
   const serverRequests = await readServerTrace();
   const longTasks = await readLongTasks(page);
-  const routeRequests = completed.filter(
-    (request) => request.path === route.path || request.isRsc,
-  );
+  const routeRequests = completed.filter((request) => request.path === route.path || request.isRsc);
 
   return {
     route: route.name,
@@ -238,7 +239,9 @@ test.describe("PERF-01 authenticated client navigation evidence", () => {
         (response) => `${sample.route}/${sample.run}: ${response.status} ${response.path}`,
       ),
     );
-    expect(failures, `Client transition requests must not fail:\n${failures.join("\n")}`).toEqual([]);
+    expect(failures, `Client transition requests must not fail:\n${failures.join("\n")}`).toEqual(
+      [],
+    );
 
     const missingRsc = samples
       .filter((sample) => sample.rscRequestCount === 0)
