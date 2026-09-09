@@ -1,6 +1,8 @@
 import { createServer } from "node:http";
 import { performance } from "node:perf_hooks";
 
+import { getPerformanceAdminApiFixture } from "./performance-admin-api-fixtures.mjs";
+
 const host = "127.0.0.1";
 const port = 54323;
 const origin = `http://${host}:${port}`;
@@ -33,6 +35,17 @@ function copyResponseHeaders(response, upstreamHeaders, contentLength) {
   response.setHeader("content-length", String(contentLength));
 }
 
+function fixtureResponse(body) {
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+      "x-lifemate-qa-fixture": "performance-success-path",
+    },
+  });
+}
+
 export function startPerformanceAdminApiProxy(targetOrigin) {
   let samples = [];
 
@@ -58,16 +71,19 @@ export function startPerformanceAdminApiProxy(targetOrigin) {
     const startedAt = performance.now();
     try {
       const body = await readBody(request);
+      const fixture = getPerformanceAdminApiFixture(request.method ?? "GET", requestUrl);
       const targetUrl = new URL(`${requestUrl.pathname}${requestUrl.search}`, targetOrigin);
-      const upstream = await fetch(targetUrl, {
-        method: request.method,
-        headers: copyRequestHeaders(request),
-        body:
-          body.byteLength > 0 && request.method !== "GET" && request.method !== "HEAD"
-            ? body
-            : undefined,
-        redirect: "manual",
-      });
+      const upstream = fixture
+        ? fixtureResponse(fixture)
+        : await fetch(targetUrl, {
+            method: request.method,
+            headers: copyRequestHeaders(request),
+            body:
+              body.byteLength > 0 && request.method !== "GET" && request.method !== "HEAD"
+                ? body
+                : undefined,
+            redirect: "manual",
+          });
       const responseBody = Buffer.from(await upstream.arrayBuffer());
       const durationMs = performance.now() - startedAt;
 
