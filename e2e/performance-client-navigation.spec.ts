@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { performance } from "node:perf_hooks";
+import { performance as nodePerformance } from "node:perf_hooks";
 import path from "node:path";
 
 import { expect, test, type Page, type Request, type Response } from "@playwright/test";
@@ -136,7 +136,7 @@ async function measureClientTransition(
     if (url.pathname !== route.path && !isRsc) return;
 
     requests.set(request, {
-      startedAt: performance.now(),
+      startedAt: nodePerformance.now(),
       sample: {
         method: request.method(),
         path: url.pathname,
@@ -153,7 +153,7 @@ async function measureClientTransition(
     completed.push({
       ...tracked.sample,
       status: response.status(),
-      durationMs: Number((performance.now() - tracked.startedAt).toFixed(2)),
+      durationMs: Number((nodePerformance.now() - tracked.startedAt).toFixed(2)),
     });
   };
 
@@ -162,18 +162,18 @@ async function measureClientTransition(
 
   const link = page.locator(`aside.sidebar a.nav-item[href="${route.path}"]`).first();
   await expect(link).toBeVisible();
-  const startedAt = performance.now();
+  const startedAt = nodePerformance.now();
   await Promise.all([
     page.waitForURL(new RegExp(`${route.path.replaceAll("/", "\\/")}$`)),
     link.click(),
   ]);
-  const clickToUrlMs = performance.now() - startedAt;
+  const clickToUrlMs = nodePerformance.now() - startedAt;
 
   const activeLink = page.locator(
     `aside.sidebar a.nav-item[href="${route.path}"][aria-current="page"]`,
   );
   await expect(activeLink).toBeVisible();
-  const clickToActiveNavMs = performance.now() - startedAt;
+  const clickToActiveNavMs = nodePerformance.now() - startedAt;
   await page.waitForTimeout(SETTLE_MS);
 
   page.off("request", onRequest);
