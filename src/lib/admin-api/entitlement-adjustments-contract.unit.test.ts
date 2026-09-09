@@ -23,9 +23,7 @@ describe("manual entitlement adjustment contract", () => {
 
   it("distinguishes stale state, approval and idempotency conflicts", () => {
     expect(classifyEntitlementConflict("idempotency_conflict")).toBe("idempotency");
-    expect(classifyEntitlementConflict("entitlement_version_conflict")).toBe(
-      "entitlement_version",
-    );
+    expect(classifyEntitlementConflict("entitlement_version_conflict")).toBe("entitlement_version");
     expect(classifyEntitlementConflict("entitlement_adjust_approval_required")).toBe(
       "approval_required",
     );
