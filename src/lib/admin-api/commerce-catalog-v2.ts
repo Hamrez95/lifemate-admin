@@ -1,5 +1,6 @@
 import "server-only";
 
+import { parseCommerceCatalogMutationSuccess } from "@/src/lib/admin-api/commerce-catalog-v2-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -66,7 +67,7 @@ export type CommerceCatalogV2Result =
   | { kind: "unavailable"; correlationId?: string };
 
 export type CommerceCatalogMutationResult =
-  | { kind: "ok"; replayed: boolean }
+  | { kind: "ok"; code: string; replayed: boolean }
   | { kind: "unauthenticated" }
   | { kind: "forbidden" }
   | { kind: "invalid"; message?: string }
@@ -342,7 +343,14 @@ export async function mutateCommerceCatalogV2(
         ? body.message
         : undefined;
   if (response.ok) {
-    return { kind: "ok", replayed: body?.replayed === true };
+    const success = parseCommerceCatalogMutationSuccess(body);
+    if (!success) {
+      return {
+        kind: "unavailable",
+        correlationId: response.headers.get("x-correlation-id") ?? undefined,
+      };
+    }
+    return { kind: "ok", code: success.code, replayed: success.replayed };
   }
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden" };
