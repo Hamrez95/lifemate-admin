@@ -112,7 +112,7 @@ async function navigateToDashboard(page: Page) {
   if (new URL(page.url()).pathname === "/") return;
   const dashboardLink = page.locator('aside.sidebar a.nav-item[href="/"]').first();
   await expect(dashboardLink).toBeVisible();
-  await Promise.all([page.waitForURL(/\/$/), dashboardLink.click()]);
+  await Promise.all([page.waitForURL(/\/$/, { waitUntil: "commit" }), dashboardLink.click()]);
   await expect(dashboardLink).toHaveAttribute("aria-current", "page");
   await page.waitForTimeout(SETTLE_MS);
 }
@@ -164,7 +164,9 @@ async function measureClientTransition(
   await expect(link).toBeVisible();
   const startedAt = nodePerformance.now();
   await Promise.all([
-    page.waitForURL(new RegExp(`${route.path.replaceAll("/", "\\/")}$`)),
+    page.waitForURL(new RegExp(`${route.path.replaceAll("/", "\\/")}$`), {
+      waitUntil: "commit",
+    }),
     link.click(),
   ]);
   const clickToUrlMs = nodePerformance.now() - startedAt;
