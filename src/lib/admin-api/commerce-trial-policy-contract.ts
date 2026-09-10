@@ -106,18 +106,12 @@ export function parseCommerceTrialReadEnvelope(value: unknown): {
   const row = record(value);
   if (!row) return null;
   const freshness = record(row.freshness);
-  if (
-    !freshness ||
-    freshness.status !== "fresh" ||
-    typeof freshness.asOfUtc !== "string"
-  ) {
+  if (!freshness || freshness.status !== "fresh" || typeof freshness.asOfUtc !== "string") {
     return null;
   }
   if (row.policy === null) {
     return { policy: null, freshness: { status: "fresh", asOfUtc: freshness.asOfUtc } };
   }
   const policy = parseCommerceTrialPolicy(row.policy);
-  return policy
-    ? { policy, freshness: { status: "fresh", asOfUtc: freshness.asOfUtc } }
-    : null;
+  return policy ? { policy, freshness: { status: "fresh", asOfUtc: freshness.asOfUtc } } : null;
 }
