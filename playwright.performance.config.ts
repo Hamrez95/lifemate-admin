@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./e2e",
-  testMatch: /performance-baseline\.spec\.ts/,
+  testMatch: /performance-(baseline|client-navigation)\.spec\.ts/,
   fullyParallel: false,
   workers: 1,
   retries: 0,
