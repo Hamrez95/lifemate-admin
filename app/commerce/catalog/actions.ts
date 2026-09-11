@@ -260,7 +260,8 @@ export async function upsertPolicyAction(
         message: "وضعیت canonical Product برای Free quota قابل تأیید نیست؛ تغییری ثبت نشد.",
       };
     }
-    const productCode = catalog.data.products.find((product) => product.id === productId)?.code ?? null;
+    const productCode =
+      catalog.data.products.find((product) => product.id === productId)?.code ?? null;
     const validation = validateFreemiumQuotaPolicy({
       policyKey,
       productCode,
