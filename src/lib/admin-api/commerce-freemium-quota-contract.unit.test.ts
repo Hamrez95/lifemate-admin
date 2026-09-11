@@ -49,13 +49,7 @@ describe("commerce freemium quota contract", () => {
     ["wellmate-caremate", "integer", "Retired", 1, "inactive"],
     ["wellmate-caremate", "integer", "Active", -1, "invalid_value"],
     ["wellmate-caremate", "integer", "Active", 1.5, "invalid_value"],
-    [
-      "wellmate-caremate",
-      "integer",
-      "Active",
-      POSTGRES_INTEGER_MAX + 1,
-      "invalid_value",
-    ],
+    ["wellmate-caremate", "integer", "Active", POSTGRES_INTEGER_MAX + 1, "invalid_value"],
   ] as const)(
     "fails closed for invalid canonical quota policy %#",
     (productCode, valueType, status, value, reason) => {
