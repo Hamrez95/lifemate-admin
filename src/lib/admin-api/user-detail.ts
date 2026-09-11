@@ -50,7 +50,6 @@ export type UserDetailResponse = {
       status: string;
       startsAtUtc: string;
       expiresAtUtc: string | null;
-      version: number;
     }>;
   }>;
   relationships: UserDetailSection<
@@ -124,9 +123,7 @@ function hasValidCommerceContract(section: UserDetailSection<unknown>): boolean 
       typeof entitlement.source === "string" &&
       typeof entitlement.status === "string" &&
       typeof entitlement.startsAtUtc === "string" &&
-      (entitlement.expiresAtUtc === null || typeof entitlement.expiresAtUtc === "string") &&
-      Number.isInteger(entitlement.version) &&
-      Number(entitlement.version) >= 1
+      (entitlement.expiresAtUtc === null || typeof entitlement.expiresAtUtc === "string")
     );
   });
 }
