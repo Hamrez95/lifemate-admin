@@ -2,7 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 
-import { mutateCommerceCatalogV2 } from "@/src/lib/admin-api/commerce-catalog-v2";
+import {
+  getCommerceCatalogV2,
+  mutateCommerceCatalogV2,
+} from "@/src/lib/admin-api/commerce-catalog-v2";
+import {
+  isFreemiumQuotaPolicyKey,
+  validateFreemiumQuotaPolicy,
+} from "@/src/lib/admin-api/commerce-freemium-quota-contract";
 
 export type CatalogActionState = { status: "idle" | "success" | "error"; message: string };
 export const initialCatalogActionState: CatalogActionState = { status: "idle", message: "" };
@@ -244,6 +251,39 @@ export async function upsertPolicyAction(
   } catch {
     return { status: "error", message: "مقدار Policy با نوع انتخاب‌شده سازگار نیست." };
   }
+
+  if (isFreemiumQuotaPolicyKey(policyKey)) {
+    const catalog = await getCommerceCatalogV2({ includeHidden: true });
+    if (catalog.kind !== "ok") {
+      return {
+        status: "error",
+        message: "وضعیت canonical Product برای Free quota قابل تأیید نیست؛ تغییری ثبت نشد.",
+      };
+    }
+    const productCode =
+      catalog.data.products.find((product) => product.id === productId)?.code ?? null;
+    const validation = validateFreemiumQuotaPolicy({
+      policyKey,
+      productCode,
+      valueType,
+      status,
+      value,
+    });
+    if (validation.kind === "invalid") {
+      return {
+        status: "error",
+        message:
+          validation.reason === "wrong_product"
+            ? "Free quota فقط برای Product canonical WellMate + CareMate قابل تغییر است."
+            : validation.reason === "wrong_type"
+              ? "Free quota باید از نوع integer باقی بماند."
+              : validation.reason === "inactive"
+                ? "Free quota canonical نباید Retire شود؛ مقدار Active را تغییر دهید."
+                : "مقدار Free quota خارج از محدوده integer قابل پشتیبانی است.",
+      };
+    }
+  }
+
   return mutate(
     `/api/v1/commerce/catalog-v2/products/${productId}/policies/${encodeURIComponent(policyKey)}`,
     "PUT",
