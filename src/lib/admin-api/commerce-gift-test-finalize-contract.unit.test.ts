@@ -25,7 +25,10 @@ describe("Gift test finalize success contract", () => {
 
   it("accepts canonical idempotent replay", () => {
     expect(
-      parseGiftTestFinalizeSuccess({ ...successBody(), status: "Claimed", replayed: true }, giftIntentId),
+      parseGiftTestFinalizeSuccess(
+        { ...successBody(), status: "Claimed", replayed: true },
+        giftIntentId,
+      ),
     ).toEqual({ giftIntentId, status: "Claimed", replayed: true });
   });
 
