@@ -1,5 +1,6 @@
 import "server-only";
 
+import { parseGiftTestFinalizeSuccess } from "@/src/lib/admin-api/commerce-gift-test-finalize-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -51,7 +52,8 @@ export async function finalizeGiftForInternalTest(input: {
     return { kind: "unavailable" };
   }
 
-  const payload = record(await response.json().catch(() => null));
+  const rawPayload = await response.json().catch(() => null);
+  const payload = record(rawPayload);
   const code = payload && typeof payload.code === "string" ? payload.code : undefined;
   const message = payload
     ? typeof payload.detail === "string"
@@ -64,10 +66,8 @@ export async function finalizeGiftForInternalTest(input: {
     payload && typeof payload.correlationId === "string" ? payload.correlationId : undefined;
 
   if (response.ok) {
-    return {
-      kind: "ok",
-      replayed: payload?.replayed === true,
-    };
+    const success = parseGiftTestFinalizeSuccess(rawPayload, input.giftIntentId);
+    return success ? { kind: "ok", replayed: success.replayed } : { kind: "unavailable" };
   }
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden", code };
