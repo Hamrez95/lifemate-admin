@@ -91,6 +91,8 @@ export type UserActivityResult =
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const USER_ACTIVITY_PAGE_SIZE = 20;
 
+type CommerceContractValidation = "valid" | "version_unavailable" | "invalid";
+
 function hasSectionState(value: unknown): value is UserDetailSectionState {
   return value === "ready" || value === "empty" || value === "forbidden" || value === "unavailable";
 }
@@ -108,43 +110,63 @@ function isFreshness(value: unknown): value is UserDetailResponse["freshness"] {
   );
 }
 
-function hasValidCommerceContract(section: UserDetailSection<unknown>): boolean {
-  if (section.state !== "ready") return true;
-  if (!section.data || typeof section.data !== "object" || Array.isArray(section.data))
-    return false;
+function validateCommerceContract(section: UserDetailSection<unknown>): CommerceContractValidation {
+  if (section.state !== "ready") return "valid";
+  if (!section.data || typeof section.data !== "object" || Array.isArray(section.data)) {
+    return "invalid";
+  }
   const commerce = section.data as Record<string, unknown>;
-  if (!Array.isArray(commerce.subscriptions) || !Array.isArray(commerce.entitlements)) return false;
-  return commerce.entitlements.every((value) => {
-    if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  if (!Array.isArray(commerce.subscriptions) || !Array.isArray(commerce.entitlements)) {
+    return "invalid";
+  }
+
+  let versionUnavailable = false;
+  for (const value of commerce.entitlements) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return "invalid";
     const entitlement = value as Record<string, unknown>;
-    return (
+    const baseValid =
       typeof entitlement.id === "string" &&
       UUID_PATTERN.test(entitlement.id) &&
       typeof entitlement.featureCode === "string" &&
       typeof entitlement.source === "string" &&
       typeof entitlement.status === "string" &&
       typeof entitlement.startsAtUtc === "string" &&
-      (entitlement.expiresAtUtc === null || typeof entitlement.expiresAtUtc === "string") &&
-      Number.isInteger(entitlement.version) &&
-      Number(entitlement.version) >= 1
-    );
-  });
+      (entitlement.expiresAtUtc === null || typeof entitlement.expiresAtUtc === "string");
+    if (!baseValid) return "invalid";
+
+    if (!Number.isInteger(entitlement.version) || Number(entitlement.version) < 1) {
+      versionUnavailable = true;
+    }
+  }
+
+  return versionUnavailable ? "version_unavailable" : "valid";
 }
 
 export function parseUserDetailResponse(value: unknown): UserDetailResponse | null {
   if (!value || typeof value !== "object") return null;
   const body = value as Record<string, unknown>;
   if (!isSection(body.account) || !isSection(body.person) || !isSection(body.products)) return null;
-  if (!isSection(body.commerce) || !isSection(body.relationships) || !isSection(body.adminActivity))
+  if (
+    !isSection(body.commerce) ||
+    !isSection(body.relationships) ||
+    !isSection(body.adminActivity)
+  ) {
     return null;
-  if (!hasValidCommerceContract(body.commerce)) return null;
+  }
+  const commerceValidation = validateCommerceContract(body.commerce);
+  if (commerceValidation === "invalid") return null;
   if (!isFreshness(body.freshness)) return null;
   const account = body.account as UserDetailResponse["account"];
   if (account.state !== "ready" || !account.data) return null;
   if (!UUID_PATTERN.test(account.data.id) || typeof account.data.status !== "string") return null;
   if (typeof account.data.username !== "string" && account.data.username !== null) return null;
   if (typeof account.data.createdAtUtc !== "string") return null;
-  return body as unknown as UserDetailResponse;
+
+  const normalizedBody =
+    commerceValidation === "version_unavailable"
+      ? { ...body, commerce: { state: "unavailable" as const } }
+      : body;
+  return normalizedBody as unknown as UserDetailResponse;
 }
 
 function isActivityItem(value: unknown): value is UserAdminActivityItem {
@@ -165,8 +187,9 @@ function parseActivityResponse(value: unknown): UserActivityResponse | null {
     !Number.isInteger(body.page) ||
     !Number.isInteger(body.pageSize) ||
     !Number.isInteger(body.total)
-  )
+  ) {
     return null;
+  }
   if (!isFreshness(body.freshness)) return null;
   return body as unknown as UserActivityResponse;
 }
