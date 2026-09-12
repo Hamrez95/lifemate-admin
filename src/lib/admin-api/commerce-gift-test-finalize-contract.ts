@@ -16,7 +16,11 @@ export function parseGiftTestFinalizeSuccess(
 
   const body = value as Record<string, unknown>;
   if (body.giftIntentId !== expectedGiftIntentId) return null;
-  if (typeof body.status !== "string" || body.status.trim().length === 0 || body.status.length > 64) {
+  if (
+    typeof body.status !== "string" ||
+    body.status.trim().length === 0 ||
+    body.status.length > 64
+  ) {
     return null;
   }
 
