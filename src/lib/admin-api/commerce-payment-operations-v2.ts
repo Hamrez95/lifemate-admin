@@ -65,7 +65,7 @@ export type CommercePaymentOperationsSnapshot = {
 };
 
 export type CommercePaymentMutationResult =
-  | { kind: "ok"; code: string; replayed: boolean; message?: string }
+  | { kind: "ok"; code?: string; replayed: boolean; message?: string }
   | { kind: "unauthenticated" }
   | { kind: "forbidden" }
   | { kind: "invalid"; code?: string; message?: string }
@@ -332,13 +332,17 @@ export async function getCommercePaymentOperationsSnapshot(): Promise<CommercePa
   };
 }
 
-async function mutation(path: string, body: Record<string, unknown>, idempotencyKey: string) {
+async function mutation(
+  path: string,
+  body: Record<string, unknown>,
+  idempotencyKey: string,
+): Promise<CommercePaymentMutationResult> {
   const response = await api(path, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Idempotency-Key": idempotencyKey },
     body: JSON.stringify(body),
   });
-  if (!response) return { kind: "unauthenticated" } as CommercePaymentMutationResult;
+  if (!response) return { kind: "unauthenticated" };
   const rawPayload = await response.json().catch(() => null);
   const payload = record(rawPayload);
   const message = payload
@@ -355,15 +359,15 @@ async function mutation(path: string, body: Record<string, unknown>, idempotency
     const success = parseCommercePaymentMutationSuccess(rawPayload);
     return success ? { kind: "ok", ...success } : { kind: "unavailable" };
   }
-  if (response.status === 401) return { kind: "unauthenticated" } as CommercePaymentMutationResult;
-  if (response.status === 403) return { kind: "forbidden" } as CommercePaymentMutationResult;
+  if (response.status === 401) return { kind: "unauthenticated" };
+  if (response.status === 403) return { kind: "forbidden" };
   if (response.status === 400 || response.status === 422) {
-    return { kind: "invalid", code, message } as CommercePaymentMutationResult;
+    return { kind: "invalid", code, message };
   }
   if (response.status === 409) {
-    return { kind: "conflict", code, message } as CommercePaymentMutationResult;
+    return { kind: "conflict", code, message };
   }
-  return { kind: "unavailable", correlationId, message } as CommercePaymentMutationResult;
+  return { kind: "unavailable", correlationId, message };
 }
 
 export function requestCommerceRefund(input: {
