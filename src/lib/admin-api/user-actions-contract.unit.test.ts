@@ -16,9 +16,9 @@ function successBody() {
 
 describe("User 360 account action success contract", () => {
   it("accepts a success envelope bound to the requested account and action", () => {
-    expect(
-      parseUserAccountActionSuccess(successBody(), { accountId, action: "suspend" }),
-    ).toEqual(successBody());
+    expect(parseUserAccountActionSuccess(successBody(), { accountId, action: "suspend" })).toEqual(
+      successBody(),
+    );
   });
 
   it("rejects a success envelope for a different account", () => {
