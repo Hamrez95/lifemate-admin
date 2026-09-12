@@ -3,17 +3,16 @@ import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
 export type UserAccountAction = "suspend" | "restore";
 
+type UserAccountActionSuccess = {
+  accountId: string;
+  action: UserAccountAction;
+  previousStatus: string;
+  status: string;
+  replayed: boolean;
+};
+
 export type UserAccountActionResult =
-  | {
-      kind: "ok";
-      data: {
-        accountId: string;
-        action: UserAccountAction;
-        previousStatus: string;
-        status: string;
-        replayed: boolean;
-      };
-    }
+  | { kind: "ok"; data: UserAccountActionSuccess }
   | { kind: "unauthenticated" }
   | { kind: "forbidden"; message?: string }
   | { kind: "not_found"; message?: string }
@@ -23,6 +22,30 @@ export type UserAccountActionResult =
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
+
+export function parseUserAccountActionSuccess(
+  value: unknown,
+  expected: { accountId: string; action: UserAccountAction },
+): UserAccountActionSuccess | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const body = value as Record<string, unknown>;
+  if (
+    body.accountId !== expected.accountId ||
+    body.action !== expected.action ||
+    typeof body.previousStatus !== "string" ||
+    typeof body.status !== "string" ||
+    typeof body.replayed !== "boolean"
+  ) {
+    return null;
+  }
+  return {
+    accountId: expected.accountId,
+    action: expected.action,
+    previousStatus: body.previousStatus,
+    status: body.status,
+    replayed: body.replayed,
+  };
+}
 
 async function adminAccessToken(): Promise<string | null> {
   const supabase = await createServerSupabaseClient();
@@ -104,26 +127,8 @@ export async function performUserAccountAction(input: {
   }
 
   if (response.ok) {
-    const body = (await response.json()) as Record<string, unknown>;
-    if (
-      typeof body.accountId !== "string" ||
-      (body.action !== "suspend" && body.action !== "restore") ||
-      typeof body.previousStatus !== "string" ||
-      typeof body.status !== "string" ||
-      typeof body.replayed !== "boolean"
-    ) {
-      return { kind: "unavailable" };
-    }
-    return {
-      kind: "ok",
-      data: {
-        accountId: body.accountId,
-        action: body.action,
-        previousStatus: body.previousStatus,
-        status: body.status,
-        replayed: body.replayed,
-      },
-    };
+    const parsed = parseUserAccountActionSuccess(await response.json(), input);
+    return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
   }
 
   const problem = await readProblem(response);
