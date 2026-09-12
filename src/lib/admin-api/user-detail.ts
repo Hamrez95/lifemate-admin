@@ -146,7 +146,11 @@ export function parseUserDetailResponse(value: unknown): UserDetailResponse | nu
   if (!value || typeof value !== "object") return null;
   const body = value as Record<string, unknown>;
   if (!isSection(body.account) || !isSection(body.person) || !isSection(body.products)) return null;
-  if (!isSection(body.commerce) || !isSection(body.relationships) || !isSection(body.adminActivity)) {
+  if (
+    !isSection(body.commerce) ||
+    !isSection(body.relationships) ||
+    !isSection(body.adminActivity)
+  ) {
     return null;
   }
   const commerceValidation = validateCommerceContract(body.commerce);
