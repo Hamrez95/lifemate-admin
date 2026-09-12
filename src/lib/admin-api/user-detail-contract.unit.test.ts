@@ -38,8 +38,18 @@ function canonicalUserDetail() {
 }
 
 describe("User 360 canonical detail contract", () => {
-  it("accepts the current Core entitlement projection without an invented version field", () => {
+  it("keeps User 360 available but fails the Commerce section closed when Core omits entitlement version", () => {
     const payload = canonicalUserDetail();
+    const parsed = parseUserDetailResponse(payload);
+
+    expect(parsed).not.toBeNull();
+    expect(parsed?.account).toEqual(payload.account);
+    expect(parsed?.commerce).toEqual({ state: "unavailable" });
+  });
+
+  it("preserves Commerce when a concurrency-safe entitlement version is present", () => {
+    const payload = canonicalUserDetail();
+    Object.assign(payload.commerce.data.entitlements[0], { version: 4 });
 
     expect(parseUserDetailResponse(payload)).toEqual(payload);
   });
