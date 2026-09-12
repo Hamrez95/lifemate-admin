@@ -53,6 +53,7 @@ describe("ADM-COM-004 Transaction Detail / Audited Financial Actions", () => {
     expect(actions).toContain("requestCommerceRefundWorkflow");
     expect(actions).toContain("reason.length < 10");
     expect(actions).toContain("idempotencyKey");
+    expect(actions).toContain("result.data.transactionId.toLowerCase() !== transactionId");
     expect(operation).toContain('name="idempotencyKey"');
     expect(operation).toContain("crypto.randomUUID()");
     expect(operation).toContain("PendingReview");
