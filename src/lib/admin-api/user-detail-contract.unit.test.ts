@@ -49,14 +49,16 @@ describe("User 360 canonical detail contract", () => {
 
   it("preserves Commerce when a concurrency-safe entitlement version is present", () => {
     const payload = canonicalUserDetail();
-    Object.assign(payload.commerce.data.entitlements[0], { version: 4 });
+    const entitlement = payload.commerce.data.entitlements[0]!;
+    Object.assign(entitlement, { version: 4 });
 
     expect(parseUserDetailResponse(payload)).toEqual(payload);
   });
 
   it("still fails closed when a canonical entitlement field is missing", () => {
     const payload = canonicalUserDetail();
-    delete (payload.commerce.data.entitlements[0] as Partial<Record<string, unknown>>).featureCode;
+    const entitlement = payload.commerce.data.entitlements[0]!;
+    delete (entitlement as Partial<Record<string, unknown>>).featureCode;
 
     expect(parseUserDetailResponse(payload)).toBeNull();
   });
