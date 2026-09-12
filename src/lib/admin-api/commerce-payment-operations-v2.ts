@@ -1,5 +1,6 @@
 import "server-only";
 
+import { parseCommercePaymentMutationSuccess } from "@/src/lib/admin-api/commerce-payment-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -64,7 +65,7 @@ export type CommercePaymentOperationsSnapshot = {
 };
 
 export type CommercePaymentMutationResult =
-  | { kind: "ok"; replayed?: boolean; message?: string }
+  | { kind: "ok"; code?: string; replayed: boolean; message?: string }
   | { kind: "unauthenticated" }
   | { kind: "forbidden" }
   | { kind: "invalid"; code?: string; message?: string }
@@ -331,14 +332,19 @@ export async function getCommercePaymentOperationsSnapshot(): Promise<CommercePa
   };
 }
 
-async function mutation(path: string, body: Record<string, unknown>, idempotencyKey: string) {
+async function mutation(
+  path: string,
+  body: Record<string, unknown>,
+  idempotencyKey: string,
+): Promise<CommercePaymentMutationResult> {
   const response = await api(path, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Idempotency-Key": idempotencyKey },
     body: JSON.stringify(body),
   });
-  if (!response) return { kind: "unauthenticated" } as CommercePaymentMutationResult;
-  const payload = record(await response.json().catch(() => null));
+  if (!response) return { kind: "unauthenticated" };
+  const rawPayload = await response.json().catch(() => null);
+  const payload = record(rawPayload);
   const message = payload
     ? typeof payload.detail === "string"
       ? payload.detail
@@ -350,21 +356,18 @@ async function mutation(path: string, body: Record<string, unknown>, idempotency
   const correlationId =
     payload && typeof payload.correlationId === "string" ? payload.correlationId : undefined;
   if (response.ok) {
-    return {
-      kind: "ok",
-      replayed: payload && typeof payload.replayed === "boolean" ? payload.replayed : undefined,
-      message,
-    } as CommercePaymentMutationResult;
+    const success = parseCommercePaymentMutationSuccess(rawPayload);
+    return success ? { kind: "ok", ...success } : { kind: "unavailable" };
   }
-  if (response.status === 401) return { kind: "unauthenticated" } as CommercePaymentMutationResult;
-  if (response.status === 403) return { kind: "forbidden" } as CommercePaymentMutationResult;
+  if (response.status === 401) return { kind: "unauthenticated" };
+  if (response.status === 403) return { kind: "forbidden" };
   if (response.status === 400 || response.status === 422) {
-    return { kind: "invalid", code, message } as CommercePaymentMutationResult;
+    return { kind: "invalid", code, message };
   }
   if (response.status === 409) {
-    return { kind: "conflict", code, message } as CommercePaymentMutationResult;
+    return { kind: "conflict", code, message };
   }
-  return { kind: "unavailable", correlationId, message } as CommercePaymentMutationResult;
+  return { kind: "unavailable", correlationId, message };
 }
 
 export function requestCommerceRefund(input: {
