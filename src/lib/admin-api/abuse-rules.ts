@@ -1,5 +1,6 @@
 import "server-only";
 
+import { parseAbuseRuleMutationSuccess } from "@/src/lib/admin-api/abuse-rule-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -57,6 +58,8 @@ export type AbuseMutationResult =
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const KEY = /^[a-z][a-z0-9._-]{2,79}$/;
+
+type SuccessValidator = (value: unknown) => { replayed: boolean } | null;
 
 function text(value: unknown): string | null {
   return typeof value === "string" && value.trim() ? value.trim() : null;
@@ -283,6 +286,7 @@ async function mutate(
   path: string,
   body: Record<string, unknown>,
   idempotencyKey: string,
+  validateSuccess: SuccessValidator,
 ): Promise<AbuseMutationResult> {
   try {
     const response = await authenticatedFetch(path, {
@@ -302,12 +306,8 @@ async function mutate(
         correlationId: response.headers.get("x-correlation-id") ?? undefined,
         message,
       };
-    const replayed =
-      !!payload &&
-      typeof payload === "object" &&
-      !Array.isArray(payload) &&
-      (payload as Record<string, unknown>).replayed === true;
-    return { kind: "ok", replayed };
+    const success = validateSuccess(payload);
+    return success ? { kind: "ok", replayed: success.replayed } : { kind: "unavailable" };
   } catch {
     return { kind: "unavailable" };
   }
@@ -331,7 +331,16 @@ export function upsertAbuseRule(input: {
   idempotencyKey: string;
 }) {
   const { idempotencyKey, ...body } = input;
-  return mutate("/api/v1/security/abuse/rules", body, idempotencyKey);
+  return mutate(
+    "/api/v1/security/abuse/rules",
+    body,
+    idempotencyKey,
+    (value) =>
+      parseAbuseRuleMutationSuccess(value, {
+        kind: "upsert",
+        expectedVersion: input.expectedVersion,
+      }),
+  );
 }
 
 export function retireAbuseRule(input: {
@@ -344,5 +353,11 @@ export function retireAbuseRule(input: {
     `/api/v1/security/abuse/rules/${encodeURIComponent(input.ruleId)}/actions/retire`,
     { expectedVersion: input.expectedVersion, reason: input.reason },
     input.idempotencyKey,
+    (value) =>
+      parseAbuseRuleMutationSuccess(value, {
+        kind: "retire",
+        ruleId: input.ruleId,
+        expectedVersion: input.expectedVersion,
+      }),
   );
 }
