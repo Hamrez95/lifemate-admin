@@ -10,18 +10,14 @@ const effectiveFromUtc = "2026-09-14T08:30:00.000Z";
 describe("Commerce catalog mutation success contract", () => {
   it("accepts canonical plan creation and replay metadata", () => {
     expect(
-      parseCommerceCatalogMutationSuccess(
-        { planId, status: "Active", replayed: false },
-        201,
-        { kind: "createPlan" },
-      ),
+      parseCommerceCatalogMutationSuccess({ planId, status: "Active", replayed: false }, 201, {
+        kind: "createPlan",
+      }),
     ).not.toBeNull();
     expect(
-      parseCommerceCatalogMutationSuccess(
-        { planId, status: "Active", replayed: true },
-        201,
-        { kind: "createPlan" },
-      ),
+      parseCommerceCatalogMutationSuccess({ planId, status: "Active", replayed: true }, 201, {
+        kind: "createPlan",
+      }),
     ).not.toBeNull();
   });
 
