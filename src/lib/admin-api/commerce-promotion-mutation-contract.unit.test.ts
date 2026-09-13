@@ -65,7 +65,13 @@ describe("Commerce promotion mutation success contract", () => {
     null,
     {},
     { ...base(), replayed: "false" },
-    { ...base(), code: "unexpected", discountCodeId, promotionStatus: "Draft", codeStatus: "Active" },
+    {
+      ...base(),
+      code: "unexpected",
+      discountCodeId,
+      promotionStatus: "Draft",
+      codeStatus: "Active",
+    },
     { ...base(), discountCodeId: "bad", promotionStatus: "Draft", codeStatus: "Active" },
   ])("rejects malformed create success %#", (value) => {
     expect(parseCommercePromotionMutationSuccess(value, { kind: "create" })).toBeNull();
