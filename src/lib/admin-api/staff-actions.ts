@@ -1,7 +1,11 @@
+import {
+  parseStaffMutationSuccess,
+  type StaffMutationAction,
+} from "@/src/lib/admin-api/staff-action-mutation-contract";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
-export type StaffAction = "activate" | "disable" | "reenable" | "assign" | "revoke";
+export type StaffAction = StaffMutationAction;
 
 export type StaffActionResult =
   | {
@@ -101,26 +105,13 @@ export async function performStaffAction(input: {
     return { kind: "unavailable" };
   }
   if (response.ok) {
-    const body = (await response.json()) as Record<string, unknown>;
-    if (
-      typeof body.accountId !== "string" ||
-      typeof body.action !== "string" ||
-      typeof body.noop !== "boolean" ||
-      typeof body.replayed !== "boolean"
-    )
-      return { kind: "unavailable" };
-    return {
-      kind: "ok",
-      data: {
-        accountId: body.accountId,
-        action: body.action as StaffAction,
-        roleCode: typeof body.roleCode === "string" ? body.roleCode : null,
-        status: typeof body.status === "string" ? body.status : null,
-        previousStatus: typeof body.previousStatus === "string" ? body.previousStatus : null,
-        noop: body.noop,
-        replayed: body.replayed,
-      },
-    };
+    const body = await response.json().catch(() => null);
+    const parsed = parseStaffMutationSuccess(body, response.status, {
+      accountId: input.accountId,
+      action: input.action,
+      roleCode: isRoleAction ? (roleCode ?? null) : null,
+    });
+    return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
   }
   const detail = await problem(response);
   if (response.status === 401) return { kind: "unauthenticated" };
