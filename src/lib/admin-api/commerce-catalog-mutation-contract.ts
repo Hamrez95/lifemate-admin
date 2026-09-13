@@ -36,7 +36,8 @@ export function parseCommerceCatalogMutationSuccess(
   if (!body || typeof body.replayed !== "boolean") return null;
 
   if (expectation.kind === "createPlan") {
-    if (httpStatus !== 201 || typeof body.planId !== "string" || !UUID.test(body.planId)) return null;
+    if (httpStatus !== 201 || typeof body.planId !== "string" || !UUID.test(body.planId))
+      return null;
     if (body.status !== "Active") return null;
     return body;
   }
@@ -50,7 +51,8 @@ export function parseCommerceCatalogMutationSuccess(
     return body;
   }
 
-  if (httpStatus !== 201 || typeof body.priceId !== "string" || !UUID.test(body.priceId)) return null;
+  if (httpStatus !== 201 || typeof body.priceId !== "string" || !UUID.test(body.priceId))
+    return null;
   if (!sameInstant(body.effectiveFromUtc, expectation.effectiveFromUtc)) return null;
   return body;
 }
