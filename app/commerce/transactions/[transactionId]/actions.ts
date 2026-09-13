@@ -49,6 +49,12 @@ export async function requestRefundAction(
   });
 
   if (result.kind === "ok") {
+    if (result.data.transactionId.toLowerCase() !== transactionId) {
+      return {
+        status: "unavailable",
+        message: "پاسخ سرویس مالی با تراکنش درخواستی هم‌خوان نیست؛ دوباره تلاش کنید.",
+      };
+    }
     revalidatePath(`/commerce/transactions/${transactionId}`);
     revalidatePath("/commerce/transactions");
     return {
