@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { parseCommercePromotionMutationSuccess } from "@/src/lib/admin-api/commerce-promotion-mutation-contract";
 import {
   setCommercePromotionStatus,
   updateCommercePromotion,
@@ -189,6 +190,15 @@ export async function updatePromotionAction(
     payload,
     identity.idempotencyKey,
   );
+  if (
+    result.kind === "ok" &&
+    !parseCommercePromotionMutationSuccess(result.data, {
+      kind: "update",
+      promotionId: identity.promotionId,
+    })
+  ) {
+    return { status: "unavailable", message: "پاسخ سرویس تجارت معتبر نیست؛ دوباره تلاش کنید." };
+  }
   const state = stateFromMutation(result, "قوانین پروموشن با Audit به‌روزرسانی شد.");
   if (state.status === "success") {
     revalidatePath(`/commerce/promotions/${identity.promotionId}`);
@@ -217,6 +227,16 @@ export async function changePromotionStatusAction(
     reason,
     identity.idempotencyKey,
   );
+  if (
+    result.kind === "ok" &&
+    !parseCommercePromotionMutationSuccess(result.data, {
+      kind: "status",
+      promotionId: identity.promotionId,
+      status: targetStatus,
+    })
+  ) {
+    return { status: "unavailable", message: "پاسخ سرویس تجارت معتبر نیست؛ دوباره تلاش کنید." };
+  }
   const state = stateFromMutation(result, `وضعیت پروموشن به ${targetStatus} تغییر کرد.`);
   if (state.status === "success") {
     revalidatePath(`/commerce/promotions/${identity.promotionId}`);
