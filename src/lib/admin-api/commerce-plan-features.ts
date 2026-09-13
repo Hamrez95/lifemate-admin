@@ -1,5 +1,6 @@
 import "server-only";
 
+import { parseCommercePlanFeatureMutationSuccess } from "@/src/lib/admin-api/commerce-plan-feature-mutation-contract";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
@@ -150,7 +151,17 @@ export async function configureCommercePlanFeature(input: {
     return { kind: "unavailable" };
   }
 
-  if (response.ok) return { kind: "ok" };
+  if (response.ok) {
+    const body = await response.json().catch(() => null);
+    return parseCommercePlanFeatureMutationSuccess(body, {
+      planId: input.planId,
+      featureId: input.featureId,
+      assigned: input.assigned,
+      expectedVersion: input.expectedVersion,
+    })
+      ? { kind: "ok" }
+      : { kind: "unavailable" };
+  }
   const issue = await problem(response);
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden", message: issue.message };
