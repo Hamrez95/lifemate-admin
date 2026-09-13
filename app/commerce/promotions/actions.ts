@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { parseCommercePromotionMutationSuccess } from "@/src/lib/admin-api/commerce-promotion-mutation-contract";
 import {
   createCommercePromotion,
   type PromotionDiscountType,
@@ -37,7 +38,9 @@ function mutationState(
   result: Awaited<ReturnType<typeof createCommercePromotion>>,
 ): PromotionActionState {
   if (result.kind === "ok") {
-    return { status: "success", message: "پروموشن به‌صورت Draft ساخته شد." };
+    return parseCommercePromotionMutationSuccess(result.data, { kind: "create" })
+      ? { status: "success", message: "پروموشن به‌صورت Draft ساخته شد." }
+      : { status: "unavailable", message: "پاسخ سرویس تجارت معتبر نیست؛ دوباره تلاش کنید." };
   }
   if (result.kind === "forbidden" || result.kind === "unauthenticated") {
     return {
