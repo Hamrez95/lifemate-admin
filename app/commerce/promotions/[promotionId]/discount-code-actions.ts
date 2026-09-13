@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { parseCommerceDiscountCodeMutationSuccess } from "@/src/lib/admin-api/commerce-discount-code-mutation-contract";
 import {
   issueCommerceDiscountCodes,
   setCommerceDiscountCodeStatus,
@@ -128,18 +129,27 @@ export async function issueDiscountCodesAction(
     return { status: "invalid", message: "روش صدور کد معتبر نیست." };
   }
 
-  const state = mutationState(
-    await issueCommerceDiscountCodes({
+  const result = await issueCommerceDiscountCodes({
+    promotionId,
+    codes,
+    generateCount,
+    prefix,
+    maxRedemptions,
+    reason,
+    idempotencyKey,
+  });
+  if (
+    result.kind === "ok" &&
+    !parseCommerceDiscountCodeMutationSuccess(result.data, {
+      kind: "issue",
       promotionId,
-      codes,
-      generateCount,
-      prefix,
-      maxRedemptions,
-      reason,
-      idempotencyKey,
-    }),
-    "کدهای تخفیف با محدودیت و Audit صادر شدند.",
-  );
+      expectedCount: codes?.length ?? generateCount ?? 0,
+      explicitCodes: codes,
+    })
+  ) {
+    return { status: "unavailable", message: "پاسخ سرویس تجارت معتبر نیست؛ دوباره تلاش کنید." };
+  }
+  const state = mutationState(result, "کدهای تخفیف با محدودیت و Audit صادر شدند.");
   if (state.status === "success") {
     revalidatePath(`/commerce/promotions/${promotionId}`);
     revalidatePath("/commerce/promotions");
@@ -178,17 +188,28 @@ export async function setDiscountCodeStatusAction(
     return { status: "invalid", message: "دلیل تغییر باید بین ۱۰ تا ۱۰۰۰ نویسه باشد." };
   }
 
-  const state = mutationState(
-    await setCommerceDiscountCodeStatus({
+  const expectedVersion = Number(versionRaw);
+  const result = await setCommerceDiscountCodeStatus({
+    promotionId,
+    codeId,
+    status,
+    expectedVersion,
+    reason,
+    idempotencyKey,
+  });
+  if (
+    result.kind === "ok" &&
+    !parseCommerceDiscountCodeMutationSuccess(result.data, {
+      kind: "status",
       promotionId,
       codeId,
       status,
-      expectedVersion: Number(versionRaw),
-      reason,
-      idempotencyKey,
-    }),
-    "وضعیت کد تخفیف با نسخه‌بندی و Audit تغییر کرد.",
-  );
+      expectedVersion,
+    })
+  ) {
+    return { status: "unavailable", message: "پاسخ سرویس تجارت معتبر نیست؛ دوباره تلاش کنید." };
+  }
+  const state = mutationState(result, "وضعیت کد تخفیف با نسخه‌بندی و Audit تغییر کرد.");
   if (state.status === "success") {
     revalidatePath(`/commerce/promotions/${promotionId}`);
     revalidatePath("/commerce/promotions");
