@@ -193,7 +193,7 @@ export async function setDiscountCodeStatusAction(
     promotionId,
     codeId,
     status,
-    expectedVersion,
+    expectedVersion: Number(versionRaw),
     reason,
     idempotencyKey,
   });
