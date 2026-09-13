@@ -1,5 +1,7 @@
 import "server-only";
 
+import { parseCommerceCatalogMutationSuccess } from "@/src/lib/admin-api/commerce-catalog-mutation-contract";
+import { parseCommerceTrialMutationSuccess } from "@/src/lib/admin-api/commerce-trial-policy-contract";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
@@ -63,6 +65,8 @@ export type CommerceCatalogMutationResult =
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
 
+type SuccessValidator = (data: Record<string, unknown>, httpStatus: number) => boolean;
+
 async function accessToken(): Promise<string | null> {
   const supabase = await createServerSupabaseClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
@@ -100,6 +104,7 @@ async function mutateCatalog(
   method: "POST" | "PUT",
   body: unknown,
   idempotencyKey: string,
+  validateSuccess: SuccessValidator,
 ): Promise<CommerceCatalogMutationResult> {
   if (!IDEMPOTENCY_PATTERN.test(idempotencyKey)) {
     return { kind: "invalid", message: "شناسه امن درخواست معتبر نیست." };
@@ -127,9 +132,18 @@ async function mutateCatalog(
   }
 
   if (response.ok) {
-    const data = (await response.json()) as unknown;
-    return data && typeof data === "object" && !Array.isArray(data)
-      ? { kind: "ok", data: data as Record<string, unknown> }
+    let data: unknown;
+    try {
+      data = await response.json();
+    } catch {
+      return { kind: "unavailable" };
+    }
+    if (!data || typeof data !== "object" || Array.isArray(data)) {
+      return { kind: "unavailable" };
+    }
+    const result = data as Record<string, unknown>;
+    return validateSuccess(result, response.status)
+      ? { kind: "ok", data: result }
       : { kind: "unavailable" };
   }
 
@@ -198,7 +212,9 @@ export async function getCommerceTrialPolicy(planId: string): Promise<CommerceTr
 }
 
 export function createCommercePlan(payload: CreateCommercePlanPayload, idempotencyKey: string) {
-  return mutateCatalog("/api/v1/commerce/plans", "POST", payload, idempotencyKey);
+  return mutateCatalog("/api/v1/commerce/plans", "POST", payload, idempotencyKey, (data, status) =>
+    Boolean(parseCommerceCatalogMutationSuccess(data, status, { kind: "createPlan" })),
+  );
 }
 
 export function updateCommercePlan(
@@ -211,7 +227,20 @@ export function updateCommercePlan(
       kind: "not_found",
     } as CommerceCatalogMutationResult);
   }
-  return mutateCatalog(`/api/v1/commerce/plans/${planId}`, "PUT", payload, idempotencyKey);
+  return mutateCatalog(
+    `/api/v1/commerce/plans/${planId}`,
+    "PUT",
+    payload,
+    idempotencyKey,
+    (data, status) =>
+      Boolean(
+        parseCommerceCatalogMutationSuccess(data, status, {
+          kind: "updatePlan",
+          planId,
+          status: payload.status,
+        }),
+      ),
+  );
 }
 
 export function scheduleCommercePrice(
@@ -224,7 +253,20 @@ export function scheduleCommercePrice(
       kind: "not_found",
     } as CommerceCatalogMutationResult);
   }
-  return mutateCatalog(`/api/v1/commerce/plans/${planId}/prices`, "POST", payload, idempotencyKey);
+  return mutateCatalog(
+    `/api/v1/commerce/plans/${planId}/prices`,
+    "POST",
+    payload,
+    idempotencyKey,
+    (data, status) =>
+      Boolean(
+        parseCommerceCatalogMutationSuccess(data, status, {
+          kind: "schedulePrice",
+          planId,
+          effectiveFromUtc: payload.effectiveFromUtc,
+        }),
+      ),
+  );
 }
 
 export function configureCommerceTrial(
@@ -242,5 +284,17 @@ export function configureCommerceTrial(
     "PUT",
     payload,
     idempotencyKey,
+    (data, status) => {
+      const parsed = parseCommerceTrialMutationSuccess(data);
+      return Boolean(
+        parsed &&
+          status === (payload.expectedVersion === 0 ? 201 : 200) &&
+          parsed.planId.toLowerCase() === planId.toLowerCase() &&
+          parsed.durationDays === payload.durationDays &&
+          parsed.eligibilityRule === payload.eligibilityRule &&
+          parsed.status === payload.status &&
+          parsed.version === payload.expectedVersion + 1,
+      );
+    },
   );
 }
