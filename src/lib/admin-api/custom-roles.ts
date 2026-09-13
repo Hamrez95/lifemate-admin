@@ -1,5 +1,6 @@
 import "server-only";
 
+import { parseCustomRoleMutationSuccess } from "@/src/lib/admin-api/custom-role-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -60,6 +61,8 @@ type PermissionMutationInput = {
   reason: string;
   idempotencyKey: string;
 };
+
+type SuccessValidator = (value: unknown, httpStatus: number) => { replayed: boolean } | null;
 
 const ROLE_CODE = /^[a-z][a-z0-9_]{1,63}$/;
 const PERMISSION_CODE = /^[a-z][a-z0-9_.]{1,119}$/;
@@ -196,7 +199,11 @@ export async function getCustomRoles(): Promise<CustomRolesResult> {
   }
 }
 
-async function mutate(path: string, init: RequestInit): Promise<CustomRoleMutationResult> {
+async function mutate(
+  path: string,
+  init: RequestInit,
+  validateSuccess: SuccessValidator,
+): Promise<CustomRoleMutationResult> {
   try {
     const response = await authenticatedFetch(path, init);
     if (!response) return { kind: "unauthenticated" };
@@ -213,51 +220,75 @@ async function mutate(path: string, init: RequestInit): Promise<CustomRoleMutati
         message,
       };
     }
-    const replayed =
-      !!payload &&
-      typeof payload === "object" &&
-      !Array.isArray(payload) &&
-      typeof (payload as Record<string, unknown>).replayed === "boolean"
-        ? Boolean((payload as Record<string, unknown>).replayed)
-        : false;
-    return { kind: "ok", replayed };
+    const success = validateSuccess(payload, response.status);
+    return success ? { kind: "ok", replayed: success.replayed } : { kind: "unavailable" };
   } catch {
     return { kind: "unavailable" };
   }
 }
 
 export function createCustomRole(input: RoleMutationInput): Promise<CustomRoleMutationResult> {
-  return mutate("/api/v1/security/custom-roles", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
-    body: JSON.stringify({
-      code: input.code,
-      displayName: input.displayName,
-      rank: input.rank,
-      reason: input.reason,
-    }),
-  });
+  return mutate(
+    "/api/v1/security/custom-roles",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
+      body: JSON.stringify({
+        code: input.code,
+        displayName: input.displayName,
+        rank: input.rank,
+        reason: input.reason,
+      }),
+    },
+    (value, status) =>
+      parseCustomRoleMutationSuccess(value, status, {
+        kind: "create",
+        roleCode: input.code.trim().toLowerCase(),
+        displayName: input.displayName?.trim() ?? "",
+        rank: input.rank ?? -1,
+      }),
+  );
 }
 
 export function updateCustomRole(input: RoleMutationInput): Promise<CustomRoleMutationResult> {
-  return mutate(`/api/v1/security/custom-roles/${encodeURIComponent(input.code)}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
-    body: JSON.stringify({
-      displayName: input.displayName,
-      rank: input.rank,
-      expectedVersion: input.expectedVersion,
-      reason: input.reason,
-    }),
-  });
+  return mutate(
+    `/api/v1/security/custom-roles/${encodeURIComponent(input.code)}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
+      body: JSON.stringify({
+        displayName: input.displayName,
+        rank: input.rank,
+        expectedVersion: input.expectedVersion,
+        reason: input.reason,
+      }),
+    },
+    (value, status) =>
+      parseCustomRoleMutationSuccess(value, status, {
+        kind: "update",
+        roleCode: input.code.trim().toLowerCase(),
+        displayName: input.displayName?.trim() ?? "",
+        rank: input.rank ?? -1,
+        expectedVersion: input.expectedVersion ?? -1,
+      }),
+  );
 }
 
 export function retireCustomRole(input: RoleMutationInput): Promise<CustomRoleMutationResult> {
-  return mutate(`/api/v1/security/custom-roles/${encodeURIComponent(input.code)}/actions/retire`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
-    body: JSON.stringify({ expectedVersion: input.expectedVersion, reason: input.reason }),
-  });
+  return mutate(
+    `/api/v1/security/custom-roles/${encodeURIComponent(input.code)}/actions/retire`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
+      body: JSON.stringify({ expectedVersion: input.expectedVersion, reason: input.reason }),
+    },
+    (value, status) =>
+      parseCustomRoleMutationSuccess(value, status, {
+        kind: "retire",
+        roleCode: input.code.trim().toLowerCase(),
+        expectedVersion: input.expectedVersion ?? -1,
+      }),
+  );
 }
 
 export function mutateCustomRolePermission(
@@ -275,5 +306,13 @@ export function mutateCustomRolePermission(
         reason: input.reason,
       }),
     },
+    (value, status) =>
+      parseCustomRoleMutationSuccess(value, status, {
+        kind: "permission",
+        roleCode: input.roleCode.trim().toLowerCase(),
+        permissionCode: input.permissionCode.trim().toLowerCase(),
+        action,
+        expectedVersion: input.expectedVersion,
+      }),
   );
 }
