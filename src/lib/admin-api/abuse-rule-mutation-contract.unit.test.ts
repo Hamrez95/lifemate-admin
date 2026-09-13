@@ -39,7 +39,10 @@ describe("abuse rule mutation success contract", () => {
   });
 
   it.each([
-    [{ code: "ok", id: ruleId, version: 1, replayed: false }, { kind: "upsert", expectedVersion: null } as const],
+    [
+      { code: "ok", id: ruleId, version: 1, replayed: false },
+      { kind: "upsert", expectedVersion: null } as const,
+    ],
     [
       { httpStatus: 200, code: "ok", id: ruleId, version: 2, replayed: false },
       { kind: "upsert", expectedVersion: null } as const,
