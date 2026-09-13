@@ -331,15 +331,11 @@ export function upsertAbuseRule(input: {
   idempotencyKey: string;
 }) {
   const { idempotencyKey, ...body } = input;
-  return mutate(
-    "/api/v1/security/abuse/rules",
-    body,
-    idempotencyKey,
-    (value) =>
-      parseAbuseRuleMutationSuccess(value, {
-        kind: "upsert",
-        expectedVersion: input.expectedVersion,
-      }),
+  return mutate("/api/v1/security/abuse/rules", body, idempotencyKey, (value) =>
+    parseAbuseRuleMutationSuccess(value, {
+      kind: "upsert",
+      expectedVersion: input.expectedVersion,
+    }),
   );
 }
 
