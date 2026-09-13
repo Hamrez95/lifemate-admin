@@ -288,12 +288,12 @@ export function configureCommerceTrial(
       const parsed = parseCommerceTrialMutationSuccess(data);
       return Boolean(
         parsed &&
-          status === (payload.expectedVersion === 0 ? 201 : 200) &&
-          parsed.planId.toLowerCase() === planId.toLowerCase() &&
-          parsed.durationDays === payload.durationDays &&
-          parsed.eligibilityRule === payload.eligibilityRule &&
-          parsed.status === payload.status &&
-          parsed.version === payload.expectedVersion + 1,
+        status === (payload.expectedVersion === 0 ? 201 : 200) &&
+        parsed.planId.toLowerCase() === planId.toLowerCase() &&
+        parsed.durationDays === payload.durationDays &&
+        parsed.eligibilityRule === payload.eligibilityRule &&
+        parsed.status === payload.status &&
+        parsed.version === payload.expectedVersion + 1,
       );
     },
   );
