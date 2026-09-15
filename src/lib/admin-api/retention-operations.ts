@@ -1,5 +1,9 @@
 import "server-only";
 
+import {
+  parseRetentionMutationSuccess,
+  type RetentionMutationExpectation,
+} from "@/src/lib/admin-api/retention-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -287,6 +291,7 @@ async function mutate(
   path: string,
   body: Record<string, unknown>,
   idempotencyKey: string,
+  expectation: RetentionMutationExpectation,
 ): Promise<RetentionMutationResult> {
   try {
     const response = await authenticatedFetch(path, {
@@ -306,12 +311,8 @@ async function mutate(
         correlationId: response.headers.get("x-correlation-id") ?? undefined,
         message,
       };
-    const replayed =
-      !!payload &&
-      typeof payload === "object" &&
-      !Array.isArray(payload) &&
-      (payload as Record<string, unknown>).replayed === true;
-    return { kind: "ok", replayed };
+    const success = parseRetentionMutationSuccess(payload, response.status, expectation);
+    return success ? { kind: "ok", replayed: success.replayed } : { kind: "unavailable" };
   } catch {
     return { kind: "unavailable" };
   }
@@ -339,6 +340,11 @@ export function activateRetentionPolicy(input: {
       reason: input.reason,
     },
     input.idempotencyKey,
+    {
+      kind: "policy",
+      dataCategory: input.dataCategory,
+      purposeCode: input.purposeCode.trim() ? input.purposeCode : "default",
+    },
   );
 }
 
@@ -362,6 +368,7 @@ export function createRetentionHold(input: {
       expiresAtUtc: input.expiresAtUtc,
     },
     input.idempotencyKey,
+    { kind: "hold-create" },
   );
 }
 
@@ -374,5 +381,6 @@ export function releaseRetentionHold(input: {
     `/api/v1/security/retention/holds/${encodeURIComponent(input.holdId)}/release`,
     { reason: input.reason },
     input.idempotencyKey,
+    { kind: "hold-release", holdId: input.holdId },
   );
 }
