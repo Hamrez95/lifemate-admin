@@ -1,5 +1,9 @@
 import "server-only";
 
+import {
+  parseProductUpdatePolicyMutationSuccess,
+  type ProductUpdatePolicyMutationSuccess,
+} from "@/src/lib/admin-api/product-update-policy-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -151,27 +155,62 @@ export async function putProductUpdatePolicy(input: {
   expectedVersion: number;
   reason: string;
   idempotencyKey: string;
-}): Promise<Result<Record<string, unknown>>> {
-  return mapped(
-    await request("/api/v1/platform/product-update-policies", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Idempotency-Key": input.idempotencyKey,
-      },
-      body: JSON.stringify({
-        product: input.product,
-        platform: input.platform,
-        minimumSupportedVersion: input.minimumSupportedVersion,
-        recommendedVersion: input.recommendedVersion,
-        mode: input.mode,
-        reasonCode: input.reasonCode,
-        messageKey: input.messageKey,
-        status: input.status,
-        effectiveAtUtc: input.effectiveAtUtc,
-        expectedVersion: input.expectedVersion,
-        reason: input.reason,
-      }),
+}): Promise<Result<ProductUpdatePolicyMutationSuccess>> {
+  const response = await request("/api/v1/platform/product-update-policies", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Idempotency-Key": input.idempotencyKey,
+    },
+    body: JSON.stringify({
+      product: input.product,
+      platform: input.platform,
+      minimumSupportedVersion: input.minimumSupportedVersion,
+      recommendedVersion: input.recommendedVersion,
+      mode: input.mode,
+      reasonCode: input.reasonCode,
+      messageKey: input.messageKey,
+      status: input.status,
+      effectiveAtUtc: input.effectiveAtUtc,
+      expectedVersion: input.expectedVersion,
+      reason: input.reason,
     }),
-  );
+  });
+
+  if (response === null || response.status === 401) return { kind: "unauthenticated" };
+  const payload = (await response.json().catch(() => null)) as unknown;
+  const body =
+    payload && typeof payload === "object" && !Array.isArray(payload)
+      ? (payload as Record<string, unknown>)
+      : null;
+
+  if (response.status === 403) return { kind: "forbidden" };
+  if ([400, 404, 409].includes(response.status)) {
+    return {
+      kind: "invalid",
+      message: typeof body?.message === "string" ? body.message : undefined,
+    };
+  }
+  if (!response.ok) {
+    return {
+      kind: "unavailable",
+      correlationId:
+        response.headers.get("x-correlation-id") ??
+        (typeof body?.correlationId === "string" ? body.correlationId : undefined),
+    };
+  }
+
+  const success = parseProductUpdatePolicyMutationSuccess(payload, response.status, {
+    product: input.product,
+    platform: input.platform,
+    minimumSupportedVersion: input.minimumSupportedVersion,
+    recommendedVersion: input.recommendedVersion,
+    mode: input.mode,
+    reasonCode: input.reasonCode,
+    messageKey: input.messageKey,
+    status: input.status,
+    effectiveAtUtc: input.effectiveAtUtc,
+    expectedVersion: input.expectedVersion,
+  });
+  return success ? { kind: "ok", data: success } : { kind: "unavailable" };
 }
