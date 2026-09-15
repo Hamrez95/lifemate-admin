@@ -1,5 +1,10 @@
 import "server-only";
 
+import {
+  parsePlatformControlMutationSuccess,
+  type PlatformControlMutationExpectation,
+  type PlatformControlMutationSuccess,
+} from "@/src/lib/admin-api/platform-control-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -112,19 +117,43 @@ async function mapped<T>(
   };
 }
 
-function mutation(
+async function mutation(
   path: string,
   method: "POST" | "PATCH",
   body: Record<string, unknown>,
   idempotencyKey: string,
-) {
-  return mapped<Record<string, unknown>>(
-    request(path, {
-      method,
-      headers: { "Content-Type": "application/json", "Idempotency-Key": idempotencyKey },
-      body: JSON.stringify(body),
-    }),
-  );
+  expectation: PlatformControlMutationExpectation,
+): Promise<Result<PlatformControlMutationSuccess>> {
+  const response = await request(path, {
+    method,
+    headers: { "Content-Type": "application/json", "Idempotency-Key": idempotencyKey },
+    body: JSON.stringify(body),
+  });
+  if (response === null) return { kind: "unauthenticated" };
+
+  const payload = (await response.json().catch(() => null)) as unknown;
+  const row =
+    payload && typeof payload === "object" && !Array.isArray(payload)
+      ? (payload as Record<string, unknown>)
+      : null;
+
+  if (response.status === 401) return { kind: "unauthenticated" };
+  if (response.status === 403) return { kind: "forbidden" };
+  if ([400, 404, 409].includes(response.status)) {
+    return {
+      kind: "invalid",
+      message: typeof row?.message === "string" ? row.message : undefined,
+    };
+  }
+  if (!response.ok) {
+    return {
+      kind: "unavailable",
+      correlationId: typeof row?.correlationId === "string" ? row.correlationId : undefined,
+    };
+  }
+
+  const success = parsePlatformControlMutationSuccess(payload, response.status, expectation);
+  return success ? { kind: "ok", data: success } : { kind: "unavailable" };
 }
 
 export function getPlatformControls(): Promise<
@@ -186,6 +215,12 @@ export function createPlatformControl(input: {
       reason: input.reason,
     },
     input.idempotencyKey,
+    {
+      kind: "control-create",
+      controlKey: input.controlKey,
+      controlKind: input.controlKind,
+      valueType: input.valueType,
+    },
   );
 }
 
@@ -211,6 +246,14 @@ export function updatePlatformControl(input: {
       reason: input.reason,
     },
     input.idempotencyKey,
+    {
+      kind: "control-update",
+      controlKey: input.key,
+      expectedVersion: input.expectedVersion,
+      status: input.status,
+      description: input.description,
+      failClosed: input.failClosed,
+    },
   );
 }
 
@@ -242,6 +285,13 @@ export function createPlatformRule(input: {
       reason: input.reason,
     },
     input.idempotencyKey,
+    {
+      kind: "rule-create",
+      controlKey: input.controlKey,
+      priority: input.priority,
+      targetType: input.targetType,
+      status: input.status,
+    },
   );
 }
 
@@ -275,6 +325,14 @@ export function updatePlatformRule(input: {
       reason: input.reason,
     },
     input.idempotencyKey,
+    {
+      kind: "rule-update",
+      ruleId: input.ruleId,
+      expectedVersion: input.expectedVersion,
+      priority: input.priority,
+      targetType: input.targetType,
+      status: input.status,
+    },
   );
 }
 
@@ -294,6 +352,7 @@ export function rollbackPlatformControl(input: {
       reason: input.reason,
     },
     input.idempotencyKey,
+    { kind: "rollback", controlKey: input.key, expectedVersion: input.expectedVersion },
   );
 }
 
@@ -308,5 +367,6 @@ export function killSwitchPlatformControl(input: {
     "POST",
     { expectedVersion: input.expectedVersion, reason: input.reason },
     input.idempotencyKey,
+    { kind: "kill-switch", controlKey: input.key, expectedVersion: input.expectedVersion },
   );
 }
