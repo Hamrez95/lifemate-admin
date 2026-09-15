@@ -1,5 +1,10 @@
 import "server-only";
 
+import {
+  parseProductSignalMutationSuccess,
+  type ProductSignalMutationExpectation,
+  type ProductSignalMutationSuccess,
+} from "@/src/lib/admin-api/product-signal-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -109,6 +114,39 @@ async function mapped<T>(response: Response | null): Promise<ProductSignalResult
   };
 }
 
+async function mutationMapped(
+  response: Response | null,
+  expectation: ProductSignalMutationExpectation,
+): Promise<ProductSignalResult<ProductSignalMutationSuccess>> {
+  if (response === null) return { kind: "unauthenticated" };
+
+  const payload = (await response.json().catch(() => null)) as unknown;
+  const body =
+    payload && typeof payload === "object" && !Array.isArray(payload)
+      ? (payload as Record<string, unknown>)
+      : null;
+
+  if (response.status === 401) return { kind: "unauthenticated" };
+  if (response.status === 403) return { kind: "forbidden" };
+  if (response.status === 400 || response.status === 404 || response.status === 409) {
+    return {
+      kind: "invalid",
+      message: typeof body?.message === "string" ? body.message : undefined,
+    };
+  }
+  if (!response.ok) {
+    return {
+      kind: "unavailable",
+      correlationId:
+        response.headers.get("x-correlation-id") ??
+        (typeof body?.correlationId === "string" ? body.correlationId : undefined),
+    };
+  }
+
+  const success = parseProductSignalMutationSuccess(payload, response.status, expectation);
+  return success ? { kind: "ok", data: success } : { kind: "unavailable" };
+}
+
 export async function listExperiments(): Promise<
   ProductSignalResult<{ items: ExperimentDefinition[]; total: number; outcomesComputed: boolean }>
 > {
@@ -118,13 +156,18 @@ export async function listExperiments(): Promise<
 export async function createExperiment(input: {
   payload: Record<string, unknown>;
   idempotencyKey: string;
-}): Promise<ProductSignalResult<Record<string, unknown>>> {
-  return mapped(
+}): Promise<ProductSignalResult<ProductSignalMutationSuccess>> {
+  const experimentKey =
+    typeof input.payload.experimentKey === "string"
+      ? input.payload.experimentKey.trim().toLowerCase()
+      : "";
+  return mutationMapped(
     await adminFetch("/api/v1/experiments", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
       body: JSON.stringify(input.payload),
     }),
+    { kind: "experiment-create", experimentKey },
   );
 }
 
@@ -134,8 +177,8 @@ export async function setExperimentStatus(input: {
   expectedVersion: number;
   reason: string;
   idempotencyKey: string;
-}): Promise<ProductSignalResult<Record<string, unknown>>> {
-  return mapped(
+}): Promise<ProductSignalResult<ProductSignalMutationSuccess>> {
+  return mutationMapped(
     await adminFetch(`/api/v1/experiments/${encodeURIComponent(input.experimentKey)}/status`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
@@ -145,6 +188,12 @@ export async function setExperimentStatus(input: {
         reason: input.reason,
       }),
     }),
+    {
+      kind: "experiment-status",
+      experimentKey: input.experimentKey.trim().toLowerCase(),
+      status: input.status,
+      expectedVersion: input.expectedVersion,
+    },
   );
 }
 
@@ -190,8 +239,8 @@ export async function mutateFeedback(input: {
   supportTicketId?: string | null;
   productIssueRef?: string | null;
   idempotencyKey: string;
-}): Promise<ProductSignalResult<Record<string, unknown>>> {
-  return mapped(
+}): Promise<ProductSignalResult<ProductSignalMutationSuccess>> {
+  return mutationMapped(
     await adminFetch(`/api/v1/feedback/${encodeURIComponent(input.itemId)}/actions`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
@@ -203,5 +252,11 @@ export async function mutateFeedback(input: {
         ...(input.productIssueRef ? { productIssueRef: input.productIssueRef } : {}),
       }),
     }),
+    {
+      kind: "feedback-action",
+      itemId: input.itemId.trim().toLowerCase(),
+      expectedStatus: input.expectedStatus,
+      action: input.action,
+    },
   );
 }
