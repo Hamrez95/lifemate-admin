@@ -36,10 +36,7 @@ function record(value: unknown): Record<string, unknown> | null {
 }
 
 function sameCode(value: unknown, expected: string): boolean {
-  return (
-    typeof value === "string" &&
-    value.trim().toLowerCase() === expected.trim().toLowerCase()
-  );
+  return typeof value === "string" && value.trim().toLowerCase() === expected.trim().toLowerCase();
 }
 
 function positiveInteger(value: unknown): number | null {
