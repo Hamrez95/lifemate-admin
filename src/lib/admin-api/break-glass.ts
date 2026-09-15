@@ -1,5 +1,9 @@
 import "server-only";
 
+import {
+  parseBreakGlassMutationSuccess,
+  type BreakGlassMutationExpectation,
+} from "@/src/lib/admin-api/break-glass-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -145,6 +149,7 @@ async function mutation(
   path: string,
   payload: Record<string, unknown>,
   idempotencyKey: string,
+  expectation: BreakGlassMutationExpectation,
 ): Promise<BreakGlassMutationResult> {
   const response = await call(path, {
     method: "POST",
@@ -159,22 +164,11 @@ async function mutation(
   if (response.status === 400 || response.status === 404 || response.status === 422)
     return { kind: "invalid", ...details };
   if (!response.ok) return { kind: "unavailable", correlationId: details.correlationId };
-  const body = (await response.json()) as Record<string, unknown>;
-  if (
-    !isUuid(body.requestId) ||
-    !isStatus(body.status) ||
-    !Number.isInteger(body.version) ||
-    typeof body.replayed !== "boolean"
-  ) {
-    return { kind: "unavailable" };
-  }
-  return {
-    kind: "ok",
-    requestId: body.requestId,
-    status: body.status,
-    version: Number(body.version),
-    replayed: body.replayed,
-  };
+
+  const payloadBody = (await response.json().catch(() => null)) as unknown;
+  const success = parseBreakGlassMutationSuccess(payloadBody, response.status, expectation);
+  if (!success) return { kind: "unavailable" };
+  return { kind: "ok", ...success };
 }
 
 export function createBreakGlassRequest(input: {
@@ -193,6 +187,7 @@ export function createBreakGlassRequest(input: {
       reason: input.reason,
     },
     input.idempotencyKey,
+    { kind: "create" },
   );
 }
 
@@ -207,5 +202,11 @@ export function mutateBreakGlassRequest(input: {
     `/api/v1/security/break-glass/requests/${input.requestId}/actions/${input.action}`,
     { expectedVersion: input.expectedVersion, reason: input.reason },
     input.idempotencyKey,
+    {
+      kind: "action",
+      requestId: input.requestId,
+      action: input.action,
+      expectedVersion: input.expectedVersion,
+    },
   );
 }
