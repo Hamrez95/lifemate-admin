@@ -25,19 +25,16 @@ describe("retention mutation success contract", () => {
 
   it("accepts canonical hold create and release success", () => {
     expect(
-      parseRetentionMutationSuccess(
-        { httpStatus: 201, code: "ok", id, replayed: false },
-        201,
-        { kind: "hold-create" },
-      ),
+      parseRetentionMutationSuccess({ httpStatus: 201, code: "ok", id, replayed: false }, 201, {
+        kind: "hold-create",
+      }),
     ).toEqual({ replayed: false });
 
     expect(
-      parseRetentionMutationSuccess(
-        { httpStatus: 200, code: "ok", id, replayed: true },
-        200,
-        { kind: "hold-release", holdId: id },
-      ),
+      parseRetentionMutationSuccess({ httpStatus: 200, code: "ok", id, replayed: true }, 200, {
+        kind: "hold-release",
+        holdId: id,
+      }),
     ).toEqual({ replayed: true });
   });
 
@@ -81,11 +78,7 @@ describe("retention mutation success contract", () => {
       200,
       { kind: "policy", dataCategory: "support.tickets", purposeCode: "default" } as const,
     ],
-    [
-      { httpStatus: 200, code: "ok", id, replayed: false },
-      200,
-      { kind: "hold-create" } as const,
-    ],
+    [{ httpStatus: 200, code: "ok", id, replayed: false }, 200, { kind: "hold-create" } as const],
     [
       { httpStatus: 200, code: "ok", id: "123e4567-e89b-42d3-a456-426614174001", replayed: false },
       200,
