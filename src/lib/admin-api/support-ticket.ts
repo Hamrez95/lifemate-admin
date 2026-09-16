@@ -1,3 +1,7 @@
+import {
+  parseSupportTicketActionSuccess,
+  type SupportTicketActionExpectation,
+} from "@/src/lib/admin-api/support-ticket-action-contract";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
@@ -80,6 +84,30 @@ const ACTION_PATHS: Record<SupportTicketAction, string> = {
   set_priority: "priority",
   set_assignee: "assignee",
 };
+
+function actionSuccessExpectation(input: {
+  ticketId: string;
+  action: SupportTicketAction;
+  payload: SupportTicketActionPayload;
+}): SupportTicketActionExpectation | null {
+  if (input.action === "add_note" && "note" in input.payload) {
+    return { ticketId: input.ticketId, action: input.action };
+  }
+  if (input.action === "set_status" && "status" in input.payload) {
+    return { ticketId: input.ticketId, action: input.action, status: input.payload.status };
+  }
+  if (input.action === "set_priority" && "priority" in input.payload) {
+    return { ticketId: input.ticketId, action: input.action, priority: input.payload.priority };
+  }
+  if (input.action === "set_assignee" && "assigneeAccountId" in input.payload) {
+    return {
+      ticketId: input.ticketId,
+      action: input.action,
+      assigneeAccountId: input.payload.assigneeAccountId,
+    };
+  }
+  return null;
+}
 
 async function accessToken(): Promise<string | null> {
   const supabase = await createServerSupabaseClient();
@@ -325,23 +353,12 @@ export async function performSupportTicketAction(input: {
   }
 
   if (response.ok) {
-    const body = (await response.json()) as Record<string, unknown>;
-    if (
-      typeof body.ticketId !== "string" ||
-      !UUID_PATTERN.test(body.ticketId) ||
-      typeof body.status !== "string" ||
-      typeof body.priority !== "string" ||
-      !nullableString(body.assignedAdminAccountId) ||
-      typeof body.lastActivityAtUtc !== "string" ||
-      typeof body.action !== "string" ||
-      typeof body.replayed !== "boolean"
-    ) {
-      return { kind: "unavailable" };
-    }
-    return {
-      kind: "ok",
-      data: body as SupportTicketActionResult & never,
-    } as SupportTicketActionResult;
+    const body = (await response.json().catch(() => null)) as unknown;
+    const expectation = actionSuccessExpectation(input);
+    const success = expectation
+      ? parseSupportTicketActionSuccess(body, response.status, expectation)
+      : null;
+    return success ? { kind: "ok", data: success } : { kind: "unavailable" };
   }
 
   const issue = await problem(response);
