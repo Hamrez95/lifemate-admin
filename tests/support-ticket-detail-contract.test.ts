@@ -3,6 +3,8 @@ import { resolve } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { parseSupportTicketActionSuccess } from "../src/lib/admin-api/support-ticket-action-contract";
+
 function source(path: string): string {
   return readFileSync(resolve(process.cwd(), path), "utf8");
 }
@@ -18,6 +20,62 @@ describe("ADM-SUP-002 Ticket Detail", () => {
     expect(client).toContain('method: "POST"');
     expect(client).not.toContain(".from(");
     expect(client).not.toContain("service_role");
+  });
+
+  it("binds mutation success to the exact ticket, action and requested target state", () => {
+    const ticketId = "123e4567-e89b-42d3-a456-426614174000";
+    const assignee = "123e4567-e89b-42d3-a456-426614174001";
+    const canonical = {
+      ticketId,
+      status: "Resolved",
+      priority: "High",
+      assignedAdminAccountId: assignee,
+      lastActivityAtUtc: "2026-09-16T12:00:00.000Z",
+      action: "set_status",
+      replayed: false,
+    };
+
+    expect(
+      parseSupportTicketActionSuccess(canonical, {
+        ticketId,
+        action: "set_status",
+        status: "Resolved",
+      }),
+    ).toEqual(canonical);
+    expect(
+      parseSupportTicketActionSuccess({ ...canonical, ticketId: assignee }, {
+        ticketId,
+        action: "set_status",
+        status: "Resolved",
+      }),
+    ).toBeNull();
+    expect(
+      parseSupportTicketActionSuccess({ ...canonical, action: "set_priority" }, {
+        ticketId,
+        action: "set_status",
+        status: "Resolved",
+      }),
+    ).toBeNull();
+    expect(
+      parseSupportTicketActionSuccess({ ...canonical, status: "Pending" }, {
+        ticketId,
+        action: "set_status",
+        status: "Resolved",
+      }),
+    ).toBeNull();
+    expect(
+      parseSupportTicketActionSuccess(
+        { ...canonical, action: "set_assignee" },
+        { ticketId, action: "set_assignee", assigneeAccountId: assignee },
+      ),
+    ).not.toBeNull();
+    expect(
+      parseSupportTicketActionSuccess({ ...canonical, replayed: "false" }, {
+        ticketId,
+        action: "set_status",
+        status: "Resolved",
+      }),
+    ).toBeNull();
   });
 
   it("enforces read and write permissions independently", () => {
