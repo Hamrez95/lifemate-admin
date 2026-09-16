@@ -46,37 +46,25 @@ describe("ADM-SUP-002 Ticket Detail", () => {
       }),
     ).toEqual(canonical);
     expect(
-      parseSupportTicketActionSuccess(
-        { ...canonical, ticketId: assignee },
-        200,
-        {
-          ticketId,
-          action: "set_status",
-          status: "Resolved",
-        },
-      ),
+      parseSupportTicketActionSuccess({ ...canonical, ticketId: assignee }, 200, {
+        ticketId,
+        action: "set_status",
+        status: "Resolved",
+      }),
     ).toBeNull();
     expect(
-      parseSupportTicketActionSuccess(
-        { ...canonical, action: "set_priority" },
-        200,
-        {
-          ticketId,
-          action: "set_status",
-          status: "Resolved",
-        },
-      ),
+      parseSupportTicketActionSuccess({ ...canonical, action: "set_priority" }, 200, {
+        ticketId,
+        action: "set_status",
+        status: "Resolved",
+      }),
     ).toBeNull();
     expect(
-      parseSupportTicketActionSuccess(
-        { ...canonical, status: "Pending" },
-        200,
-        {
-          ticketId,
-          action: "set_status",
-          status: "Resolved",
-        },
-      ),
+      parseSupportTicketActionSuccess({ ...canonical, status: "Pending" }, 200, {
+        ticketId,
+        action: "set_status",
+        status: "Resolved",
+      }),
     ).toBeNull();
     expect(
       parseSupportTicketActionSuccess(
@@ -86,11 +74,11 @@ describe("ADM-SUP-002 Ticket Detail", () => {
       ),
     ).toBeNull();
     expect(
-      parseSupportTicketActionSuccess(
-        { ...canonical, action: "set_assignee" },
-        200,
-        { ticketId, action: "set_assignee", assigneeAccountId: assignee },
-      ),
+      parseSupportTicketActionSuccess({ ...canonical, action: "set_assignee" }, 200, {
+        ticketId,
+        action: "set_assignee",
+        assigneeAccountId: assignee,
+      }),
     ).not.toBeNull();
     expect(
       parseSupportTicketActionSuccess(
