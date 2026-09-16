@@ -3,6 +3,8 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { parseSupportMessageMutationSuccess } from "../src/lib/admin-api/support-conversation-mutation-contract";
+
 const root = process.cwd();
 const client = readFileSync(join(root, "src/lib/admin-api/support-conversation.ts"), "utf8");
 const page = readFileSync(join(root, "app/support/[ticketId]/conversation/page.tsx"), "utf8");
@@ -22,6 +24,38 @@ describe("Support conversation workspace contract", () => {
     expect(client).not.toContain(".from(");
     expect(client).not.toContain("service_role");
     expect(client).not.toContain("supabase.storage");
+  });
+
+  it("fails closed on malformed or misbound staff-message success", () => {
+    const ticketId = "123e4567-e89b-42d3-a456-426614174000";
+    const messageId = "123e4567-e89b-42d3-a456-426614174001";
+    const canonical = {
+      ticketId,
+      messageId,
+      createdAtUtc: "2026-09-16T12:00:00.000Z",
+      replayed: false,
+    };
+
+    expect(parseSupportMessageMutationSuccess(canonical, 200, { ticketId })).toEqual({
+      messageId,
+      createdAtUtc: canonical.createdAtUtc,
+      replayed: false,
+    });
+    expect(
+      parseSupportMessageMutationSuccess({ ...canonical, replayed: true }, 200, { ticketId })
+        ?.replayed,
+    ).toBe(true);
+    expect(
+      parseSupportMessageMutationSuccess(
+        { ...canonical, ticketId: "223e4567-e89b-42d3-a456-426614174000" },
+        200,
+        { ticketId },
+      ),
+    ).toBeNull();
+    expect(
+      parseSupportMessageMutationSuccess({ ...canonical, replayed: "false" }, 200, { ticketId }),
+    ).toBeNull();
+    expect(parseSupportMessageMutationSuccess(canonical, 201, { ticketId })).toBeNull();
   });
 
   it("keeps support permissions and Admin session checks explicit", () => {

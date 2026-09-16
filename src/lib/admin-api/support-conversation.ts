@@ -1,5 +1,6 @@
 import "server-only";
 
+import { parseSupportMessageMutationSuccess } from "@/src/lib/admin-api/support-conversation-mutation-contract";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
@@ -201,11 +202,14 @@ export async function getSupportConversationOperations(ticketId: string): Promis
   return { kind: "ok", data: { escalations, links, freshness: freshness.asOfUtc } };
 }
 
+type MutationSuccessParser = (payload: unknown, httpStatus: number) => { replayed: boolean } | null;
+
 async function mutate(
   ticketId: string,
   suffix: string,
   payload: Record<string, unknown>,
   idempotencyKey: string,
+  successParser?: MutationSuccessParser,
 ): Promise<ConversationMutationResult> {
   if (!UUID_PATTERN.test(ticketId)) return { kind: "not_found" };
   if (!IDEMPOTENCY_PATTERN.test(idempotencyKey))
@@ -233,8 +237,14 @@ async function mutate(
     return { kind: "unavailable" };
   }
   if (response.ok) {
-    const body = (await response.json()) as Record<string, unknown>;
-    return { kind: "ok", replayed: body.replayed === true };
+    const body = (await response.json().catch(() => null)) as unknown;
+    if (successParser) {
+      const success = successParser(body, response.status);
+      return success ? { kind: "ok", replayed: success.replayed } : { kind: "unavailable" };
+    }
+    if (!body || typeof body !== "object" || Array.isArray(body)) return { kind: "unavailable" };
+    const replayed = (body as Record<string, unknown>).replayed;
+    return typeof replayed === "boolean" ? { kind: "ok", replayed } : { kind: "unavailable" };
   }
   const issue = await problem(response);
   if (response.status === 401) return { kind: "unauthenticated" };
@@ -257,6 +267,8 @@ export function sendSupportConversationMessage(input: {
     "messages",
     { body: input.body, clientMessageId: input.clientMessageId },
     input.idempotencyKey,
+    (payload, httpStatus) =>
+      parseSupportMessageMutationSuccess(payload, httpStatus, { ticketId: input.ticketId }),
   );
 }
 
