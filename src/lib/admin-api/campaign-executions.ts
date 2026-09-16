@@ -1,8 +1,19 @@
+import {
+  parseCampaignExecutionMutationSuccess,
+  type CampaignExecutionMutationExpectation,
+  type CampaignExecutionMutationSuccess,
+} from "@/src/lib/admin-api/campaign-execution-mutation-contract";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
 export type CampaignExecutionStatus =
-  "Prepared" | "Confirmed" | "Scheduled" | "Processing" | "Completed" | "Cancelled" | "Failed";
+  | "Prepared"
+  | "Confirmed"
+  | "Scheduled"
+  | "Processing"
+  | "Completed"
+  | "Cancelled"
+  | "Failed";
 
 export type CampaignExecution = {
   id: string;
@@ -198,12 +209,17 @@ export async function getCampaignExecutions(
 async function mutate(
   path: string,
   payload: Record<string, unknown>,
-): Promise<CampaignExecutionResult<Record<string, unknown>>> {
+  expected: CampaignExecutionMutationExpectation,
+): Promise<CampaignExecutionResult<CampaignExecutionMutationSuccess>> {
   const result = await request(path, { method: "POST", body: JSON.stringify(payload) });
   if (!result) return { kind: "unauthenticated" };
   if (!result.response.ok) return failed(result.response, result.body);
-  const body = record(result.body);
-  return body ? { kind: "ok", data: body } : { kind: "unavailable" };
+  const success = parseCampaignExecutionMutationSuccess(
+    result.body,
+    result.response.status,
+    expected,
+  );
+  return success ? { kind: "ok", data: success } : { kind: "unavailable" };
 }
 
 export async function prepareCampaignExecution(payload: {
@@ -214,13 +230,18 @@ export async function prepareCampaignExecution(payload: {
   smsProvider: string | null;
   smsCurrency: string | null;
 }) {
-  return mutate("/api/v1/marketing/campaign-executions/prepare", payload);
+  return mutate("/api/v1/marketing/campaign-executions/prepare", payload, {
+    kind: "prepare",
+    smsProvider: payload.channels.includes("SMS") ? payload.smsProvider : null,
+  });
 }
 
 export async function confirmCampaignExecution(executionId: string, expectedVersion: number) {
-  return mutate(`/api/v1/marketing/campaign-executions/${executionId}/confirm`, {
-    expectedVersion,
-  });
+  return mutate(
+    `/api/v1/marketing/campaign-executions/${executionId}/confirm`,
+    { expectedVersion },
+    { kind: "confirm", executionId, expectedVersion },
+  );
 }
 
 export async function scheduleCampaignExecution(
@@ -228,10 +249,11 @@ export async function scheduleCampaignExecution(
   expectedVersion: number,
   scheduledAtUtc: string,
 ) {
-  return mutate(`/api/v1/marketing/campaign-executions/${executionId}/schedule`, {
-    expectedVersion,
-    scheduledAtUtc,
-  });
+  return mutate(
+    `/api/v1/marketing/campaign-executions/${executionId}/schedule`,
+    { expectedVersion, scheduledAtUtc },
+    { kind: "schedule", executionId, expectedVersion, scheduledAtUtc },
+  );
 }
 
 export async function cancelCampaignExecution(
@@ -239,8 +261,9 @@ export async function cancelCampaignExecution(
   expectedVersion: number,
   reason: string,
 ) {
-  return mutate(`/api/v1/marketing/campaign-executions/${executionId}/cancel`, {
-    expectedVersion,
-    reason,
-  });
+  return mutate(
+    `/api/v1/marketing/campaign-executions/${executionId}/cancel`,
+    { expectedVersion, reason },
+    { kind: "cancel", executionId, expectedVersion },
+  );
 }
