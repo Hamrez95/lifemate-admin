@@ -35,11 +35,13 @@ function sameNullableUuid(value: unknown, expected: string | null): boolean {
 
 export function parseSupportTicketActionSuccess(
   value: unknown,
+  httpStatus: number,
   expected: SupportTicketActionExpectation,
 ): SupportTicketActionSuccess | null {
   const body = record(value);
   if (
     !body ||
+    httpStatus !== 200 ||
     typeof body.ticketId !== "string" ||
     !UUID_PATTERN.test(body.ticketId) ||
     body.ticketId.toLowerCase() !== expected.ticketId.toLowerCase() ||
