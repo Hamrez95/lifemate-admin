@@ -35,25 +35,22 @@ describe("campaign execution mutation success contract", () => {
       }),
     ).toEqual(body);
     expect(
-      parseCampaignExecutionMutationSuccess(
-        { ...body, status: "Prepared" },
-        201,
-        { kind: "prepare", smsProvider: "kavenegar" },
-      ),
+      parseCampaignExecutionMutationSuccess({ ...body, status: "Prepared" }, 201, {
+        kind: "prepare",
+        smsProvider: "kavenegar",
+      }),
     ).toBeNull();
     expect(
-      parseCampaignExecutionMutationSuccess(
-        { ...body, smsProvider: "other-provider" },
-        201,
-        { kind: "prepare", smsProvider: "kavenegar" },
-      ),
+      parseCampaignExecutionMutationSuccess({ ...body, smsProvider: "other-provider" }, 201, {
+        kind: "prepare",
+        smsProvider: "kavenegar",
+      }),
     ).toBeNull();
     expect(
-      parseCampaignExecutionMutationSuccess(
-        { ...body, createdAtUtc: "invalid" },
-        201,
-        { kind: "prepare", smsProvider: "kavenegar" },
-      ),
+      parseCampaignExecutionMutationSuccess({ ...body, createdAtUtc: "invalid" }, 201, {
+        kind: "prepare",
+        smsProvider: "kavenegar",
+      }),
     ).toBeNull();
   });
 
