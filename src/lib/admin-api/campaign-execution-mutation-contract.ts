@@ -111,7 +111,5 @@ export function parseCampaignExecutionMutationSuccess(
     return body as unknown as CampaignExecutionMutationSuccess;
   }
 
-  return body.status === "Cancelled"
-    ? (body as unknown as CampaignExecutionMutationSuccess)
-    : null;
+  return body.status === "Cancelled" ? (body as unknown as CampaignExecutionMutationSuccess) : null;
 }
