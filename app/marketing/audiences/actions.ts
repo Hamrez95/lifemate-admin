@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import {
+  matchesAudienceSegmentSnapshot,
+  matchesCreatedAudienceSegment,
+} from "@/src/lib/admin-api/audience-segment-action-contract";
+import {
   createAudienceSegment,
   previewAudienceSegment,
   snapshotAudienceSegment,
@@ -106,6 +110,15 @@ export async function createAudienceSegmentAction(formData: FormData): Promise<v
     idempotencyKey,
   );
   if (result.kind !== "ok") destination("error", resultMessage(result));
+  if (
+    !matchesCreatedAudienceSegment(result.data, {
+      key,
+      name,
+      description: description || null,
+    })
+  ) {
+    destination("error", "پاسخ Audience API با Segment درخواستی تطابق نداشت؛ دوباره تلاش کنید.");
+  }
   revalidatePath("/marketing/audiences");
   destination(
     "success",
@@ -131,6 +144,9 @@ export async function snapshotAudienceSegmentAction(formData: FormData): Promise
   if (!IDEMPOTENCY.test(idempotencyKey)) destination("error", "شناسه امن درخواست معتبر نیست.");
   const result = await snapshotAudienceSegment(id, version, idempotencyKey);
   if (result.kind !== "ok") destination("error", resultMessage(result));
+  if (!matchesAudienceSegmentSnapshot(result.data, { segmentId: id, segmentVersion: version })) {
+    destination("error", "Snapshot برگشتی با نسخه درخواستی Segment تطابق نداشت؛ صفحه را تازه کنید.");
+  }
   const count = result.data.suppressed ? "suppressed" : String(result.data.memberCount ?? 0);
   destination(
     "success",
