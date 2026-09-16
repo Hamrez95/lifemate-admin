@@ -43,25 +43,34 @@ describe("ADM-SUP-002 Ticket Detail", () => {
       }),
     ).toEqual(canonical);
     expect(
-      parseSupportTicketActionSuccess({ ...canonical, ticketId: assignee }, {
-        ticketId,
-        action: "set_status",
-        status: "Resolved",
-      }),
+      parseSupportTicketActionSuccess(
+        { ...canonical, ticketId: assignee },
+        {
+          ticketId,
+          action: "set_status",
+          status: "Resolved",
+        },
+      ),
     ).toBeNull();
     expect(
-      parseSupportTicketActionSuccess({ ...canonical, action: "set_priority" }, {
-        ticketId,
-        action: "set_status",
-        status: "Resolved",
-      }),
+      parseSupportTicketActionSuccess(
+        { ...canonical, action: "set_priority" },
+        {
+          ticketId,
+          action: "set_status",
+          status: "Resolved",
+        },
+      ),
     ).toBeNull();
     expect(
-      parseSupportTicketActionSuccess({ ...canonical, status: "Pending" }, {
-        ticketId,
-        action: "set_status",
-        status: "Resolved",
-      }),
+      parseSupportTicketActionSuccess(
+        { ...canonical, status: "Pending" },
+        {
+          ticketId,
+          action: "set_status",
+          status: "Resolved",
+        },
+      ),
     ).toBeNull();
     expect(
       parseSupportTicketActionSuccess(
@@ -70,11 +79,14 @@ describe("ADM-SUP-002 Ticket Detail", () => {
       ),
     ).not.toBeNull();
     expect(
-      parseSupportTicketActionSuccess({ ...canonical, replayed: "false" }, {
-        ticketId,
-        action: "set_status",
-        status: "Resolved",
-      }),
+      parseSupportTicketActionSuccess(
+        { ...canonical, replayed: "false" },
+        {
+          ticketId,
+          action: "set_status",
+          status: "Resolved",
+        },
+      ),
     ).toBeNull();
   });
 
