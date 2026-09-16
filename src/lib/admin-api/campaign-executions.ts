@@ -7,13 +7,7 @@ import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
 export type CampaignExecutionStatus =
-  | "Prepared"
-  | "Confirmed"
-  | "Scheduled"
-  | "Processing"
-  | "Completed"
-  | "Cancelled"
-  | "Failed";
+  "Prepared" | "Confirmed" | "Scheduled" | "Processing" | "Completed" | "Cancelled" | "Failed";
 
 export type CampaignExecution = {
   id: string;
