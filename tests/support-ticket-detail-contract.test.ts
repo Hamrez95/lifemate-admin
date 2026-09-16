@@ -18,6 +18,8 @@ describe("ADM-SUP-002 Ticket Detail", () => {
     expect(client).toContain("/api/v1/support/assignees");
     expect(client).toContain('"Idempotency-Key": input.idempotencyKey');
     expect(client).toContain('method: "POST"');
+    expect(client).toContain("parseSupportTicketActionSuccess");
+    expect(client).toContain("response.json().catch(() => null)");
     expect(client).not.toContain(".from(");
     expect(client).not.toContain("service_role");
   });
@@ -25,6 +27,7 @@ describe("ADM-SUP-002 Ticket Detail", () => {
   it("binds mutation success to the exact ticket, action and requested target state", () => {
     const ticketId = "123e4567-e89b-42d3-a456-426614174000";
     const assignee = "123e4567-e89b-42d3-a456-426614174001";
+    const otherAssignee = "123e4567-e89b-42d3-a456-426614174002";
     const canonical = {
       ticketId,
       status: "Resolved",
@@ -36,7 +39,7 @@ describe("ADM-SUP-002 Ticket Detail", () => {
     };
 
     expect(
-      parseSupportTicketActionSuccess(canonical, {
+      parseSupportTicketActionSuccess(canonical, 200, {
         ticketId,
         action: "set_status",
         status: "Resolved",
@@ -45,6 +48,7 @@ describe("ADM-SUP-002 Ticket Detail", () => {
     expect(
       parseSupportTicketActionSuccess(
         { ...canonical, ticketId: assignee },
+        200,
         {
           ticketId,
           action: "set_status",
@@ -55,6 +59,7 @@ describe("ADM-SUP-002 Ticket Detail", () => {
     expect(
       parseSupportTicketActionSuccess(
         { ...canonical, action: "set_priority" },
+        200,
         {
           ticketId,
           action: "set_status",
@@ -65,29 +70,69 @@ describe("ADM-SUP-002 Ticket Detail", () => {
     expect(
       parseSupportTicketActionSuccess(
         { ...canonical, status: "Pending" },
+        200,
         {
           ticketId,
           action: "set_status",
           status: "Resolved",
         },
+      ),
+    ).toBeNull();
+    expect(
+      parseSupportTicketActionSuccess(
+        { ...canonical, action: "set_priority", priority: "High" },
+        200,
+        { ticketId, action: "set_priority", priority: "Urgent" },
       ),
     ).toBeNull();
     expect(
       parseSupportTicketActionSuccess(
         { ...canonical, action: "set_assignee" },
+        200,
         { ticketId, action: "set_assignee", assigneeAccountId: assignee },
       ),
     ).not.toBeNull();
     expect(
       parseSupportTicketActionSuccess(
-        { ...canonical, replayed: "false" },
-        {
-          ticketId,
-          action: "set_status",
-          status: "Resolved",
-        },
+        { ...canonical, action: "set_assignee", assignedAdminAccountId: otherAssignee },
+        200,
+        { ticketId, action: "set_assignee", assigneeAccountId: assignee },
       ),
     ).toBeNull();
+    expect(
+      parseSupportTicketActionSuccess(
+        { ...canonical, action: "set_assignee", assignedAdminAccountId: assignee },
+        200,
+        { ticketId, action: "set_assignee", assigneeAccountId: null },
+      ),
+    ).toBeNull();
+  });
+
+  it("fails closed on non-canonical HTTP success and malformed replay or timestamps", () => {
+    const ticketId = "123e4567-e89b-42d3-a456-426614174000";
+    const canonical = {
+      ticketId,
+      status: "Resolved",
+      priority: "High",
+      assignedAdminAccountId: null,
+      lastActivityAtUtc: "2026-09-16T12:00:00.000Z",
+      action: "add_note",
+      replayed: false,
+    };
+    const expected = { ticketId, action: "add_note" } as const;
+
+    expect(parseSupportTicketActionSuccess(canonical, 201, expected)).toBeNull();
+    expect(
+      parseSupportTicketActionSuccess({ ...canonical, replayed: "false" }, 200, expected),
+    ).toBeNull();
+    expect(
+      parseSupportTicketActionSuccess(
+        { ...canonical, lastActivityAtUtc: "not-a-date" },
+        200,
+        expected,
+      ),
+    ).toBeNull();
+    expect(parseSupportTicketActionSuccess(null, 200, expected)).toBeNull();
   });
 
   it("enforces read and write permissions independently", () => {
