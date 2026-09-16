@@ -3,10 +3,6 @@
 import { revalidatePath } from "next/cache";
 
 import {
-  parseSupportTicketActionSuccess,
-  type SupportTicketActionExpectation,
-} from "@/src/lib/admin-api/support-ticket-action-contract";
-import {
   performSupportTicketAction,
   type SupportTicketAction,
   type SupportTicketActionPayload,
@@ -49,24 +45,6 @@ function payloadFor(
   return UUID_PATTERN.test(assigneeAccountId) ? { assigneeAccountId } : null;
 }
 
-function successExpectation(
-  ticketId: string,
-  action: SupportTicketAction,
-  payload: SupportTicketActionPayload,
-): SupportTicketActionExpectation | null {
-  if (action === "add_note" && "note" in payload) return { ticketId, action };
-  if (action === "set_status" && "status" in payload) {
-    return { ticketId, action, status: payload.status };
-  }
-  if (action === "set_priority" && "priority" in payload) {
-    return { ticketId, action, priority: payload.priority };
-  }
-  if (action === "set_assignee" && "assigneeAccountId" in payload) {
-    return { ticketId, action, assigneeAccountId: payload.assigneeAccountId };
-  }
-  return null;
-}
-
 export async function runSupportTicketAction(
   _previous: SupportActionFormState,
   formData: FormData,
@@ -85,13 +63,6 @@ export async function runSupportTicketAction(
   const result = await performSupportTicketAction({ ticketId, action, payload, idempotencyKey });
 
   if (result.kind === "ok") {
-    const expectation = successExpectation(ticketId, action, payload);
-    if (!expectation || !parseSupportTicketActionSuccess(result.data, expectation)) {
-      return {
-        status: "unavailable",
-        message: "پاسخ Admin API با عملیات درخواستی تطابق نداشت؛ صفحه را تازه‌سازی کنید.",
-      };
-    }
     revalidatePath(`/support/${ticketId}`);
     revalidatePath("/support");
     const messages: Record<SupportTicketAction, string> = {
