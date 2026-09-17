@@ -40,18 +40,16 @@ describe("privacy document mutation success contract", () => {
       }),
     ).toBe(true);
     expect(
-      isPrivacyDocumentMutationSuccess(
-        { ...body, documentId: OTHER_DOCUMENT_ID },
-        200,
-        { kind: "publish", documentId: DOCUMENT_ID },
-      ),
+      isPrivacyDocumentMutationSuccess({ ...body, documentId: OTHER_DOCUMENT_ID }, 200, {
+        kind: "publish",
+        documentId: DOCUMENT_ID,
+      }),
     ).toBe(false);
     expect(
-      isPrivacyDocumentMutationSuccess(
-        { ...body, status: "Draft" },
-        200,
-        { kind: "publish", documentId: DOCUMENT_ID },
-      ),
+      isPrivacyDocumentMutationSuccess({ ...body, status: "Draft" }, 200, {
+        kind: "publish",
+        documentId: DOCUMENT_ID,
+      }),
     ).toBe(false);
   });
 
@@ -74,18 +72,16 @@ describe("privacy document mutation success contract", () => {
       }),
     ).toBe(true);
     expect(
-      isPrivacyDocumentMutationSuccess(
-        { ...body, retiredAtUtc: "invalid" },
-        200,
-        { kind: "retire", documentId: DOCUMENT_ID },
-      ),
+      isPrivacyDocumentMutationSuccess({ ...body, retiredAtUtc: "invalid" }, 200, {
+        kind: "retire",
+        documentId: DOCUMENT_ID,
+      }),
     ).toBe(false);
     expect(
-      isPrivacyDocumentMutationSuccess(
-        { ...body, noop: "false" },
-        200,
-        { kind: "retire", documentId: DOCUMENT_ID },
-      ),
+      isPrivacyDocumentMutationSuccess({ ...body, noop: "false" }, 200, {
+        kind: "retire",
+        documentId: DOCUMENT_ID,
+      }),
     ).toBe(false);
   });
 
