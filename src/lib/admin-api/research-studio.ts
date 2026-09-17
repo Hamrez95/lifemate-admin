@@ -1,5 +1,9 @@
 import "server-only";
 
+import {
+  parseResearchMutationSuccess,
+  type ResearchExportRequestSuccess,
+} from "@/src/lib/admin-api/research-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -117,27 +121,40 @@ export async function createResearchDataset(input: {
   payload: Record<string, unknown>;
   idempotencyKey: string;
 }): Promise<ResearchResult<{ datasetId: string }>> {
-  return mapped(
-    await adminFetch("/api/v1/research/datasets", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
-      body: JSON.stringify(input.payload),
-    }),
-  );
+  const response = await adminFetch("/api/v1/research/datasets", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
+    body: JSON.stringify(input.payload),
+  });
+  if (response === null || !response.ok) return mapped<{ datasetId: string }>(response);
+
+  const body = await response.json().catch(() => null);
+  const success = parseResearchMutationSuccess(body, response.status, { kind: "create-dataset" });
+  return success ? { kind: "ok", data: success } : { kind: "unavailable" };
 }
 
 export async function requestResearchExport(input: {
   datasetId: string;
   format: "CSV" | "XLSX";
   idempotencyKey: string;
-}): Promise<ResearchResult<{ jobId: string; status: string }>> {
-  return mapped(
-    await adminFetch(`/api/v1/research/datasets/${encodeURIComponent(input.datasetId)}/exports`, {
+}): Promise<ResearchResult<ResearchExportRequestSuccess>> {
+  const response = await adminFetch(
+    `/api/v1/research/datasets/${encodeURIComponent(input.datasetId)}/exports`,
+    {
       method: "POST",
       headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
       body: JSON.stringify({ format: input.format }),
-    }),
+    },
   );
+  if (response === null || !response.ok) return mapped<ResearchExportRequestSuccess>(response);
+
+  const body = await response.json().catch(() => null);
+  const success = parseResearchMutationSuccess(body, response.status, {
+    kind: "request-export",
+    datasetId: input.datasetId,
+    format: input.format,
+  });
+  return success ? { kind: "ok", data: success } : { kind: "unavailable" };
 }
 
 export async function getResearchExportDownload(jobId: string): Promise<
