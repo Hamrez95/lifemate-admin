@@ -17,9 +17,7 @@ function instant(value: unknown): value is string {
 
 function exactDocument(value: unknown, expected: string): boolean {
   return (
-    typeof value === "string" &&
-    UUID.test(value) &&
-    value.toLowerCase() === expected.toLowerCase()
+    typeof value === "string" && UUID.test(value) && value.toLowerCase() === expected.toLowerCase()
   );
 }
 
@@ -48,9 +46,5 @@ export function isPrivacyDocumentMutationSuccess(
   if (!exactDocument(body.documentId, expected.documentId)) return false;
   if (expected.kind === "publish") return body.status === "Active";
 
-  return (
-    body.status === "Retired" &&
-    instant(body.retiredAtUtc) &&
-    typeof body.noop === "boolean"
-  );
+  return body.status === "Retired" && instant(body.retiredAtUtc) && typeof body.noop === "boolean";
 }
