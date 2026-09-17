@@ -1,3 +1,4 @@
+import { isPrivacyPreferenceMutationSuccess } from "@/src/lib/admin-api/privacy-preference-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -205,6 +206,15 @@ export async function updatePreferencePurposePolicy(input: {
   } catch {
     return { ok: false, code: "unavailable" };
   }
-  if (response.ok) return { ok: true };
+  if (response.ok) {
+    const body = await response.json().catch(() => null);
+    return isPrivacyPreferenceMutationSuccess(body, response.status, {
+      purpose: normalized.purpose,
+      policyVersion: normalized.policyVersion,
+      status: normalized.status,
+    })
+      ? { ok: true }
+      : { ok: false, code: "unavailable" };
+  }
   return { ok: false, code: (await problem(response)).code ?? `http_${response.status}` };
 }
