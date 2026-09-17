@@ -1,3 +1,4 @@
+import { isPrivacyDocumentMutationSuccess } from "@/src/lib/admin-api/privacy-document-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import {
@@ -172,6 +173,19 @@ async function mutationFailure(response: Response): Promise<PrivacyMutationResul
   }
 }
 
+async function mutationSuccess(
+  response: Response,
+  expected:
+    | { kind: "create" }
+    | { kind: "publish"; documentId: string }
+    | { kind: "retire"; documentId: string },
+): Promise<PrivacyMutationResult> {
+  const body = await response.json().catch(() => null);
+  return isPrivacyDocumentMutationSuccess(body, response.status, expected)
+    ? { ok: true }
+    : { ok: false, code: "unavailable" };
+}
+
 export async function getPrivacyDirectory(
   kind: PrivacyDirectoryKind,
   params: URLSearchParams,
@@ -281,7 +295,7 @@ export async function createPrivacyDocument(input: {
   } catch {
     return { ok: false, code: "unavailable" };
   }
-  return response.ok ? { ok: true } : mutationFailure(response);
+  return response.ok ? mutationSuccess(response, { kind: "create" }) : mutationFailure(response);
 }
 
 export async function publishPrivacyDocument(input: {
@@ -323,7 +337,9 @@ export async function publishPrivacyDocument(input: {
   } catch {
     return { ok: false, code: "unavailable" };
   }
-  return response.ok ? { ok: true } : mutationFailure(response);
+  return response.ok
+    ? mutationSuccess(response, { kind: "publish", documentId: input.documentId })
+    : mutationFailure(response);
 }
 
 export async function retirePrivacyDocument(input: {
@@ -359,5 +375,7 @@ export async function retirePrivacyDocument(input: {
   } catch {
     return { ok: false, code: "unavailable" };
   }
-  return response.ok ? { ok: true } : mutationFailure(response);
+  return response.ok
+    ? mutationSuccess(response, { kind: "retire", documentId: input.documentId })
+    : mutationFailure(response);
 }
