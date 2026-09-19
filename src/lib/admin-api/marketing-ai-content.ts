@@ -3,6 +3,7 @@ import "server-only";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
+import { isMarketingAiContentMutationSuccess } from "./marketing-ai-content-mutation-contract";
 import type { MarketingCampaignResult } from "./marketing-campaigns";
 
 export const marketingAiContentGoals = [
@@ -351,7 +352,20 @@ export async function generateMarketingAiContent(
   if (!result) return { kind: "unauthenticated" };
   if (result.response.ok) {
     const parsed = parseGenerate(result.body);
-    return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
+    if (
+      !parsed ||
+      !isMarketingAiContentMutationSuccess(result.body, result.response.status, {
+        campaignId,
+        goal: payload.goal,
+        tone: payload.tone,
+        language: payload.language,
+        keyMessage: payload.keyMessage,
+        callToAction: payload.callToAction,
+      })
+    ) {
+      return { kind: "unavailable" };
+    }
+    return { kind: "ok", data: parsed };
   }
   return failed(result.response, record(result.body) ?? {});
 }
