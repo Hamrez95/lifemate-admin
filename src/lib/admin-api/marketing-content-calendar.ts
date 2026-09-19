@@ -3,6 +3,7 @@ import "server-only";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
+import { parseMarketingCalendarMutationSuccess } from "./marketing-content-calendar-mutation-contract";
 import type { MarketingCampaignResult } from "./marketing-campaigns";
 
 export const marketingCalendarTimezones = ["Asia/Tehran", "UTC"] as const;
@@ -233,33 +234,6 @@ function parseReport(value: unknown): MarketingContentCalendarReport | null {
   };
 }
 
-function parseMutation(value: unknown): MarketingCalendarMutation | null {
-  const body = record(value);
-  if (!body) return null;
-  if (
-    typeof body.campaignId !== "string" ||
-    !UUID_PATTERN.test(body.campaignId) ||
-    typeof body.executionId !== "string" ||
-    !UUID_PATTERN.test(body.executionId) ||
-    !STATUS_SET.has(String(body.publishStatus)) ||
-    typeof body.replayed !== "boolean"
-  ) {
-    return null;
-  }
-  if (body.scheduledForUtc !== undefined && !instant(body.scheduledForUtc)) return null;
-  if (body.scheduleTimezone !== undefined && typeof body.scheduleTimezone !== "string") return null;
-  if (
-    body.retryOfExecutionId !== undefined &&
-    (typeof body.retryOfExecutionId !== "string" || !UUID_PATTERN.test(body.retryOfExecutionId))
-  ) {
-    return null;
-  }
-  if (body.providerConnectivity !== undefined && body.providerConnectivity !== "NotVerified") {
-    return null;
-  }
-  return body as MarketingCalendarMutation;
-}
-
 async function bearer(): Promise<string | null> {
   const supabase = await createServerSupabaseClient();
   const { data: claimsData, error } = await supabase.auth.getClaims();
@@ -354,7 +328,12 @@ export async function scheduleMarketingCampaignPublish(
   );
   if (!result) return { kind: "unauthenticated" };
   if (result.response.ok) {
-    const parsed = parseMutation(result.body);
+    const parsed = parseMarketingCalendarMutationSuccess(result.body, result.response.status, {
+      kind: "schedule",
+      campaignId,
+      scheduledLocal: payload.scheduledLocal,
+      timezone: payload.timezone,
+    });
     return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
   }
   return failed(result.response, record(result.body) ?? {});
@@ -387,7 +366,10 @@ async function executionAction(
   );
   if (!result) return { kind: "unauthenticated" };
   if (result.response.ok) {
-    const parsed = parseMutation(result.body);
+    const parsed = parseMarketingCalendarMutationSuccess(result.body, result.response.status, {
+      kind: action,
+      executionId,
+    });
     return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
   }
   return failed(result.response, record(result.body) ?? {});
