@@ -25,24 +25,34 @@ const IDEMPOTENCY_PATTERN = /^[A-Za-z0-9._:-]{8,180}$/;
 
 export function parseUserAccountActionSuccess(
   value: unknown,
+  httpStatus: number,
   expected: { accountId: string; action: UserAccountAction },
 ): UserAccountActionSuccess | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const body = value as Record<string, unknown>;
+  const exactAccount =
+    typeof body.accountId === "string" &&
+    UUID_PATTERN.test(body.accountId) &&
+    body.accountId.toLowerCase() === expected.accountId.toLowerCase();
+  const expectedPreviousStatus = expected.action === "suspend" ? "Active" : "Disabled";
+  const expectedStatus = expected.action === "suspend" ? "Disabled" : "Active";
   if (
-    body.accountId !== expected.accountId ||
+    httpStatus !== 200 ||
+    body.httpStatus !== 200 ||
+    body.code !== "ok" ||
+    !exactAccount ||
     body.action !== expected.action ||
-    typeof body.previousStatus !== "string" ||
-    typeof body.status !== "string" ||
+    body.previousStatus !== expectedPreviousStatus ||
+    body.status !== expectedStatus ||
     typeof body.replayed !== "boolean"
   ) {
     return null;
   }
   return {
-    accountId: expected.accountId,
+    accountId: body.accountId as string,
     action: expected.action,
-    previousStatus: body.previousStatus,
-    status: body.status,
+    previousStatus: expectedPreviousStatus,
+    status: expectedStatus,
     replayed: body.replayed,
   };
 }
@@ -127,7 +137,11 @@ export async function performUserAccountAction(input: {
   }
 
   if (response.ok) {
-    const parsed = parseUserAccountActionSuccess(await response.json(), input);
+    const parsed = parseUserAccountActionSuccess(
+      await response.json().catch(() => null),
+      response.status,
+      input,
+    );
     return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
   }
 
