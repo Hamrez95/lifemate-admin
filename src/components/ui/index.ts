@@ -27,3 +27,4 @@ export { MetricCard } from "./MetricCard";
 export { PageHeader } from "./PageHeader";
 export { SuccessState } from "./SuccessState";
 export { StateCard } from "./StateCard";
+export { Combobox, Dialog, Drawer, Menu, MenuItem, Popover, Tooltip } from "./OverlayPrimitives";
