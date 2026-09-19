@@ -234,33 +234,6 @@ function parseReport(value: unknown): MarketingContentCalendarReport | null {
   };
 }
 
-function parseMutation(value: unknown): MarketingCalendarMutation | null {
-  const body = record(value);
-  if (!body) return null;
-  if (
-    typeof body.campaignId !== "string" ||
-    !UUID_PATTERN.test(body.campaignId) ||
-    typeof body.executionId !== "string" ||
-    !UUID_PATTERN.test(body.executionId) ||
-    !STATUS_SET.has(String(body.publishStatus)) ||
-    typeof body.replayed !== "boolean"
-  ) {
-    return null;
-  }
-  if (body.scheduledForUtc !== undefined && !instant(body.scheduledForUtc)) return null;
-  if (body.scheduleTimezone !== undefined && typeof body.scheduleTimezone !== "string") return null;
-  if (
-    body.retryOfExecutionId !== undefined &&
-    (typeof body.retryOfExecutionId !== "string" || !UUID_PATTERN.test(body.retryOfExecutionId))
-  ) {
-    return null;
-  }
-  if (body.providerConnectivity !== undefined && body.providerConnectivity !== "NotVerified") {
-    return null;
-  }
-  return body as MarketingCalendarMutation;
-}
-
 async function bearer(): Promise<string | null> {
   const supabase = await createServerSupabaseClient();
   const { data: claimsData, error } = await supabase.auth.getClaims();
