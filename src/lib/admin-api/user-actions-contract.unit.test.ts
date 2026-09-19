@@ -18,14 +18,15 @@ function suspendSuccess() {
 
 describe("User 360 account action success contract", () => {
   it("accepts canonical suspend success only as Active to Disabled", () => {
-    expect(parseUserAccountActionSuccess(suspendSuccess(), 200, { accountId, action: "suspend" }))
-      .toEqual({
-        accountId,
-        action: "suspend",
-        previousStatus: "Active",
-        status: "Disabled",
-        replayed: false,
-      });
+    expect(
+      parseUserAccountActionSuccess(suspendSuccess(), 200, { accountId, action: "suspend" }),
+    ).toEqual({
+      accountId,
+      action: "suspend",
+      previousStatus: "Active",
+      status: "Disabled",
+      replayed: false,
+    });
   });
 
   it("accepts canonical restore success only as Disabled to Active", () => {
@@ -36,8 +37,9 @@ describe("User 360 account action success contract", () => {
       status: "Active",
       replayed: true,
     };
-    expect(parseUserAccountActionSuccess(body, 200, { accountId, action: "restore" })?.replayed)
-      .toBe(true);
+    expect(
+      parseUserAccountActionSuccess(body, 200, { accountId, action: "restore" })?.replayed,
+    ).toBe(true);
   });
 
   it("rejects wrong identity, action, target state or envelope", () => {
@@ -63,14 +65,11 @@ describe("User 360 account action success contract", () => {
 
   it("rejects malformed successful payloads", () => {
     expect(
-      parseUserAccountActionSuccess(
-        { ...suspendSuccess(), replayed: "false" },
-        200,
-        { accountId, action: "suspend" },
-      ),
+      parseUserAccountActionSuccess({ ...suspendSuccess(), replayed: "false" }, 200, {
+        accountId,
+        action: "suspend",
+      }),
     ).toBeNull();
-    expect(
-      parseUserAccountActionSuccess(null, 200, { accountId, action: "suspend" }),
-    ).toBeNull();
+    expect(parseUserAccountActionSuccess(null, 200, { accountId, action: "suspend" })).toBeNull();
   });
 });
