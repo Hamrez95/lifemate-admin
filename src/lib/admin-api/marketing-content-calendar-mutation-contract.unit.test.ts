@@ -36,11 +36,7 @@ describe("marketing content calendar mutation success contract", () => {
       replayed: false,
     });
     expect(
-      parseMarketingCalendarMutationSuccess(
-        { ...body, scheduleTimezone: "UTC" },
-        202,
-        expected,
-      ),
+      parseMarketingCalendarMutationSuccess({ ...body, scheduleTimezone: "UTC" }, 202, expected),
     ).toBeNull();
     expect(
       parseMarketingCalendarMutationSuccess(
@@ -66,11 +62,7 @@ describe("marketing content calendar mutation success contract", () => {
       "Cancelled",
     );
     expect(
-      parseMarketingCalendarMutationSuccess(
-        { ...body, executionId: RETRY_ID },
-        200,
-        expected,
-      ),
+      parseMarketingCalendarMutationSuccess({ ...body, executionId: RETRY_ID }, 200, expected),
     ).toBeNull();
     expect(parseMarketingCalendarMutationSuccess(body, 202, expected)).toBeNull();
   });
@@ -97,11 +89,7 @@ describe("marketing content calendar mutation success contract", () => {
       replayed: false,
     });
     expect(
-      parseMarketingCalendarMutationSuccess(
-        { ...body, executionId: EXECUTION_ID },
-        202,
-        expected,
-      ),
+      parseMarketingCalendarMutationSuccess({ ...body, executionId: EXECUTION_ID }, 202, expected),
     ).toBeNull();
     expect(
       parseMarketingCalendarMutationSuccess(
