@@ -1,7 +1,8 @@
 import "server-only";
 
-import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
+import { parseAccessGrantMutationSuccess } from "@/src/lib/admin-api/access-grant-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
+import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
 export type AccessGrantAction = "extend" | "replace-scopes" | "revoke";
 
@@ -54,28 +55,6 @@ async function problem(response: Response): Promise<{ message?: string; correlat
   }
 }
 
-function validSuccess(value: unknown): value is {
-  version: number;
-  status: string;
-  expiresAtUtc: string | null;
-  scopeCount: number;
-  noop: boolean;
-  replayed: boolean;
-} {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
-  const row = value as Record<string, unknown>;
-  return (
-    Number.isInteger(row.version) &&
-    Number(row.version) >= 1 &&
-    typeof row.status === "string" &&
-    (row.expiresAtUtc === null || typeof row.expiresAtUtc === "string") &&
-    Number.isInteger(row.scopeCount) &&
-    Number(row.scopeCount) >= 0 &&
-    typeof row.noop === "boolean" &&
-    typeof row.replayed === "boolean"
-  );
-}
-
 export async function mutateAccessGrant(
   input: AccessGrantActionInput,
 ): Promise<AccessGrantActionResult> {
@@ -119,17 +98,16 @@ export async function mutateAccessGrant(
   }
 
   if (response.ok) {
-    const parsed = (await response.json()) as unknown;
-    if (!validSuccess(parsed)) return { kind: "unavailable" };
-    return {
-      kind: "ok",
-      version: parsed.version,
-      status: parsed.status,
-      expiresAtUtc: parsed.expiresAtUtc,
-      scopeCount: parsed.scopeCount,
-      noop: parsed.noop,
-      replayed: parsed.replayed,
-    };
+    const raw = await response.json().catch(() => null);
+    const parsed = parseAccessGrantMutationSuccess(raw, response.status, {
+      grantId: input.grantId,
+      action: input.action,
+      expectedVersion: input.expectedVersion,
+      expiresAtUtc: input.expiresAtUtc,
+      scopes: input.scopes,
+    });
+    if (!parsed) return { kind: "unavailable" };
+    return { kind: "ok", ...parsed };
   }
   if (response.status === 401) return { kind: "unauthenticated" };
   const details = await problem(response);
