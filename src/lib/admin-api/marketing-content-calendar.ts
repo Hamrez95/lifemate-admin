@@ -3,7 +3,7 @@ import "server-only";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
-import type { MarketingCampaignResult } from "./marketing-campaigns";
+import { parseMarketingCalendarMutationSuccess } from "./marketing-content-calendar-mutation-contract";\nimport type { MarketingCampaignResult } from "./marketing-campaigns";
 
 export const marketingCalendarTimezones = ["Asia/Tehran", "UTC"] as const;
 export type MarketingCalendarTimezone = (typeof marketingCalendarTimezones)[number];
@@ -354,7 +354,12 @@ export async function scheduleMarketingCampaignPublish(
   );
   if (!result) return { kind: "unauthenticated" };
   if (result.response.ok) {
-    const parsed = parseMutation(result.body);
+    const parsed = parseMarketingCalendarMutationSuccess(result.body, result.response.status, {
+      kind: "schedule",
+      campaignId,
+      scheduledLocal: payload.scheduledLocal,
+      timezone: payload.timezone,
+    });
     return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
   }
   return failed(result.response, record(result.body) ?? {});
@@ -387,7 +392,10 @@ async function executionAction(
   );
   if (!result) return { kind: "unauthenticated" };
   if (result.response.ok) {
-    const parsed = parseMutation(result.body);
+    const parsed = parseMarketingCalendarMutationSuccess(result.body, result.response.status, {
+      kind: action,
+      executionId,
+    });
     return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
   }
   return failed(result.response, record(result.body) ?? {});
