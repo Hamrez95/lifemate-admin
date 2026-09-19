@@ -3,11 +3,14 @@ import {
   type CampaignExecutionMutationExpectation,
   type CampaignExecutionMutationSuccess,
 } from "@/src/lib/admin-api/campaign-execution-mutation-contract";
+import {
+  isCanonicalCampaignExecutionStatus,
+  type CampaignExecutionStatus,
+} from "@/src/lib/admin-api/campaign-execution-status-contract";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
-export type CampaignExecutionStatus =
-  "Prepared" | "Confirmed" | "Scheduled" | "Processing" | "Completed" | "Cancelled" | "Failed";
+export type { CampaignExecutionStatus } from "@/src/lib/admin-api/campaign-execution-status-contract";
 
 export type CampaignExecution = {
   id: string;
@@ -51,15 +54,6 @@ export type CampaignExecutionResult<T> =
 type Problem = { code?: unknown; title?: unknown; message?: unknown; correlationId?: unknown };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const statuses = new Set<CampaignExecutionStatus>([
-  "Prepared",
-  "Confirmed",
-  "Scheduled",
-  "Processing",
-  "Completed",
-  "Cancelled",
-  "Failed",
-]);
 
 function record(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" && !Array.isArray(value)
@@ -86,8 +80,7 @@ function parseExecution(value: unknown): CampaignExecution | null {
     typeof row.audienceSnapshotId !== "string" ||
     !UUID.test(row.audienceSnapshotId) ||
     !instant(row.campaignUpdatedAtUtc) ||
-    typeof row.status !== "string" ||
-    !statuses.has(row.status as CampaignExecutionStatus) ||
+    !isCanonicalCampaignExecutionStatus(row.status) ||
     !nonNegative(row.audienceCount) ||
     !nonNegative(row.eligibleSmsCount) ||
     !nonNegative(row.eligiblePushCount) ||
