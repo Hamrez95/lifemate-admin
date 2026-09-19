@@ -46,7 +46,11 @@ function localSecond(value: string): string | null {
   return null;
 }
 
-function instantMatchesLocal(value: unknown, scheduledLocal: string, timezone: string): value is string {
+function instantMatchesLocal(
+  value: unknown,
+  scheduledLocal: string,
+  timezone: string,
+): value is string {
   if (typeof value !== "string" || Number.isNaN(Date.parse(value))) return false;
   const expected = localSecond(scheduledLocal);
   if (!expected) return false;
