@@ -3,7 +3,8 @@ import "server-only";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
-import { parseMarketingCalendarMutationSuccess } from "./marketing-content-calendar-mutation-contract";\nimport type { MarketingCampaignResult } from "./marketing-campaigns";
+import { parseMarketingCalendarMutationSuccess } from "./marketing-content-calendar-mutation-contract";
+import type { MarketingCampaignResult } from "./marketing-campaigns";
 
 export const marketingCalendarTimezones = ["Asia/Tehran", "UTC"] as const;
 export type MarketingCalendarTimezone = (typeof marketingCalendarTimezones)[number];
