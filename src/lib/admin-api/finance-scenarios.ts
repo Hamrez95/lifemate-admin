@@ -3,6 +3,7 @@ import "server-only";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
+import { parseFinanceScenarioMutationSuccess } from "./finance-scenario-mutation-contract";
 import {
   type FinanceScenariosResponse,
   parseFinanceScenariosResponse,
@@ -122,13 +123,27 @@ export async function configureFinanceScenario(input: {
   } catch {
     return { kind: "unavailable" };
   }
+
   if (response.ok) {
-    const body = (await response.json()) as Record<string, unknown>;
-    if (typeof body.scenarioId !== "string" || !Number.isInteger(body.version)) {
-      return { kind: "unavailable" };
-    }
-    return { kind: "ok", scenarioId: body.scenarioId, version: Number(body.version) };
+    const payload = await response.json().catch(() => null);
+    const expected =
+      input.scenarioId && input.expectedVersion !== null
+        ? {
+            kind: "update" as const,
+            scenarioId: input.scenarioId,
+            expectedVersion: input.expectedVersion,
+          }
+        : input.scenarioId === null && input.expectedVersion === null
+          ? ({ kind: "create" } as const)
+          : null;
+    if (!expected) return { kind: "unavailable" };
+
+    const success = parseFinanceScenarioMutationSuccess(payload, response.status, expected);
+    return success
+      ? { kind: "ok", scenarioId: success.scenarioId, version: success.version }
+      : { kind: "unavailable" };
   }
+
   const issue = await problem(response);
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden", message: issue.message };
