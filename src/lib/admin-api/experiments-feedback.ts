@@ -1,5 +1,6 @@
 import "server-only";
 
+import { parseExperimentMutationSuccess } from "@/src/lib/admin-api/experiment-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -119,13 +120,20 @@ export async function createExperiment(input: {
   payload: Record<string, unknown>;
   idempotencyKey: string;
 }): Promise<ProductSignalResult<Record<string, unknown>>> {
-  return mapped(
-    await adminFetch("/api/v1/experiments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
-      body: JSON.stringify(input.payload),
-    }),
-  );
+  const response = await adminFetch("/api/v1/experiments", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
+    body: JSON.stringify(input.payload),
+  });
+  if (response === null || !response.ok) return mapped(response);
+
+  const body = await response.json().catch(() => null);
+  const success = parseExperimentMutationSuccess(body, response.status, {
+    kind: "create",
+    experimentKey:
+      typeof input.payload.experimentKey === "string" ? input.payload.experimentKey : "",
+  });
+  return success ? { kind: "ok", data: success } : { kind: "unavailable" };
 }
 
 export async function setExperimentStatus(input: {
@@ -135,8 +143,9 @@ export async function setExperimentStatus(input: {
   reason: string;
   idempotencyKey: string;
 }): Promise<ProductSignalResult<Record<string, unknown>>> {
-  return mapped(
-    await adminFetch(`/api/v1/experiments/${encodeURIComponent(input.experimentKey)}/status`, {
+  const response = await adminFetch(
+    `/api/v1/experiments/${encodeURIComponent(input.experimentKey)}/status`,
+    {
       method: "POST",
       headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
       body: JSON.stringify({
@@ -144,8 +153,18 @@ export async function setExperimentStatus(input: {
         expectedVersion: input.expectedVersion,
         reason: input.reason,
       }),
-    }),
+    },
   );
+  if (response === null || !response.ok) return mapped(response);
+
+  const body = await response.json().catch(() => null);
+  const success = parseExperimentMutationSuccess(body, response.status, {
+    kind: "set-status",
+    experimentKey: input.experimentKey,
+    status: input.status,
+    expectedVersion: input.expectedVersion,
+  });
+  return success ? { kind: "ok", data: success } : { kind: "unavailable" };
 }
 
 export async function listFeedback(
