@@ -7,6 +7,7 @@ import {
   type CommandCenterPreferences,
   parseCommandCenterPreferencesResponse,
 } from "./settings-preferences-contract";
+import { parseCommandCenterPreferencesMutationSuccess } from "./settings-preferences-mutation-contract";
 
 export type { CommandCenterPreferences } from "./settings-preferences-contract";
 
@@ -116,7 +117,18 @@ export async function configureCommandCenterPreferences(input: {
   } catch {
     return { kind: "unavailable" };
   }
-  if (response.ok) return { kind: "ok" };
+
+  if (response.ok) {
+    const payload = await response.json().catch(() => null);
+    const success = parseCommandCenterPreferencesMutationSuccess(payload, response.status, {
+      locale: input.locale,
+      timeZone: input.timeZone,
+      displayName: input.displayName,
+      expectedVersion: input.expectedVersion,
+    });
+    return success ? { kind: "ok" } : { kind: "unavailable" };
+  }
+
   const issue = await problem(response);
   if (response.status === 401) return { kind: "unauthenticated" };
   if (response.status === 403) return { kind: "forbidden", message: issue.message };
