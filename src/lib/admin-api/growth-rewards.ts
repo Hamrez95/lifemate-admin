@@ -1,5 +1,10 @@
 import "server-only";
 
+import {
+  parseGrowthRewardMutationSuccess,
+  type GrowthRewardRuleMutationExpectation,
+  type GrowthRewardSourceReviewExpectation,
+} from "@/src/lib/admin-api/growth-reward-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -229,7 +234,62 @@ export async function getGrowthRewardsSnapshot(): Promise<GrowthRewardsSnapshot>
   };
 }
 
-async function mutation(path: string, body: Record<string, unknown>, idempotencyKey: string) {
+function ruleExpectation(
+  body: Record<string, unknown>,
+): GrowthRewardRuleMutationExpectation | null {
+  const ruleCode = text(body.code, 80)?.trim().toLowerCase() ?? null;
+  const triggerKind = text(body.triggerKind, 24);
+  const rewardKind = text(body.rewardKind, 32);
+  const status = text(body.status, 16);
+  const expectedVersion = integer(body.expectedVersion, 0);
+  const maxIssuesPerAccount =
+    body.maxIssuesPerAccount === null ? null : integer(body.maxIssuesPerAccount, 1);
+  if (
+    !ruleCode ||
+    !["Referral", "Advocacy", "Gift", "Campaign"].includes(triggerKind ?? "") ||
+    !["Discount", "GiftEntitlement", "RaffleEligibility", "CharityImpact"].includes(
+      rewardKind ?? "",
+    ) ||
+    !["Draft", "Active", "Paused", "Retired"].includes(status ?? "") ||
+    expectedVersion === null ||
+    (body.maxIssuesPerAccount !== null && maxIssuesPerAccount === null)
+  ) {
+    return null;
+  }
+  return {
+    kind: "rule-upsert",
+    ruleCode,
+    triggerKind: triggerKind as GrowthRewardRuleMutationExpectation["triggerKind"],
+    rewardKind: rewardKind as GrowthRewardRuleMutationExpectation["rewardKind"],
+    status: status as GrowthRewardRuleMutationExpectation["status"],
+    expectedVersion,
+    maxIssuesPerAccount,
+  };
+}
+
+function reviewExpectation(
+  sourceKind: "Referral" | "Advocacy",
+  sourceId: string,
+  body: Record<string, unknown>,
+): GrowthRewardSourceReviewExpectation | null {
+  const expectedVersion = integer(body.expectedVersion, 1);
+  const decision = text(body.decision, 7)?.trim().toLowerCase();
+  if (
+    !UUID.test(sourceId) ||
+    expectedVersion === null ||
+    (decision !== "approve" && decision !== "reject")
+  ) {
+    return null;
+  }
+  return { kind: "source-review", sourceKind, sourceId, expectedVersion, decision };
+}
+
+async function mutation(
+  path: string,
+  body: Record<string, unknown>,
+  idempotencyKey: string,
+  expected: GrowthRewardRuleMutationExpectation | GrowthRewardSourceReviewExpectation,
+) {
   const response = await api(path, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Idempotency-Key": idempotencyKey },
@@ -246,11 +306,12 @@ async function mutation(path: string, body: Record<string, unknown>, idempotency
     : undefined;
   const correlationId =
     payload && typeof payload.correlationId === "string" ? payload.correlationId : undefined;
-  if (response.ok)
-    return {
-      kind: "ok",
-      replayed: payload && typeof payload.replayed === "boolean" ? payload.replayed : undefined,
-    } as GrowthRewardMutationResult;
+  if (response.ok) {
+    const success = parseGrowthRewardMutationSuccess(payload, response.status, expected);
+    return success
+      ? ({ kind: "ok", replayed: success.replayed } as GrowthRewardMutationResult)
+      : ({ kind: "unavailable" } as GrowthRewardMutationResult);
+  }
   if (response.status === 401) return { kind: "unauthenticated" } as GrowthRewardMutationResult;
   if (response.status === 403) return { kind: "forbidden" } as GrowthRewardMutationResult;
   if (response.status === 409) return { kind: "conflict", message } as GrowthRewardMutationResult;
@@ -263,7 +324,9 @@ export async function upsertGrowthRewardRule(
   body: Record<string, unknown>,
   idempotencyKey: string,
 ) {
-  return await mutation("/api/v1/commerce/rewards/rules", body, idempotencyKey);
+  const expected = ruleExpectation(body);
+  if (!expected) return { kind: "invalid" } as GrowthRewardMutationResult;
+  return await mutation("/api/v1/commerce/rewards/rules", body, idempotencyKey, expected);
 }
 
 export async function reviewGrowthRewardSource(
@@ -272,9 +335,12 @@ export async function reviewGrowthRewardSource(
   body: Record<string, unknown>,
   idempotencyKey: string,
 ) {
+  const expected = reviewExpectation(kind, sourceId, body);
+  if (!expected) return { kind: "invalid" } as GrowthRewardMutationResult;
   return await mutation(
     `/api/v1/commerce/rewards/sources/${kind}/${sourceId}/review`,
     body,
     idempotencyKey,
+    expected,
   );
 }
