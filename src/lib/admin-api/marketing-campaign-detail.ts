@@ -366,7 +366,14 @@ export async function updateMarketingCampaignContent(
     body: JSON.stringify(payload),
   });
   if (!result) return { kind: "unauthenticated" };
-  if (result.response.ok && record(result.body)) {
+  if (
+    result.response.ok &&
+    record(result.body) &&
+    isMarketingCampaignDetailMutationSuccess(result.body, result.response.status, {
+      kind: "content",
+      campaignId,
+    })
+  ) {
     return { kind: "ok", data: result.body as Record<string, unknown> };
   }
   return failed(result.response, record(result.body) ?? {});
@@ -388,7 +395,15 @@ export async function setMarketingCampaignApproval(
     body: JSON.stringify({ approved, reason }),
   });
   if (!result) return { kind: "unauthenticated" };
-  if (result.response.ok && record(result.body)) {
+  if (
+    result.response.ok &&
+    record(result.body) &&
+    isMarketingCampaignDetailMutationSuccess(result.body, result.response.status, {
+      kind: "approval",
+      campaignId,
+      approved,
+    })
+  ) {
     return { kind: "ok", data: result.body as Record<string, unknown> };
   }
   return failed(result.response, record(result.body) ?? {});
@@ -409,7 +424,14 @@ export async function requestMarketingCampaignPublish(
     body: JSON.stringify({ reason }),
   });
   if (!result) return { kind: "unauthenticated" };
-  if (result.response.ok && record(result.body)) {
+  if (
+    result.response.ok &&
+    record(result.body) &&
+    isMarketingCampaignDetailMutationSuccess(result.body, result.response.status, {
+      kind: "publish",
+      campaignId,
+    })
+  ) {
     return { kind: "ok", data: result.body as Record<string, unknown> };
   }
   return failed(result.response, record(result.body) ?? {});
