@@ -1,6 +1,7 @@
 import "server-only";
 
 import { parseExperimentMutationSuccess } from "@/src/lib/admin-api/experiment-mutation-contract";
+import { parseFeedbackActionSuccess } from "@/src/lib/admin-api/feedback-action-mutation-contract";
 import { getServerAdminAccessToken } from "@/src/lib/admin-api/session";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 
@@ -210,8 +211,9 @@ export async function mutateFeedback(input: {
   productIssueRef?: string | null;
   idempotencyKey: string;
 }): Promise<ProductSignalResult<Record<string, unknown>>> {
-  return mapped(
-    await adminFetch(`/api/v1/feedback/${encodeURIComponent(input.itemId)}/actions`, {
+  const response = await adminFetch(
+    `/api/v1/feedback/${encodeURIComponent(input.itemId)}/actions`,
+    {
       method: "POST",
       headers: { "Content-Type": "application/json", "Idempotency-Key": input.idempotencyKey },
       body: JSON.stringify({
@@ -221,6 +223,17 @@ export async function mutateFeedback(input: {
         ...(input.supportTicketId ? { supportTicketId: input.supportTicketId } : {}),
         ...(input.productIssueRef ? { productIssueRef: input.productIssueRef } : {}),
       }),
-    }),
+    },
   );
+  if (response === null || !response.ok) return mapped(response);
+
+  const body = await response.json().catch(() => null);
+  const success = parseFeedbackActionSuccess(body, response.status, {
+    itemId: input.itemId,
+    expectedStatus: input.expectedStatus,
+    action: input.action,
+  });
+  return success
+    ? { kind: "ok", data: success as unknown as Record<string, unknown> }
+    : { kind: "unavailable" };
 }
