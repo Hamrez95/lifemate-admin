@@ -4,47 +4,73 @@ import { parseUserAccountActionSuccess } from "./user-actions";
 
 const accountId = "8b82f871-baa2-4ee7-9849-ce20882fd67c";
 
-function successBody() {
+function suspendSuccess() {
   return {
+    httpStatus: 200,
+    code: "ok",
     accountId,
     action: "suspend",
     previousStatus: "Active",
-    status: "Suspended",
+    status: "Disabled",
     replayed: false,
   };
 }
 
 describe("User 360 account action success contract", () => {
-  it("accepts a success envelope bound to the requested account and action", () => {
-    expect(parseUserAccountActionSuccess(successBody(), { accountId, action: "suspend" })).toEqual(
-      successBody(),
-    );
+  it("accepts canonical suspend success only as Active to Disabled", () => {
+    expect(parseUserAccountActionSuccess(suspendSuccess(), 200, { accountId, action: "suspend" }))
+      .toEqual({
+        accountId,
+        action: "suspend",
+        previousStatus: "Active",
+        status: "Disabled",
+        replayed: false,
+      });
   });
 
-  it("rejects a success envelope for a different account", () => {
-    expect(
-      parseUserAccountActionSuccess(
-        { ...successBody(), accountId: "2ec2634f-95d9-4b0d-9a2a-3f234686c04f" },
-        { accountId, action: "suspend" },
-      ),
-    ).toBeNull();
+  it("accepts canonical restore success only as Disabled to Active", () => {
+    const body = {
+      ...suspendSuccess(),
+      action: "restore",
+      previousStatus: "Disabled",
+      status: "Active",
+      replayed: true,
+    };
+    expect(parseUserAccountActionSuccess(body, 200, { accountId, action: "restore" })?.replayed)
+      .toBe(true);
   });
 
-  it("rejects a success envelope for a different action", () => {
+  it("rejects wrong identity, action, target state or envelope", () => {
+    const expected = { accountId, action: "suspend" } as const;
     expect(
       parseUserAccountActionSuccess(
-        { ...successBody(), action: "restore" },
-        { accountId, action: "suspend" },
+        { ...suspendSuccess(), accountId: "2ec2634f-95d9-4b0d-9a2a-3f234686c04f" },
+        200,
+        expected,
       ),
     ).toBeNull();
+    expect(
+      parseUserAccountActionSuccess({ ...suspendSuccess(), action: "restore" }, 200, expected),
+    ).toBeNull();
+    expect(
+      parseUserAccountActionSuccess({ ...suspendSuccess(), status: "Suspended" }, 200, expected),
+    ).toBeNull();
+    expect(
+      parseUserAccountActionSuccess({ ...suspendSuccess(), code: "accepted" }, 200, expected),
+    ).toBeNull();
+    expect(parseUserAccountActionSuccess(suspendSuccess(), 201, expected)).toBeNull();
   });
 
   it("rejects malformed successful payloads", () => {
     expect(
       parseUserAccountActionSuccess(
-        { ...successBody(), replayed: "false" },
+        { ...suspendSuccess(), replayed: "false" },
+        200,
         { accountId, action: "suspend" },
       ),
+    ).toBeNull();
+    expect(
+      parseUserAccountActionSuccess(null, 200, { accountId, action: "suspend" }),
     ).toBeNull();
   });
 });
