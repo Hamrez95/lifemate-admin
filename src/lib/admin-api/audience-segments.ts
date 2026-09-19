@@ -1,3 +1,4 @@
+import { isAudienceSegmentSnapshotMutationSuccess } from "@/src/lib/admin-api/audience-segment-snapshot-mutation-contract";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
@@ -284,6 +285,14 @@ export async function snapshotAudienceSegment(
   });
   if (!result) return { kind: "unauthenticated" };
   if (!result.response.ok) return failed(result.response, (record(result.body) ?? {}) as Problem);
+  if (
+    !isAudienceSegmentSnapshotMutationSuccess(result.body, result.response.status, {
+      segmentId: id,
+      segmentVersion: expectedVersion,
+    })
+  ) {
+    return { kind: "unavailable" };
+  }
   const body = record(result.body);
   if (
     !body ||
