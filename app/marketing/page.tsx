@@ -90,6 +90,9 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
           <Link href="/marketing/idea-engine" className={styles.campaignLink}>
             Idea Engine
           </Link>
+          <Link href="/marketing/creative-radar" className={styles.campaignLink}>
+            Creative Radar
+          </Link>
         </div>
       </section>
 
