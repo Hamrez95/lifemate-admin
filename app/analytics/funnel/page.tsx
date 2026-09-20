@@ -55,6 +55,29 @@ function formatRate(value: number | null): string {
   return value === null ? "—" : `${number.format(value * 100)}٪`;
 }
 
+function stateLabel(state: KpiValue["state"]): string {
+  if (state === "ready") return "داده آماده است";
+  if (state === "partial") return "بخشی از داده آماده است";
+  return "فعلاً قابل دریافت نیست";
+}
+
+function freshnessLabel(value: KpiValue): string {
+  if (value.freshness.status === "fresh") return "به‌روز";
+  if (value.freshness.status === "partial") return "با پوشش محدود";
+  return "تازه‌بودن نامشخص";
+}
+
+function formatTehranDate(value: string): string {
+  const parsed = new Date(`${value}T12:00:00Z`);
+  return Number.isNaN(parsed.getTime())
+    ? value
+    : new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+        timeZone: "Asia/Tehran",
+        month: "short",
+        day: "numeric",
+      }).format(parsed);
+}
+
 function CanonicalMetric({
   definition,
   value,
@@ -62,14 +85,10 @@ function CanonicalMetric({
   definition: AnalyticsKpiDefinition;
   value: KpiValue;
 }) {
-  const normalized =
-    value.value === null ? 0 : definition.unit === "rate" ? value.value * 100 : value.value;
   const width =
-    definition.unit === "rate"
-      ? Math.max(0, Math.min(normalized, 100))
-      : value.value === null
-        ? 0
-        : 100;
+    definition.unit === "rate" && value.value !== null
+      ? Math.max(0, Math.min(value.value * 100, 100))
+      : null;
   const label = `${definition.displayNameFa}: ${formatValue(definition, value)}؛ وضعیت ${value.state}`;
 
   return (
@@ -77,7 +96,9 @@ function CanonicalMetric({
       <div className={styles.metricHeader}>
         <div>
           <strong>{definition.displayNameFa}</strong>
-          <span>{definition.eventSources.join(" · ")}</span>
+          <span>
+            {freshnessLabel(value)} · {definition.eventSources.join(" · ")}
+          </span>
         </div>
         <b>{formatValue(definition, value)}</b>
       </div>
@@ -85,15 +106,17 @@ function CanonicalMetric({
         <div className={styles.metricUnavailable} role="status">
           {value.reason ?? "این شاخص از API canonical مقدار قابل اتکا ندارد."}
         </div>
-      ) : (
+      ) : width !== null ? (
         <div className={styles.barTrack} role="img" aria-label={label} tabIndex={0}>
           <span className={styles.barFill} style={{ width: `${width}%` }} aria-hidden="true" />
           <span className={styles.tooltip} role="tooltip">
             {label}
           </span>
         </div>
-      )}
-      <small>{definition.formula}</small>
+      ) : null}
+      <small>
+        {definition.formula} · {stateLabel(value.state)}
+      </small>
     </article>
   );
 }
@@ -161,7 +184,7 @@ async function FunnelContent({ filters }: { filters: URLSearchParams }) {
     <div className={styles.page}>
       <section className={styles.hero}>
         <div>
-          <span className={styles.eyebrow}>Activation Funnel · Canonical evidence</span>
+          <span className={styles.eyebrow}>دادهٔ تأییدشدهٔ فعال‌سازی</span>
           <h2>قیف فعال‌سازی و تبدیل</h2>
           <p>
             شمارش مراحل، conversion و drop-off فقط از cohort canonical Core خوانده می‌شوند؛ هیچ نرخ
@@ -169,8 +192,8 @@ async function FunnelContent({ filters }: { filters: URLSearchParams }) {
           </p>
         </div>
         <div className={styles.heroMeta}>
-          <span>Taxonomy v{catalog.eventTaxonomyVersion.toLocaleString("fa-IR")}</span>
-          <span>KPI Dictionary v{catalog.kpiDictionaryVersion.toLocaleString("fa-IR")}</span>
+          <span>واژه‌نامه رویداد v{catalog.eventTaxonomyVersion.toLocaleString("fa-IR")}</span>
+          <span>تعریف شاخص‌ها v{catalog.kpiDictionaryVersion.toLocaleString("fa-IR")}</span>
           <span>آخرین دریافت {dateTime.format(new Date(values.generatedAtUtc))}</span>
         </div>
       </section>
@@ -205,18 +228,22 @@ async function FunnelContent({ filters }: { filters: URLSearchParams }) {
           >
             خروجی
           </button>
-          <a href="#aggregate-drilldown">Drill-down تجمیعی</a>
+          <a href="#aggregate-drilldown">جزئیات تجمیعی</a>
         </div>
       </section>
 
       <section className={styles.funnelCard} aria-labelledby="canonical-funnel-title">
         <div className={styles.sectionHeading}>
           <div>
-            <span className={styles.eyebrow}>Canonical activation cohort</span>
+            <span className={styles.eyebrow}>گروه فعال‌سازی تأییدشده</span>
             <h3 id="canonical-funnel-title">نمای قیف مرحله‌ای</h3>
           </div>
           <span className={styles.unavailableBadge}>
-            {hasCanonicalFunnel ? "Partial" : "Unavailable"}
+            {hasCanonicalFunnel
+              ? funnelStages.every(({ value }) => value.state === "ready")
+                ? "داده آماده است"
+                : "بخشی از داده آماده است"
+              : "فعلاً قابل دریافت نیست"}
           </span>
         </div>
         {!hasCanonicalFunnel ? (
@@ -237,17 +264,22 @@ async function FunnelContent({ filters }: { filters: URLSearchParams }) {
                     </strong>
                     <span>{value.source}</span>
                   </div>
-                  <b>{value.suppressed ? "Suppressed" : formatValue(definition, value)}</b>
+                  <b>
+                    {value.suppressed
+                      ? "به‌دلیل حریم خصوصی نمایش داده نمی‌شود"
+                      : formatValue(definition, value)}
+                  </b>
                 </div>
                 {definition.funnel?.stageOrder === 1 ? (
                   <small>
-                    cohort پایه · حداقل نمایش{" "}
+                    گروه پایه · حداقل نمایش{" "}
                     {definition.funnel.privacyThreshold.toLocaleString("fa-IR")} حساب
                   </small>
                 ) : (
                   <small>
-                    Conversion {formatRate(value.funnel?.conversionFromPrevious ?? null)} · Drop-off{" "}
-                    {formatRate(value.funnel?.dropOffFromPrevious ?? null)}
+                    تبدیل از مرحلهٔ قبل {formatRate(value.funnel?.conversionFromPrevious ?? null)} ·
+                    ریزش {formatRate(value.funnel?.dropOffFromPrevious ?? null)} ·{" "}
+                    {stateLabel(value.state)}
                   </small>
                 )}
                 {value.reason ? (
@@ -266,7 +298,7 @@ async function FunnelContent({ filters }: { filters: URLSearchParams }) {
       >
         <div className={styles.sectionHeading}>
           <div>
-            <span className={styles.eyebrow}>Approved aggregate drill-down</span>
+            <span className={styles.eyebrow}>جزئیات روزانهٔ تجمیعی</span>
             <h3 id="aggregate-drilldown-title">شکست روزانه cohort</h3>
             <p>
               فقط aggregate روزانه نمایش داده می‌شود؛ هیچ شناسه حساب، پروفایل یا payload سلامت وجود
@@ -275,19 +307,19 @@ async function FunnelContent({ filters }: { filters: URLSearchParams }) {
           </div>
         </div>
         {!hasCanonicalFunnel || drilldownDates.length === 0 ? (
-          <AdminPageState state="empty" title="داده aggregate برای drill-down وجود ندارد" />
+          <AdminPageState state="empty" title="دادهٔ تجمیعی برای جزئیات وجود ندارد" />
         ) : (
           <div className={styles.metricList}>
             {drilldownDates.map((date) => (
               <article className={styles.metricRow} key={date}>
                 <div className={styles.metricHeader}>
-                  <strong>{date}</strong>
+                  <strong>{formatTehranDate(date)}</strong>
                   <span>
                     {funnelStages
                       .map(({ definition, value }) => {
                         const point = value.series?.find((candidate) => candidate.date === date);
                         const rendered = point?.suppressed
-                          ? "Suppressed"
+                          ? "محافظت‌شده"
                           : point?.value == null
                             ? "—"
                             : number.format(point.value);
@@ -305,7 +337,7 @@ async function FunnelContent({ filters }: { filters: URLSearchParams }) {
       <section className={styles.metricsCard} aria-labelledby="canonical-evidence-title">
         <div className={styles.sectionHeading}>
           <div>
-            <span className={styles.eyebrow}>Other canonical KPI evidence</span>
+            <span className={styles.eyebrow}>شاخص‌های تأییدشدهٔ دیگر</span>
             <h3 id="canonical-evidence-title">شاخص‌های مستقل Analytics</h3>
             <p>این بخش جدا از funnel است و برای ساخت conversion مرحله‌ای استفاده نمی‌شود.</p>
           </div>
@@ -339,7 +371,7 @@ export default async function FunnelPage({ searchParams }: FunnelPageProps) {
       <AdminShell
         activeSlug="analytics"
         title="قیف فعال‌سازی و تبدیل"
-        subtitle="Reference 9 · canonical data only"
+        subtitle="فقط دادهٔ تأییدشده؛ بدون برآورد یا تکمیل ساختگی"
       >
         {!canRead ? <AdminPageState state="forbidden" /> : <FunnelContent filters={filters} />}
       </AdminShell>
