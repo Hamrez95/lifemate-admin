@@ -9,6 +9,11 @@ const viewports = [
   { name: "desktop-1440", width: 1440, height: 900 },
 ] as const;
 
+const presentationModes = [
+  { direction: "rtl", theme: "light" },
+  { direction: "ltr", theme: "dark" },
+] as const;
+
 async function expectNoViewportOverflow(page: Page) {
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
@@ -16,39 +21,49 @@ async function expectNoViewportOverflow(page: Page) {
   expect(overflow).toBe(false);
 }
 
-for (const viewport of viewports) {
-  test(`shared RTL shell is stable at ${viewport.name}`, async ({ page }) => {
-    await page.setViewportSize({ width: viewport.width, height: viewport.height });
-    await signInWithMfa(page);
-    await expect(page).toHaveURL(/\/$/);
+for (const presentation of presentationModes) {
+  for (const viewport of viewports) {
+    test(`shared ${presentation.direction.toUpperCase()} ${presentation.theme} shell is stable at ${viewport.name}`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await page.addInitScript(({ direction, theme }) => {
+        localStorage.setItem("lifemate-command-center-direction", direction);
+        localStorage.setItem("lifemate-command-center-appearance", theme);
+      }, presentation);
+      await signInWithMfa(page);
+      await expect(page).toHaveURL(/\/$/);
 
-    await expect(page.getByLabel("ناوبری اصلی Command Center")).toBeVisible();
-    await expect(page.getByRole("navigation", { name: "مسیر صفحه" })).toBeVisible();
-    await expect(page.getByRole("main")).toBeVisible();
-    await expectNoViewportOverflow(page);
+      await expect(page.getByLabel("ناوبری اصلی Command Center")).toBeVisible();
+      await expect(page.getByRole("navigation", { name: "مسیر صفحه" })).toBeVisible();
+      await expect(page.getByRole("main")).toBeVisible();
+      await expectNoViewportOverflow(page);
 
-    const shellDirection = await page
-      .locator(".app-shell")
-      .evaluate((element) => getComputedStyle(element).direction);
-    expect(shellDirection).toBe("rtl");
+      const shellDirection = await page
+        .locator(".app-shell")
+        .evaluate((element) => getComputedStyle(element).direction);
+      expect(shellDirection).toBe(presentation.direction);
+      await expect(page.locator("html")).toHaveAttribute("dir", presentation.direction);
+      await expect(page.locator("html")).toHaveAttribute("data-theme", presentation.theme);
 
-    const sidebar = page.getByLabel("ناوبری اصلی Command Center");
-    const box = await sidebar.boundingBox();
-    expect(box).not.toBeNull();
+      const sidebar = page.getByLabel("ناوبری اصلی Command Center");
+      const box = await sidebar.boundingBox();
+      expect(box).not.toBeNull();
 
-    if (viewport.width === 390) {
-      const position = await sidebar.evaluate((element) => getComputedStyle(element).position);
-      expect(position).toBe("fixed");
-      expect(box!.width).toBeGreaterThanOrEqual(380);
-    } else if (viewport.width === 768) {
-      expect(box!.width).toBeGreaterThanOrEqual(70);
-      expect(box!.width).toBeLessThanOrEqual(74);
-    } else if (viewport.width === 1024) {
-      expect(box!.width).toBeGreaterThanOrEqual(205);
-      expect(box!.width).toBeLessThanOrEqual(215);
-    } else {
-      expect(box!.width).toBeGreaterThanOrEqual(230);
-      expect(box!.width).toBeLessThanOrEqual(242);
-    }
-  });
+      if (viewport.width === 390) {
+        const position = await sidebar.evaluate((element) => getComputedStyle(element).position);
+        expect(position).toBe("fixed");
+        expect(box!.width).toBeGreaterThanOrEqual(380);
+      } else if (viewport.width === 768) {
+        expect(box!.width).toBeGreaterThanOrEqual(70);
+        expect(box!.width).toBeLessThanOrEqual(74);
+      } else if (viewport.width === 1024) {
+        expect(box!.width).toBeGreaterThanOrEqual(205);
+        expect(box!.width).toBeLessThanOrEqual(215);
+      } else {
+        expect(box!.width).toBeGreaterThanOrEqual(230);
+        expect(box!.width).toBeLessThanOrEqual(242);
+      }
+    });
+  }
 }
