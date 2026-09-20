@@ -87,6 +87,9 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
           <Link href="/marketing/content-studio" className={styles.campaignLink}>
             AI Content Studio
           </Link>
+          <Link href="/marketing/idea-engine" className={styles.campaignLink}>
+            Idea Engine
+          </Link>
         </div>
       </section>
 
