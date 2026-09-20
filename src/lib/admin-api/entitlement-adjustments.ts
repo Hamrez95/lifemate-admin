@@ -1,9 +1,9 @@
 import "server-only";
 
+import { parseEntitlementAdjustmentMutationSuccess } from "@/src/lib/admin-api/entitlement-adjustment-mutation-contract";
 import {
   classifyEntitlementConflict,
   classifyEntitlementForbidden,
-  parseEntitlementAdjustmentSuccess,
   type EntitlementAdjustmentSuccess,
   type EntitlementConflictKind,
   type EntitlementForbiddenReason,
@@ -148,6 +148,7 @@ function classifyFailure(
 }
 
 async function mutate(
+  kind: "preview" | "request" | "execute",
   path: string,
   body: ManualEntitlementAdjustmentInput,
   idempotencyKey?: string,
@@ -172,7 +173,10 @@ async function mutate(
   if (!response.ok) return classifyFailure(response, await problem(response));
   try {
     const value = (await response.json()) as unknown;
-    const data = parseEntitlementAdjustmentSuccess(value);
+    const data = parseEntitlementAdjustmentMutationSuccess(value, response.status, {
+      kind,
+      input: body,
+    });
     return data ? { kind: "ok", data } : { kind: "unavailable" };
   } catch {
     return { kind: "unavailable" };
@@ -218,21 +222,31 @@ function historyItem(value: unknown): ManualEntitlementHistoryItem | null {
 }
 
 export function previewEntitlementAdjustment(input: ManualEntitlementAdjustmentInput) {
-  return mutate("/api/v1/commerce/entitlement-adjustments/preview", input);
+  return mutate("preview", "/api/v1/commerce/entitlement-adjustments/preview", input);
 }
 
 export function requestEntitlementAdjustment(
   input: ManualEntitlementAdjustmentInput,
   idempotencyKey: string,
 ) {
-  return mutate("/api/v1/commerce/entitlement-adjustments/requests", input, idempotencyKey);
+  return mutate(
+    "request",
+    "/api/v1/commerce/entitlement-adjustments/requests",
+    input,
+    idempotencyKey,
+  );
 }
 
 export function executeEntitlementAdjustment(
   input: ManualEntitlementAdjustmentInput,
   idempotencyKey: string,
 ) {
-  return mutate("/api/v1/commerce/entitlement-adjustments/execute", input, idempotencyKey);
+  return mutate(
+    "execute",
+    "/api/v1/commerce/entitlement-adjustments/execute",
+    input,
+    idempotencyKey,
+  );
 }
 
 export async function getEntitlementAdjustmentHistory(
