@@ -53,12 +53,12 @@ function fmtDate(value: string) {
 }
 function stateLabel(state: string) {
   return state === "ready"
-    ? "آماده"
+    ? "داده آماده است"
     : state === "partial"
-      ? "داده محدود"
+      ? "بخشی از داده آماده است"
       : state === "suppressed"
-        ? "محافظت‌شده"
-        : "ناموجود";
+        ? "به‌دلیل حریم خصوصی نمایش داده نمی‌شود"
+        : "فعلاً قابل دریافت نیست";
 }
 
 function RetentionCellView({ cell }: { cell: RetentionCell }) {
@@ -99,13 +99,13 @@ function Heatmap({ rows }: { rows: CohortRow[] }) {
     <div
       className={styles.heatmapScroll}
       tabIndex={0}
-      aria-label="نقشه حرارتی cohort، قابل پیمایش افقی"
+      aria-label="نقشه حرارتی گروه‌ها، قابل پیمایش افقی"
     >
       <table className={styles.heatmap}>
-        <caption>Retention D1 / D7 / D30 فقط از داده canonical و با suppression حریم خصوصی</caption>
+        <caption>ماندگاری روز ۱، ۷ و ۳۰ فقط با دادهٔ تأییدشده و محافظت حریم خصوصی</caption>
         <thead>
           <tr>
-            <th scope="col">شروع Cohort</th>
+            <th scope="col">شروع گروه</th>
             <th scope="col">اندازه</th>
             <th scope="col">D1</th>
             <th scope="col">D7</th>
@@ -120,7 +120,9 @@ function Heatmap({ rows }: { rows: CohortRow[] }) {
               <td>
                 {row.suppressed
                   ? `< ${number.format(COHORT_SUPPRESSION_THRESHOLD)}`
-                  : number.format(row.size ?? 0)}
+                  : row.size === null
+                    ? "—"
+                    : number.format(row.size)}
               </td>
               {row.retention.map((cell) => (
                 <td key={cell.day} data-state={cell.state}>
@@ -146,8 +148,8 @@ function AcquisitionChart({ rows }: { rows: CohortRow[] }) {
     return (
       <AdminPageState
         state="unavailable"
-        title="نمودار Acquisition قابل ساخت نیست"
-        description="اندازه cohortها در این بازه موجود یا قابل نمایش نیست."
+        title="نمودار جذب قابل ساخت نیست"
+        description="اندازهٔ گروه‌ها در این بازه موجود یا قابل نمایش نیست."
       />
     );
   const max = Math.max(...points.map((p) => p.size ?? 0), 1);
@@ -156,13 +158,13 @@ function AcquisitionChart({ rows }: { rows: CohortRow[] }) {
     <div
       className={styles.chartScroll}
       tabIndex={0}
-      aria-label="نمودار acquisition cohort، قابل پیمایش افقی"
+      aria-label="نمودار گروه‌های جذب، قابل پیمایش افقی"
     >
       <svg
         className={styles.chart}
         viewBox={`0 0 ${width} 230`}
         role="img"
-        aria-label="اندازه cohortهای acquisition"
+        aria-label="اندازهٔ گروه‌های جذب"
       >
         <line x1="30" x2={width - 18} y1="188" y2="188" className={styles.gridLine} />
         {points.map((point, index) => {
@@ -196,7 +198,7 @@ function AcquisitionChart({ rows }: { rows: CohortRow[] }) {
 function UnavailablePanel({ title, reason }: { title: string; reason: string }) {
   return (
     <article className={styles.unavailablePanel}>
-      <span>Unavailable</span>
+      <span>فعلاً قابل دریافت نیست</span>
       <strong>{title}</strong>
       <p>{reason}</p>
     </article>
@@ -208,17 +210,17 @@ function Workspace({ report }: { report: AnalyticsCohortReport }) {
     <div className={styles.page}>
       <section className={styles.hero}>
         <div>
-          <span className={styles.eyebrow}>Cohort Retention · Reference 24</span>
+          <span className={styles.eyebrow}>ماندگاری گروهیِ تأییدشده</span>
           <h2>تحلیل ماندگاری گروهی</h2>
           <p>
-            کدام cohortها می‌مانند و چه چیزی واقعاً قابل اثبات است؟ Acquisition فعلی واقعی است؛
-            retention تا زمانی که تاریخچه canonical موجود نباشد «—» می‌ماند.
+            کدام گروه‌ها می‌مانند و چه چیزی واقعاً قابل اثبات است؟ جذب فعلی واقعی است؛ ماندگاری تا
+            زمانی که تاریخچهٔ تأییدشده موجود نباشد «—» می‌ماند.
           </p>
         </div>
         <aside>
-          <span>Definition</span>
+          <span>نسخهٔ تعریف</span>
           <strong>v{report.definition.version.toLocaleString("fa-IR")}</strong>
-          <span>Suppression</span>
+          <span>حد حریم خصوصی</span>
           <strong>&lt; {number.format(report.definition.suppressionThreshold)}</strong>
         </aside>
       </section>
@@ -246,34 +248,38 @@ function Workspace({ report }: { report: AnalyticsCohortReport }) {
           <button type="submit">اعمال فیلتر</button>
         </form>
         <div className={styles.actions}>
-          <button type="button" disabled title="endpoint canonical برای export cohort وجود ندارد">
+          <button
+            type="button"
+            disabled
+            title="قرارداد تأییدشده برای خروجی گروه‌ها وجود ندارد (endpoint canonical)"
+          >
             خروجی
           </button>
           <button
             type="button"
             disabled
-            title="endpoint canonical برای drill-down cohort وجود ندارد"
+            title="قرارداد تأییدشده برای جزئیات گروه‌ها وجود ندارد (endpoint canonical)"
           >
-            Drill-down
+            جزئیات
           </button>
         </div>
       </section>
 
       <section className={styles.metricGrid} aria-label="شاخص‌های cohort">
         <article data-tone="green">
-          <span>Acquisition</span>
+          <span>حساب‌های جذب‌شده</span>
           <strong>
             {report.acquisition.total === null ? "—" : number.format(report.acquisition.total)}
           </strong>
           <small>{stateLabel(report.acquisition.state)}</small>
         </article>
         <article data-tone="blue">
-          <span>Activation · 7d</span>
+          <span>فعال‌سازی ۷ روزه</span>
           <strong>—</strong>
           <small>{report.activation.reason}</small>
         </article>
         <article data-tone="violet">
-          <span>Retention D1/D7/D30</span>
+          <span>ماندگاری روز ۱/۷/۳۰</span>
           <strong>—</strong>
           <small>{report.retention.reason}</small>
         </article>
@@ -283,7 +289,7 @@ function Workspace({ report }: { report: AnalyticsCohortReport }) {
         <header>
           <div>
             <span className={styles.eyebrow}>نقشه حرارتی ماندگاری</span>
-            <h3>Retention Cohorts</h3>
+            <h3>گروه‌های ماندگاری</h3>
             <p>هر سلول فقط وقتی مقدار واقعی وجود داشته باشد رنگ می‌گیرد.</p>
           </div>
           <span className={styles.stateBadge} data-state={report.retention.state}>
@@ -297,8 +303,8 @@ function Workspace({ report }: { report: AnalyticsCohortReport }) {
         <section className={styles.chartCard}>
           <header>
             <div>
-              <span className={styles.eyebrow}>منحنی Acquisition</span>
-              <h3>اندازه cohortهای واقعی</h3>
+              <span className={styles.eyebrow}>روند جذب</span>
+              <h3>اندازهٔ گروه‌های واقعی</h3>
             </div>
           </header>
           <AcquisitionChart rows={report.retention.cohorts} />
@@ -308,21 +314,21 @@ function Workspace({ report }: { report: AnalyticsCohortReport }) {
           <span className={styles.eyebrow}>تعریف و شرایط شمول</span>
           <dl>
             <div>
-              <dt>Acquisition</dt>
+              <dt>جذب</dt>
               <dd>{report.definition.acquisitionEvent}</dd>
             </div>
             <div>
-              <dt>Activation</dt>
+              <dt>فعال‌سازی</dt>
               <dd>
                 {report.definition.activationEvent} · {report.definition.activationWindowDays}d
               </dd>
             </div>
             <div>
-              <dt>Retention</dt>
+              <dt>ماندگاری</dt>
               <dd>{report.definition.retentionEvent} · D1/D7/D30</dd>
             </div>
             <div>
-              <dt>Timezone</dt>
+              <dt>منطقهٔ زمانی</dt>
               <dd>{report.definition.timezone}</dd>
             </div>
           </dl>
@@ -331,14 +337,14 @@ function Workspace({ report }: { report: AnalyticsCohortReport }) {
 
       <div className={styles.twoColumn}>
         <UnavailablePanel title="کانال‌های جذب" reason={report.channels.reason} />
-        <UnavailablePanel title="Churn / Return" reason={report.churnReturn.reason} />
+        <UnavailablePanel title="ریزش و بازگشت" reason={report.churnReturn.reason} />
       </div>
       <section className={styles.footerMeta}>
         <span>آخرین تولید: {dateTime.format(new Date(report.generatedAtUtc))}</span>
-        <span>Taxonomy v{report.definition.eventTaxonomyVersion.toLocaleString("fa-IR")}</span>
         <span>
-          KPI Dictionary v{report.definition.kpiDictionaryVersion.toLocaleString("fa-IR")}
+          واژه‌نامه رویداد v{report.definition.eventTaxonomyVersion.toLocaleString("fa-IR")}
         </span>
+        <span>تعریف شاخص‌ها v{report.definition.kpiDictionaryVersion.toLocaleString("fa-IR")}</span>
         <Link href="/analytics/funnel">قیف فعال‌سازی</Link>
         <Link href="/analytics">نمای کلی Analytics</Link>
       </section>
@@ -358,7 +364,7 @@ async function Content({ query }: { query: URLSearchParams }) {
     return (
       <AdminPageState
         state="unavailable"
-        title="Cohort canonical در دسترس نیست"
+        title="دادهٔ تأییدشدهٔ گروه‌ها در دسترس نیست"
         description={result.correlationId ? `کد پیگیری: ${result.correlationId}` : undefined}
       />
     );
@@ -374,13 +380,13 @@ export default async function CohortsPage({ searchParams }: Props) {
       <AdminShell
         activeSlug="analytics"
         title="تحلیل ماندگاری گروهی"
-        subtitle="Reference 24 · aggregate canonical cohorts"
+        subtitle="فقط دادهٔ تجمیعیِ تأییدشده؛ بدون برآورد یا تکمیل ساختگی"
       >
         {!canRead ? (
           <AdminPageState state="forbidden" />
         ) : (
           <Suspense
-            fallback={<AdminPageState state="loading" title="در حال دریافت Cohortهای canonical" />}
+            fallback={<AdminPageState state="loading" title="در حال دریافت گروه‌های تأییدشده" />}
           >
             <Content query={query} />
           </Suspense>
