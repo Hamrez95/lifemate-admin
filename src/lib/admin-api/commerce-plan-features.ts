@@ -153,7 +153,7 @@ export async function configureCommercePlanFeature(input: {
 
   if (response.ok) {
     const body = await response.json().catch(() => null);
-    return parseCommercePlanFeatureMutationSuccess(body, {
+    return parseCommercePlanFeatureMutationSuccess(body, response.status, {
       planId: input.planId,
       featureId: input.featureId,
       assigned: input.assigned,

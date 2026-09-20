@@ -160,7 +160,13 @@ export async function configureCommerceTrialPolicy(input: {
     } catch {
       return { kind: "unavailable" };
     }
-    const parsed = parseCommerceTrialMutationSuccess(body);
+    const parsed = parseCommerceTrialMutationSuccess(body, response.status, {
+      planId: input.planId,
+      durationDays: input.durationDays,
+      eligibilityRule: input.eligibilityRule,
+      status: input.status,
+      expectedVersion: input.expectedVersion,
+    });
     return parsed ? { kind: "ok", data: parsed } : { kind: "unavailable" };
   }
 
