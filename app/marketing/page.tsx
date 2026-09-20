@@ -96,6 +96,9 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
           <Link href="/marketing/media-inbox" className={styles.campaignLink}>
             Media Inbox
           </Link>
+          <Link href="/marketing/repurpose" className={styles.campaignLink}>
+            Repurpose Engine
+          </Link>
         </div>
       </section>
 
