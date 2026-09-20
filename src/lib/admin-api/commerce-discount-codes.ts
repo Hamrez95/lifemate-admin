@@ -1,5 +1,9 @@
 import "server-only";
 
+import {
+  parseDiscountCodeMutationSuccess,
+  type DiscountCodeAdapterMutationExpectation,
+} from "@/src/lib/admin-api/commerce-discount-code-mutation-contract";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
@@ -126,6 +130,7 @@ async function mutate(
   path: string,
   body: unknown,
   idempotencyKey: string,
+  expected: DiscountCodeAdapterMutationExpectation,
 ): Promise<DiscountCodeMutationResult> {
   if (!IDEMPOTENCY_PATTERN.test(idempotencyKey)) {
     return { kind: "invalid", message: "شناسه امن درخواست معتبر نیست." };
@@ -152,10 +157,9 @@ async function mutate(
   }
 
   if (response.ok) {
-    const data = (await response.json()) as unknown;
-    return data && typeof data === "object" && !Array.isArray(data)
-      ? { kind: "ok", data: data as Record<string, unknown> }
-      : { kind: "unavailable" };
+    const value = await response.json().catch(() => null);
+    const data = parseDiscountCodeMutationSuccess(value, response.status, expected);
+    return data ? { kind: "ok", data } : { kind: "unavailable" };
   }
   const issue = await problem(response);
   if (response.status === 401) return { kind: "unauthenticated" };
@@ -213,6 +217,14 @@ export function issueCommerceDiscountCodes(input: {
       reason: input.reason,
     },
     input.idempotencyKey,
+    {
+      kind: "issue",
+      promotionId: input.promotionId,
+      codes: input.codes,
+      generateCount: input.generateCount,
+      prefix: input.prefix,
+      maxRedemptions: input.maxRedemptions,
+    },
   );
 }
 
@@ -235,5 +247,12 @@ export function setCommerceDiscountCodeStatus(input: {
       reason: input.reason,
     },
     input.idempotencyKey,
+    {
+      kind: "status",
+      promotionId: input.promotionId,
+      codeId: input.codeId,
+      status: input.status,
+      expectedVersion: input.expectedVersion,
+    },
   );
 }

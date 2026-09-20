@@ -18,6 +18,23 @@ export type DiscountCodeMutationExpectation =
       expectedVersion: number;
     };
 
+export type DiscountCodeAdapterMutationExpectation =
+  | {
+      kind: "issue";
+      promotionId: string;
+      codes: readonly string[] | null;
+      generateCount: number | null;
+      prefix: string | null;
+      maxRedemptions: number | null;
+    }
+  | {
+      kind: "status";
+      promotionId: string;
+      codeId: string;
+      status: "Active" | "Disabled";
+      expectedVersion: number;
+    };
+
 function record(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
@@ -103,4 +120,39 @@ export function parseCommerceDiscountCodeMutationSuccess(
   }
 
   return body;
+}
+
+export function parseDiscountCodeMutationSuccess(
+  value: unknown,
+  httpStatus: number,
+  expectation: DiscountCodeAdapterMutationExpectation,
+): Record<string, unknown> | null {
+  if (expectation.kind === "issue") {
+    if (httpStatus !== 201) return null;
+    const expectedCount = expectation.codes?.length ?? expectation.generateCount ?? 0;
+    const body = parseCommerceDiscountCodeMutationSuccess(value, {
+      kind: "issue",
+      promotionId: expectation.promotionId,
+      expectedCount,
+      explicitCodes: expectation.codes?.map((code) => code.trim().toUpperCase()) ?? null,
+    });
+    if (!body || !Array.isArray(body.items)) return null;
+
+    const prefix = expectation.prefix?.trim().toUpperCase() ?? "";
+    for (const value of body.items) {
+      const item = record(value);
+      if (
+        !item ||
+        item.maxRedemptions !== expectation.maxRedemptions ||
+        item.version !== 1 ||
+        (prefix && (typeof item.code !== "string" || !item.code.startsWith(`${prefix}-`)))
+      ) {
+        return null;
+      }
+    }
+    return body;
+  }
+
+  if (httpStatus !== 200) return null;
+  return parseCommerceDiscountCodeMutationSuccess(value, expectation);
 }
