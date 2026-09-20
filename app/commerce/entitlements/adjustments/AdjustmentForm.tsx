@@ -25,7 +25,17 @@ export type ExistingAccessOption = {
   version: number;
 };
 
-function SubmitButtons({ canRequest, canExecute }: { canRequest: boolean; canExecute: boolean }) {
+function SubmitButtons({
+  canRequest,
+  canExecute,
+  destructiveConfirmed,
+  requiresDestructiveConfirmation,
+}: {
+  canRequest: boolean;
+  canExecute: boolean;
+  destructiveConfirmed: boolean;
+  requiresDestructiveConfirmation: boolean;
+}) {
   const { pending } = useFormStatus();
   return (
     <div className={styles.actions}>
@@ -45,7 +55,12 @@ function SubmitButtons({ canRequest, canExecute }: { canRequest: boolean; canExe
           type="submit"
           name="intent"
           value="execute"
-          disabled={pending}
+          disabled={pending || (requiresDestructiveConfirmation && !destructiveConfirmed)}
+          title={
+            requiresDestructiveConfirmation && !destructiveConfirmed
+              ? "برای کاهش یا لغو، ابتدا تأیید آگاهانه را فعال کنید."
+              : undefined
+          }
         >
           اجرای تغییر دسترسی
         </button>
@@ -96,6 +111,7 @@ export function AdjustmentForm({
   const [operation, setOperation] = useState("Grant");
   const [selectedEntitlementId, setSelectedEntitlementId] = useState("");
   const [idempotencyKey, setIdempotencyKey] = useState(requestKey);
+  const [destructiveConfirmed, setDestructiveConfirmed] = useState(false);
   const before = state.data?.before;
   const after = state.data?.after;
   const delta = state.data?.delta;
@@ -108,6 +124,7 @@ export function AdjustmentForm({
     (item) => item.id === selectedEntitlementId,
   );
   const requiresExisting = operation !== "Grant";
+  const requiresDestructiveConfirmation = operation === "Reduce" || operation === "Revoke";
 
   function rotateRequestKey() {
     setIdempotencyKey(`entitlement-adjust:${crypto.randomUUID()}`);
@@ -171,6 +188,7 @@ export function AdjustmentForm({
               onChange={(event) => {
                 setOperation(event.target.value);
                 setSelectedEntitlementId("");
+                setDestructiveConfirmed(false);
               }}
             >
               <option value="Grant">Grant · اعطای دسترسی جدید</option>
@@ -270,15 +288,29 @@ export function AdjustmentForm({
           />
         </label>
 
-        <label className={styles.confirmRow}>
-          <input type="checkbox" name="confirmed" />
+        <label
+          className={styles.confirmRow}
+          data-required={requiresDestructiveConfirmation || undefined}
+        >
+          <input
+            type="checkbox"
+            name="confirmed"
+            checked={destructiveConfirmed}
+            onChange={(event) => setDestructiveConfirmed(event.target.checked)}
+          />
           <span>
-            برای Reduce / Revoke تأیید می‌کنم اثر روی قابلیت‌ها و زمان انقضا را در پیش‌نمایش بررسی
-            کرده‌ام و این عملیات خرید یا سابقه پرداخت واقعی کاربر را تغییر نمی‌دهد.
+            {requiresDestructiveConfirmation
+              ? "تأیید می‌کنم اثر کاهش یا لغو را در پیش‌نمایش بررسی کرده‌ام. اجرای این تغییر دسترسی، قابلیت‌های کاربر را فوراً یا در زمان اعلام‌شده محدود می‌کند و خرید یا سابقه پرداخت او را تغییر نمی‌دهد."
+              : "برای عملیات غیرمخرب، پیش‌نمایش قبل/بعد را پیش از اجرا بررسی کنید."}
           </span>
         </label>
 
-        <SubmitButtons canRequest={canRequest} canExecute={canExecute} />
+        <SubmitButtons
+          canRequest={canRequest}
+          canExecute={canExecute}
+          destructiveConfirmed={destructiveConfirmed}
+          requiresDestructiveConfirmation={requiresDestructiveConfirmation}
+        />
       </form>
 
       {state.status !== "idle" ? (
