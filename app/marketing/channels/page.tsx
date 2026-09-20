@@ -14,7 +14,7 @@ import {
 } from "@/src/lib/admin-api/marketing-channels";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
-import { setChannelStatusAction } from "./actions";
+import { ChannelStatusControl } from "./ChannelStatusControl";
 import styles from "./channels.module.css";
 
 type ChannelPageProps = {
@@ -74,7 +74,7 @@ function capabilityLabel(value: MarketingCapabilityState | undefined): string {
 
 function actionRequired(channel: MarketingChannel): string {
   if (channel.operatorStatus === "Disabled") {
-    return "کانال operational غیرفعال است؛ قبل از هر انتشار باید وضعیت و provider دوباره بررسی شود.";
+    return "کانال عملیاتی غیرفعال است؛ قبل از هر انتشار باید وضعیت و provider دوباره بررسی شود.";
   }
   if (!channel.credentialAvailable) {
     return "Credential امن در server/Vault تنظیم نشده است؛ عملیات provider باید fail-closed بماند.";
@@ -186,30 +186,7 @@ function ChannelCard({ channel, canControl }: { channel: MarketingChannel; canCo
       </div>
 
       {canControl ? (
-        <form action={setChannelStatusAction} className={styles.controlForm}>
-          <input type="hidden" name="providerCode" value={channel.providerCode} />
-          <input type="hidden" name="enabled" value={String(nextEnabled)} />
-          <input
-            type="hidden"
-            name="idempotencyKey"
-            value={`channel-status-${channel.providerCode}-${crypto.randomUUID()}`}
-          />
-          <label>
-            <span>دلیل تغییر</span>
-            <input
-              name="reason"
-              minLength={10}
-              maxLength={1000}
-              placeholder={
-                nextEnabled ? "دلیل فعال‌سازی مجدد کانال" : "دلیل توقف انتشار از این کانال"
-              }
-              required
-            />
-          </label>
-          <button type="submit" data-action={nextEnabled ? "enable" : "disable"}>
-            {nextEnabled ? "فعال‌سازی operational" : "غیرفعال‌سازی فوری"}
-          </button>
-        </form>
+        <ChannelStatusControl providerCode={channel.providerCode} nextEnabled={nextEnabled} />
       ) : (
         <p className={styles.readOnlyNote}>
           کنترل وضعیت به permission پرریسک `marketing.social.publish` نیاز دارد.
@@ -283,10 +260,10 @@ export default async function MarketingChannelsPage({ searchParams }: ChannelPag
           ) : result?.kind === "ok" ? (
             <>
               <div className={styles.legend} aria-label="تعریف وضعیت کانال‌ها">
-                <span>SetupRequired = Credential وجود ندارد</span>
-                <span>CredentialAvailable = secret فقط روی سرور موجود است</span>
-                <span>Verified = فقط با provider evidence معتبر</span>
-                <span>Capability گزارش‌نشده = قابل استفاده فرض نمی‌شود</span>
+                <span>تنظیم لازم = Credential وجود ندارد</span>
+                <span>Credential موجود = secret فقط روی سرور است</span>
+                <span>تأییدشده = فقط با evidence معتبر provider</span>
+                <span>قابلیت گزارش‌نشده = قابل استفاده فرض نمی‌شود</span>
               </div>
               <section className={styles.grid} aria-label="وضعیت کانال‌های Marketing">
                 {result.data.items.map((channel) => (
