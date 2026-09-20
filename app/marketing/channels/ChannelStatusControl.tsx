@@ -30,9 +30,7 @@ export function ChannelStatusControl({
           name="reason"
           minLength={10}
           maxLength={1000}
-          placeholder={
-            nextEnabled ? "دلیل فعال‌سازی مجدد کانال" : "دلیل توقف انتشار از این کانال"
-          }
+          placeholder={nextEnabled ? "دلیل فعال‌سازی مجدد کانال" : "دلیل توقف انتشار از این کانال"}
           required
         />
       </label>
@@ -55,9 +53,7 @@ export function ChannelStatusControl({
         data-action={nextEnabled ? "enable" : "disable"}
         disabled={isDestructive && !confirmed}
         title={
-          isDestructive && !confirmed
-            ? "برای غیرفعال‌سازی، تأیید آگاهانه لازم است."
-            : undefined
+          isDestructive && !confirmed ? "برای غیرفعال‌سازی، تأیید آگاهانه لازم است." : undefined
         }
       >
         {nextEnabled ? "فعال‌سازی عملیاتی" : "غیرفعال‌سازی فوری"}
