@@ -1,3 +1,7 @@
+import {
+  parseCommercePromotionMutationSuccess,
+  type PromotionMutationExpectation,
+} from "@/src/lib/admin-api/commerce-promotion-mutation-contract";
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
 import { createServerSupabaseClient } from "@/src/lib/supabase/server";
 
@@ -534,6 +538,7 @@ async function mutatePromotion(
   method: "POST" | "PUT",
   body: unknown,
   idempotencyKey: string,
+  expected: PromotionMutationExpectation,
 ): Promise<PromotionMutationResult> {
   if (!IDEMPOTENCY_PATTERN.test(idempotencyKey)) {
     return { kind: "invalid", message: "شناسه امن درخواست معتبر نیست." };
@@ -554,14 +559,17 @@ async function mutatePromotion(
     return { kind: "unavailable" };
   }
   if (response.ok) {
-    const data = (await response.json()) as unknown;
-    return isRecord(data) ? { kind: "ok", data } : { kind: "unavailable" };
+    const value = await response.json().catch(() => null);
+    const data = parseCommercePromotionMutationSuccess(value, response.status, expected);
+    return data ? { kind: "ok", data } : { kind: "unavailable" };
   }
   return mapMutationFailure(response, await problem(response));
 }
 
 export function createCommercePromotion(payload: PromotionWritePayload, idempotencyKey: string) {
-  return mutatePromotion("/api/v1/commerce/promotions", "POST", payload, idempotencyKey);
+  return mutatePromotion("/api/v1/commerce/promotions", "POST", payload, idempotencyKey, {
+    kind: "create",
+  });
 }
 
 export function updateCommercePromotion(
@@ -576,6 +584,11 @@ export function updateCommercePromotion(
     "PUT",
     payload,
     idempotencyKey,
+    {
+      kind: "update",
+      promotionId,
+      codeStatus: payload.codeStatus,
+    },
   );
 }
 
@@ -592,5 +605,10 @@ export function setCommercePromotionStatus(
     "POST",
     { status, reason },
     idempotencyKey,
+    {
+      kind: "status",
+      promotionId,
+      status,
+    },
   );
 }
