@@ -29,7 +29,7 @@ describe("ADM-MKT-005 secure channel boundary", () => {
     expect(client).toContain('"ReconnectRequired"');
     expect(client).toContain("CONNECTIVITY_STATES.has");
     expect(client).toContain("CAPABILITY_STATES.has");
-    expect(page).toContain("Verified = فقط با provider evidence معتبر");
+    expect(page).toContain("تأییدشده = فقط با evidence معتبر provider");
     expect(page).toContain("Credential روی سرور موجود است؛ این به معنی اتصال");
     expect(page).not.toContain('providerConnectivity: "Connected"');
   });
