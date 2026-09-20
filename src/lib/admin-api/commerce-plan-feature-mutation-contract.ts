@@ -17,27 +17,60 @@ function record(value: unknown): Record<string, unknown> | null {
 
 function sameUuid(value: unknown, expected: string): boolean {
   return (
-    typeof value === "string" && UUID.test(value) && value.toLowerCase() === expected.toLowerCase()
+    typeof value === "string" &&
+    UUID.test(value) &&
+    UUID.test(expected) &&
+    value.toLowerCase() === expected.toLowerCase()
   );
+}
+
+function validateRouteBody(
+  value: unknown,
+  expectation: PlanFeatureMutationExpectation,
+): Record<string, unknown> | null {
+  const body = record(value);
+  if (
+    !body ||
+    !sameUuid(body.planId, expectation.planId) ||
+    !sameUuid(body.featureId, expectation.featureId) ||
+    body.assigned !== expectation.assigned ||
+    !Number.isSafeInteger(body.version) ||
+    typeof body.replayed !== "boolean" ||
+    !Number.isSafeInteger(expectation.expectedVersion) ||
+    expectation.expectedVersion < 0 ||
+    Number(body.version) !== expectation.expectedVersion + 1
+  ) {
+    return null;
+  }
+  return body;
 }
 
 export function parseCommercePlanFeatureMutationSuccess(
   value: unknown,
   expectation: PlanFeatureMutationExpectation,
+): Record<string, unknown> | null;
+export function parseCommercePlanFeatureMutationSuccess(
+  value: unknown,
+  httpStatus: number,
+  expectation: PlanFeatureMutationExpectation,
+): Record<string, unknown> | null;
+export function parseCommercePlanFeatureMutationSuccess(
+  value: unknown,
+  arg2: number | PlanFeatureMutationExpectation,
+  arg3?: PlanFeatureMutationExpectation,
 ): Record<string, unknown> | null {
+  if (typeof arg2 === "number") {
+    const expectation = arg3;
+    if (!expectation) return null;
+    const body = validateRouteBody(value, expectation);
+    if (!body) return null;
+    const expectedHttpStatus = expectation.expectedVersion === 0 ? 201 : 200;
+    return arg2 === expectedHttpStatus ? body : null;
+  }
+
   const generic = parseCommercePaymentMutationSuccess(value);
-  const body = record(value);
+  const body = validateRouteBody(value, arg2);
   if (!generic || generic.code !== "ok" || !body) return null;
-  if (!sameUuid(body.planId, expectation.planId)) return null;
-  if (!sameUuid(body.featureId, expectation.featureId)) return null;
-  if (body.assigned !== expectation.assigned) return null;
-  if (!Number.isSafeInteger(body.version)) return null;
-  if (!Number.isSafeInteger(expectation.expectedVersion) || expectation.expectedVersion < 0)
-    return null;
-
-  const expectedHttpStatus = expectation.expectedVersion === 0 ? 201 : 200;
-  if (body.httpStatus !== expectedHttpStatus) return null;
-  if (Number(body.version) !== expectation.expectedVersion + 1) return null;
-
-  return body;
+  const expectedHttpStatus = arg2.expectedVersion === 0 ? 201 : 200;
+  return body.httpStatus === expectedHttpStatus ? body : null;
 }

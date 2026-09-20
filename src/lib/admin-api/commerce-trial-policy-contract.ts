@@ -17,6 +17,14 @@ export type CommerceTrialPolicyMutationSuccess = {
   replayed: boolean;
 };
 
+export type CommerceTrialMutationExpectation = {
+  planId: string;
+  durationDays: number;
+  eligibilityRule: "NoPriorTrialForProduct";
+  status: "Active" | "Disabled";
+  expectedVersion: number;
+};
+
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function record(value: unknown): Record<string, unknown> | null {
@@ -35,6 +43,39 @@ function status(value: unknown): CommerceTrialPolicy["status"] | null {
 
 function eligibility(value: unknown): CommerceTrialPolicy["eligibilityRule"] | null {
   return value === "NoPriorTrialForProduct" ? value : null;
+}
+
+function sameUuid(value: string, expected: string): boolean {
+  return UUID.test(expected) && value.toLowerCase() === expected.toLowerCase();
+}
+
+function parseMutationShape(value: unknown): CommerceTrialPolicyMutationSuccess | null {
+  const row = record(value);
+  if (!row) return null;
+  const durationDays = integer(row.durationDays, 1);
+  const version = integer(row.version, 1);
+  const parsedStatus = status(row.status);
+  const parsedEligibility = eligibility(row.eligibilityRule);
+  if (
+    typeof row.planId !== "string" ||
+    !UUID.test(row.planId) ||
+    durationDays === null ||
+    durationDays > 365 ||
+    !parsedEligibility ||
+    !parsedStatus ||
+    version === null ||
+    typeof row.replayed !== "boolean"
+  ) {
+    return null;
+  }
+  return {
+    planId: row.planId,
+    durationDays,
+    eligibilityRule: parsedEligibility,
+    status: parsedStatus,
+    version,
+    replayed: row.replayed,
+  };
 }
 
 export function parseCommerceTrialPolicy(value: unknown): CommerceTrialPolicy | null {
@@ -70,33 +111,40 @@ export function parseCommerceTrialPolicy(value: unknown): CommerceTrialPolicy | 
 
 export function parseCommerceTrialMutationSuccess(
   value: unknown,
+): CommerceTrialPolicyMutationSuccess | null;
+export function parseCommerceTrialMutationSuccess(
+  value: unknown,
+  httpStatus: number,
+  expectation: CommerceTrialMutationExpectation,
+): CommerceTrialPolicyMutationSuccess | null;
+export function parseCommerceTrialMutationSuccess(
+  value: unknown,
+  httpStatus?: number,
+  expectation?: CommerceTrialMutationExpectation,
 ): CommerceTrialPolicyMutationSuccess | null {
-  const row = record(value);
-  if (!row) return null;
-  const durationDays = integer(row.durationDays, 1);
-  const version = integer(row.version, 1);
-  const parsedStatus = status(row.status);
-  const parsedEligibility = eligibility(row.eligibilityRule);
+  const parsed = parseMutationShape(value);
+  if (!parsed) return null;
+  if (httpStatus === undefined && expectation === undefined) return parsed;
+  if (httpStatus === undefined || !expectation) return null;
   if (
-    typeof row.planId !== "string" ||
-    !UUID.test(row.planId) ||
-    durationDays === null ||
-    durationDays > 365 ||
-    !parsedEligibility ||
-    !parsedStatus ||
-    version === null ||
-    typeof row.replayed !== "boolean"
+    !Number.isSafeInteger(expectation.expectedVersion) ||
+    expectation.expectedVersion < 0 ||
+    expectation.expectedVersion > 1_000_000_000
   ) {
     return null;
   }
-  return {
-    planId: row.planId,
-    durationDays,
-    eligibilityRule: parsedEligibility,
-    status: parsedStatus,
-    version,
-    replayed: row.replayed,
-  };
+  const expectedHttpStatus = expectation.expectedVersion === 0 ? 201 : 200;
+  if (
+    httpStatus !== expectedHttpStatus ||
+    !sameUuid(parsed.planId, expectation.planId) ||
+    parsed.durationDays !== expectation.durationDays ||
+    parsed.eligibilityRule !== expectation.eligibilityRule ||
+    parsed.status !== expectation.status ||
+    parsed.version !== expectation.expectedVersion + 1
+  ) {
+    return null;
+  }
+  return parsed;
 }
 
 export function parseCommerceTrialReadEnvelope(value: unknown): {

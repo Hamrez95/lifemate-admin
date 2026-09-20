@@ -7,6 +7,7 @@ import {
 } from "./commerce-trial-policy-contract";
 
 const planId = "11111111-1111-4111-8111-111111111111";
+const otherPlanId = "22222222-2222-4222-8222-222222222222";
 
 const policy = {
   planId,
@@ -41,7 +42,7 @@ describe("commerce trial policy contract", () => {
     });
   });
 
-  it("accepts the canonical mutation success and preserves replay/version truth", () => {
+  it("preserves the legacy shape-only mutation parser", () => {
     expect(
       parseCommerceTrialMutationSuccess({
         planId,
@@ -59,6 +60,58 @@ describe("commerce trial policy contract", () => {
       version: 4,
       replayed: true,
     });
+  });
+
+  it("binds first policy creation to HTTP 201 and exact requested state", () => {
+    const body = {
+      planId,
+      durationDays: 14,
+      eligibilityRule: "NoPriorTrialForProduct",
+      status: "Active",
+      version: 1,
+      replayed: false,
+    };
+    const expected = {
+      planId,
+      durationDays: 14,
+      eligibilityRule: "NoPriorTrialForProduct",
+      status: "Active",
+      expectedVersion: 0,
+    } as const;
+
+    expect(parseCommerceTrialMutationSuccess(body, 201, expected)).toEqual(body);
+    expect(parseCommerceTrialMutationSuccess(body, 200, expected)).toBeNull();
+    expect(
+      parseCommerceTrialMutationSuccess({ ...body, planId: otherPlanId }, 201, expected),
+    ).toBeNull();
+    expect(
+      parseCommerceTrialMutationSuccess({ ...body, durationDays: 30 }, 201, expected),
+    ).toBeNull();
+  });
+
+  it("binds policy update/replay to HTTP 200 and exactly next version", () => {
+    const body = {
+      planId,
+      durationDays: 30,
+      eligibilityRule: "NoPriorTrialForProduct",
+      status: "Disabled",
+      version: 4,
+      replayed: true,
+    };
+    const expected = {
+      planId,
+      durationDays: 30,
+      eligibilityRule: "NoPriorTrialForProduct",
+      status: "Disabled",
+      expectedVersion: 3,
+    } as const;
+
+    expect(parseCommerceTrialMutationSuccess(body, 200, expected)).toEqual(body);
+    expect(parseCommerceTrialMutationSuccess(body, 201, expected)).toBeNull();
+    expect(parseCommerceTrialMutationSuccess({ ...body, version: 3 }, 200, expected)).toBeNull();
+    expect(
+      parseCommerceTrialMutationSuccess({ ...body, status: "Active" }, 200, expected),
+    ).toBeNull();
   });
 
   it.each([
