@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const page = readFileSync("app/marketing/channels/page.tsx", "utf8");
 const actions = readFileSync("app/marketing/channels/actions.ts", "utf8");
+const control = readFileSync("app/marketing/channels/ChannelStatusControl.tsx", "utf8");
 
 describe("ADM-MKT-005 channel setup workspace", () => {
   it("splits read and high-risk operator-control permissions", () => {
@@ -12,8 +13,8 @@ describe("ADM-MKT-005 channel setup workspace", () => {
   });
 
   it("uses audited server actions for enable-disable control", () => {
-    expect(page).toContain("setChannelStatusAction");
-    expect(page).toContain("channel-status-");
+    expect(control).toContain("setChannelStatusAction");
+    expect(control).toContain("channel-status-");
     expect(actions).toContain("setMarketingChannelStatus");
     expect(actions).toContain("IDEMPOTENCY_PATTERN");
   });

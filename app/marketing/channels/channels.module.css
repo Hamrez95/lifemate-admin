@@ -194,6 +194,26 @@
   font-size: 0.78rem;
 }
 
+.destructiveConfirm {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 0.55rem !important;
+  grid-column: 1 / -1;
+  border: 1px solid color-mix(in srgb, var(--danger) 42%, var(--border-subtle));
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--danger) 7%, var(--surface-soft));
+  padding: 0.75rem;
+  color: var(--text-primary) !important;
+  font-size: 0.82rem !important;
+  line-height: 1.75;
+}
+
+.destructiveConfirm input {
+  width: auto !important;
+  min-height: auto !important;
+  margin-top: 0.25rem;
+}
+
 .controlForm input {
   min-height: 42px;
   border: 1px solid var(--border-subtle);
