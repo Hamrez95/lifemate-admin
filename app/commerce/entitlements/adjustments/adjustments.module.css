@@ -114,6 +114,13 @@
   margin-top: 0.25rem;
 }
 
+.confirmRow[data-required="true"] {
+  border: 1px solid color-mix(in srgb, var(--lm-danger) 42%, var(--lm-border));
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--lm-danger) 7%, var(--lm-surface));
+  padding: 0.75rem;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
