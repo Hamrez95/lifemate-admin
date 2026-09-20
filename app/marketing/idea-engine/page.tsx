@@ -22,10 +22,12 @@ export default async function IdeaEnginePage() {
           <header className={styles.hero}>
             <div>
               <p className={styles.eyebrow}>Creative planning · Not instrumented</p>
-              <h2>ایده‌پردازی را می‌توانیم امن طراحی کنیم؛ هنوز نمی‌توانیم آن را واقعی ذخیره کنیم.</h2>
+              <h2>
+                ایده‌پردازی را می‌توانیم امن طراحی کنیم؛ هنوز نمی‌توانیم آن را واقعی ذخیره کنیم.
+              </h2>
               <p>
-                تا وقتی API canonical برای ایده، revision، review و shoot plan آماده نشود، هیچ
-                ایده، score یا script نمایشی ساخته نمی‌شود و دکمهٔ Publish هم وجود ندارد.
+                تا وقتی API canonical برای ایده، revision، review و shoot plan آماده نشود، هیچ ایده،
+                score یا script نمایشی ساخته نمی‌شود و دکمهٔ Publish هم وجود ندارد.
               </p>
             </div>
             <Link className={styles.backLink} href="/marketing/content-studio">
