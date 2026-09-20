@@ -51,6 +51,28 @@ function useNativeDialog(open: boolean, onOpenChange: (open: boolean) => void) {
   return ref;
 }
 
+function useDismissibleDisclosure(open: boolean, onDismiss: () => void) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onDismiss();
+    };
+    const onPointerDown = (event: PointerEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) onDismiss();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [onDismiss, open]);
+
+  return ref;
+}
+
 export function Dialog({
   children,
   open,
@@ -142,8 +164,9 @@ export function Popover({
 }) {
   const [open, setOpen] = useState(false);
   const contentId = useId();
+  const ref = useDismissibleDisclosure(open, () => setOpen(false));
   return (
-    <span className={styles.popover}>
+    <span ref={ref} className={styles.popover}>
       <button
         type="button"
         className={styles.popoverTrigger}
@@ -166,8 +189,9 @@ export function Popover({
 export function Menu({ label, children }: { label: string; children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const menuId = useId();
+  const ref = useDismissibleDisclosure(open, () => setOpen(false));
   return (
-    <span className={styles.menu}>
+    <span ref={ref} className={styles.menu}>
       <button
         type="button"
         className={styles.menuTrigger}

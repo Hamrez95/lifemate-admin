@@ -20,4 +20,11 @@ describe("canonical overlay primitives", () => {
     expect(styles).toContain(":focus-visible");
     expect(styles).toContain("prefers-reduced-motion: reduce");
   });
+
+  it("dismisses transient disclosures with Escape and outside interaction", () => {
+    expect(source).toContain("function useDismissibleDisclosure");
+    expect(source).toContain('event.key === "Escape"');
+    expect(source).toContain('document.addEventListener("pointerdown", onPointerDown)');
+    expect(source).toContain("useDismissibleDisclosure(open, () => setOpen(false))");
+  });
 });
