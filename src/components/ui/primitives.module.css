@@ -222,11 +222,185 @@
   background: var(--lm-danger);
   color: var(--lm-text-inverse);
 }
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.dialog,
+.drawer {
+  width: min(560px, calc(100vw - 32px));
+  max-height: min(720px, calc(100dvh - 32px));
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-md);
+  background: var(--lm-surface-raised);
+  color: var(--lm-text);
+  box-shadow: var(--lm-shadow);
+  padding: 0;
+}
+.dialog::backdrop,
+.drawer::backdrop {
+  background: color-mix(in srgb, var(--lm-text) 36%, transparent);
+}
+.drawer {
+  width: min(460px, calc(100vw - 20px));
+  max-width: none;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin-inline: 0 0;
+  margin-block: 0;
+  border-radius: 0;
+}
+.overlayHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--lm-space-3);
+  border-bottom: 1px solid var(--lm-border);
+  padding: var(--lm-space-5);
+}
+.overlayHeader h2,
+.overlayHeader p {
+  margin: 0;
+}
+.overlayHeader h2 {
+  font-size: 17px;
+}
+.overlayHeader p {
+  margin-top: 4px;
+  color: var(--lm-text-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.overlayClose,
+.popoverTrigger,
+.menuTrigger {
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-sm);
+  background: var(--lm-surface-raised);
+  color: var(--lm-text);
+  cursor: pointer;
+  font: inherit;
+}
+.overlayClose {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  font-size: 22px;
+  line-height: 1;
+}
+.overlayBody {
+  overflow: auto;
+  padding: var(--lm-space-5);
+}
+.tooltipTrigger,
+.popover,
+.menu {
+  position: relative;
+  display: inline-flex;
+}
+.tooltipContent {
+  position: absolute;
+  z-index: 20;
+  inset-inline-start: 50%;
+  bottom: calc(100% + 8px);
+  width: max-content;
+  max-width: min(240px, 80vw);
+  transform: translateX(-50%) translateY(3px);
+  border-radius: var(--lm-radius-sm);
+  background: var(--lm-text);
+  color: var(--lm-text-inverse);
+  padding: 6px 8px;
+  font-size: 11px;
+  line-height: 1.5;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
+}
+.tooltipTrigger:hover .tooltipContent,
+.tooltipTrigger:focus-within .tooltipContent {
+  opacity: 1;
+  transform: translateX(-50%);
+}
+.popoverTrigger,
+.menuTrigger {
+  min-height: 38px;
+  padding-inline: var(--lm-space-3);
+}
+.popoverContent,
+.menuContent {
+  position: absolute;
+  z-index: 20;
+  inset-inline-end: 0;
+  top: calc(100% + 6px);
+  display: grid;
+  min-width: 180px;
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-sm);
+  background: var(--lm-surface-raised);
+  box-shadow: var(--lm-shadow);
+  padding: var(--lm-space-2);
+}
+.menuItem {
+  min-height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--lm-text);
+  cursor: pointer;
+  padding-inline: var(--lm-space-3);
+  text-align: start;
+}
+.menuItem:hover,
+.menuItem:focus-visible {
+  background: var(--lm-surface-soft);
+}
+.combobox {
+  display: grid;
+  gap: var(--lm-space-2);
+  color: var(--lm-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+.combobox select {
+  min-height: 42px;
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-sm);
+  background: var(--lm-surface-raised);
+  color: var(--lm-text);
+  padding-inline: var(--lm-space-3);
+  font: inherit;
+}
+.overlayClose:focus-visible,
+.popoverTrigger:focus-visible,
+.menuTrigger:focus-visible,
+.menuItem:focus-visible,
+.combobox select:focus-visible {
+  outline: none;
+  box-shadow: var(--lm-focus);
+}
 @media (max-width: 768px) {
   .sectionHeader {
     align-items: flex-start;
   }
   .splitPane {
     grid-template-columns: 1fr;
+  }
+  .drawer {
+    width: 100vw;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tooltipContent {
+    transition: none;
   }
 }
