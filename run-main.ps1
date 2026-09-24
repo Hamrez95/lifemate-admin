@@ -108,5 +108,10 @@ if (-not $NoBrowser) {
   Start-Process $url
 }
 
-& npm run dev -- --hostname 127.0.0.1 --port $Port
+$nextCli = Join-Path $repositoryRoot "node_modules\\next\\dist\\bin\\next"
+if (-not (Test-Path $nextCli)) {
+  throw "Next.js CLI was not found after dependency setup. Run .\\run-main.ps1 -Install and retry."
+}
+
+& node $nextCli dev --hostname 127.0.0.1 --port $Port
 exit $LASTEXITCODE

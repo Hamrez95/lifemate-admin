@@ -15,7 +15,8 @@ describe("run-main PowerShell launcher", () => {
     expect(script).toContain("switch main");
     expect(script).toContain("pull --ff-only origin main");
     expect(script).toContain('[version]"20.9.0"');
-    expect(script).toContain("--hostname 127.0.0.1 --port $Port");
+    expect(script).toContain("& node $nextCli dev --hostname 127.0.0.1 --port $Port");
+    expect(script).not.toContain("npm run dev -- --hostname");
   });
 
   it("supports safe install and browser controls", () => {
