@@ -99,6 +99,12 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
           <Link href="/marketing/repurpose" className={styles.campaignLink}>
             Repurpose Engine
           </Link>
+          <Link href="/marketing/review-publish" className={styles.campaignLink}>
+            Review & Publish
+          </Link>
+          <Link href="/marketing/organic-analytics" className={styles.campaignLink}>
+            Organic Creative Analytics
+          </Link>
         </div>
       </section>
 
