@@ -47,8 +47,13 @@ export default async function RepurposePage() {
           <section className={styles.boundary} aria-label="مرزهای ایمنی Repurpose Engine">
             <strong>مرزهای ایمنی مشتق‌سازی</strong>
             <ul>
-              <li>تأیید source به‌تنهایی تأیید مشتق یا claim تازه نیست؛ هر revision نیازمند review است.</li>
-              <li>قابلیت native پلتفرمِ پشتیبانی‌نشده فقط Manual publish required است، نه Published.</li>
+              <li>
+                تأیید source به‌تنهایی تأیید مشتق یا claim تازه نیست؛ هر revision نیازمند review
+                است.
+              </li>
+              <li>
+                قابلیت native پلتفرمِ پشتیبانی‌نشده فقط Manual publish required است، نه Published.
+              </li>
               <li>ویرایش هر مشتق نباید source یا مشتق‌های دیگر را تغییر دهد.</li>
             </ul>
           </section>

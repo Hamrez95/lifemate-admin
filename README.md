@@ -88,6 +88,22 @@ npm run dev
 
 Then open `http://localhost:3000`.
 
+### Windows: run the latest `main` with one command
+
+From a clean clone, open PowerShell in any directory and run:
+
+```powershell
+& "C:\path\to\lifemate-admin\run-main.ps1" -Install
+```
+
+The script safely stops if Git has uncommitted changes; otherwise it fast-forwards `main`, installs locked dependencies when needed, and starts the app at `http://127.0.0.1:3000`.
+
+- Use `-Port 3001` for a different local port.
+- Use `-NoBrowser` when you do not want it to open a browser tab.
+- Run without `-Install` after the first setup; it still runs `npm ci` if `node_modules` is missing or `package-lock.json` changed while updating `main`.
+
+Prerequisites: Git, npm and Node.js 20.9 or newer. The script never resets, stashes or overwrites local work.
+
 ## Verification
 
 ```bash

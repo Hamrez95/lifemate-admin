@@ -22,11 +22,13 @@ export default async function ReviewPublishPage() {
           <header className={styles.hero}>
             <div>
               <p className={styles.eyebrow}>Review queue · Unavailable</p>
-              <h2>تا queue و provider canonical نداریم، هیچ آیتمی را آمادهٔ انتشار نشان نمی‌دهیم.</h2>
+              <h2>
+                تا queue و provider canonical نداریم، هیچ آیتمی را آمادهٔ انتشار نشان نمی‌دهیم.
+              </h2>
               <p>
                 review، schedule، publish و manual reconciliation باید بر اساس revision دقیق، asset
-                lineage و قابلیت provider سرور باشند. خروجی نمایشی، approval یا Published ساختگی
-                در این سطح وجود ندارد.
+                lineage و قابلیت provider سرور باشند. خروجی نمایشی، approval یا Published ساختگی در
+                این سطح وجود ندارد.
               </p>
             </div>
             <Link className={styles.backLink} href="/marketing/content-calendar">
@@ -47,9 +49,16 @@ export default async function ReviewPublishPage() {
           <section className={styles.boundary} aria-label="مرزهای ایمنی Review and Publish">
             <strong>guardهای غیرقابل‌دورزدن</strong>
             <ul>
-              <li>هر تغییر material approval را باطل می‌کند؛ تأیید source به مشتق‌ها ارث نمی‌رسد.</li>
-              <li>Provider غیرتأییدشده، stale یا unsupported فقط fallback عملی نشان می‌دهد، نه publish.</li>
-              <li>OutcomeUnknown نیازمند reconciliation است؛ retry کور یا انتشار دوباره مجاز نیست.</li>
+              <li>
+                هر تغییر material approval را باطل می‌کند؛ تأیید source به مشتق‌ها ارث نمی‌رسد.
+              </li>
+              <li>
+                Provider غیرتأییدشده، stale یا unsupported فقط fallback عملی نشان می‌دهد، نه
+                publish.
+              </li>
+              <li>
+                OutcomeUnknown نیازمند reconciliation است؛ retry کور یا انتشار دوباره مجاز نیست.
+              </li>
             </ul>
           </section>
         </main>
