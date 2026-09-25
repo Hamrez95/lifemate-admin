@@ -14,6 +14,8 @@ const canonicalPaths = [
   { href: "/security/audit", label: "Audit و رخدادهای ثبت‌شده" },
   { href: "/support", label: "صف پشتیبانی و incidentهای کاربری" },
   { href: "/operations/releases", label: "Release Adoption و Update Policy" },
+  { href: "/operations/cocoon", label: "CocoonMate Operations و product health" },
+  { href: "/operations/cocoon/content", label: "CocoonMate clinical content governance" },
   { href: "/marketing/content-calendar", label: "اجرای انتشارهای canonical" },
   { href: "/finance", label: "read model مالی canonical" },
 ] as const;
