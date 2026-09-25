@@ -76,7 +76,7 @@ describe("core route performance contract", () => {
 
     expect(server).toContain("const getAdminAccessForRequest = cache(async ()");
     expect(occurrences(server, "/api/v1/me")).toBe(1);
-    expect(occurrences(sidebar, "prefetch={false}")).toBe(5);
+    expect(occurrences(sidebar, "prefetch={false}")).toBe(6);
   });
 
   it("keeps the responsive browser gate on all requested core routes", () => {

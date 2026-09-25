@@ -10,6 +10,15 @@ import { canAccessWorkspace } from "@/src/lib/admin-api/policy";
 
 type SidebarProps = { activeSlug: string };
 
+const workspaceGroups = [
+  {
+    label: "فضاهای کاری",
+    slugs: ["", "users", "analytics", "relationships", "support", "commerce"],
+  },
+  { label: "رشد و عملیات", slugs: ["marketing", "finance", "operations"] },
+  { label: "کنترل و دسترسی", slugs: ["security", "privacy", "ai", "settings"] },
+] as const;
+
 export function Sidebar({ activeSlug }: SidebarProps) {
   const admin = useAdminSession();
   const pathname = usePathname();
@@ -26,104 +35,147 @@ export function Sidebar({ activeSlug }: SidebarProps) {
   const researchActive = pathname === "/research" || pathname.startsWith("/research/");
   const experimentsActive = pathname === "/experiments" || pathname.startsWith("/experiments/");
   const profileActive = pathname === "/profile" || pathname.startsWith("/profile/");
+  const cocoonActive = pathname.startsWith("/operations/cocoon");
+
+  function renderWorkspace(workspace: (typeof visibleWorkspaces)[number]) {
+    const active = workspace.slug === activeSlug;
+    const isPrimaryRoute = active && !auditActive && !researchActive && !experimentsActive;
+
+    return (
+      <li key={workspace.slug || "command-center"}>
+        <Link
+          className="nav-item"
+          data-active={isPrimaryRoute ? "true" : "false"}
+          href={workspaceHref(workspace)}
+          prefetch={false}
+          aria-label={workspace.label}
+          aria-current={isPrimaryRoute ? "page" : undefined}
+        >
+          <span className="nav-item__symbol" aria-hidden="true">
+            {workspace.symbol}
+          </span>
+          <span>{workspace.label}</span>
+          {workspace.slug === "ai" && <span className="nav-item__badge">جدید</span>}
+        </Link>
+        {workspace.slug === "analytics" && active && isFounder ? (
+          <Link
+            className="nav-item nav-item--subroute"
+            data-active={researchActive ? "true" : "false"}
+            href="/research"
+            prefetch={false}
+            aria-label="Research Studio"
+            aria-current={researchActive ? "page" : undefined}
+          >
+            <span className="nav-item__symbol" aria-hidden="true">
+              ↳
+            </span>
+            <span>Research Studio</span>
+          </Link>
+        ) : null}
+        {workspace.slug === "analytics" && active && canReadProductSignals ? (
+          <Link
+            className="nav-item nav-item--subroute"
+            data-active={experimentsActive ? "true" : "false"}
+            href="/experiments"
+            prefetch={false}
+            aria-label="Experiments, Feedback & Advocacy"
+            aria-current={experimentsActive ? "page" : undefined}
+          >
+            <span className="nav-item__symbol" aria-hidden="true">
+              ↳
+            </span>
+            <span>Experiments & Feedback</span>
+          </Link>
+        ) : null}
+        {workspace.slug === "operations" && active ? (
+          <Link
+            className="nav-item nav-item--subroute"
+            data-active={cocoonActive ? "true" : "false"}
+            href="/operations/cocoon"
+            prefetch={false}
+            aria-label="CocoonMate operations"
+            aria-current={cocoonActive ? "page" : undefined}
+          >
+            <span className="nav-item__symbol" aria-hidden="true">
+              ↳
+            </span>
+            <span>CocoonMate</span>
+          </Link>
+        ) : null}
+        {workspace.slug === "security" && active && canReadAudit ? (
+          <Link
+            className="nav-item nav-item--subroute"
+            data-active={auditActive ? "true" : "false"}
+            href="/security/audit"
+            prefetch={false}
+            aria-label="گزارش ممیزی"
+            aria-current={auditActive ? "page" : undefined}
+          >
+            <span className="nav-item__symbol" aria-hidden="true">
+              ↳
+            </span>
+            <span>گزارش ممیزی</span>
+          </Link>
+        ) : null}
+      </li>
+    );
+  }
 
   return (
     <aside className="sidebar" aria-label="ناوبری اصلی Command Center">
       <div className="sidebar__brand">
         <LifeMateLogo />
+        <div className="sidebar__workspace-switcher" aria-label="محیط فعال">
+          <span>محیط فعال</span>
+          <strong>LifeMate Command Center</strong>
+          <span className="sidebar__workspace-chevron" aria-hidden="true">
+            ⌄
+          </span>
+        </div>
       </div>
       <nav className="sidebar__nav">
-        <ul>
-          {visibleWorkspaces.map((workspace) => {
-            const active = workspace.slug === activeSlug;
-            return (
-              <li key={workspace.slug || "command-center"}>
-                <Link
-                  className="nav-item"
-                  data-active={
-                    active && !auditActive && !researchActive && !experimentsActive
-                      ? "true"
-                      : "false"
-                  }
-                  href={workspaceHref(workspace)}
-                  prefetch={false}
-                  aria-label={workspace.label}
-                  aria-current={
-                    active && !auditActive && !researchActive && !experimentsActive
-                      ? "page"
-                      : undefined
-                  }
-                >
-                  <span className="nav-item__symbol" aria-hidden="true">
-                    {workspace.symbol}
-                  </span>
-                  <span>{workspace.label}</span>
-                  {workspace.slug === "ai" && <span className="nav-item__badge">جدید</span>}
-                </Link>
-                {workspace.slug === "analytics" && active && isFounder ? (
-                  <Link
-                    className="nav-item nav-item--subroute"
-                    data-active={researchActive ? "true" : "false"}
-                    href="/research"
-                    prefetch={false}
-                    aria-label="Research Studio"
-                    aria-current={researchActive ? "page" : undefined}
-                  >
-                    <span className="nav-item__symbol" aria-hidden="true">
-                      ↳
-                    </span>
-                    <span>Research Studio</span>
-                  </Link>
-                ) : null}
-                {workspace.slug === "analytics" && active && canReadProductSignals ? (
-                  <Link
-                    className="nav-item nav-item--subroute"
-                    data-active={experimentsActive ? "true" : "false"}
-                    href="/experiments"
-                    prefetch={false}
-                    aria-label="Experiments, Feedback & Advocacy"
-                    aria-current={experimentsActive ? "page" : undefined}
-                  >
-                    <span className="nav-item__symbol" aria-hidden="true">
-                      ↳
-                    </span>
-                    <span>Experiments & Feedback</span>
-                  </Link>
-                ) : null}
-                {workspace.slug === "security" && active && canReadAudit ? (
-                  <Link
-                    className="nav-item nav-item--subroute"
-                    data-active={auditActive ? "true" : "false"}
-                    href="/security/audit"
-                    prefetch={false}
-                    aria-label="گزارش ممیزی"
-                    aria-current={auditActive ? "page" : undefined}
-                  >
-                    <span className="nav-item__symbol" aria-hidden="true">
-                      ↳
-                    </span>
-                    <span>گزارش ممیزی</span>
-                  </Link>
-                ) : null}
-              </li>
+        {workspaceGroups.map((group) => {
+          const groupWorkspaces = group.slugs
+            .map((slug) => visibleWorkspaces.find((workspace) => workspace.slug === slug))
+            .filter((workspace): workspace is (typeof visibleWorkspaces)[number] =>
+              Boolean(workspace),
             );
-          })}
-          <li>
-            <Link
-              className="nav-item"
-              data-active={profileActive ? "true" : "false"}
-              href="/profile"
-              prefetch={false}
-              aria-label="پروفایل و تغییر رمز عبور"
-              aria-current={profileActive ? "page" : undefined}
+          if (groupWorkspaces.length === 0) return null;
+          return (
+            <section
+              className="sidebar__group"
+              key={group.label}
+              aria-labelledby={`nav-${group.label}`}
             >
-              <span className="nav-item__symbol" aria-hidden="true">
-                ◎
-              </span>
-              <span>پروفایل و امنیت</span>
-            </Link>
-          </li>
-        </ul>
+              <h2 id={`nav-${group.label}`} className="sidebar__group-label">
+                {group.label}
+              </h2>
+              <ul>{groupWorkspaces.map(renderWorkspace)}</ul>
+            </section>
+          );
+        })}
+        <section className="sidebar__group sidebar__group--last" aria-labelledby="nav-account">
+          <h2 id="nav-account" className="sidebar__group-label">
+            حساب
+          </h2>
+          <ul>
+            <li>
+              <Link
+                className="nav-item"
+                data-active={profileActive ? "true" : "false"}
+                href="/profile"
+                prefetch={false}
+                aria-label="پروفایل و تغییر رمز عبور"
+                aria-current={profileActive ? "page" : undefined}
+              >
+                <span className="nav-item__symbol" aria-hidden="true">
+                  ◎
+                </span>
+                <span>پروفایل و امنیت</span>
+              </Link>
+            </li>
+          </ul>
+        </section>
       </nav>
       <div className="sidebar__status" role="status" aria-label="وضعیت امنیت نشست مدیریت">
         <span className="status-dot" aria-hidden="true" />
