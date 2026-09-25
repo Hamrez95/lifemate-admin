@@ -13,6 +13,8 @@ describe("ADM-MKT-001 Marketing workspace routing and privacy", () => {
   it("uses the existing Marketing RBAC permission", () => {
     const page = source("app/marketing/page.tsx");
     expect(page).toContain('admin.permissions.includes("marketing.read")');
+    expect(page).toContain('href="/marketing/channels"');
+    expect(page).toContain("اتصال کانال‌ها");
   });
 
   it("is discoverable from the configured Marketing workspace", () => {
