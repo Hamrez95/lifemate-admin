@@ -11,7 +11,15 @@ type TopbarProps = { title: string; subtitle?: string };
 export function Topbar({ title, subtitle }: TopbarProps) {
   return (
     <header className="topbar">
-      <PageHeader title={title} subtitle={subtitle} />
+      <div className="topbar__page">
+        <div className="topbar__context-line" aria-label="محیط فعال">
+          <span className="topbar__context-dot" aria-hidden="true" />
+          <span>LifeMate Command Center</span>
+          <span className="topbar__context-divider" aria-hidden="true" />
+          <span>محیط مدیریتی</span>
+        </div>
+        <PageHeader title={title} subtitle={subtitle} />
+      </div>
       <div className="topbar__actions">
         <DirectionControl />
         <AppearanceControl />
