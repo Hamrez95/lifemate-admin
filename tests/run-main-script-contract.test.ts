@@ -14,6 +14,11 @@ describe("run-main PowerShell launcher", () => {
     expect(script).toContain("fetch origin main");
     expect(script).toContain("switch main");
     expect(script).toContain("pull --ff-only origin main");
+    expect(script).toContain("Test-RequiredEnvironment");
+    expect(script).toContain("NEXT_PUBLIC_SUPABASE_URL");
+    expect(script).toContain("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
+    expect(script).toContain("NEXT_PUBLIC_ADMIN_API_URL");
+    expect(script).toContain("The runner never prints or creates secrets.");
     expect(script).toContain('[version]"20.9.0"');
     expect(script).toContain("& node $nextCli dev --hostname 127.0.0.1 --port $Port");
     expect(script).not.toContain("npm run dev -- --hostname");
