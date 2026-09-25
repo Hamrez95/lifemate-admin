@@ -39,6 +39,31 @@ function Test-LoopbackPortInUse {
   }
 }
 
+function Test-RequiredEnvironment {
+  param([Parameter(Mandatory)][string]$Root)
+
+  $envPath = Join-Path $Root ".env.local"
+  if (-not (Test-Path $envPath)) {
+    throw "'.env.local' is missing. Copy '.env.example' to '.env.local', fill the browser-safe Supabase values, then retry."
+  }
+
+  $content = Get-Content -Raw $envPath
+  $required = @(
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+    "NEXT_PUBLIC_ADMIN_API_URL"
+  )
+  $missing = @(
+    $required | Where-Object {
+      $content -notmatch "(?m)^\\s*$_\\s*=\\s*\\S"
+    }
+  )
+
+  if ($missing.Count -gt 0) {
+    throw "'.env.local' is missing required values: $($missing -join ', '). The runner never prints or creates secrets."
+  }
+}
+
 Require-Command git
 Require-Command node
 Require-Command npm
@@ -71,6 +96,8 @@ Write-Host "Fetching latest origin/main..." -ForegroundColor Cyan
 Invoke-Git fetch origin main
 Invoke-Git switch main
 Invoke-Git pull --ff-only origin main
+
+Test-RequiredEnvironment -Root $repositoryRoot
 
 $commit = (& git rev-parse --short HEAD).Trim()
 if ($LASTEXITCODE -ne 0) {
