@@ -1034,8 +1034,25 @@ input:focus-visible,
   }
 
   .sidebar__nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     overflow-x: auto;
     padding: 7px 8px calc(7px + env(safe-area-inset-bottom));
+  }
+
+  .sidebar__group {
+    display: contents;
+    margin: 0;
+  }
+
+  .sidebar__group--last {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .sidebar__group-label {
+    display: none;
   }
 
   .sidebar__nav ul {
