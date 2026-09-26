@@ -9,9 +9,9 @@
 .coverageNotice,
 .stageSection,
 .previousPeriod {
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--lm-border);
   border-radius: 1rem;
-  background: var(--surface-panel);
+  background: var(--lm-surface);
 }
 
 .hero {
@@ -32,13 +32,13 @@
 .metricCard p,
 .coverageNotice p {
   margin: 0;
-  color: var(--text-muted);
+  color: var(--lm-text-muted);
   line-height: 1.8;
 }
 
 .eyebrow,
 .metricKey {
-  color: var(--text-muted);
+  color: var(--lm-text-muted);
   font-size: 0.78rem;
   letter-spacing: 0.04em;
 }
@@ -48,7 +48,7 @@
   display: grid;
   align-content: start;
   gap: 0.45rem;
-  color: var(--text-muted);
+  color: var(--lm-text-muted);
   font-size: 0.86rem;
 }
 
@@ -67,7 +67,7 @@
 
 .coverageNotice > div span,
 .coverageNotice small {
-  color: var(--text-muted);
+  color: var(--lm-text-muted);
 }
 
 .coverageNotice small {
@@ -93,7 +93,7 @@
 .filters label {
   display: grid;
   gap: 0.35rem;
-  color: var(--text-muted);
+  color: var(--lm-text-muted);
   font-size: 0.82rem;
 }
 
@@ -102,9 +102,9 @@
 .filters button,
 .toolbar > button {
   min-height: 2.5rem;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--lm-border);
   border-radius: 0.65rem;
-  background: var(--surface-raised);
+  background: var(--lm-surface-raised);
   color: inherit;
   padding: 0.55rem 0.75rem;
 }
@@ -124,12 +124,12 @@
   flex-wrap: wrap;
   gap: 0.75rem 1.25rem;
   padding: 1rem 1.2rem;
-  color: var(--text-muted);
+  color: var(--lm-text-muted);
 }
 
 .scopeNotice strong,
 .previousPeriod strong {
-  color: var(--text-primary);
+  color: var(--lm-text-primary);
 }
 
 .stageSection {
@@ -152,10 +152,10 @@
 
 .metricCard {
   min-width: 0;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--lm-border);
   border-radius: 0.85rem;
   padding: 1rem;
-  background: var(--surface-raised);
+  background: var(--lm-surface-raised);
   display: grid;
   gap: 0.8rem;
 }
@@ -194,7 +194,7 @@
 .stateBadge {
   flex: 0 0 auto;
   max-width: 10.5rem;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--lm-border);
   border-radius: 999px;
   padding: 0.3rem 0.6rem;
   font-size: 0.72rem;
@@ -223,13 +223,13 @@
   justify-content: space-between;
   gap: 0.5rem;
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--lm-text-muted);
 }
 
 .helpers {
   display: grid;
   gap: 0.65rem;
-  border-top: 1px solid var(--border-subtle);
+  border-top: 1px solid var(--lm-border);
   padding-top: 0.75rem;
 }
 
@@ -247,7 +247,7 @@
 }
 
 .calculationDetails {
-  border-top: 1px solid var(--border-subtle);
+  border-top: 1px solid var(--lm-border);
   padding-top: 0.65rem;
   font-size: 0.8rem;
 }
@@ -276,7 +276,7 @@
 }
 
 .calculationDetails dt {
-  color: var(--text-muted);
+  color: var(--lm-text-muted);
 }
 
 .calculationDetails dd {

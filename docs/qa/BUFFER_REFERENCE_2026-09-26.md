@@ -37,6 +37,14 @@ as secondary sections. LifeMate applies that pattern without borrowing product s
 Forecast and unavailable values remain distinct, and the Finance route now consumes the shared v2
 semantic tokens in both light and dark themes instead of owning a separate raw-color palette.
 
+## ADM-UX-05 Analytics/Growth migration wave
+
+The Growth workspace follows Buffer's current Insights direction: keep the overview and selected
+scope visible, make metric definitions inspectable, and distinguish unavailable data from a zero.
+The route now uses the canonical v2 semantic token vocabulary and exposes explicit loading/error
+boundaries while preserving its real availability states (`ready`, `partial`, delayed and
+unavailable) and product-scope filters.
+
 ## LifeMate guardrails
 
 - Do not pixel-match Buffer or reuse its proprietary assets.
