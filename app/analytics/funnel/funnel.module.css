@@ -16,14 +16,14 @@
   border: 1px solid var(--lm-border);
   border-radius: 22px;
   background: var(--lm-surface);
-  box-shadow: 0 10px 28px rgba(34, 48, 68, 0.045);
+  box-shadow: var(--lm-shadow);
 }
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
   gap: 18px;
   padding: 24px;
-  background: linear-gradient(145deg, #fffdfa, #f7f3ff 58%, #eef9f5);
+  background: linear-gradient(145deg, var(--lm-surface), var(--lm-violet-soft) 58%, var(--lm-green-soft));
 }
 .hero h2,
 .sectionHeading h3 {
@@ -45,9 +45,9 @@
   align-content: center;
 }
 .heroMeta span {
-  border: 1px solid rgba(118, 87, 232, 0.15);
+  border: 1px solid var(--lm-violet-soft);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--lm-surface-raised);
   padding: 10px 12px;
   color: var(--lm-text);
   font-size: 11px;
@@ -157,7 +157,7 @@
   outline: none;
 }
 .barTrack:focus-visible {
-  box-shadow: 0 0 0 3px rgba(52, 120, 246, 0.22);
+  box-shadow: var(--lm-focus);
 }
 .barFill {
   display: block;
