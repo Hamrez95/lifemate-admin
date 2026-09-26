@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { AdminSessionProvider } from "@/src/components/auth/AdminSessionProvider";
 import { AdminShell } from "@/src/components/shell/AdminShell";
+import { Page } from "@/src/components/ui";
 import { getCommandCenterPreferences } from "@/src/lib/admin-api/settings-preferences";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 import { formatPersianDateTime } from "@/src/lib/time-zone";
@@ -43,7 +44,7 @@ export default async function SettingsPage() {
         title="تنظیمات"
         subtitle="تنظیمات canonical Command Center با default-deny و بدون نمایش credential"
       >
-        <div className={styles.page}>
+        <Page className={styles.page}>
           <section className={styles.hero} aria-labelledby="settings-title">
             <p className="eyebrow">ADM-SET · Reference 27</p>
             <h2 id="settings-title">تنظیمات مرکز فرماندهی</h2>
@@ -182,7 +183,7 @@ export default async function SettingsPage() {
               </p>
             </div>
           </section>
-        </div>
+        </Page>
       </AdminShell>
     </AdminSessionProvider>
   );

@@ -5,6 +5,7 @@ import { ChangePasswordForm } from "@/src/components/auth/ChangePasswordForm";
 import { SecurityFactorsPanel } from "@/src/components/auth/SecurityFactorsPanel";
 import { SessionControlPanel } from "@/src/components/auth/SessionControlPanel";
 import { AdminShell } from "@/src/components/shell/AdminShell";
+import { Page } from "@/src/components/ui";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
 
 export const metadata: Metadata = {
@@ -21,7 +22,7 @@ export default async function ProfilePage() {
         title="پروفایل و امنیت"
         subtitle="مدیریت اطلاعات ورود و امنیت حساب Command Center"
       >
-        <div className="profile-security-grid">
+        <Page className="profile-security-grid">
           <section
             className="section-card profile-identity-card"
             aria-labelledby="identity-card-title"
@@ -57,7 +58,7 @@ export default async function ProfilePage() {
           <ChangePasswordForm />
           <SecurityFactorsPanel />
           <SessionControlPanel />
-        </div>
+        </Page>
       </AdminShell>
     </AdminSessionProvider>
   );
