@@ -22,7 +22,6 @@ const legacyRawColorFiles = new Set([
   "app/commerce/promotions/promotions.module.css",
   "app/commerce/transactions/[transactionId]/transaction-detail.module.css",
   "app/commerce/transactions/transactions.module.css",
-  "app/finance/finance.module.css",
   "app/finance/scenario/scenario-form.module.css",
   "app/marketing/content-calendar/calendar.module.css",
   "app/marketing/content-studio/studio.module.css",
