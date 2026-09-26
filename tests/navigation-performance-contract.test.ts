@@ -20,7 +20,7 @@ describe("PERF-02 navigation feedback contract", () => {
     const performanceSpec = source("e2e/performance-baseline.spec.ts");
 
     expect(performanceSpec).toContain("keeps selected navigation synchronized");
-    expect(performanceSpec).toContain("page.waitForURL(`**${target}`)");
+    expect(performanceSpec).toContain('page.waitForURL(`**${target}`, { waitUntil: "commit" })');
     expect(performanceSpec).toContain('aria-current="page"');
   });
 });

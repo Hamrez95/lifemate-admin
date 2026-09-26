@@ -253,7 +253,7 @@ test.describe("PERF-01 authenticated production-build baseline", () => {
     for (const target of ["/finance", "/operations", "/security", "/settings"]) {
       const link = page.locator(`a[href="${target}"]`).first();
       await expect(link).toBeVisible();
-      await Promise.all([page.waitForURL(`**${target}`), link.click()]);
+      await Promise.all([page.waitForURL(`**${target}`, { waitUntil: "commit" }), link.click()]);
       await expect(page.locator(`a[href="${target}"][aria-current="page"]`)).toHaveCount(1);
     }
   });
