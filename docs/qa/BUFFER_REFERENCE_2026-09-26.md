@@ -19,6 +19,16 @@ This note records the public Buffer references used for the Command Center QA-01
 4. Prefer calm surfaces, clear active states and responsive density over decorative dashboard chrome.
 5. Test the same representative routes at phone, tablet and desktop widths.
 
+## ADM-UX-05 Profile/Settings migration wave
+
+The September 2026 Profile/Settings wave applies the shared `Page` composition primitive to both
+route roots and adds route-level loading and retryable error boundaries. This follows the same
+operator-facing principles reviewed in Buffer's account/settings surfaces: stable navigation,
+clear context, and explicit feedback while a workspace is unavailable. The routes retain their
+existing permission checks, canonical settings contract, no-credential boundary, and security
+controls; the migration changes composition and state presentation, not authorization or data
+semantics.
+
 ## LifeMate guardrails
 
 - Do not pixel-match Buffer or reuse its proprietary assets.
