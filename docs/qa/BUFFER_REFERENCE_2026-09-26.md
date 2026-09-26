@@ -29,6 +29,14 @@ existing permission checks, canonical settings contract, no-credential boundary,
 controls; the migration changes composition and state presentation, not authorization or data
 semantics.
 
+## ADM-UX-05 Finance migration wave
+
+For Finance, the reviewed Buffer Insights references support a summary-first analytics surface:
+keep the primary metrics and selected period visible, then expose detailed series and definitions
+as secondary sections. LifeMate applies that pattern without borrowing product semantics: Actual,
+Forecast and unavailable values remain distinct, and the Finance route now consumes the shared v2
+semantic tokens in both light and dark themes instead of owning a separate raw-color palette.
+
 ## LifeMate guardrails
 
 - Do not pixel-match Buffer or reuse its proprietary assets.
