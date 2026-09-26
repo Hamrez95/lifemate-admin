@@ -8,7 +8,6 @@ const canonicalTokenSource = "app/design-system.css";
 // These files are the temporary migration registry for legacy feature styling.
 // New CSS modules must use semantic tokens instead of adding another exception.
 const legacyRawColorFiles = new Set([
-  "app/analytics/analytics.module.css",
   "app/analytics/cohorts/cohorts-reference.module.css",
   "app/analytics/cohorts/cohorts.module.css",
   "app/analytics/funnel/funnel.module.css",
