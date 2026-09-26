@@ -163,6 +163,13 @@ export function SecurityFactorsPanel() {
                 onClick={() => removeFactor(factor.id)}
                 disabled={pending || factors.length <= 1}
                 aria-label={`حذف ${factor.friendly_name || `عامل ${index + 1}`}`}
+                title={
+                  factors.length <= 1
+                    ? "آخرین عامل TOTP قابل حذف نیست"
+                    : pending
+                      ? "عملیات امنیتی دیگری در حال انجام است"
+                      : undefined
+                }
               >
                 حذف
               </button>
@@ -177,6 +184,13 @@ export function SecurityFactorsPanel() {
           className="primary-button profile-security-card__action"
           onClick={startBackupEnrollment}
           disabled={pending || loading}
+          title={
+            loading
+              ? "عامل‌های امنیتی در حال بارگذاری هستند"
+              : pending
+                ? "عملیات امنیتی دیگری در حال انجام است"
+                : undefined
+          }
         >
           {pending ? "در حال آماده‌سازی..." : "افزودن عامل پشتیبان"}
         </button>
@@ -215,7 +229,12 @@ export function SecurityFactorsPanel() {
               required
               disabled={pending}
             />
-            <button type="submit" className="primary-button" disabled={pending}>
+            <button
+              type="submit"
+              className="primary-button"
+              disabled={pending}
+              title={pending ? "تأیید عامل در حال انجام است" : undefined}
+            >
               {pending ? "در حال تأیید..." : "تأیید و فعال‌سازی"}
             </button>
           </form>

@@ -44,6 +44,7 @@ export function SessionControlPanel() {
         className="text-button profile-session-button"
         onClick={signOutEverywhere}
         disabled={pending}
+        title={pending ? "خروج از نشست‌ها در حال انجام است" : undefined}
       >
         {pending ? "در حال خروج..." : "خروج از همهٔ دستگاه‌ها"}
       </button>
