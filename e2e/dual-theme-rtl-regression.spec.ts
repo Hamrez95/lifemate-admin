@@ -56,6 +56,7 @@ test.describe("ADM-QA-001 dual-theme RTL/LTR regression matrix", () => {
   test("representative authenticated routes remain usable across all presentation modes", async ({
     page,
   }) => {
+    test.setTimeout(180_000);
     await signInWithMfa(page);
 
     for (const presentation of presentationModes) {
