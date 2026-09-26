@@ -16,6 +16,8 @@ The permanent `admin-qa` workflow covers representative browser and security pat
 - serious/critical accessibility violations on representative login, forbidden and authorized workspace surfaces;
 - Persian/RTL keyboard behavior and mobile/desktop browser projects;
 - committed visual snapshots for representative stable surfaces;
+- four-mode authenticated regression coverage (`rtl-light`, `rtl-dark`, `ltr-light`, `ltr-dark`) across representative Founder, User 360, Analytics, Support, Commerce, Marketing, Finance, Operations, Security, Profile and Settings routes;
+- `e2e/dual-theme-rtl-regression.spec.ts` owns that route matrix; screenshots remain intentionally targeted to the existing stable snapshot surfaces rather than multiplying one image per route/mode;
 - browser/route secret-boundary checks already enforced by `security:check` and contract tests.
 
 ## Isolation model
@@ -52,7 +54,7 @@ npm run test:e2e:update
 
 Never update snapshots merely to make a red build green. Review the changed PNGs alongside the code change and confirm the visual delta is expected.
 
-The current baseline set covers secure login, forbidden state and the authorized Operations workspace on desktop and mobile Chromium.
+The current baseline set covers secure login, forbidden state and the authorized Operations workspace. The four-mode route matrix adds semantic visual, accessibility and overflow assertions in both desktop and mobile Chromium projects without creating an unmaintainable screenshot explosion.
 
 ## Accessibility policy
 
