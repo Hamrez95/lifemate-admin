@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-09-26T16:00:06.264Z",
+  "generatedAt": "2026-09-26T16:07:27.202Z",
   "scope": [
     "app",
     "src"
   ],
   "counts": {
-    "sourceFiles": 482,
+    "sourceFiles": 484,
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
-    "rawColorLiterals": 922
+    "rawColorLiterals": 915
   },
   "rawColorHotspots": [
     {
@@ -123,10 +123,6 @@
     {
       "file": "app/marketing/marketing.module.css",
       "count": 9
-    },
-    {
-      "file": "app/analytics/funnel/funnel.module.css",
-      "count": 7
     },
     {
       "file": "app/marketing/content-calendar/calendar.module.css",
@@ -534,6 +530,8 @@
     "state": [
       "app/ai/error.tsx",
       "app/ai/loading.tsx",
+      "app/analytics/funnel/error.tsx",
+      "app/analytics/funnel/loading.tsx",
       "app/analytics/growth/error.tsx",
       "app/analytics/growth/loading.tsx",
       "app/api/admin/notifications/count/route.ts",
