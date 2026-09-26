@@ -22,6 +22,17 @@ const workspaceGroups = [
 export function Sidebar({ activeSlug }: SidebarProps) {
   const admin = useAdminSession();
   const pathname = usePathname();
+  const routeActiveSlug =
+    pathname === "/"
+      ? ""
+      : pathname.startsWith("/research") || pathname.startsWith("/experiments")
+        ? "analytics"
+        : pathname.startsWith("/operations/cocoon")
+          ? "operations"
+          : pathname.startsWith("/security")
+            ? "security"
+            : (pathname.split("/")[1] ?? "");
+  const resolvedActiveSlug = routeActiveSlug || activeSlug;
   const visibleWorkspaces = workspaces.filter((workspace) =>
     canAccessWorkspace(workspace, admin.permissions),
   );
@@ -38,7 +49,11 @@ export function Sidebar({ activeSlug }: SidebarProps) {
   const cocoonActive = pathname.startsWith("/operations/cocoon");
 
   function renderWorkspace(workspace: (typeof visibleWorkspaces)[number]) {
-    const active = workspace.slug === activeSlug;
+    const workspacePath = workspaceHref(workspace);
+    const routeMatchesWorkspace =
+      pathname === workspacePath ||
+      (workspacePath !== "/" && pathname.startsWith(`${workspacePath}/`));
+    const active = workspace.slug === resolvedActiveSlug || routeMatchesWorkspace;
     const isPrimaryRoute = active && !auditActive && !researchActive && !experimentsActive;
 
     return (
