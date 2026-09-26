@@ -5,9 +5,9 @@
 .hero,
 .panel,
 .state {
-  border: 1px solid var(--border-subtle, #ded8d0);
+  border: 1px solid var(--lm-border);
   border-radius: 20px;
-  background: var(--surface, #fff);
+  background: var(--lm-surface-raised);
   padding: 20px;
 }
 .hero {
@@ -21,7 +21,7 @@
   margin: 4px 0 8px;
 }
 .muted {
-  color: #6b645e;
+  color: var(--lm-text-muted);
 }
 .filters {
   display: grid;
@@ -36,16 +36,16 @@
 .field input,
 .field select {
   min-height: 42px;
-  border: 1px solid #d7d0c8;
+  border: 1px solid var(--lm-border);
   border-radius: 12px;
   padding: 0 12px;
-  background: #fff;
+  background: var(--lm-surface-raised);
 }
 .actions {
   display: flex;
   gap: 8px;
 }
-.button,
+.primaryAction,
 .linkButton {
   min-height: 42px;
   border-radius: 12px;
@@ -54,18 +54,18 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  border: 1px solid #cfc6bc;
-  background: #fff;
+  border: 1px solid var(--lm-border-strong);
+  background: var(--lm-surface-raised);
   color: inherit;
 }
-.button {
-  background: #23211f;
-  color: #fff;
-  border-color: #23211f;
+.primaryAction {
+  background: var(--lm-text);
+  color: var(--lm-surface-raised);
+  border-color: var(--lm-text);
 }
 .tableWrap {
   overflow: auto;
-  border: 1px solid #e0d9d1;
+  border: 1px solid var(--lm-border);
   border-radius: 16px;
 }
 .table {
@@ -77,13 +77,13 @@
 .table td {
   text-align: right;
   padding: 13px;
-  border-bottom: 1px solid #eee8e1;
+  border-bottom: 1px solid var(--lm-border);
   vertical-align: top;
 }
 .table th {
   font-size: 13px;
-  color: #665f58;
-  background: #faf8f5;
+  color: var(--lm-text-muted);
+  background: var(--lm-surface-soft);
 }
 .identity {
   display: grid;
@@ -95,7 +95,7 @@
 .code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 12px;
-  color: #716960;
+  color: var(--lm-text-muted);
 }
 .chips {
   display: flex;
@@ -108,16 +108,16 @@
   padding: 3px 8px;
   border-radius: 999px;
   font-size: 12px;
-  background: #f2eee9;
+  background: var(--lm-surface-soft);
 }
 .status[data-status="Active"] {
-  background: #e8f5ec;
-  color: #26633a;
+  background: var(--lm-green-soft);
+  color: var(--lm-green-deep);
 }
 .status[data-status="Disabled"],
 .status[data-status="Revoked"] {
-  background: #fff0ee;
-  color: #8c342d;
+  background: var(--lm-danger);
+  color: var(--lm-text-inverse);
 }
 .metricGrid {
   display: grid;
@@ -126,7 +126,7 @@
 }
 .metric {
   padding: 14px;
-  border: 1px solid #e4ddd5;
+  border: 1px solid var(--lm-border);
   border-radius: 14px;
   display: grid;
   gap: 5px;
@@ -142,7 +142,7 @@
   gap: 10px;
 }
 .timeline li {
-  border-right: 3px solid #ded5ca;
+  border-inline-end: 3px solid var(--lm-border-strong);
   padding: 8px 12px;
   display: grid;
   gap: 3px;
@@ -160,8 +160,8 @@
 .notice {
   padding: 12px;
   border-radius: 12px;
-  background: #f7f3ee;
-  color: #5f5851;
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-secondary);
 }
 .permissionGrid {
   display: flex;
@@ -169,7 +169,7 @@
   gap: 7px;
 }
 .permission {
-  border: 1px solid #ddd5cc;
+  border: 1px solid var(--lm-border);
   border-radius: 10px;
   padding: 6px 9px;
   font-size: 12px;
@@ -182,7 +182,7 @@
 .empty {
   padding: 28px;
   text-align: center;
-  color: #6d655e;
+  color: var(--lm-text-muted);
 }
 @media (max-width: 900px) {
   .filters {
@@ -203,7 +203,7 @@
   .actions {
     width: 100%;
   }
-  .button,
+  .primaryAction,
   .linkButton {
     flex: 1;
   }

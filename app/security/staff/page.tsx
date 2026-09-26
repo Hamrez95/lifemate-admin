@@ -118,7 +118,7 @@ export default async function StaffDirectoryPage({ searchParams }: Props) {
               />
             </label>
             <div className={styles.actions}>
-              <button className={styles.button} type="submit">
+              <button className={styles.primaryAction} type="submit">
                 اعمال
               </button>
               <Link className={styles.linkButton} href="/security/staff">

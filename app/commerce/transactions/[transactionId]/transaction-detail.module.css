@@ -348,7 +348,7 @@
 .timeline li:not(:last-child)::before {
   position: absolute;
   top: 16px;
-  right: 7px;
+  inset-inline-end: 7px;
   bottom: 0;
   width: 2px;
   background: var(--lm-border);

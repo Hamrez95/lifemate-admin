@@ -5,7 +5,7 @@
   border: 1px solid var(--lm-border);
   border-radius: 1.25rem;
   background: var(--lm-surface-raised);
-  box-shadow: 0 11px 30px rgba(34, 48, 68, 0.045);
+  box-shadow: var(--lm-shadow);
 }
 
 .heading {
@@ -65,7 +65,7 @@
   background: var(--lm-surface-soft);
   border: 1px solid var(--lm-border);
   color: var(--lm-text);
-  box-shadow: 0 5px 14px rgba(34, 48, 68, 0.035);
+  box-shadow: 0 5px 14px color-mix(in srgb, var(--lm-text) 4%, transparent);
 }
 
 .message[data-sender="Staff"] {
@@ -122,8 +122,8 @@
   border: 1px solid var(--lm-green-deep);
   border-radius: 0.7rem;
   background: linear-gradient(135deg, var(--lm-green), var(--lm-green-deep));
-  box-shadow: 0 8px 18px rgba(23, 173, 104, 0.17);
-  color: white;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--lm-green) 17%, transparent);
+  color: var(--lm-text-inverse);
   padding: 0.65rem 1rem;
   font-weight: 700;
   cursor: pointer;
@@ -135,7 +135,7 @@
 .composer button:hover:not(:disabled),
 .operationCard button:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 11px 22px rgba(23, 173, 104, 0.22);
+  box-shadow: 0 11px 22px color-mix(in srgb, var(--lm-green) 22%, transparent);
 }
 
 .composer textarea:focus-visible,

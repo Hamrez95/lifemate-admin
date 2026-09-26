@@ -90,6 +90,11 @@
     --lm-sidebar-width: 210px;
   }
 }
+@media (max-width: 1180px) {
+  :root {
+    --lm-sidebar-width: 210px;
+  }
+}
 @media (max-width: 768px) {
   :root {
     --lm-space-6: 20px;

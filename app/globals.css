@@ -952,10 +952,6 @@ input:focus-visible,
 }
 
 @media (max-width: 1180px) {
-  :root {
-    --lm-sidebar-width: 210px;
-  }
-
   .metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
