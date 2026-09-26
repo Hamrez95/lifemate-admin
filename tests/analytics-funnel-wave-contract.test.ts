@@ -24,7 +24,7 @@ describe("ADM-UX-05 Analytics/Funnel migration wave", () => {
 
     expect(page).toContain("getKpiValues");
     expect(page).toContain("hasCanonicalFunnel");
-    expect(page).toContain("state=\"unavailable\"");
+    expect(page).toContain('state="unavailable"');
     expect(loading).toContain("LoadingState");
     expect(error).toContain("ErrorState");
     expect(error).toContain("onClick={reset}");
