@@ -124,8 +124,8 @@
 }
 
 .filterActions button {
-  border: 1px solid var(--lm-action-primary);
-  background: var(--lm-action-primary);
+  border: 1px solid var(--lm-action-primary-hover);
+  background: var(--lm-action-primary-hover);
   color: var(--lm-text-inverse);
   cursor: pointer;
 }

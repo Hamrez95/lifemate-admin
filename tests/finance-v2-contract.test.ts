@@ -12,7 +12,7 @@ describe("ADM-UX-05 Finance migration wave", () => {
 
     expect(styles).toContain("var(--lm-surface-raised)");
     expect(styles).toContain("var(--lm-text-muted)");
-    expect(styles).toContain("var(--lm-action-primary)");
+    expect(styles).toContain("var(--lm-action-primary-hover)");
     expect(styles).not.toMatch(/#[0-9a-f]{3,8}\b|\b(?:rgb|rgba|hsl|hsla)\(/iu);
   });
 
