@@ -246,6 +246,18 @@ async function observeSidebarPrefetch(page: Page) {
 }
 
 test.describe("PERF-01 authenticated production-build baseline", () => {
+  test("keeps selected navigation synchronized with client route transitions", async ({ page }) => {
+    await signInWithMfa(page);
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    for (const target of ["/finance", "/operations", "/security", "/settings"]) {
+      const link = page.locator(`a[href="${target}"]`).first();
+      await expect(link).toBeVisible();
+      await Promise.all([page.waitForURL(`**${target}`), link.click()]);
+      await expect(page.locator(`a[href="${target}"][aria-current="page"]`)).toHaveCount(1);
+    }
+  });
+
   test("captures repeated route timing and safe server fanout without real-user data", async ({
     page,
   }, testInfo) => {
