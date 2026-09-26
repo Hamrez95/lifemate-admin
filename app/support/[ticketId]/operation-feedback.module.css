@@ -10,7 +10,7 @@
   height: 13px;
   flex: 0 0 13px;
   contain: paint;
-  border: 2px solid rgba(255, 255, 255, 0.45);
+  border: 2px solid color-mix(in srgb, currentColor 45%, transparent);
   border-top-color: currentColor;
   border-radius: 50%;
   animation: support-spin 0.75s linear infinite;
