@@ -51,3 +51,10 @@ unavailable) and product-scope filters.
 - Preserve Persian-first copy, Vazirmatn typography, logical CSS properties and RTL semantics.
 - Preserve server authorization, AAL2, no-store truthfulness and synthetic-only QA fixtures.
 - A visual snapshot approval never waives accessibility, responsive overflow or security checks.
+
+## ADM-UX-05 Analytics/Funnel migration wave
+
+The Funnel workspace now uses the canonical v2 semantic token vocabulary, including theme-safe
+surface, focus, shadow and accent tokens. Its existing canonical-only data semantics remain intact:
+unavailable and partial results are explicit, no conversion is inferred from unrelated KPIs, and
+the route now has explicit loading and retryable error boundaries.
