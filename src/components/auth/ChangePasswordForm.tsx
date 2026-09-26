@@ -94,7 +94,12 @@ export function ChangePasswordForm() {
           required
           disabled={pending}
         />
-        <button type="submit" className="primary-button" disabled={pending}>
+        <button
+          type="submit"
+          className="primary-button"
+          disabled={pending}
+          title={pending ? "تغییر رمز عبور در حال انجام است" : undefined}
+        >
           {pending ? "در حال تغییر..." : "تغییر رمز عبور"}
         </button>
       </form>
