@@ -123,3 +123,7 @@ The transaction detail workspace now uses shared semantic surfaces for payment s
 ## ADM-UX-05 Security role detail semantic-surface wave
 
 The role detail workspace now consumes the shared semantic tokens for permissions, risk/state pills, warning states, member tables and mobile member cards. Existing RBAC meaning, blocked/elevated labeling, provenance details and responsive table-to-card fallback remain intact while focus and theme behavior now match the shared shell.
+
+## ADM-UX-05 Security retention semantic-surface wave
+
+The retention workspace now consumes shared semantic surfaces, status colors, focus treatment and 44px controls across its policy form, notices, holds and release actions. Existing retention truthfulness, unavailable/conflict/forbidden feedback, RTL table behavior and responsive stacking remain unchanged.

@@ -8,7 +8,7 @@
   display: flex;
   gap: 8px;
   align-items: center;
-  color: var(--muted-foreground, #667085);
+  color: var(--lm-text-secondary);
   font-size: 0.88rem;
 }
 
@@ -23,10 +23,10 @@
 .unavailable,
 .metrics article,
 .holdCard {
-  border: 1px solid rgba(15, 31, 47, 0.09);
+  border: 1px solid var(--lm-border);
   border-radius: 20px;
-  background: rgba(255, 253, 248, 0.94);
-  box-shadow: 0 14px 35px rgba(14, 30, 44, 0.055);
+  background: var(--lm-surface-raised);
+  box-shadow: var(--lm-shadow);
 }
 
 .hero {
@@ -39,14 +39,14 @@
 .hero h2,
 .panel h3 {
   margin: 4px 0 8px;
-  color: #132a3a;
+  color: var(--lm-text);
 }
 
 .hero p,
 .notice p,
 .unavailable p {
   margin: 0;
-  color: #667085;
+  color: var(--lm-text-secondary);
   line-height: 1.85;
 }
 
@@ -56,13 +56,13 @@
   gap: 7px;
   border-radius: 16px;
   padding: 18px;
-  background: #f1f7f1;
-  color: #1d4637;
+  background: var(--lm-green-soft);
+  color: var(--lm-green-deep);
 }
 
 .sourceCard span,
 .sourceCard small {
-  color: #62756b;
+  color: var(--lm-text-muted);
 }
 
 .metrics {
@@ -78,17 +78,17 @@
 }
 
 .metrics span {
-  color: #667085;
+  color: var(--lm-text-secondary);
   font-size: 0.86rem;
 }
 
 .metrics strong {
-  color: #132a3a;
+  color: var(--lm-text);
   font-size: 1.45rem;
 }
 
 .safeMetric strong {
-  color: #226b4f;
+  color: var(--lm-green-deep);
 }
 
 .notice,
@@ -97,7 +97,7 @@
 }
 
 .notice {
-  border-inline-start: 4px solid #2f7a5d;
+  border-inline-start: 4px solid var(--lm-green-deep);
 }
 
 .panel {
@@ -118,7 +118,7 @@
 }
 
 .panel > header span {
-  color: #667085;
+  color: var(--lm-text-secondary);
   font-size: 0.82rem;
 }
 
@@ -132,7 +132,7 @@
 .releaseForm label {
   display: grid;
   gap: 7px;
-  color: #344054;
+  color: var(--lm-text-secondary);
   font-size: 0.86rem;
 }
 
@@ -141,11 +141,11 @@
 .form select,
 .releaseForm input {
   width: 100%;
-  border: 1px solid #d7ded9;
+  border: 1px solid var(--lm-border-strong);
   border-radius: 12px;
-  background: #fff;
+  background: var(--lm-surface-raised);
   padding: 10px 12px;
-  color: #132a3a;
+  color: var(--lm-text);
   font: inherit;
 }
 
@@ -163,11 +163,22 @@
 .releaseForm button {
   border: 0;
   border-radius: 12px;
-  background: #246b50;
-  color: #fff;
+  background: var(--lm-green-deep);
+  color: var(--lm-surface-raised);
   padding: 10px 16px;
   font: inherit;
+  min-height: 44px;
   cursor: pointer;
+}
+
+.form input:focus-visible,
+.form textarea:focus-visible,
+.form select:focus-visible,
+.releaseForm input:focus-visible,
+.formFooter button:focus-visible,
+.releaseForm button:focus-visible {
+  outline: none;
+  box-shadow: var(--lm-focus);
 }
 
 .formFooter button:disabled,
@@ -177,7 +188,7 @@
 }
 
 .formFooter span {
-  color: #667085;
+  color: var(--lm-text-secondary);
   font-size: 0.8rem;
 }
 
@@ -185,20 +196,20 @@
   margin: 0;
   border-radius: 10px;
   padding: 9px 12px;
-  background: #f5f6f4;
-  color: #44524a;
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-secondary);
 }
 
 .actionMessage[data-status="invalid"],
 .actionMessage[data-status="conflict"] {
-  background: #fff7e8;
-  color: #8a5b00;
+  background: var(--lm-orange-soft);
+  color: var(--lm-orange);
 }
 
 .actionMessage[data-status="forbidden"],
 .actionMessage[data-status="unavailable"] {
-  background: #fff1f1;
-  color: #9a3737;
+  background: color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised));
+  color: var(--lm-danger);
 }
 
 .tableWrap {
@@ -213,14 +224,14 @@
 
 .tableWrap th,
 .tableWrap td {
-  border-bottom: 1px solid #edf0ed;
+  border-bottom: 1px solid var(--lm-border);
   padding: 12px;
   text-align: right;
   vertical-align: top;
 }
 
 .tableWrap th {
-  color: #667085;
+  color: var(--lm-text-secondary);
   font-size: 0.78rem;
 }
 
@@ -231,12 +242,12 @@
 
 .tableWrap td small {
   margin-top: 4px;
-  color: #78867e;
+  color: var(--lm-text-muted);
 }
 
 .emptyCell,
 .empty {
-  color: #667085;
+  color: var(--lm-text-secondary);
   text-align: center;
   padding: 28px;
 }
@@ -254,21 +265,21 @@
 .holdCard header code {
   display: block;
   margin-top: 5px;
-  color: #78867e;
+  color: var(--lm-text-muted);
   font-size: 0.72rem;
   overflow-wrap: anywhere;
 }
 
 .holdCard header > span {
   border-radius: 999px;
-  background: #f1f3f1;
+  background: var(--lm-surface-soft);
   padding: 5px 9px;
   font-size: 0.76rem;
 }
 
 .holdCard header > span[data-active="true"] {
-  background: #e6f4eb;
-  color: #226b4f;
+  background: var(--lm-green-soft);
+  color: var(--lm-green-deep);
 }
 
 .holdCard dl {
@@ -279,13 +290,13 @@
 }
 
 .holdCard dt {
-  color: #667085;
+  color: var(--lm-text-secondary);
   font-size: 0.76rem;
 }
 
 .holdCard dd {
   margin: 4px 0 0;
-  color: #344054;
+  color: var(--lm-text-secondary);
   overflow-wrap: anywhere;
 }
 
