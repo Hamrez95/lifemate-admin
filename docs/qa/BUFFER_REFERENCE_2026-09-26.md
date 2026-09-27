@@ -89,3 +89,9 @@ UI never presents a fabricated channel connection or campaign result while data 
 Security and Relationships now expose complete route-level loading and retryable error boundaries. The
 shared shell stays stable while RBAC and relationship data load or recover; no role, permission,
 relationship, consent or access-grant state is fabricated when the canonical source is unavailable.
+
+## ADM-UX-05 Operations/CocoonMate route-state wave
+
+Operations, CocoonMate content, readiness, and release workspaces now expose explicit loading and
+retryable error boundaries. The shared Buffer-inspired shell remains stable while operational data
+loads or recovers; no deployment, content, readiness, rollout, or adoption state is fabricated.
