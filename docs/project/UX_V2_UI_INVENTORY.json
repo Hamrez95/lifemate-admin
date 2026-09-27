@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-27T21:30:49.693Z",
+  "generatedAt": "2026-09-27T21:32:15.197Z",
   "scope": [
     "app",
     "src"
@@ -9,7 +9,7 @@
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
-    "rawColorLiterals": 653
+    "rawColorLiterals": 615
   },
   "rawColorHotspots": [
     {
@@ -23,10 +23,6 @@
     {
       "file": "app/commerce/transactions/transactions.module.css",
       "count": 40
-    },
-    {
-      "file": "app/security/roles/[roleCode]/role-detail.module.css",
-      "count": 38
     },
     {
       "file": "app/security/retention/retention.module.css",
