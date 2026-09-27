@@ -84,7 +84,6 @@ Marketing overview and channel management now expose explicit loading and retrya
 boundaries. Existing provider capability, permission and unavailable states remain truthful; the
 UI never presents a fabricated channel connection or campaign result while data is pending.
 
-
 ## ADM-UX-05 Security/Relationships route-state wave
 
 Security and Relationships now expose complete route-level loading and retryable error boundaries. The
