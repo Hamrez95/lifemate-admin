@@ -11,15 +11,19 @@
   --lm-radius-sm: 10px;
   --lm-radius-md: 16px;
   --lm-radius-lg: 22px;
+  --lm-shadow-sm: 0 1px 2px rgb(21 34 56 / 6%);
   --lm-shadow: 0 10px 28px rgb(34 48 68 / 5%);
   --lm-sidebar-width: 242px;
+  --lm-sidebar-collapsed-width: 84px;
   --lm-canvas: #f7f8f6;
   --lm-surface: #fffefa;
   --lm-surface-raised: #ffffff;
   --lm-surface-subtle: #f4f2ed;
+  --lm-surface-hover: #eef5f0;
   --lm-text-primary: #152238;
   --lm-text-secondary: #435065;
   --lm-text-muted: #596478;
+  --lm-text-subtle: #7b8794;
   --lm-text-inverse: #ffffff;
   --lm-border-default: #e5e0d7;
   --lm-border-strong: #d9d2c7;
@@ -34,9 +38,11 @@
   --lm-action-warning-subtle: #fff2e8;
   --lm-status-danger: #c63f4c;
   --lm-focus-ring: 0 0 0 3px rgb(52 120 246 / 32%);
+  --lm-sidebar-active-rail: #178f5c;
   /* Migration aliases: remove only after feature-route migration proves no consumer. */
   --lm-bg: var(--lm-canvas);
   --lm-surface-soft: var(--lm-surface-subtle);
+  --lm-surface-hover-soft: var(--lm-surface-hover);
   --lm-text: var(--lm-text-primary);
   --lm-border: var(--lm-border-default);
   --lm-green: var(--lm-action-primary);
@@ -59,9 +65,11 @@
   --lm-surface: #18211f;
   --lm-surface-raised: #1e2926;
   --lm-surface-subtle: #222e2a;
+  --lm-surface-hover: #293a34;
   --lm-text-primary: #edf5f0;
   --lm-text-secondary: #c1cdc6;
   --lm-text-muted: #a2b0a8;
+  --lm-text-subtle: #819188;
   --lm-text-inverse: #13201a;
   --lm-border-default: #33443d;
   --lm-border-strong: #4a5b53;
@@ -76,6 +84,7 @@
   --lm-action-warning-subtle: #49311d;
   --lm-status-danger: #ff8891;
   --lm-focus-ring: 0 0 0 3px rgb(123 168 255 / 52%);
+  --lm-sidebar-active-rail: #70dfa2;
 }
 
 [dir="rtl"] {
