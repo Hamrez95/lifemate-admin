@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-27T18:21:51.417Z",
+  "generatedAt": "2026-09-27T18:59:18.000Z",
   "scope": [
     "app",
     "src"
   ],
   "counts": {
-    "sourceFiles": 500,
+    "sourceFiles": 503,
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
@@ -565,7 +565,10 @@
       "app/marketing/page.tsx",
       "app/profile/error.tsx",
       "app/profile/loading.tsx",
+      "app/relationships/error.tsx",
+      "app/relationships/loading.tsx",
       "app/security/audit/loading.tsx",
+      "app/security/error.tsx",
       "app/security/loading.tsx",
       "app/security/roles/[roleCode]/loading.tsx",
       "app/settings/error.tsx",

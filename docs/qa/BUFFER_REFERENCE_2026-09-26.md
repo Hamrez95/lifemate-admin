@@ -83,3 +83,9 @@ catalog price, access state or mutation success is invented while authoritative 
 Marketing overview and channel management now expose explicit loading and retryable error
 boundaries. Existing provider capability, permission and unavailable states remain truthful; the
 UI never presents a fabricated channel connection or campaign result while data is pending.
+
+## ADM-UX-05 Security/Relationships route-state wave
+
+Security and Relationships now expose complete route-level loading and retryable error boundaries. The
+shared shell stays stable while RBAC and relationship data load or recover; no role, permission,
+relationship, consent or access-grant state is fabricated when the canonical source is unavailable.
