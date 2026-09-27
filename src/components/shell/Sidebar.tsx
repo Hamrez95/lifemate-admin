@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 import { useAdminSession } from "@/src/components/auth/AdminSessionProvider";
 import { LifeMateLogo } from "@/src/components/brand/LifeMateLogo";
@@ -22,6 +23,7 @@ const workspaceGroups = [
 export function Sidebar({ activeSlug }: SidebarProps) {
   const admin = useAdminSession();
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
   const routeActiveSlug =
     pathname === "/"
       ? ""
@@ -137,9 +139,23 @@ export function Sidebar({ activeSlug }: SidebarProps) {
   }
 
   return (
-    <aside className="sidebar" aria-label="ناوبری اصلی Command Center">
+    <aside
+      className={`sidebar${collapsed ? " sidebar--collapsed" : ""}`}
+      aria-label="ناوبری اصلی Command Center"
+    >
       <div className="sidebar__brand">
-        <LifeMateLogo />
+        <div className="sidebar__brand-row">
+          <LifeMateLogo />
+          <button
+            className="sidebar__collapse-button"
+            type="button"
+            onClick={() => setCollapsed((value) => !value)}
+            aria-label={collapsed ? "باز کردن نوار کناری" : "جمع کردن نوار کناری"}
+            aria-expanded={!collapsed}
+          >
+            <span aria-hidden="true">{collapsed ? "→" : "←"}</span>
+          </button>
+        </div>
         <div className="sidebar__workspace-switcher" aria-label="محیط فعال">
           <span>محیط فعال</span>
           <strong>LifeMate Command Center</strong>
