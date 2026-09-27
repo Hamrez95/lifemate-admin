@@ -77,3 +77,9 @@ the route shell does not present guessed conversation or customer data while a r
 Commerce overview and catalog now expose explicit loading and retryable error boundaries. The
 workspace keeps subscription, entitlement and Core-dependent unavailable states truthful; no
 catalog price, access state or mutation success is invented while authoritative data is loading.
+
+## ADM-UX-05 Marketing overview/channels route-state wave
+
+Marketing overview and channel management now expose explicit loading and retryable error
+boundaries. Existing provider capability, permission and unavailable states remain truthful; the
+UI never presents a fabricated channel connection or campaign result while data is pending.
