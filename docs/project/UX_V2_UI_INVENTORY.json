@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-27T21:07:38.000Z",
+  "generatedAt": "2026-09-27T21:19:51.555Z",
   "scope": [
     "app",
     "src"
@@ -9,13 +9,9 @@
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
-    "rawColorLiterals": 915
+    "rawColorLiterals": 831
   },
   "rawColorHotspots": [
-    {
-      "file": "app/security/security.module.css",
-      "count": 84
-    },
     {
       "file": "app/support/[ticketId]/ticket-detail.module.css",
       "count": 77

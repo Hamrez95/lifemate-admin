@@ -11,10 +11,10 @@
 .boundaryBanner,
 .matrixPanel,
 .roleCard {
-  border: 1px solid var(--line, #e8e2d8);
+  border: 1px solid var(--line, var(--lm-border));
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 12px 38px rgba(65, 54, 44, 0.06);
+  background: var(--lm-surface-raised);
+  box-shadow: var(--lm-shadow);
 }
 
 .hero {
@@ -24,9 +24,9 @@
   gap: 1.2rem;
   padding: 1.25rem 1.4rem;
   background:
-    radial-gradient(circle at 12% 20%, rgba(255, 190, 120, 0.13), transparent 32%),
-    radial-gradient(circle at 88% 22%, rgba(149, 169, 235, 0.14), transparent 34%),
-    rgba(255, 255, 255, 0.96);
+    radial-gradient(circle at 12% 20%, var(--lm-orange-soft), transparent 32%),
+    radial-gradient(circle at 88% 22%, var(--lm-blue-soft), transparent 34%),
+    var(--lm-surface-raised);
 }
 
 .hero h2,
@@ -41,7 +41,7 @@
 .filterSummary,
 .roleCard p {
   margin: 0;
-  color: #6e6963;
+  color: var(--lm-text-secondary);
   line-height: 1.8;
 }
 
@@ -50,19 +50,19 @@
   display: grid;
   gap: 0.25rem;
   padding: 0.85rem 1rem;
-  border: 1px solid #ede4d7;
+  border: 1px solid var(--lm-border);
   border-radius: 16px;
-  background: #fbf8f3;
+  background: var(--lm-surface-soft);
 }
 
 .sourceCard span,
 .sourceCard small {
-  color: #787168;
+  color: var(--lm-text-muted);
   font-size: 0.78rem;
 }
 
 .sourceCard strong {
-  color: #34302c;
+  color: var(--lm-text);
 }
 
 .metricGrid {
@@ -80,7 +80,7 @@
 
 .metricCard > span,
 .metricCard > small {
-  color: #77716a;
+  color: var(--lm-text-muted);
   font-size: 0.78rem;
 }
 
@@ -88,7 +88,7 @@
   display: block;
   margin: 0.8rem 0 0.35rem;
   font-size: clamp(1.8rem, 4vw, 2.45rem);
-  color: #302d29;
+  color: var(--lm-text);
 }
 
 .filters {
@@ -108,7 +108,7 @@
 
 .searchField label,
 .filterField label {
-  color: #625d57;
+  color: var(--lm-text-secondary);
   font-size: 0.78rem;
   font-weight: 700;
 }
@@ -117,10 +117,10 @@
 .filterField select {
   width: 100%;
   min-height: 42px;
-  border: 1px solid #ddd5ca;
+  border: 1px solid var(--lm-border-strong);
   border-radius: 12px;
-  background: #fff;
-  color: #332f2a;
+  background: var(--lm-surface-raised);
+  color: var(--lm-text);
   padding: 0.45rem 0.7rem;
   font: inherit;
 }
@@ -147,16 +147,16 @@
 }
 
 .filterActions button {
-  border: 1px solid #71451d;
-  background: #71451d;
-  color: #fff;
+  border: 1px solid var(--lm-green-deep);
+  background: var(--lm-green-deep);
+  color: var(--lm-text-inverse);
   cursor: pointer;
 }
 
 .filterActions a {
-  border: 1px solid #ded6cb;
-  background: #faf7f1;
-  color: #514b44;
+  border: 1px solid var(--lm-border-strong);
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-secondary);
 }
 
 .searchField input:focus-visible,
@@ -164,8 +164,8 @@
 .filterActions button:focus-visible,
 .filterActions a:focus-visible,
 .tableRegion:focus-visible {
-  outline: 3px solid rgba(90, 104, 214, 0.3);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--lm-focus);
 }
 
 .stateBanner,
@@ -177,8 +177,8 @@
 }
 
 .stateBanner {
-  background: #fffaf0;
-  border-color: #f1dfb3;
+  background: var(--lm-orange-soft);
+  border-color: var(--lm-border-strong);
 }
 
 .stateBanner > span,
@@ -193,24 +193,24 @@
 }
 
 .stateBanner > span {
-  background: #ffe9b8;
-  color: #805f15;
+  background: var(--lm-orange-soft);
+  color: var(--lm-orange);
 }
 
 .boundaryBanner {
-  background: linear-gradient(145deg, #fff9f4, #faf6ff);
-  border-color: #ead8cc;
+  background: linear-gradient(145deg, var(--lm-orange-soft), var(--lm-violet-soft));
+  border-color: var(--lm-border-strong);
 }
 
 .boundaryIcon {
-  background: #f2e2d4;
-  color: #704424;
+  background: var(--lm-orange-soft);
+  color: var(--lm-orange);
 }
 
 .boundaryBanner small {
   display: block;
   margin-top: 0.35rem;
-  color: #7a736c;
+  color: var(--lm-text-muted);
   line-height: 1.65;
 }
 
@@ -231,10 +231,10 @@
   min-height: 30px;
   align-items: center;
   padding: 0.25rem 0.7rem;
-  border: 1px solid #e6d8c9;
+  border: 1px solid var(--lm-border);
   border-radius: 999px;
-  background: #fbf6f0;
-  color: #745334;
+  background: var(--lm-orange-soft);
+  color: var(--lm-text-secondary);
   font-size: 0.76rem;
   font-weight: 800;
 }
@@ -246,9 +246,9 @@
   max-height: min(68vh, 760px);
   overflow: auto;
   margin-top: 0.9rem;
-  border: 1px solid #eee6dc;
+  border: 1px solid var(--lm-border);
   border-radius: 16px;
-  background: #fff;
+  background: var(--lm-surface-raised);
   overscroll-behavior: contain;
 }
 
@@ -262,18 +262,18 @@
 
 .matrixTable th,
 .matrixTable td {
-  border-inline-end: 1px solid #eee9e2;
-  border-block-end: 1px solid #eee9e2;
+  border-inline-end: 1px solid var(--lm-border);
+  border-block-end: 1px solid var(--lm-border);
   padding: 0.7rem 0.65rem;
   vertical-align: middle;
-  background: #fff;
+  background: var(--lm-surface-raised);
 }
 
 .matrixTable thead th {
   position: sticky;
   inset-block-start: 0;
   z-index: 5;
-  background: #f9f6f1;
+  background: var(--lm-surface-soft);
 }
 
 .permissionHeader,
@@ -285,16 +285,16 @@
   inset-inline-start: 0;
   z-index: 4;
   text-align: start;
-  box-shadow: -8px 0 16px rgba(70, 61, 51, 0.04);
+  box-shadow: var(--lm-shadow-sm);
 }
 
 .permissionHeader {
   z-index: 8 !important;
-  background: #f6f1ea !important;
+  background: var(--lm-surface-soft) !important;
 }
 
 .permissionCell {
-  background: #fffdfa !important;
+  background: var(--lm-surface) !important;
 }
 
 .roleHeader {
@@ -311,14 +311,14 @@
 
 .roleHeader span {
   margin-top: 0.18rem;
-  color: #7e776f;
+  color: var(--lm-text-subtle);
   font-size: 0.7rem;
   font-weight: 500;
 }
 
 .roleHeader em {
   margin-top: 0.25rem;
-  color: #8a4e45;
+  color: var(--lm-danger);
   font-size: 0.68rem;
   font-style: normal;
 }
@@ -332,12 +332,12 @@
   direction: ltr;
   unicode-bidi: isolate;
   justify-self: start;
-  color: #332f2a;
+  color: var(--lm-text);
   font-size: 0.8rem;
 }
 
 .permissionCell > div > span {
-  color: #6f6962;
+  color: var(--lm-text-secondary);
   line-height: 1.55;
   font-size: 0.76rem;
 }
@@ -354,32 +354,32 @@
   align-items: center;
   min-height: 24px;
   padding: 0.1rem 0.48rem;
-  border: 1px solid #e8e0d6;
+  border: 1px solid var(--lm-border);
   border-radius: 999px;
-  background: #faf8f4;
-  color: #665f58;
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-secondary);
   font-size: 0.67rem;
   font-style: normal;
   font-weight: 700;
 }
 
 .permissionMeta span[data-risk="SENSITIVE"] {
-  background: #fff7e7;
-  border-color: #eed7a7;
-  color: #745713;
+  background: var(--lm-orange-soft);
+  border-color: var(--lm-border-strong);
+  color: var(--lm-orange);
 }
 
 .permissionMeta span[data-risk="HIGH_RISK"] {
-  background: #fff0eb;
-  border-color: #efc8ba;
-  color: #824132;
+  background: var(--lm-orange-soft);
+  border-color: var(--lm-border-strong);
+  color: var(--lm-danger);
 }
 
 .permissionMeta span[data-risk="ELEVATED"],
 .permissionMeta em {
-  background: #f8efff;
-  border-color: #dbc5ed;
-  color: #67417e;
+  background: var(--lm-violet-soft);
+  border-color: var(--lm-border-strong);
+  color: var(--lm-violet);
 }
 
 .assignmentCell {
@@ -395,34 +395,34 @@
   justify-content: center;
   padding: 0.2rem 0.48rem;
   border-radius: 999px;
-  border: 1px solid #e8e2da;
-  color: #7b756e;
-  background: #faf9f7;
+  border: 1px solid var(--lm-border);
+  color: var(--lm-text-muted);
+  background: var(--lm-surface-soft);
   font-size: 0.7rem;
   font-weight: 800;
 }
 
 .assignmentMark[data-state="effective"] {
-  border-color: #b8dfce;
-  background: #eefaf5;
-  color: #27644d;
+  border-color: var(--lm-border-strong);
+  background: var(--lm-green-soft);
+  color: var(--lm-green-deep);
 }
 
 .assignmentMark[data-state="blocked"] {
-  border-color: #efc7b8;
-  background: #fff1ec;
-  color: #7b4034;
+  border-color: var(--lm-border-strong);
+  background: var(--lm-orange-soft);
+  color: var(--lm-danger);
 }
 
 .assignmentMark[data-state="elevated"] {
-  border-color: #d8c2e8;
-  background: #f8f0ff;
-  color: #65427a;
+  border-color: var(--lm-border-strong);
+  background: var(--lm-violet-soft);
+  color: var(--lm-violet);
 }
 
 .matrixTable tbody tr[data-elevated="true"] .permissionCell,
 .matrixTable tbody tr[data-elevated="true"] td {
-  background: #fdf9ff;
+  background: var(--lm-violet-soft);
 }
 
 .footnote {
@@ -453,7 +453,7 @@
 }
 
 .roleCard header div > span {
-  color: #7a746d;
+  color: var(--lm-text-muted);
   font-size: 0.75rem;
 }
 
@@ -462,18 +462,18 @@
   min-height: 26px;
   align-items: center;
   padding: 0.12rem 0.5rem;
-  border: 1px solid #cce3d8;
+  border: 1px solid var(--lm-border-strong);
   border-radius: 999px;
-  background: #f2fbf7;
-  color: #32634f;
+  background: var(--lm-green-soft);
+  color: var(--lm-green-deep);
   font-size: 0.68rem;
   font-weight: 800;
 }
 
 .roleCard header > span[data-status="Disabled"] {
-  border-color: #edcbc2;
-  background: #fff3ef;
-  color: #7b4438;
+  border-color: var(--lm-border-strong);
+  background: var(--lm-orange-soft);
+  color: var(--lm-danger);
 }
 
 .roleCard p {
@@ -491,7 +491,7 @@
 .roleCard li {
   direction: ltr;
   text-align: start;
-  color: #534e48;
+  color: var(--lm-text-secondary);
   font-size: 0.75rem;
   overflow-wrap: anywhere;
 }
@@ -499,7 +499,7 @@
 .roleCard small {
   display: block;
   margin-top: 0.55rem;
-  color: #77716a;
+  color: var(--lm-text-muted);
 }
 
 .filterSummary {

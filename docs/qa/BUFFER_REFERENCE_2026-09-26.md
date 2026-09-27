@@ -103,3 +103,7 @@ copying Buffer branding or assets: a calmer persistent sidebar, explicit active-
 accessible collapse control, readable mobile labels, semantic interaction tokens, and 44px touch
 targets. The information architecture remains LifeMate-specific and works in Persian RTL and English
 LTR; dark mode and reduced-motion behavior remain first-class presentation modes.
+
+## ADM-UX-05 Security semantic-surface wave
+
+The RBAC workspace now consumes the shared semantic surface, border, focus, shadow and status tokens across its desktop matrix and mobile role cards. The migration keeps the existing permission semantics, sticky matrix behavior, responsive mobile fallback and reduced-motion guardrail while making light and dark presentation consistent with the shared shell.
