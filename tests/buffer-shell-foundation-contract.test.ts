@@ -18,7 +18,7 @@ describe("ADM-UX-05 Buffer-inspired shell foundation", () => {
     expect(sidebar).toContain("باز کردن نوار کناری");
     expect(globals).toContain(".sidebar--collapsed");
     expect(globals).toContain(".app-shell:has(.sidebar--collapsed)");
-    expect(globals).toContain(".nav-item[data-active="true"]::before");
+    expect(globals).toContain('.nav-item[data-active="true"]::before');
     expect(globals).toContain(".nav-item > span:not(.nav-item__symbol)");
     expect(tokens).toContain("--lm-sidebar-collapsed-width");
     expect(tokens).toContain("--lm-surface-hover");
