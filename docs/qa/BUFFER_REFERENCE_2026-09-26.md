@@ -111,3 +111,7 @@ The RBAC workspace now consumes the shared semantic surface, border, focus, shad
 ## ADM-UX-05 Support ticket semantic-surface wave
 
 The ticket detail workspace now uses the shared semantic surface, border, focus, shadow and status tokens across the hero, operation cards, feedback states and timeline. Existing SLA/priority semantics, operator actions, timeline readability, responsive stacking and reduced-motion behavior remain unchanged while light and dark presentation now follows the shared shell.
+
+## ADM-UX-05 User action semantic-surface wave
+
+The User360 action panel and confirmation dialog now consume shared semantic tokens for destructive and restorative actions, overlays, form focus, feedback and responsive stacking. Authorization, confirmation flow, reason capture and existing disabled states remain unchanged; only the visual system is centralized for a calmer, theme-safe operator experience.
