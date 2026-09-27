@@ -13,9 +13,9 @@
   border: 1px solid var(--lm-border);
   border-radius: 28px;
   background:
-    radial-gradient(circle at 8% 12%, rgba(52, 120, 246, 0.12), transparent 31%),
-    radial-gradient(circle at 94% 92%, rgba(23, 173, 104, 0.13), transparent 33%),
-    linear-gradient(135deg, #fffdf9, #f8fbf8 58%, #f3f6ff);
+    radial-gradient(circle at 8% 12%, var(--lm-blue-soft), transparent 31%),
+    radial-gradient(circle at 94% 92%, var(--lm-green-soft), transparent 33%),
+    linear-gradient(135deg, var(--lm-surface), var(--lm-green-soft) 58%, var(--lm-blue-soft));
   padding: 30px;
   box-shadow: var(--lm-shadow);
 }
@@ -25,7 +25,7 @@
   inset: -78px auto auto -72px;
   width: 190px;
   height: 190px;
-  border: 24px solid rgba(118, 87, 232, 0.05);
+  border: 24px solid var(--lm-violet-soft);
   border-radius: 999px;
   content: "";
 }
@@ -80,7 +80,7 @@
 
 .backLink {
   border: 1px solid var(--lm-border-strong);
-  background: rgba(255, 255, 255, 0.76);
+  background: var(--lm-surface-raised);
   color: var(--lm-text);
   text-decoration: none;
   transition:
@@ -91,7 +91,7 @@
 
 .backLink:hover {
   transform: translateY(-1px);
-  border-color: rgba(23, 173, 104, 0.45);
+  border-color: var(--lm-green);
 }
 
 .backLink:focus-visible,
@@ -105,7 +105,7 @@
   direction: ltr;
   unicode-bidi: isolate;
   background: var(--lm-blue-soft);
-  color: #285fb7;
+  color: var(--lm-blue);
 }
 
 .heroState {
@@ -115,11 +115,11 @@
   min-height: 190px;
   align-content: center;
   justify-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--lm-surface-raised);
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--lm-surface-raised);
   padding: 20px;
-  box-shadow: 0 14px 35px rgba(21, 34, 56, 0.06);
+  box-shadow: var(--lm-shadow);
   text-align: center;
   backdrop-filter: blur(8px);
 }
@@ -144,19 +144,19 @@
 
 .heroState strong[data-status="Pending"] {
   background: var(--lm-orange-soft);
-  color: #a75a18;
+  color: var(--lm-orange);
 }
 
 .heroState strong[data-status="Failed"],
 .heroState strong[data-status="Chargeback"] {
-  background: #fff0f1;
-  color: #b9383e;
+  background: color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised));
+  color: var(--lm-danger);
 }
 
 .heroState strong[data-status="Cancelled"],
 .heroState strong[data-status="Refunded"] {
   background: var(--lm-violet-soft);
-  color: #6446ce;
+  color: var(--lm-violet);
 }
 
 .heroState small {
@@ -175,7 +175,7 @@
   align-items: center;
   border: 1px solid var(--lm-border);
   border-radius: 16px;
-  background: rgba(255, 253, 249, 0.9);
+  background: var(--lm-surface);
   padding: 11px 13px;
   color: var(--lm-text-muted);
   font-size: 0.76rem;
@@ -211,7 +211,7 @@
   border-radius: 18px;
   background: var(--lm-surface);
   padding: 15px;
-  box-shadow: 0 7px 20px rgba(21, 34, 56, 0.03);
+  box-shadow: var(--lm-shadow-sm);
 }
 
 .factGrid span {
@@ -241,17 +241,17 @@
   border-radius: 23px;
   background: var(--lm-surface);
   padding: 21px;
-  box-shadow: 0 8px 25px rgba(21, 34, 56, 0.035);
+  box-shadow: var(--lm-shadow);
 }
 
 .contextCard[data-kind="order"] {
   background:
-    linear-gradient(145deg, rgba(255, 242, 232, 0.58), transparent 48%), var(--lm-surface);
+    linear-gradient(145deg, var(--lm-orange-soft), transparent 48%), var(--lm-surface);
 }
 
 .contextCard[data-kind="subscription"] {
   background:
-    linear-gradient(145deg, rgba(236, 246, 255, 0.68), transparent 50%), var(--lm-surface);
+    linear-gradient(145deg, var(--lm-blue-soft), transparent 50%), var(--lm-surface);
 }
 
 .contextCard h3,
@@ -326,7 +326,7 @@
 .countBadge {
   min-height: 34px;
   background: var(--lm-blue-soft);
-  color: #285fb7;
+  color: var(--lm-blue);
 }
 
 .timeline {
@@ -407,8 +407,8 @@
 
 .timelineTopline span[data-state="Duplicate"],
 .timelineTopline span[data-state="OutOfOrder"] {
-  background: #fff0f1;
-  color: #b9383e;
+  background: color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised));
+  color: var(--lm-danger);
 }
 
 .timeline p {
@@ -456,7 +456,7 @@
   border-radius: 999px;
   background: var(--lm-orange-soft);
   padding: 4px 8px;
-  color: #9b561c;
+  color: var(--lm-orange);
   font-size: 0.69rem;
   font-weight: 800;
 }
@@ -469,8 +469,8 @@
 
 .refundTopline span[data-refund-status="Rejected"],
 .refundTopline span[data-refund-status="Failed"] {
-  background: #fff0f1;
-  color: #b9383e;
+  background: color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised));
+  color: var(--lm-danger);
 }
 
 .refundTopline time,
@@ -505,18 +505,18 @@
 .permissionBadge {
   min-height: 34px;
   background: var(--lm-violet-soft);
-  color: #6144c6;
+  color: var(--lm-violet);
 }
 
 .riskBadge {
   min-height: 34px;
-  background: #fff0f1;
-  color: #b9383e;
+  background: color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised));
+  color: var(--lm-danger);
 }
 
 .refundPanel {
-  border-color: rgba(234, 81, 87, 0.18);
-  background: linear-gradient(135deg, #fffdf9, #fff7f5);
+  border-color: var(--lm-danger);
+  background: linear-gradient(135deg, var(--lm-surface), var(--lm-orange-soft));
 }
 
 .refundPanel[data-available="false"] {
@@ -543,7 +543,7 @@
   resize: vertical;
   border: 1px solid var(--lm-border-strong);
   border-radius: 15px;
-  background: #fff;
+  background: var(--lm-surface-raised);
   padding: 12px 13px;
   color: var(--lm-text);
   font: inherit;
@@ -563,11 +563,11 @@
 }
 
 .safetyNote {
-  border: 1px solid #f2d8b9;
+  border: 1px solid var(--lm-border-strong);
   border-radius: 14px;
   background: var(--lm-orange-soft);
   padding: 11px 12px;
-  color: #85501f;
+  color: var(--lm-orange);
   font-size: 0.75rem;
   line-height: 1.7;
 }
@@ -586,17 +586,17 @@
 .actionFeedback[data-status="forbidden"],
 .actionFeedback[data-status="conflict"],
 .actionFeedback[data-status="unavailable"] {
-  color: #a7393f;
+  color: var(--lm-danger);
 }
 
 .refundButton {
   width: fit-content;
   min-height: 44px;
-  border: 1px solid rgba(185, 56, 62, 0.18);
+  border: 1px solid var(--lm-danger);
   border-radius: 13px;
-  background: #fff0f1;
+  background: color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised));
   padding: 10px 16px;
-  color: #aa343a;
+  color: var(--lm-danger);
   cursor: pointer;
   font: inherit;
   font-size: 0.79rem;
@@ -609,7 +609,7 @@
 
 .refundButton:hover:not(:disabled) {
   transform: translateY(-1px);
-  background: #ffe8ea;
+  background: color-mix(in srgb, var(--lm-danger) 14%, var(--lm-surface-raised));
 }
 
 .refundButton:disabled {
@@ -619,7 +619,7 @@
 
 .auditPanel {
   background:
-    linear-gradient(145deg, rgba(242, 238, 255, 0.52), transparent 52%), var(--lm-surface);
+    linear-gradient(145deg, var(--lm-violet-soft), transparent 52%), var(--lm-surface);
 }
 
 .auditList article > div > span[data-result="Succeeded"] {
@@ -629,8 +629,8 @@
 
 .auditList article > div > span[data-result="Denied"],
 .auditList article > div > span[data-result="Failed"] {
-  background: #fff0f1;
-  color: #b9383e;
+  background: color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised));
+  color: var(--lm-danger);
 }
 
 .auditList strong {
