@@ -2,7 +2,7 @@
   border: 1px solid var(--lm-border);
   border-radius: var(--lm-radius-md);
   background: var(--lm-surface-raised);
-  box-shadow: var(--lm-shadow);
+  box-shadow: var(--lm-shadow-sm);
   padding: var(--lm-space-6);
 }
 .surface[data-density="compact"] {
@@ -70,7 +70,7 @@
 }
 .button {
   display: inline-flex;
-  min-height: 40px;
+  min-height: 44px;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--lm-border);
@@ -81,11 +81,27 @@
   font: inherit;
   font-weight: 700;
   cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+.button:hover:not(:disabled) {
+  border-color: var(--lm-border-strong);
+  background: var(--lm-surface-hover);
+}
+.button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 .button[data-variant="primary"] {
   border-color: var(--lm-green);
   background: var(--lm-green);
   color: var(--lm-text-inverse);
+}
+.button[data-variant="primary"]:hover:not(:disabled) {
+  border-color: var(--lm-green-deep);
+  background: var(--lm-green-deep);
 }
 .button[data-variant="danger"] {
   border-color: var(--lm-danger);
@@ -102,14 +118,18 @@
 }
 .iconButton {
   display: inline-grid;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   place-items: center;
   border: 1px solid var(--lm-border);
   border-radius: var(--lm-radius-sm);
   background: var(--lm-surface-raised);
   color: var(--lm-text);
   cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
 }
 .iconButton:hover:not(:disabled) {
   background: var(--lm-surface-soft);
@@ -129,7 +149,7 @@
   color: var(--lm-danger);
 }
 .input {
-  min-height: 42px;
+  min-height: 44px;
   width: 100%;
   border: 1px solid var(--lm-border);
   border-radius: var(--lm-radius-sm);
@@ -141,7 +161,7 @@
 .textarea,
 .select {
   width: 100%;
-  min-height: 42px;
+  min-height: 44px;
   border: 1px solid var(--lm-border);
   border-radius: var(--lm-radius-sm);
   background: var(--lm-surface-raised);
@@ -180,6 +200,7 @@
   color: var(--lm-text-muted);
   font-size: 12px;
   font-weight: 700;
+  min-height: 44px;
   padding-block: 10px 8px;
   padding-inline: 12px;
   text-decoration: none;
