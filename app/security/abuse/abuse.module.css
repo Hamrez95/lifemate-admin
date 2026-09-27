@@ -7,7 +7,7 @@
 .breadcrumbs {
   display: flex;
   gap: 8px;
-  color: #667085;
+  color: var(--lm-text-secondary);
   font-size: 0.86rem;
 }
 
@@ -21,10 +21,10 @@
 .unavailable,
 .metrics article,
 .ruleCard {
-  border: 1px solid rgba(15, 31, 47, 0.09);
+  border: 1px solid var(--lm-border);
   border-radius: 20px;
-  background: rgba(255, 253, 248, 0.94);
-  box-shadow: 0 14px 35px rgba(14, 30, 44, 0.05);
+  background: var(--lm-surface-raised);
+  box-shadow: var(--lm-shadow);
 }
 
 .hero {
@@ -37,13 +37,13 @@
 .hero h2,
 .panel h3 {
   margin: 4px 0 8px;
-  color: #132a3a;
+  color: var(--lm-text);
 }
 
 .hero p,
 .unavailable p {
   margin: 0;
-  color: #667085;
+  color: var(--lm-text-secondary);
   line-height: 1.85;
 }
 
@@ -53,8 +53,8 @@
   gap: 8px;
   border-radius: 16px;
   padding: 18px;
-  background: #f1f7f1;
-  color: #215d47;
+  background: var(--lm-green-soft);
+  color: var(--lm-green-deep);
 }
 
 .metrics {
@@ -70,12 +70,12 @@
 }
 
 .metrics span {
-  color: #667085;
+  color: var(--lm-text-secondary);
   font-size: 0.82rem;
 }
 
 .metrics strong {
-  color: #132a3a;
+  color: var(--lm-text);
   font-size: 1.35rem;
 }
 
@@ -102,7 +102,7 @@
 }
 
 .panel > header span {
-  color: #667085;
+  color: var(--lm-text-secondary);
   font-size: 0.8rem;
 }
 
@@ -116,7 +116,7 @@
 .retireForm {
   display: grid;
   gap: 7px;
-  color: #344054;
+  color: var(--lm-text-secondary);
   font-size: 0.84rem;
 }
 
@@ -125,11 +125,11 @@
 .form select,
 .retireForm input {
   width: 100%;
-  border: 1px solid #d7ded9;
+  border: 1px solid var(--lm-border-strong);
   border-radius: 12px;
-  background: #fff;
+  background: var(--lm-surface-raised);
   padding: 10px 12px;
-  color: #132a3a;
+  color: var(--lm-text);
   font: inherit;
 }
 
@@ -142,11 +142,22 @@
 .footer button,
 .retireForm button {
   border: 0;
+  min-height: 44px;
   border-radius: 12px;
-  background: #246b50;
-  color: #fff;
+  background: var(--lm-green-deep);
+  color: var(--lm-surface-raised);
   padding: 10px 15px;
   font: inherit;
+}
+
+.form input:focus-visible,
+.form textarea:focus-visible,
+.form select:focus-visible,
+.retireForm input:focus-visible,
+.footer button:focus-visible,
+.retireForm button:focus-visible {
+  outline: none;
+  box-shadow: var(--lm-focus);
 }
 
 .footer button:disabled,
@@ -156,7 +167,7 @@
 
 .footer span,
 .ruleShape {
-  color: #667085;
+  color: var(--lm-text-secondary);
   font-size: 0.8rem;
 }
 
@@ -164,19 +175,19 @@
   margin: 0;
   border-radius: 10px;
   padding: 9px 12px;
-  background: #f5f6f4;
+  background: var(--lm-surface-soft);
 }
 
 .message[data-status="invalid"],
 .message[data-status="conflict"] {
-  background: #fff7e8;
-  color: #8a5b00;
+  background: var(--lm-orange-soft);
+  color: var(--lm-orange);
 }
 
 .message[data-status="forbidden"],
 .message[data-status="unavailable"] {
-  background: #fff1f1;
-  color: #9a3737;
+  background: color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised));
+  color: var(--lm-danger);
 }
 
 .rules {
@@ -192,13 +203,13 @@
 .ruleCard header code {
   display: block;
   margin-top: 5px;
-  color: #78867e;
+  color: var(--lm-text-muted);
   font-size: 0.72rem;
 }
 
 .ruleCard header > span {
   border-radius: 999px;
-  background: #edf4ef;
+  background: var(--lm-green-soft);
   padding: 5px 9px;
   font-size: 0.76rem;
 }
@@ -211,13 +222,13 @@
 }
 
 .ruleCard dt {
-  color: #667085;
+  color: var(--lm-text-secondary);
   font-size: 0.74rem;
 }
 
 .ruleCard dd {
   margin: 4px 0 0;
-  color: #344054;
+  color: var(--lm-text-secondary);
 }
 
 .retireForm {
@@ -237,20 +248,20 @@
 
 .tableWrap th,
 .tableWrap td {
-  border-bottom: 1px solid #edf0ed;
+  border-bottom: 1px solid var(--lm-border);
   padding: 11px;
   text-align: right;
 }
 
 .tableWrap th {
-  color: #667085;
+  color: var(--lm-text-secondary);
   font-size: 0.78rem;
 }
 
 .empty,
 .emptyCell {
   padding: 26px;
-  color: #667085;
+  color: var(--lm-text-secondary);
   text-align: center;
 }
 
