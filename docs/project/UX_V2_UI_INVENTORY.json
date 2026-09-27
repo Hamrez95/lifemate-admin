@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-27T18:59:18.000Z",
+  "generatedAt": "2026-09-27T19:09:24.000Z",
   "scope": [
     "app",
     "src"
   ],
   "counts": {
-    "sourceFiles": 503,
+    "sourceFiles": 513,
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
@@ -563,6 +563,16 @@
       "app/marketing/error.tsx",
       "app/marketing/loading.tsx",
       "app/marketing/page.tsx",
+      "app/operations/cocoon/content/error.tsx",
+      "app/operations/cocoon/content/loading.tsx",
+      "app/operations/cocoon/error.tsx",
+      "app/operations/cocoon/loading.tsx",
+      "app/operations/cocoon/readiness/error.tsx",
+      "app/operations/cocoon/readiness/loading.tsx",
+      "app/operations/error.tsx",
+      "app/operations/loading.tsx",
+      "app/operations/releases/error.tsx",
+      "app/operations/releases/loading.tsx",
       "app/profile/error.tsx",
       "app/profile/loading.tsx",
       "app/relationships/error.tsx",
