@@ -127,3 +127,7 @@ The role detail workspace now consumes the shared semantic tokens for permission
 ## ADM-UX-05 Security retention semantic-surface wave
 
 The retention workspace now consumes shared semantic surfaces, status colors, focus treatment and 44px controls across its policy form, notices, holds and release actions. Existing retention truthfulness, unavailable/conflict/forbidden feedback, RTL table behavior and responsive stacking remain unchanged.
+
+## ADM-UX-05 Security audit semantic-surface wave
+
+The audit workspace now uses the shared semantic palette for filters, read-only/boundary states, result pills, table surfaces, pagination and focus feedback. Audit truthfulness, UTC hints, responsive table overflow and denied/failed distinctions remain unchanged.

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-27T21:33:54.405Z",
+  "generatedAt": "2026-09-27T21:35:16.298Z",
   "scope": [
     "app",
     "src"
@@ -9,7 +9,7 @@
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
-    "rawColorLiterals": 578
+    "rawColorLiterals": 544
   },
   "rawColorHotspots": [
     {
@@ -31,10 +31,6 @@
     {
       "file": "src/components/shell/notification-center.module.css",
       "count": 36
-    },
-    {
-      "file": "app/security/audit/audit.module.css",
-      "count": 34
     },
     {
       "file": "app/admin-auth-founder.css",
