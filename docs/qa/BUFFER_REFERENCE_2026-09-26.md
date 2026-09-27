@@ -135,3 +135,7 @@ The audit workspace now uses the shared semantic palette for filters, read-only/
 ## ADM-UX-05 Security abuse semantic-surface wave
 
 The abuse-rule workspace now uses shared semantic surfaces, status feedback, focus treatment and 44px retire controls. Existing rule lifecycle semantics, invalid/conflict/forbidden/unavailable messaging, responsive rule cards and table overflow remain unchanged.
+
+## ADM-UX-05 Commerce reference semantic-surface wave
+
+The Commerce reference workspace now consumes the shared semantic surfaces, accent states, focus ring and shadow tokens across the hero, tabs, dependency cards, metrics and unavailable panel. Its product-specific imagery, dependency semantics, responsive grids and reduced-motion behavior remain intact.
