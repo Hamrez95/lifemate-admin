@@ -107,3 +107,7 @@ LTR; dark mode and reduced-motion behavior remain first-class presentation modes
 ## ADM-UX-05 Security semantic-surface wave
 
 The RBAC workspace now consumes the shared semantic surface, border, focus, shadow and status tokens across its desktop matrix and mobile role cards. The migration keeps the existing permission semantics, sticky matrix behavior, responsive mobile fallback and reduced-motion guardrail while making light and dark presentation consistent with the shared shell.
+
+## ADM-UX-05 Support ticket semantic-surface wave
+
+The ticket detail workspace now uses the shared semantic surface, border, focus, shadow and status tokens across the hero, operation cards, feedback states and timeline. Existing SLA/priority semantics, operator actions, timeline readability, responsive stacking and reduced-motion behavior remain unchanged while light and dark presentation now follows the shared shell.
