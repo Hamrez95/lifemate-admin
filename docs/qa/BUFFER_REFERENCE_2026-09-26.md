@@ -58,3 +58,10 @@ The Funnel workspace now uses the canonical v2 semantic token vocabulary, includ
 surface, focus, shadow and accent tokens. Its existing canonical-only data semantics remain intact:
 unavailable and partial results are explicit, no conversion is inferred from unrelated KPIs, and
 the route now has explicit loading and retryable error boundaries.
+
+## ADM-UX-05 Users/User360 route-state wave
+
+The Users and User360 workspaces now expose explicit route-level loading and retryable error
+boundaries while preserving their existing permission checks, unavailable states and canonical
+Core data semantics. This keeps the shared shell responsive during directory/detail transitions
+without inventing placeholder user facts.
