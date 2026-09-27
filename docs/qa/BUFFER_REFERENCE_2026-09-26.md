@@ -131,3 +131,7 @@ The retention workspace now consumes shared semantic surfaces, status colors, fo
 ## ADM-UX-05 Security audit semantic-surface wave
 
 The audit workspace now uses the shared semantic palette for filters, read-only/boundary states, result pills, table surfaces, pagination and focus feedback. Audit truthfulness, UTC hints, responsive table overflow and denied/failed distinctions remain unchanged.
+
+## ADM-UX-05 Security abuse semantic-surface wave
+
+The abuse-rule workspace now uses shared semantic surfaces, status feedback, focus treatment and 44px retire controls. Existing rule lifecycle semantics, invalid/conflict/forbidden/unavailable messaging, responsive rule cards and table overflow remain unchanged.
