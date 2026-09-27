@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-27T18:14:47.001Z",
+  "generatedAt": "2026-09-27T18:21:51.417Z",
   "scope": [
     "app",
     "src"
   ],
   "counts": {
-    "sourceFiles": 496,
+    "sourceFiles": 500,
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
@@ -557,7 +557,11 @@
       "app/forbidden/page.tsx",
       "app/loading.tsx",
       "app/marketing/campaigns/loading.tsx",
+      "app/marketing/channels/error.tsx",
+      "app/marketing/channels/loading.tsx",
       "app/marketing/channels/page.tsx",
+      "app/marketing/error.tsx",
+      "app/marketing/loading.tsx",
       "app/marketing/page.tsx",
       "app/profile/error.tsx",
       "app/profile/loading.tsx",
