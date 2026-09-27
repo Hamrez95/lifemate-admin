@@ -119,3 +119,7 @@ The User360 action panel and confirmation dialog now consume shared semantic tok
 ## ADM-UX-05 Commerce transaction semantic-surface wave
 
 The transaction detail workspace now uses shared semantic surfaces for payment status, order/subscription context, refund controls, audit history and timeline states. The route keeps its RTL/LTR transaction identifiers, refund permission boundary, unavailable/empty states and responsive layouts while aligning focus and status treatment with the shared shell.
+
+## ADM-UX-05 Security role detail semantic-surface wave
+
+The role detail workspace now consumes the shared semantic tokens for permissions, risk/state pills, warning states, member tables and mobile member cards. Existing RBAC meaning, blocked/elevated labeling, provenance details and responsive table-to-card fallback remain intact while focus and theme behavior now match the shared shell.
