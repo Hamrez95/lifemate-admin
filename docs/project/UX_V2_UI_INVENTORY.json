@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-26T16:07:27.202Z",
+  "generatedAt": "2026-09-27T18:00:29.603Z",
   "scope": [
     "app",
     "src"
   ],
   "counts": {
-    "sourceFiles": 484,
+    "sourceFiles": 488,
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
@@ -562,7 +562,11 @@
       "app/security/roles/[roleCode]/loading.tsx",
       "app/settings/error.tsx",
       "app/settings/loading.tsx",
+      "app/users/[accountId]/error.tsx",
+      "app/users/[accountId]/loading.tsx",
       "app/users/[accountId]/page.tsx",
+      "app/users/error.tsx",
+      "app/users/loading.tsx",
       "src/components/admin-data-table/admin-page-state.tsx",
       "src/components/auth/AdminLoginFlow.tsx",
       "src/components/auth/AdminSessionProvider.tsx",
