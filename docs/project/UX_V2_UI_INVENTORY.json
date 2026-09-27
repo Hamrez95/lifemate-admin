@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-27T21:36:43.847Z",
+  "generatedAt": "2026-09-27T21:38:45.547Z",
   "scope": [
     "app",
     "src"
@@ -9,16 +9,12 @@
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
-    "rawColorLiterals": 514
+    "rawColorLiterals": 474
   },
   "rawColorHotspots": [
     {
       "file": "app/design-system.css",
       "count": 44
-    },
-    {
-      "file": "app/commerce/commerce-reference.module.css",
-      "count": 40
     },
     {
       "file": "app/commerce/transactions/transactions.module.css",
