@@ -95,3 +95,11 @@ relationship, consent or access-grant state is fabricated when the canonical sou
 Operations, CocoonMate content, readiness, and release workspaces now expose explicit loading and
 retryable error boundaries. The shared Buffer-inspired shell remains stable while operational data
 loads or recovers; no deployment, content, readiness, rollout, or adoption state is fabricated.
+
+## ADM-UX-05 Buffer-inspired shell foundation wave
+
+The shared LifeMate shell now adopts the useful parts of Buffer's refreshed navigation model without
+copying Buffer branding or assets: a calmer persistent sidebar, explicit active-route rail, a real
+accessible collapse control, readable mobile labels, semantic interaction tokens, and 44px touch
+targets. The information architecture remains LifeMate-specific and works in Persian RTL and English
+LTR; dark mode and reduced-motion behavior remain first-class presentation modes.
