@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-27T18:07:38.337Z",
+  "generatedAt": "2026-09-27T18:14:47.001Z",
   "scope": [
     "app",
     "src"
   ],
   "counts": {
-    "sourceFiles": 492,
+    "sourceFiles": 496,
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
@@ -537,6 +537,10 @@
       "app/api/admin/notifications/count/route.ts",
       "app/api/auth/workforce/route.ts",
       "app/commerce/catalog/actions.ts",
+      "app/commerce/catalog/error.tsx",
+      "app/commerce/catalog/loading.tsx",
+      "app/commerce/error.tsx",
+      "app/commerce/loading.tsx",
       "app/commerce/operations/PaymentOperationsControls.tsx",
       "app/commerce/operations/actions.ts",
       "app/commerce/promotions/[promotionId]/actions.ts",
