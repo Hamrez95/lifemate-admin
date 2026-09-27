@@ -65,3 +65,9 @@ The Users and User360 workspaces now expose explicit route-level loading and ret
 boundaries while preserving their existing permission checks, unavailable states and canonical
 Core data semantics. This keeps the shared shell responsive during directory/detail transitions
 without inventing placeholder user facts.
+
+## ADM-UX-05 Support queue/detail route-state wave
+
+The Support queue and ticket-detail workspaces now expose explicit loading and retryable error
+boundaries. Existing ticket permissions, unavailable states and operator actions remain canonical;
+the route shell does not present guessed conversation or customer data while a request is pending.
