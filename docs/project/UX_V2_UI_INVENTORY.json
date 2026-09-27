@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-27T18:00:29.603Z",
+  "generatedAt": "2026-09-27T18:07:38.337Z",
   "scope": [
     "app",
     "src"
   ],
   "counts": {
-    "sourceFiles": 488,
+    "sourceFiles": 492,
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
@@ -562,6 +562,10 @@
       "app/security/roles/[roleCode]/loading.tsx",
       "app/settings/error.tsx",
       "app/settings/loading.tsx",
+      "app/support/[ticketId]/error.tsx",
+      "app/support/[ticketId]/loading.tsx",
+      "app/support/error.tsx",
+      "app/support/loading.tsx",
       "app/users/[accountId]/error.tsx",
       "app/users/[accountId]/loading.tsx",
       "app/users/[accountId]/page.tsx",
