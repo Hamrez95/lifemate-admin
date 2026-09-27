@@ -115,3 +115,7 @@ The ticket detail workspace now uses the shared semantic surface, border, focus,
 ## ADM-UX-05 User action semantic-surface wave
 
 The User360 action panel and confirmation dialog now consume shared semantic tokens for destructive and restorative actions, overlays, form focus, feedback and responsive stacking. Authorization, confirmation flow, reason capture and existing disabled states remain unchanged; only the visual system is centralized for a calmer, theme-safe operator experience.
+
+## ADM-UX-05 Commerce transaction semantic-surface wave
+
+The transaction detail workspace now uses shared semantic surfaces for payment status, order/subscription context, refund controls, audit history and timeline states. The route keeps its RTL/LTR transaction identifiers, refund permission boundary, unavailable/empty states and responsive layouts while aligning focus and status treatment with the shared shell.
