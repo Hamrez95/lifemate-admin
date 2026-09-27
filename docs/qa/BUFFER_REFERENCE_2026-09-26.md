@@ -71,3 +71,9 @@ without inventing placeholder user facts.
 The Support queue and ticket-detail workspaces now expose explicit loading and retryable error
 boundaries. Existing ticket permissions, unavailable states and operator actions remain canonical;
 the route shell does not present guessed conversation or customer data while a request is pending.
+
+## ADM-UX-05 Commerce overview/catalog route-state wave
+
+Commerce overview and catalog now expose explicit loading and retryable error boundaries. The
+workspace keeps subscription, entitlement and Core-dependent unavailable states truthful; no
+catalog price, access state or mutation success is invented while authoritative data is loading.
