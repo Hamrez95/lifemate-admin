@@ -133,9 +133,9 @@
 }
 
 .dangerAction {
-  border-color: rgba(196, 58, 58, 0.35) !important;
-  background: rgba(196, 58, 58, 0.08) !important;
-  color: #a52e2e !important;
+  border-color: color-mix(in srgb, var(--lm-danger) 35%, var(--lm-border)) !important;
+  background: color-mix(in srgb, var(--lm-danger) 8%, var(--lm-surface-raised)) !important;
+  color: var(--lm-danger) !important;
 }
 
 .result {
@@ -150,13 +150,13 @@
 
 .result[data-status="success"],
 .result[data-status="preview"] {
-  border-color: rgba(23, 173, 104, 0.35);
+  border-color: var(--lm-border-strong);
 }
 
 .result[data-status="invalid"],
 .result[data-status="conflict"],
 .result[data-status="forbidden"] {
-  border-color: rgba(221, 139, 42, 0.4);
+  border-color: var(--lm-orange);
 }
 
 .previewGrid {
@@ -184,7 +184,7 @@
   direction: ltr;
   margin: 0.5rem 0 0;
   font-size: 0.72rem;
-  white-space: pre-wrap;
+  var(--lm-surface-raised)-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
@@ -199,7 +199,7 @@
   border: 0;
   border-radius: 0.75rem;
   background: var(--lm-blue);
-  color: white;
+  color: var(--lm-surface-raised);
   padding: 0.65rem 1rem;
   font: inherit;
   font-weight: 900;
