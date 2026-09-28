@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-28T10:35:30.807Z",
+  "generatedAt": "2026-09-28T10:37:32.565Z",
   "scope": [
     "app",
     "src"
@@ -9,68 +9,12 @@
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
-    "rawColorLiterals": 76
+    "rawColorLiterals": 44
   },
   "rawColorHotspots": [
     {
       "file": "app/design-system.css",
       "count": 44
-    },
-    {
-      "file": "app/users/[accountId]/user-privacy-reference.module.css",
-      "count": 6
-    },
-    {
-      "file": "app/commerce/entitlements/adjustments/adjustments.module.css",
-      "count": 5
-    },
-    {
-      "file": "app/marketing/content-studio/studio.module.css",
-      "count": 4
-    },
-    {
-      "file": "app/commerce/catalog/catalog-v2.module.css",
-      "count": 3
-    },
-    {
-      "file": "app/security/break-glass/break-glass.module.css",
-      "count": 3
-    },
-    {
-      "file": "app/security/elevated-health/elevated-health.module.css",
-      "count": 3
-    },
-    {
-      "file": "app/commerce/plans/catalog.module.css",
-      "count": 1
-    },
-    {
-      "file": "app/commerce/promotions/promotions.module.css",
-      "count": 1
-    },
-    {
-      "file": "app/marketing/media-inbox/media-inbox.module.css",
-      "count": 1
-    },
-    {
-      "file": "app/privacy/privacy.module.css",
-      "count": 1
-    },
-    {
-      "file": "app/security/staff/staff.module.css",
-      "count": 1
-    },
-    {
-      "file": "app/support/support.css",
-      "count": 1
-    },
-    {
-      "file": "app/users/[accountId]/product-version-context.module.css",
-      "count": 1
-    },
-    {
-      "file": "src/components/shell/global-command-palette.module.css",
-      "count": 1
     }
   ],
   "componentHitFiles": {
