@@ -151,3 +151,7 @@ The Commerce detail workspace now uses shared semantic surfaces for subscription
 ## ADM-UX-05 Notification center semantic-surface wave
 
 The shared notification center now uses semantic surfaces for the trigger, unread/critical/warning states, modal backdrop, source-state banners, alert cards and mobile bottom-sheet behavior. The bell target is 44px, keyboard focus remains explicit, and reduced-motion behavior is preserved.
+
+## ADM-UX-05 User detail semantic-surface wave
+
+The User360 detail workspace now consumes shared semantic surfaces for identity, status badges, sticky tabs, definition rows, relationship lists, and timeline cards. Phone/email and other identifiers remain LTR-isolated, loading shimmer respects reduced motion, and mobile tab/card stacking remains intact.
