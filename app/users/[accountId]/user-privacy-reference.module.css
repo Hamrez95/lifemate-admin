@@ -20,9 +20,9 @@
 .sensitiveAccess {
   display: grid;
   gap: 14px;
-  border: 1px solid rgba(238, 139, 49, 0.24);
+  border: 1px solid var(--lm-border-strong);
   border-radius: 17px;
-  background: linear-gradient(135deg, rgba(255, 247, 238, 0.92), rgba(255, 255, 255, 0.98));
+  background: linear-gradient(135deg, var(--lm-orange-soft), var(--lm-surface-raised));
   padding: 14px;
 }
 
@@ -53,7 +53,7 @@
   place-items: center;
   border-radius: 12px;
   background: var(--lm-orange-soft);
-  color: #9a5c1d;
+  color: var(--lm-orange);
   font-size: 18px;
 }
 
@@ -82,8 +82,8 @@
   max-width: 100%;
   border: 1px solid var(--lm-border-strong);
   border-radius: 12px;
-  background: #ecebe7;
-  color: #77766f;
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
   padding: 8px 14px;
   font: inherit;
   font-size: 11px;
