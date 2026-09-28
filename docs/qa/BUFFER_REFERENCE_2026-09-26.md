@@ -183,3 +183,7 @@ The shared Security context header now uses semantic surfaces for its hero treat
 ## ADM-UX-05 Commerce operations semantic-surface wave
 
 Commerce payment operations now consume the shared semantic surfaces for panels, inputs, action controls, focus states and success/conflict/forbidden feedback. Confirmation requirements, permission boundaries and unavailable truthfulness remain unchanged; only the presentation system is centralized.
+
+## ADM-UX-05 Finance scenario semantic-surface wave
+
+The Finance scenario form now consumes shared semantic surfaces for labels, fields, disabled states, action controls and keyboard focus. Actual/forecast scenario semantics and mutation behavior remain unchanged; the form is simply brought into the same accessible, theme-safe visual system.
