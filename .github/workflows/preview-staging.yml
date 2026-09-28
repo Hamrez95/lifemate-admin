@@ -62,6 +62,24 @@ jobs:
       - name: Verify browser secret boundary
         run: npm run security:check
 
+      - name: Verify formatting
+        run: npm run format:check
+
+      - name: UI architecture guardrails
+        run: npm run architecture:check
+
+      - name: Workflow supply-chain policy
+        run: npm run workflow:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: TypeScript
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
       - name: Build QA artifact
         run: npm run build
 
