@@ -16,12 +16,12 @@
   grid-template-columns: minmax(0, 1.3fr) minmax(310px, 0.7fr);
   gap: 22px;
   align-items: center;
-  border: 1px solid rgba(23, 173, 104, 0.17);
+  border: 1px solid var(--lm-border-strong);
   border-radius: 26px;
   background:
-    radial-gradient(circle at 12% 15%, rgba(118, 87, 232, 0.12), transparent 29%),
-    radial-gradient(circle at 88% 22%, rgba(52, 120, 246, 0.1), transparent 31%),
-    linear-gradient(135deg, #fffdfa, #f4fbf8 52%, #f6f3ff);
+    radial-gradient(circle at 12% 15%, var(--lm-violet-soft), transparent 29%),
+    radial-gradient(circle at 88% 22%, var(--lm-blue-soft), transparent 31%),
+    linear-gradient(135deg, var(--lm-surface), var(--lm-green-soft) 52%, var(--lm-violet-soft));
   box-shadow: var(--lm-shadow);
   padding: 26px;
 }
@@ -51,7 +51,7 @@
   align-items: center;
   gap: 6px;
   border-radius: 999px;
-  background: rgba(23, 173, 104, 0.08);
+  background: var(--lm-green-soft);
   color: var(--lm-green-deep);
   padding: 6px 10px;
   font-size: 10px;
@@ -72,10 +72,10 @@
   grid-template-columns: auto 1fr;
   gap: 2px 9px;
   align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.84);
+  border: 1px solid var(--lm-surface-raised);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 10px 24px rgba(34, 48, 68, 0.05);
+  background: var(--lm-surface-raised);
+  box-shadow: var(--lm-shadow);
   padding: 12px;
   backdrop-filter: blur(10px);
 }
@@ -108,8 +108,8 @@
   align-items: end;
   border: 1px solid var(--lm-border);
   border-radius: 20px;
-  background: linear-gradient(135deg, var(--lm-surface-raised), #fbfaf7);
-  box-shadow: 0 9px 26px rgba(34, 48, 68, 0.04);
+  background: linear-gradient(135deg, var(--lm-surface-raised), var(--lm-surface-soft));
+  box-shadow: var(--lm-shadow);
   padding: 18px;
 }
 .filterIntro {
@@ -160,8 +160,8 @@
   border: 0;
   border-radius: 11px;
   background: linear-gradient(135deg, var(--lm-green), var(--lm-green-deep));
-  box-shadow: 0 8px 18px rgba(23, 173, 104, 0.2);
-  color: #fff;
+  box-shadow: var(--lm-shadow-sm);
+  color: var(--lm-surface-raised);
   padding: 8px 14px;
   font: inherit;
   font-size: 10px;
@@ -172,8 +172,8 @@
 .filters select:focus-visible,
 .filters button:focus-visible,
 .backLink:focus-visible {
-  outline: 3px solid var(--lm-focus);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--lm-focus);
 }
 .ledgerCard {
   display: grid;
@@ -230,14 +230,14 @@
   bottom: -4px;
   inset-inline-start: 25px;
   width: 2px;
-  background: linear-gradient(var(--lm-green), rgba(23, 173, 104, 0.08));
+  background: linear-gradient(var(--lm-green), var(--lm-green-soft));
   content: "";
 }
 .timelineItem[data-tone="violet"]:not(:last-child)::before {
-  background: linear-gradient(var(--lm-violet), rgba(118, 87, 232, 0.08));
+  background: linear-gradient(var(--lm-violet), var(--lm-violet-soft));
 }
 .timelineItem[data-tone="blue"]:not(:last-child)::before {
-  background: linear-gradient(var(--lm-blue), rgba(52, 120, 246, 0.08));
+  background: linear-gradient(var(--lm-blue), var(--lm-blue-soft));
 }
 .rail {
   position: relative;
@@ -268,9 +268,9 @@
 .eventCard {
   display: grid;
   gap: 10px;
-  border: 1px solid rgba(229, 224, 215, 0.84);
+  border: 1px solid var(--lm-border);
   border-radius: 16px;
-  background: rgba(248, 247, 244, 0.6);
+  background: var(--lm-surface-soft);
   padding: 13px;
   transition:
     transform 150ms ease,
@@ -279,7 +279,7 @@
 }
 .eventCard:hover {
   transform: translateY(-1px);
-  border-color: rgba(52, 120, 246, 0.18);
+  border-color: var(--lm-border-strong);
   background: var(--lm-surface-raised);
 }
 .eventHeader {
@@ -319,7 +319,7 @@
   display: grid;
   gap: 4px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.68);
+  background: var(--lm-surface-raised);
   padding: 8px;
 }
 .metaLabel {
@@ -340,13 +340,13 @@
 }
 .statusBadge[data-status="Revoked"],
 .statusBadge[data-status="Ended"] {
-  background: #fff0f1;
-  color: #a33c43;
+  background: color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised));
+  color: var(--lm-danger);
 }
 .statusBadge[data-status="Expired"],
 .statusBadge[data-status="Superseded"] {
   background: var(--lm-orange-soft);
-  color: #8b531e;
+  color: var(--lm-orange);
 }
 .evidenceRow {
   display: flex;
@@ -373,7 +373,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #707a8e;
+  color: var(--lm-text-muted);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 8px;
 }
