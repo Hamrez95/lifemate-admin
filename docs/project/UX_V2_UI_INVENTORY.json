@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-28T09:03:15.006Z",
+  "generatedAt": "2026-09-28T09:04:16.112Z",
   "scope": [
     "app",
     "src"
@@ -9,7 +9,7 @@
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
-    "rawColorLiterals": 286
+    "rawColorLiterals": 266
   },
   "rawColorHotspots": [
     {
@@ -19,10 +19,6 @@
     {
       "file": "app/admin-auth-founder.css",
       "count": 33
-    },
-    {
-      "file": "app/admin-auth-enhanced.css",
-      "count": 20
     },
     {
       "file": "app/globals.css",
