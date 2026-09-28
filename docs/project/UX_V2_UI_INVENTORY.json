@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-28T04:24:32.987Z",
+  "generatedAt": "2026-09-28T08:58:21.809Z",
   "scope": [
     "app",
     "src"
@@ -9,16 +9,12 @@
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
-    "rawColorLiterals": 398
+    "rawColorLiterals": 362
   },
   "rawColorHotspots": [
     {
       "file": "app/design-system.css",
       "count": 44
-    },
-    {
-      "file": "src/components/shell/notification-center.module.css",
-      "count": 36
     },
     {
       "file": "app/admin-auth-founder.css",

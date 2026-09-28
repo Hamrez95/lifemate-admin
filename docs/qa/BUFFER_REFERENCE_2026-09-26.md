@@ -147,3 +147,7 @@ The Commerce transactions list now uses shared semantic surfaces for the flow he
 ## ADM-UX-05 Commerce detail semantic-surface wave
 
 The Commerce detail workspace now uses shared semantic surfaces for subscription/product status, rule and price cards, warning states, facts, summaries and timeline events. Product-specific status meanings, LTR identifiers, responsive stacking and reduced-motion behavior remain unchanged.
+
+## ADM-UX-05 Notification center semantic-surface wave
+
+The shared notification center now uses semantic surfaces for the trigger, unread/critical/warning states, modal backdrop, source-state banners, alert cards and mobile bottom-sheet behavior. The bell target is 44px, keyboard focus remains explicit, and reduced-motion behavior is preserved.
