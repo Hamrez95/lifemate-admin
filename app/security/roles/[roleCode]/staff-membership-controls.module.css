@@ -6,9 +6,9 @@
 .trigger,
 .form button {
   min-height: 34px;
-  border: 1px solid rgba(23, 173, 104, 0.25);
+  border: 1px solid var(--lm-border-strong);
   border-radius: 10px;
-  background: #ecfaf2;
+  background: var(--lm-green-soft);
   color: var(--lm-green-deep);
   padding: 6px 9px;
   font: inherit;
@@ -18,15 +18,15 @@
 }
 .trigger[data-tone="danger"],
 .form button[data-tone="danger"] {
-  border-color: rgba(196, 60, 68, 0.24);
-  background: #fff0f0;
-  color: #9d2f38;
+  border-color: color-mix(in srgb, var(--lm-danger) 24%, var(--lm-border));
+  background: color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised));
+  color: var(--lm-danger);
 }
 .trigger:focus-visible,
 .form button:focus-visible,
 .form textarea:focus-visible {
-  outline: 3px solid rgba(52, 120, 246, 0.25);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--lm-focus);
 }
 .trigger:disabled,
 .form button:disabled {
@@ -42,13 +42,13 @@
   width: min(560px, calc(100vw - 28px));
   border: 1px solid var(--lm-border);
   border-radius: 20px;
-  background: #fff;
+  background: var(--lm-surface-raised);
   color: var(--lm-text);
-  box-shadow: 0 24px 70px rgba(22, 32, 48, 0.28);
+  box-shadow: var(--lm-shadow);
   padding: 0;
 }
 .dialog::backdrop {
-  background: rgba(23, 29, 40, 0.48);
+  background: color-mix(in srgb, var(--lm-text) 48%, transparent);
   backdrop-filter: blur(4px);
 }
 .form {
@@ -72,9 +72,9 @@
   line-height: 1.75;
 }
 .notice {
-  border: 1px solid rgba(238, 139, 49, 0.24);
+  border: 1px solid var(--lm-orange);
   border-radius: 12px;
-  background: #fff8ee;
+  background: var(--lm-surface-raised)8ee;
   padding: 10px 12px;
 }
 .form label {
@@ -99,7 +99,7 @@
 }
 .feedback {
   min-height: 20px;
-  color: #9d2f38 !important;
+  color: var(--lm-danger) !important;
   font-weight: 800;
 }
 .feedback[data-status="success"] {
@@ -112,7 +112,7 @@
 }
 .form footer button:first-child {
   border-color: var(--lm-border);
-  background: #fff;
+  background: var(--lm-surface-raised);
   color: var(--lm-text-muted);
 }
 @media (max-width: 560px) {
