@@ -288,7 +288,7 @@
   justify-self: start;
   padding: 0.65rem 1rem;
   border: 0;
-  color: #fff;
+  color: var(--lm-surface-raised);
   cursor: pointer;
 }
 
@@ -551,8 +551,8 @@
 .lifecycleForm input:focus-visible,
 .lifecycleForm select:focus-visible,
 .lifecycleForm textarea:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--lm-blue) 35%, transparent);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--lm-focus);
 }
 
 @media (max-width: 1050px) {
