@@ -247,7 +247,7 @@
 }
 
 .support-queue__sla[data-sla="Completed"] .support-queue__sla-label {
-  border-color: rgba(118, 87, 232, 0.15);
+  border-color: var(--lm-border-strong);
   background: var(--lm-violet-soft);
   color: var(--lm-violet);
 }

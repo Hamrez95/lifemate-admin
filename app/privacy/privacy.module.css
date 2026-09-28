@@ -168,8 +168,8 @@
   min-height: 36px;
   border: 0;
   border-radius: 9px;
-  background: var(--danger, #a33);
-  color: white;
+  background: var(--danger, var(--lm-danger));
+  color: var(--lm-surface-raised);
   cursor: pointer;
 }
 .link {

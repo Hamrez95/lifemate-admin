@@ -57,7 +57,7 @@
   border: 1px solid var(--border);
   border-radius: 20px;
   background: var(--surface);
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 10px 28px var(--lm-shadow-sm);
 }
 
 .cardHeader {
@@ -151,8 +151,8 @@
 .notice {
   padding: 14px 16px;
   border-radius: 16px;
-  border: 1px solid color-mix(in srgb, #d97706 32%, var(--border));
-  background: color-mix(in srgb, #f59e0b 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--lm-orange) 32%, var(--border));
+  background: color-mix(in srgb, var(--lm-orange) 7%, transparent);
   line-height: 1.7;
 }
 
