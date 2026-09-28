@@ -318,3 +318,188 @@
     padding: 14px;
   }
 }
+
+
+.workspaceMap {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--lm-border);
+  border-radius: 18px;
+  background: var(--lm-surface-raised);
+  box-shadow: var(--lm-shadow);
+  padding: 16px;
+}
+
+.workspaceMapHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.workspaceMapHeader h3 {
+  margin: 0;
+  letter-spacing: -0.035em;
+}
+
+.workspaceMapHeader p:not(.eyebrow) {
+  max-width: 720px;
+  margin: 6px 0 0;
+  color: var(--lm-text-muted);
+  font-size: 11px;
+  line-height: 1.9;
+}
+
+.workspaceMapHint {
+  flex: 0 0 auto;
+  border: 1px solid var(--lm-border-strong);
+  border-radius: 999px;
+  background: var(--lm-surface-soft);
+  color: var(--lm-text-muted);
+  padding: 7px 10px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.workspaceMapGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.workspaceCard {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 190px;
+  border: 1px solid var(--lm-border);
+  border-radius: 14px;
+  background: var(--lm-surface-soft);
+  color: var(--lm-text);
+  padding: 13px;
+  text-decoration: none;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.workspaceCard:hover {
+  border-color: var(--lm-border-strong);
+  background: var(--lm-surface-raised);
+  transform: translateY(-2px);
+}
+
+.workspaceCard:focus-visible {
+  outline: none;
+  box-shadow: var(--lm-focus);
+}
+
+.workspaceCard[data-state="available"] {
+  border-color: color-mix(in srgb, var(--lm-green) 46%, var(--lm-border));
+  background: linear-gradient(145deg, var(--lm-green-soft), var(--lm-surface-soft));
+}
+
+.workspaceCard[data-state="partial"] {
+  border-color: color-mix(in srgb, var(--lm-blue) 38%, var(--lm-border));
+  background: linear-gradient(145deg, var(--lm-blue-soft), var(--lm-surface-soft));
+}
+
+.workspaceCard[data-state="blocked"] {
+  background: linear-gradient(145deg, var(--lm-orange-soft), var(--lm-surface-soft));
+}
+
+.workspaceCardTopline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--lm-text-muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.workspaceCard > strong {
+  font-size: 15px;
+  letter-spacing: -0.025em;
+}
+
+.workspaceCard p {
+  min-height: 42px;
+  margin: 0;
+  color: var(--lm-text-muted);
+  font-size: 10px;
+  line-height: 1.8;
+}
+
+.workspaceCard small {
+  color: var(--lm-text-muted);
+  font-size: 9px;
+}
+
+.workspaceState {
+  border-radius: 999px;
+  background: var(--lm-surface-raised);
+  color: var(--lm-text-muted);
+  padding: 4px 6px;
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+.workspaceState[data-state="available"] {
+  background: var(--lm-green-soft);
+  color: var(--lm-green-deep);
+}
+
+.workspaceState[data-state="partial"] {
+  background: var(--lm-blue-soft);
+  color: var(--lm-blue);
+}
+
+.workspaceState[data-state="blocked"] {
+  background: var(--lm-orange-soft);
+  color: var(--lm-orange);
+}
+
+.workspaceCardAction {
+  align-self: end;
+  color: var(--lm-green-deep);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+@media (max-width: 1200px) {
+  .workspaceMapGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .workspaceMapHeader {
+    display: grid;
+  }
+
+  .workspaceMapHint {
+    width: fit-content;
+  }
+
+  .workspaceMapGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .workspaceCard {
+    min-height: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspaceCard {
+    transition: none;
+  }
+
+  .workspaceCard:hover {
+    transform: none;
+  }
+}
