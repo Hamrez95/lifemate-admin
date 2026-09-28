@@ -203,3 +203,7 @@ Role staff-membership actions and dialogs now use shared semantic surfaces for p
 ## ADM-UX-05 Security layout semantic-surface wave
 
 The shared Security layout hero, navigation links and responsive art treatment now use semantic surfaces, shared focus feedback and common spacing behavior. Security information architecture, route links and mobile stacking remain unchanged.
+
+## ADM-UX-05 Residual route semantic-surface wave 1
+
+Analytics cohorts, Marketing overview, Content Calendar, PWA install and standalone state surfaces now consume shared semantic colors, shadows and focus treatment. Aggregate-data truthfulness, provider-unavailable states, RTL calendar behavior, responsive layouts and reduced-motion behavior remain unchanged.
