@@ -139,3 +139,7 @@ The abuse-rule workspace now uses shared semantic surfaces, status feedback, foc
 ## ADM-UX-05 Commerce reference semantic-surface wave
 
 The Commerce reference workspace now consumes the shared semantic surfaces, accent states, focus ring and shadow tokens across the hero, tabs, dependency cards, metrics and unavailable panel. Its product-specific imagery, dependency semantics, responsive grids and reduced-motion behavior remain intact.
+
+## ADM-UX-05 Commerce transactions semantic-surface wave
+
+The Commerce transactions list now uses shared semantic surfaces for the flow hero, payment states, anomaly feedback, summary cards, order cards and responsive behavior. Transaction amounts/identifiers remain LTR-isolated, status meanings stay canonical, and keyboard focus/reduced-motion behavior follows the shared shell.
