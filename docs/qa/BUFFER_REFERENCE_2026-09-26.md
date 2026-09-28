@@ -171,3 +171,7 @@ The admin sign-in and profile security surfaces now use the shared semantic pale
 ## ADM-UX-05 Global shell semantic-surface wave
 
 The shared shell now consumes semantic tokens for the page atmosphere, sidebar status, active navigation, topbar feedback, notice banners, metric accents, empty states and responsive controls. RTL/LTR placement, collapse behavior, mobile navigation, focus treatment and reduced-motion behavior remain unchanged.
+
+## ADM-UX-05 Offline state semantic-surface wave
+
+The offline recovery state now uses shared background, surface, shadow, status and focus tokens. Recovery messaging, the retry action and the explicit safety boundary remain unchanged; the update aligns the disconnected state with the same calm, accessible visual language as the main shell.
