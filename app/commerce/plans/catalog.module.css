@@ -71,7 +71,7 @@
 .primaryButton {
   border: 1px solid var(--lm-blue);
   background: var(--lm-blue);
-  color: white;
+  color: var(--lm-surface-raised);
 }
 
 .secondaryLink,
@@ -148,7 +148,7 @@
   color: var(--lm-blue);
   font-size: 0.76rem;
   font-weight: 800;
-  white-space: nowrap;
+  var(--lm-surface-raised)-space: nowrap;
 }
 
 .statusBadge[data-status="Active"] {
@@ -223,8 +223,8 @@
 .secondaryLink:focus-visible,
 .primaryButton:focus-visible,
 .secondaryButton:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--lm-blue) 32%, transparent);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--lm-focus);
 }
 
 .field input:disabled,
@@ -252,7 +252,7 @@
 
 .feedback[data-status="forbidden"],
 .feedback[data-status="unavailable"] {
-  color: var(--lm-red, #b42318);
+  color: var(--lm-red, var(--lm-danger));
 }
 
 .safetyNote {
