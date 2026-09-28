@@ -5,48 +5,8 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const canonicalTokenSource = "app/design-system.css";
 
-// These files are the temporary migration registry for legacy feature styling.
-// New CSS modules must use semantic tokens instead of adding another exception.
-const legacyRawColorFiles = new Set([
-  "app/analytics/cohorts/cohorts-reference.module.css",
-  "app/commerce/catalog/catalog-v2.module.css",
-  "app/commerce/commerce-reference.module.css",
-  "app/commerce/commerce.module.css",
-  "app/commerce/detail.module.css",
-  "app/commerce/entitlements/adjustments/adjustments.module.css",
-  "app/commerce/operations/operations.module.css",
-  "app/commerce/plans/catalog.module.css",
-  "app/commerce/promotions/promotions.module.css",
-  "app/commerce/transactions/[transactionId]/transaction-detail.module.css",
-  "app/commerce/transactions/transactions.module.css",
-  "app/finance/scenario/scenario-form.module.css",
-  "app/marketing/content-calendar/calendar.module.css",
-  "app/marketing/content-studio/studio.module.css",
-  "app/marketing/marketing.module.css",
-  "app/marketing/media-inbox/media-inbox.module.css",
-  "app/offline/offline.module.css",
-  "app/privacy/privacy.module.css",
-  "app/relationships/ledger/ledger.module.css",
-  "app/security/abuse/abuse.module.css",
-  "app/security/audit/audit.module.css",
-  "app/security/break-glass/break-glass.module.css",
-  "app/security/elevated-health/elevated-health.module.css",
-  "app/security/retention/retention.module.css",
-  "app/security/roles/[roleCode]/role-detail.module.css",
-  "app/security/roles/[roleCode]/staff-membership-controls.module.css",
-  "app/security/security-layout.module.css",
-  "app/security/security.module.css",
-  "app/security/staff/staff.module.css",
-  "app/standalone-state.module.css",
-  "app/support/[ticketId]/ticket-detail.module.css",
-  "app/users/[accountId]/product-version-context.module.css",
-  "app/users/[accountId]/user-action-menu.module.css",
-  "app/users/[accountId]/user-detail.module.css",
-  "app/users/[accountId]/user-privacy-reference.module.css",
-  "src/components/security/security-context-header.module.css",
-  "src/components/shell/global-command-palette.module.css",
-  "src/components/shell/notification-center.module.css",
-]);
+// Route-level raw colors have completed migration. Keep this registry empty so new exceptions require an explicit review.
+const legacyRawColorFiles = new Set();
 
 const genericSelectorPattern =
   /\.(?:section-card|notice-banner|metric-card|table-card|state-card|empty-state|loading-state|button|input|select|textarea)(?=[\s:{._-])/u;
