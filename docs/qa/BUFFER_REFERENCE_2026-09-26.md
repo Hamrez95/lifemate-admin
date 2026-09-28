@@ -167,3 +167,7 @@ The Commerce overview now consumes shared semantic surfaces for the hero, summar
 ## ADM-UX-05 Admin auth semantic-surface wave
 
 The admin sign-in and profile security surfaces now use the shared semantic palette for visual gradients, security feedback, active tabs, focus states and responsive composition. Authentication, MFA, password/session controls and no-credential boundaries remain unchanged; this wave only aligns presentation and theme behavior.
+
+## ADM-UX-05 Global shell semantic-surface wave
+
+The shared shell now consumes semantic tokens for the page atmosphere, sidebar status, active navigation, topbar feedback, notice banners, metric accents, empty states and responsive controls. RTL/LTR placement, collapse behavior, mobile navigation, focus treatment and reduced-motion behavior remain unchanged.
