@@ -133,7 +133,7 @@
 }
 
 .notice[data-kind="error"] {
-  border-color: color-mix(in srgb, var(--danger, #c64d58) 44%, var(--border-subtle));
+  border-color: color-mix(in srgb, var(--danger, var(--lm-danger)) 44%, var(--border-subtle));
 }
 
 .sectionHead {
@@ -219,7 +219,7 @@
 .filterForm button,
 .primaryButton {
   background: var(--accent-strong);
-  color: #fff;
+  color: var(--lm-surface-raised);
 }
 
 .secondaryButton,
@@ -230,8 +230,8 @@
 }
 
 .dangerButton {
-  border-color: color-mix(in srgb, var(--danger, #c64d58) 38%, var(--border-subtle));
-  background: color-mix(in srgb, var(--surface-soft) 90%, var(--danger, #c64d58));
+  border-color: color-mix(in srgb, var(--danger, var(--lm-danger)) 38%, var(--border-subtle));
+  background: color-mix(in srgb, var(--surface-soft) 90%, var(--danger, var(--lm-danger)));
   color: var(--text-primary);
 }
 
@@ -253,8 +253,8 @@
 .retryButton:focus-visible,
 .viewToggle a:focus-visible,
 .campaignLink:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--accent-strong) 35%, transparent);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--lm-focus);
 }
 
 .summaryGrid {
@@ -385,7 +385,7 @@
 }
 
 .badge[data-state="OutcomeUnknown"] {
-  border-color: color-mix(in srgb, var(--danger, #c64d58) 45%, var(--border-subtle));
+  border-color: color-mix(in srgb, var(--danger, var(--lm-danger)) 45%, var(--border-subtle));
 }
 
 .preview {
@@ -480,7 +480,7 @@
 }
 
 .executionCard[data-status="OutcomeUnknown"] {
-  border-color: color-mix(in srgb, var(--danger, #c64d58) 45%, var(--border-subtle));
+  border-color: color-mix(in srgb, var(--danger, var(--lm-danger)) 45%, var(--border-subtle));
 }
 
 .executionCard[data-status="Scheduled"] {
@@ -547,7 +547,7 @@
 
 .outcomeBox {
   border-style: solid;
-  border-color: color-mix(in srgb, var(--danger, #c64d58) 45%, var(--border-subtle));
+  border-color: color-mix(in srgb, var(--danger, var(--lm-danger)) 45%, var(--border-subtle));
 }
 
 @media (max-width: 1080px) {

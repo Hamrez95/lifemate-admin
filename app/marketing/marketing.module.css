@@ -17,7 +17,7 @@
   grid-template-columns: minmax(0, 1.5fr) minmax(240px, 0.6fr);
   gap: 18px;
   background:
-    radial-gradient(circle at 8% 0%, rgba(52, 120, 246, 0.12), transparent 34%),
+    radial-gradient(circle at 8% 0%, var(--lm-blue-soft), transparent 34%),
     linear-gradient(120deg, var(--lm-green-soft), var(--lm-surface-raised) 62%);
   padding: clamp(18px, 3vw, 28px);
 }
@@ -58,9 +58,9 @@
   display: grid;
   align-content: center;
   gap: 8px;
-  border: 1px solid rgba(23, 173, 104, 0.2);
+  border: 1px solid var(--lm-border-strong);
   border-radius: 15px;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--lm-surface-raised);
   padding: 15px;
 }
 
@@ -75,7 +75,7 @@
   justify-content: center;
   min-height: 42px;
   margin-top: 4px;
-  border: 1px solid rgba(23, 173, 104, 0.28);
+  border: 1px solid var(--lm-border-strong);
   border-radius: 11px;
   background: var(--lm-green-soft);
   color: var(--lm-green-deep);
@@ -86,8 +86,8 @@
 }
 
 .campaignLink:focus-visible {
-  outline: 3px solid rgba(52, 120, 246, 0.35);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--lm-focus);
 }
 
 .filterCard {
@@ -128,7 +128,7 @@
 .filters button {
   border-color: transparent;
   background: var(--lm-green);
-  color: #0b3928;
+  color: var(--lm-green-deep);
   cursor: pointer;
   font-weight: 800;
 }
@@ -136,8 +136,8 @@
 .filters input:focus-visible,
 .filters select:focus-visible,
 .filters button:focus-visible {
-  outline: 3px solid rgba(52, 120, 246, 0.35);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--lm-focus);
 }
 
 .summaryGrid {
@@ -224,7 +224,7 @@
 .stateBadge[data-state="unavailable"],
 .stateBadge[data-state="not_instrumented"] {
   background: var(--lm-orange-soft);
-  color: #7d4615;
+  color: var(--lm-orange);
 }
 
 .bars {
@@ -251,7 +251,7 @@
   position: relative;
   height: 165px;
   border-radius: 7px;
-  background: rgba(52, 120, 246, 0.06);
+  background: var(--lm-blue-soft);
   overflow: hidden;
 }
 

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-28T09:11:50.141Z",
+  "generatedAt": "2026-09-28T10:35:30.807Z",
   "scope": [
     "app",
     "src"
@@ -9,32 +9,12 @@
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
-    "rawColorLiterals": 117
+    "rawColorLiterals": 76
   },
   "rawColorHotspots": [
     {
       "file": "app/design-system.css",
       "count": 44
-    },
-    {
-      "file": "app/analytics/cohorts/cohorts-reference.module.css",
-      "count": 12
-    },
-    {
-      "file": "app/marketing/marketing.module.css",
-      "count": 9
-    },
-    {
-      "file": "app/marketing/content-calendar/calendar.module.css",
-      "count": 7
-    },
-    {
-      "file": "app/pwa.css",
-      "count": 7
-    },
-    {
-      "file": "app/standalone-state.module.css",
-      "count": 6
     },
     {
       "file": "app/users/[accountId]/user-privacy-reference.module.css",
