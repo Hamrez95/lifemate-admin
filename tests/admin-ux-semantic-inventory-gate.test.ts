@@ -3,7 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = process.cwd();
-const colorLiteral = /#[0-9a-fA-F]{3,8}\\b|rgba?\\([^)]*\\)/g;
+const colorLiteral = /#[0-9a-fA-F]{3,8}\b|rgba?\([^)]*\)/g;
 
 function walk(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
