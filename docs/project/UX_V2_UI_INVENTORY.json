@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-28T09:08:27.215Z",
+  "generatedAt": "2026-09-28T09:09:26.827Z",
   "scope": [
     "app",
     "src"
@@ -9,16 +9,12 @@
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
-    "rawColorLiterals": 185
+    "rawColorLiterals": 152
   },
   "rawColorHotspots": [
     {
       "file": "app/design-system.css",
       "count": 44
-    },
-    {
-      "file": "app/admin-auth-founder.css",
-      "count": 33
     },
     {
       "file": "app/security/roles/[roleCode]/staff-membership-controls.module.css",

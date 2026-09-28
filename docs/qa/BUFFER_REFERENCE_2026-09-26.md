@@ -187,3 +187,7 @@ Commerce payment operations now consume the shared semantic surfaces for panels,
 ## ADM-UX-05 Finance scenario semantic-surface wave
 
 The Finance scenario form now consumes shared semantic surfaces for labels, fields, disabled states, action controls and keyboard focus. Actual/forecast scenario semantics and mutation behavior remain unchanged; the form is simply brought into the same accessible, theme-safe visual system.
+
+## ADM-UX-05 Founder auth semantic-surface wave
+
+The three-mode founder auth workspace now uses shared semantic surfaces for trust indicators, visual hero/card treatments, active tabs, primary controls and status feedback. The auth modes, loading states, error/forbidden meanings and responsive layout remain unchanged.
