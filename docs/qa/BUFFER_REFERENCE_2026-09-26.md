@@ -195,3 +195,7 @@ The three-mode founder auth workspace now uses shared semantic surfaces for trus
 ## ADM-UX-05 Base auth semantic-surface wave
 
 The base auth card, MFA form, security note, loading state and operator logout controls now use shared semantic surfaces and shadows. Auth step meaning, MFA truthfulness, disabled states and responsive behavior remain unchanged.
+
+## ADM-UX-05 Staff membership semantic-surface wave
+
+Role staff-membership actions and dialogs now use shared semantic surfaces for primary/destructive controls, overlays, notices, feedback and keyboard focus. Authorization, confirmation, reason capture and responsive control stacking remain unchanged.
