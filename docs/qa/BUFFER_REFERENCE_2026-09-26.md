@@ -163,3 +163,7 @@ The Relationships ledger now consumes shared semantic surfaces for the evidence 
 ## ADM-UX-05 Commerce semantic-surface wave
 
 The Commerce overview now consumes shared semantic surfaces for the hero, summary metrics, plan cards, entitlement meters, highlights and focus states. Subscription, entitlement and Core-dependent unavailable states remain truthful; RTL/LTR identifiers, responsive stacking and reduced-motion behavior remain unchanged.
+
+## ADM-UX-05 Admin auth semantic-surface wave
+
+The admin sign-in and profile security surfaces now use the shared semantic palette for visual gradients, security feedback, active tabs, focus states and responsive composition. Authentication, MFA, password/session controls and no-credential boundaries remain unchanged; this wave only aligns presentation and theme behavior.
