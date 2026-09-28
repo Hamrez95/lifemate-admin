@@ -211,3 +211,7 @@ Analytics cohorts, Marketing overview, Content Calendar, PWA install and standal
 ## ADM-UX-05 Residual route semantic-surface wave 2
 
 User privacy reference, Commerce adjustments/catalog, Marketing content studio/media inbox, Security break-glass/elevated health/staff, Privacy, Support, Product version context and the global command palette now consume semantic surfaces and focus treatment. Permission boundaries, sensitive-data minimization, LTR identifiers, responsive behavior and reduced-motion behavior remain unchanged.
+
+## ADM-UX-05 Semantic inventory gate
+
+A Vitest contract now rescans every CSS file under app/ and src/ and fails if raw color literals return to route-level surfaces. The only intentional raw-color source is app/design-system.css, where the shared light/dark token foundation is defined. The gate also checks that the inventory report stays synchronized and that focus/reduced-motion theme guardrails remain present.
