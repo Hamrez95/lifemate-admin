@@ -10,7 +10,7 @@
   border: 1px solid var(--border);
   border-radius: 16px;
   background: color-mix(in srgb, var(--surface) 94%, transparent);
-  box-shadow: 0 12px 34px rgb(0 0 0 / 18%);
+  box-shadow: 0 12px 34px var(--lm-shadow);
   backdrop-filter: blur(12px);
 }
 
@@ -39,7 +39,7 @@
 }
 
 .panel header a {
-  white-space: nowrap;
+  var(--lm-surface-raised)-space: nowrap;
 }
 
 .panel ul {
