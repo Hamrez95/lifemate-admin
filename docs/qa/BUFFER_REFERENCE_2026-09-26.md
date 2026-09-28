@@ -155,3 +155,7 @@ The shared notification center now uses semantic surfaces for the trigger, unrea
 ## ADM-UX-05 User detail semantic-surface wave
 
 The User360 detail workspace now consumes shared semantic surfaces for identity, status badges, sticky tabs, definition rows, relationship lists, and timeline cards. Phone/email and other identifiers remain LTR-isolated, loading shimmer respects reduced motion, and mobile tab/card stacking remains intact.
+
+## ADM-UX-05 Relationships ledger semantic-surface wave
+
+The Relationships ledger now consumes shared semantic surfaces for the evidence legend, filters, event rail, status pills and responsive event cards. Relationship evidence semantics, LTR identifiers, filter behavior and reduced-motion behavior remain unchanged.
