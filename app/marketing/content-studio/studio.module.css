@@ -18,7 +18,7 @@
   background:
     radial-gradient(
       circle at 8% 8%,
-      color-mix(in srgb, var(--accent-violet, #7c5cff) 15%, transparent),
+      color-mix(in srgb, var(--accent-violet, var(--lm-violet)) 15%, transparent),
       transparent 31%
     ),
     radial-gradient(
@@ -124,7 +124,7 @@
 }
 
 .notice[data-kind="error"] {
-  border-color: color-mix(in srgb, var(--danger, #c94c55) 45%, var(--border-subtle));
+  border-color: color-mix(in srgb, var(--danger, var(--lm-danger)) 45%, var(--border-subtle));
 }
 
 .selectorCard,
@@ -145,7 +145,7 @@
   border-color: color-mix(in srgb, var(--accent-strong) 18%, var(--border-subtle));
   background: linear-gradient(
     145deg,
-    color-mix(in srgb, var(--surface-raised) 96%, var(--accent-violet, #7c5cff)),
+    color-mix(in srgb, var(--surface-raised) 96%, var(--accent-violet, var(--lm-violet))),
     var(--surface-raised)
   );
 }
@@ -201,7 +201,7 @@
   border-radius: 13px;
   padding: 0.65rem 1rem;
   background: var(--accent-strong);
-  color: #fff;
+  color: var(--lm-surface-raised);
   font: inherit;
   font-weight: 900;
   text-decoration: none;
@@ -216,8 +216,8 @@
 .primaryButton:focus-visible,
 .reviewLink:focus-visible,
 .variantBody:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--accent-strong) 35%, transparent);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--lm-focus);
 }
 
 .workspaceGrid {
