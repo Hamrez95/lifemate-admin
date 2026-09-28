@@ -207,3 +207,7 @@ The shared Security layout hero, navigation links and responsive art treatment n
 ## ADM-UX-05 Residual route semantic-surface wave 1
 
 Analytics cohorts, Marketing overview, Content Calendar, PWA install and standalone state surfaces now consume shared semantic colors, shadows and focus treatment. Aggregate-data truthfulness, provider-unavailable states, RTL calendar behavior, responsive layouts and reduced-motion behavior remain unchanged.
+
+## ADM-UX-05 Residual route semantic-surface wave 2
+
+User privacy reference, Commerce adjustments/catalog, Marketing content studio/media inbox, Security break-glass/elevated health/staff, Privacy, Support, Product version context and the global command palette now consume semantic surfaces and focus treatment. Permission boundaries, sensitive-data minimization, LTR identifiers, responsive behavior and reduced-motion behavior remain unchanged.
