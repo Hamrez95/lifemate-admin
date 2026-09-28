@@ -22,6 +22,100 @@ const dateTimeFormat = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
   dateStyle: "short",
   timeStyle: "short",
 });
+
+const marketingWorkspaces = [
+  {
+    lane: "Plan",
+    title: "Campaigns",
+    href: "/marketing/campaigns",
+    description: "Lifecycle کمپین، مالک، بازه و وضعیت workflow",
+    state: "available",
+    stateLabel: "قابل استفاده",
+    dependency: "منبع canonical کمپین",
+  },
+  {
+    lane: "Plan",
+    title: "Creative Radar",
+    href: "/marketing/creative-radar",
+    description: "ثبت reference عمومی و تحلیل provenance",
+    state: "blocked",
+    stateLabel: "منتظر قرارداد",
+    dependency: "قرارداد #380",
+  },
+  {
+    lane: "Plan",
+    title: "Idea Engine",
+    href: "/marketing/idea-engine",
+    description: "ایده، script و shoot plan با review انسانی",
+    state: "blocked",
+    stateLabel: "منتظر قرارداد",
+    dependency: "قرارداد #378",
+  },
+  {
+    lane: "Produce",
+    title: "Content Studio",
+    href: "/marketing/content-studio",
+    description: "تولید draft محدود و کنترل‌شده",
+    state: "partial",
+    stateLabel: "نیمه‌آماده",
+    dependency: "AI gateway و brand context",
+  },
+  {
+    lane: "Produce",
+    title: "Media Inbox",
+    href: "/marketing/media-inbox",
+    description: "دارایی خصوصی، lineage و processing job",
+    state: "blocked",
+    stateLabel: "منتظر قرارداد",
+    dependency: "قرارداد #383",
+  },
+  {
+    lane: "Produce",
+    title: "Repurpose Engine",
+    href: "/marketing/repurpose",
+    description: "مشتق‌های channel-specific با review جداگانه",
+    state: "blocked",
+    stateLabel: "منتظر قرارداد",
+    dependency: "قرارداد #387",
+  },
+  {
+    lane: "Review / Publish",
+    title: "Content Calendar",
+    href: "/marketing/content-calendar",
+    description: "تقویم و صف بررسی درون سیستم",
+    state: "partial",
+    stateLabel: "نیمه‌آماده",
+    dependency: "scheduler و provider readiness",
+  },
+  {
+    lane: "Review / Publish",
+    title: "Review & Publish",
+    href: "/marketing/review-publish",
+    description: "تأیید revision دقیق و reconciliation",
+    state: "blocked",
+    stateLabel: "منتظر قرارداد",
+    dependency: "قرارداد #389",
+  },
+  {
+    lane: "Review / Publish",
+    title: "Channel Connections",
+    href: "/marketing/channels",
+    description: "سلامت، capability و credential امن کانال",
+    state: "blocked",
+    stateLabel: "منتظر قرارداد",
+    dependency: "Provider abstraction #259",
+  },
+  {
+    lane: "Learn",
+    title: "Organic Analytics",
+    href: "/marketing/organic-analytics",
+    description: "یادگیری از metricهای verified و هم‌معنا",
+    state: "blocked",
+    stateLabel: "منتظر قرارداد",
+    dependency: "قرارداد #391",
+  },
+] as const;
+
 const productOptions = [
   { value: "", label: "همه محصولات" },
   { value: "wellmate", label: "WellMate" },
@@ -138,6 +232,41 @@ function MarketingWorkspace({ report }: { report: MarketingOverviewReport }) {
           </label>
           <button type="submit">اعمال فیلتر</button>
         </form>
+      </section>
+
+      <section className={styles.workspaceMap} aria-labelledby="marketing-workspace-title">
+        <div className={styles.workspaceMapHeader}>
+          <div>
+            <p className={styles.eyebrow}>Marketing operating system</p>
+            <h3 id="marketing-workspace-title">مسیر کامل کار بازاریابی، از ایده تا یادگیری</h3>
+            <p>
+              هر workspace جای مشخصی در جریان کار دارد. وضعیت‌ها واقعیت فعلی قراردادها را نشان
+              می‌دهند؛ «منتظر قرارداد» به معنی آماده‌بودن fake data یا انتشار خودکار نیست.
+            </p>
+          </div>
+          <span className={styles.workspaceMapHint}>Plan → Produce → Review → Learn</span>
+        </div>
+        <div className={styles.workspaceMapGrid}>
+          {marketingWorkspaces.map((workspace) => (
+            <Link
+              className={styles.workspaceCard}
+              data-state={workspace.state}
+              href={workspace.href}
+              key={workspace.href}
+            >
+              <div className={styles.workspaceCardTopline}>
+                <span>{workspace.lane}</span>
+                <span className={styles.workspaceState} data-state={workspace.state}>
+                  {workspace.stateLabel}
+                </span>
+              </div>
+              <strong>{workspace.title}</strong>
+              <p>{workspace.description}</p>
+              <small>{workspace.dependency}</small>
+              <span className={styles.workspaceCardAction}>ورود به workspace ←</span>
+            </Link>
+          ))}
+        </div>
       </section>
 
       <section className={styles.summaryGrid} aria-label="خلاصه شاخص‌های بازاریابی">
