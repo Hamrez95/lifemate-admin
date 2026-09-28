@@ -199,3 +199,7 @@ The base auth card, MFA form, security note, loading state and operator logout c
 ## ADM-UX-05 Staff membership semantic-surface wave
 
 Role staff-membership actions and dialogs now use shared semantic surfaces for primary/destructive controls, overlays, notices, feedback and keyboard focus. Authorization, confirmation, reason capture and responsive control stacking remain unchanged.
+
+## ADM-UX-05 Security layout semantic-surface wave
+
+The shared Security layout hero, navigation links and responsive art treatment now use semantic surfaces, shared focus feedback and common spacing behavior. Security information architecture, route links and mobile stacking remain unchanged.
