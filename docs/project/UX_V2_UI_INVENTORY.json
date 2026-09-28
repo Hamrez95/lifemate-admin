@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-28T08:59:35.766Z",
+  "generatedAt": "2026-09-28T09:02:15.607Z",
   "scope": [
     "app",
     "src"
@@ -9,7 +9,7 @@
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
-    "rawColorLiterals": 333
+    "rawColorLiterals": 308
   },
   "rawColorHotspots": [
     {
@@ -19,10 +19,6 @@
     {
       "file": "app/admin-auth-founder.css",
       "count": 33
-    },
-    {
-      "file": "app/relationships/ledger/ledger.module.css",
-      "count": 25
     },
     {
       "file": "app/commerce/commerce.module.css",
