@@ -6,13 +6,13 @@
   align-items: center;
   margin-block-end: 1rem;
   padding: 1.2rem 1.3rem;
-  border: 1px solid #e6dfd5;
+  border: 1px solid var(--lm-border);
   border-radius: 24px;
   background:
-    radial-gradient(circle at 12% 16%, rgba(239, 182, 153, 0.18), transparent 34%),
-    radial-gradient(circle at 88% 18%, rgba(124, 142, 208, 0.16), transparent 36%),
-    linear-gradient(145deg, #fffdfa, #f9f7f3);
-  box-shadow: 0 12px 36px rgba(61, 52, 45, 0.06);
+    radial-gradient(circle at 12% 16%, var(--lm-orange-soft), transparent 34%),
+    radial-gradient(circle at 88% 18%, var(--lm-violet-soft), transparent 36%),
+    linear-gradient(145deg, var(--lm-surface), var(--lm-surface-soft));
+  box-shadow: var(--lm-shadow);
   overflow: hidden;
 }
 
@@ -29,12 +29,12 @@
 
 .copy h2 {
   font-size: clamp(1.35rem, 2.3vw, 2rem);
-  color: #2f2b27;
+  color: var(--lm-text);
 }
 
 .copy > p:not(:global(.eyebrow)) {
   max-width: 72ch;
-  color: #69635c;
+  color: var(--lm-text-muted);
   line-height: 1.85;
   overflow-wrap: anywhere;
 }
@@ -52,17 +52,17 @@
   align-items: center;
   justify-content: center;
   padding: 0.45rem 0.8rem;
-  border: 1px solid #d9d1c8;
+  border: 1px solid var(--lm-border);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.86);
-  color: #423c36;
+  background: var(--lm-surface-raised);
+  color: var(--lm-text-secondary);
   font-weight: 800;
   text-decoration: none;
 }
 
 .nav a:focus-visible {
-  outline: 3px solid rgba(82, 103, 199, 0.32);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--lm-focus);
 }
 
 .guardrails span {
@@ -70,10 +70,10 @@
   display: inline-flex;
   align-items: center;
   padding: 0.2rem 0.58rem;
-  border: 1px solid #e4d8cf;
+  border: 1px solid var(--lm-border);
   border-radius: 999px;
-  background: #fff8f3;
-  color: #744c3e;
+  background: var(--lm-orange-soft);
+  color: var(--lm-orange);
   font-size: 0.72rem;
   font-weight: 800;
   direction: ltr;

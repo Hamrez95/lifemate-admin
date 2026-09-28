@@ -175,3 +175,7 @@ The shared shell now consumes semantic tokens for the page atmosphere, sidebar s
 ## ADM-UX-05 Offline state semantic-surface wave
 
 The offline recovery state now uses shared background, surface, shadow, status and focus tokens. Recovery messaging, the retry action and the explicit safety boundary remain unchanged; the update aligns the disconnected state with the same calm, accessible visual language as the main shell.
+
+## ADM-UX-05 Security context header semantic-surface wave
+
+The shared Security context header now uses semantic surfaces for its hero treatment, navigation controls, guardrail pills, focus feedback and responsive layout. Security section meaning, guardrail copy, LTR identifiers and image behavior remain unchanged.
