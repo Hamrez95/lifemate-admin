@@ -11,8 +11,8 @@
 }
 
 .panel {
-  background: var(--surface-card, #fff);
-  border: 1px solid var(--border-subtle, #e5e7eb);
+  background: var(--lm-surface-raised);
+  border: 1px solid var(--lm-border);
   border-radius: 20px;
   padding: 1rem;
   display: grid;
@@ -42,7 +42,7 @@
   gap: 0.8rem;
   align-items: center;
   padding: 0.7rem 0;
-  border-block-end: 1px solid var(--border-subtle, #e5e7eb);
+  border-block-end: 1px solid var(--lm-border);
 }
 
 .row div {
@@ -55,7 +55,7 @@
 .row time,
 .muted,
 .footer {
-  color: var(--text-muted, #667085);
+  color: var(--lm-text-muted);
   font-size: 0.82rem;
 }
 
@@ -63,7 +63,7 @@
   display: grid;
   gap: 0.7rem;
   padding-block-start: 0.8rem;
-  border-block-start: 1px solid var(--border-subtle, #e5e7eb);
+  border-block-start: 1px solid var(--lm-border);
 }
 
 .form label {
@@ -76,10 +76,10 @@
 .form input,
 .form textarea {
   font: inherit;
-  border: 1px solid var(--border-subtle, #d0d5dd);
+  border: 1px solid var(--lm-border-strong);
   border-radius: 12px;
   padding: 0.65rem 0.75rem;
-  background: var(--surface-card, #fff);
+  background: var(--lm-surface-raised);
   color: inherit;
 }
 
@@ -95,8 +95,8 @@
   font: inherit;
   font-weight: 800;
   cursor: pointer;
-  background: var(--accent, #175cd3);
-  color: #fff;
+  background: var(--lm-blue);
+  color: var(--lm-surface-raised);
 }
 
 .form button:disabled {
@@ -119,21 +119,21 @@
   padding: 0.6rem 0.7rem;
   border-radius: 10px;
   font-size: 0.82rem;
-  background: #f2f4f7;
+  background: var(--lm-surface-soft);
 }
 
 .feedback[data-status="success"] {
-  background: #ecfdf3;
+  background: var(--lm-green-soft);
 }
 
 .feedback[data-status="invalid"],
 .feedback[data-status="conflict"] {
-  background: #fff6ed;
+  background: var(--lm-orange-soft);
 }
 
 .feedback[data-status="forbidden"],
 .feedback[data-status="unavailable"] {
-  background: #fef3f2;
+  background: color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised));
 }
 
 .footer {
@@ -143,8 +143,8 @@
 
 .form :focus-visible,
 .panel a:focus-visible {
-  outline: 3px solid currentColor;
-  outline-offset: 3px;
+  outline: none;
+  box-shadow: var(--lm-focus);
 }
 
 @media (max-width: 1100px) {
