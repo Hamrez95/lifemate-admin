@@ -46,4 +46,13 @@ describe("ADM-UX-05 semantic inventory gate", () => {
     expect(designSystem).toContain('[data-theme="dark"]');
     expect(designSystem).toContain("@media (prefers-reduced-motion: reduce)");
   });
+
+  it("keeps the temporary legacy raw-color registry empty after route migration", () => {
+    const architectureCheck = readFileSync(
+      path.join(root, "scripts/ui-architecture-check.mjs"),
+      "utf8",
+    );
+
+    expect(architectureCheck).toContain("const legacyRawColorFiles = new Set();");
+  });
 });
