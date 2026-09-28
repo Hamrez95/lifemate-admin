@@ -159,3 +159,7 @@ The User360 detail workspace now consumes shared semantic surfaces for identity,
 ## ADM-UX-05 Relationships ledger semantic-surface wave
 
 The Relationships ledger now consumes shared semantic surfaces for the evidence legend, filters, event rail, status pills and responsive event cards. Relationship evidence semantics, LTR identifiers, filter behavior and reduced-motion behavior remain unchanged.
+
+## ADM-UX-05 Commerce semantic-surface wave
+
+The Commerce overview now consumes shared semantic surfaces for the hero, summary metrics, plan cards, entitlement meters, highlights and focus states. Subscription, entitlement and Core-dependent unavailable states remain truthful; RTL/LTR identifiers, responsive stacking and reduced-motion behavior remain unchanged.
