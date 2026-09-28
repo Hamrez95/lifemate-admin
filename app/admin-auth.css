@@ -4,16 +4,16 @@
   place-items: center;
   padding: 32px 18px;
   background:
-    radial-gradient(circle at 22% 18%, rgba(23, 173, 104, 0.11), transparent 31%),
-    radial-gradient(circle at 84% 82%, rgba(118, 87, 232, 0.08), transparent 28%), var(--lm-bg);
+    radial-gradient(circle at 22% 18%, var(--lm-green-soft), transparent 31%),
+    radial-gradient(circle at 84% 82%, var(--lm-violet-soft), transparent 28%), var(--lm-bg);
 }
 
 .auth-card {
   width: min(500px, 100%);
   border: 1px solid var(--lm-border);
   border-radius: 24px;
-  background: rgba(255, 253, 249, 0.97);
-  box-shadow: 0 28px 80px rgba(34, 48, 68, 0.1);
+  background: var(--lm-surface-raised);
+  box-shadow: var(--lm-shadow);
   padding: clamp(22px, 5vw, 34px);
 }
 
@@ -50,7 +50,7 @@
 }
 
 .auth-form label {
-  color: #354154;
+  color: var(--lm-text-secondary);
   font-size: 12px;
   font-weight: 700;
 }
@@ -105,9 +105,9 @@
 .primary-button {
   min-height: 46px;
   background: linear-gradient(135deg, var(--lm-green), var(--lm-green-deep));
-  color: #fff;
+  color: var(--lm-surface-raised);
   padding: 10px 16px;
-  box-shadow: 0 10px 24px rgba(23, 173, 104, 0.16);
+  box-shadow: var(--lm-shadow-sm);
 }
 
 .text-button {
@@ -118,10 +118,10 @@
 
 .auth-message {
   margin: 2px 0 0;
-  border: 1px solid rgba(52, 120, 246, 0.16);
+  border: 1px solid var(--lm-border-strong);
   border-radius: 11px;
   background: var(--lm-blue-soft);
-  color: #315d9f;
+  color: var(--lm-blue);
   padding: 10px 12px;
   font-size: 10px;
   line-height: 1.8;
@@ -158,7 +158,7 @@
   width: 54px;
   height: 54px;
   place-items: center;
-  border: 1px solid rgba(23, 173, 104, 0.18);
+  border: 1px solid var(--lm-border-strong);
   border-radius: 16px;
   background: var(--lm-green-soft);
   color: var(--lm-green-deep);
@@ -180,7 +180,7 @@
   margin: 2px auto;
   border: 1px solid var(--lm-border);
   border-radius: 16px;
-  background: #fff;
+  background: var(--lm-surface-raised);
   padding: 12px;
 }
 
