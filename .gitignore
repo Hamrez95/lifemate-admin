@@ -22,3 +22,5 @@
 # logs
 *.log
 npm-debug.log*
+# Graphify local knowledge graph (rebuild per workspace; source remains in Git)
+/graphify-out/
