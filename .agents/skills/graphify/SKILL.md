@@ -1,20 +1,32 @@
 ---
 name: graphify
-description: Query a local Graphify code knowledge graph before broad source reads to reduce context/token usage for architecture, dependency, impact-analysis, and code-navigation questions.
+description: Use Graphify before broad source reads for architecture, dependency, impact-analysis, and code-navigation questions. It reduces context and token usage by returning a scoped structural view of the repository.
 ---
 
-# Graphify code-context workflow
+# Graphify — mandatory code-context workflow
 
-Use Graphify-Labs/graphify v8+ as a local code index. The graph narrows context; repository source remains authoritative.
+Use Graphify-Labs/graphify v8+ as the local code index. The graph narrows context; repository source remains authoritative.
 
-1. If `graphify-out/graph.json` exists, start with `graphify query "<question>" --budget 1200`.
-   - Use `graphify path "<A>" "<B>"` for relationship questions.
-   - Use `graphify explain "<concept>"` for focused concepts.
-2. Open only the source files/locations returned by the graph, then verify the exact code before editing or making a factual claim.
-3. If the graph does not exist, ensure the CLI is available (`uv tool install graphifyy`, fallback `pipx install graphifyy`) and run `graphify extract . --code-only`.
-4. After code changes, refresh with `graphify extract . --code-only`. This intentionally keeps routine refreshes structural/local and avoids semantic LLM passes over docs/media.
-5. Do not run semantic extraction over docs, PDFs, images, or video unless the user explicitly needs that material in the graph.
-6. Do not commit generated `graphify-out/` artifacts. If a graph query is insufficient, raise the budget to 2000-3000 before falling back to broad grep/source browsing.
-7. If the graph is stale, inconsistent, or missing relevant source, trust the repository source and rebuild/fall back rather than guessing.
+## Required workflow
 
-When the user invokes `/graphify`, follow this workflow.
+1. Check whether `graphify-out/graph.json` exists.
+2. If it is missing, build a low-cost structural graph:
+   `graphify . --code-only --no-viz`
+3. If it exists but source changed since the last build, refresh it:
+   `graphify update .`
+4. Before reading broad source, ask a scoped question:
+   `graphify query "<task-specific question>" --budget 1200`
+5. For relationships use:
+   `graphify path "<A>" "<B>"`
+   and for a focused concept use:
+   `graphify explain "<concept>"`.
+6. Open only the source files returned by the graph, then verify exact code before editing or making factual claims.
+7. After code changes run `graphify update .` so the next Work/agent can reuse the index.
+
+## Cost and fallback policy
+
+Use code-only mode for routine development. Do not run semantic extraction over docs, PDFs, images, or video unless the task explicitly needs those relationships. Do not commit generated `graphify-out/` artifacts.
+
+If Graphify is unavailable, state the blocker, use a narrow `rg` fallback only, and record the fallback in the final report. Never silently replace a graph query with a whole-repository scan.
+
+When the user invokes `$graphify`, follow this workflow. In PowerShell use `graphify .`, not `/graphify .`.
