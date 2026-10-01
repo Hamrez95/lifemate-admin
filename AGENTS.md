@@ -60,11 +60,19 @@ npm run build
 
 Use focused branches and reviewable pull requests. Do not force-push `main`. Do not deploy a change whose required CI is red.
 
-## Graphify context optimization
+## Graphify — mandatory codebase navigation
 
-- Project-scoped Graphify skills live at `.agents/skills/graphify/SKILL.md` and `.codex/skills/graphify/SKILL.md`.
-- For codebase architecture, dependency, impact-analysis, and code-navigation questions, use `graphify query`, `graphify path`, or `graphify explain` before broad grep/file reads whenever `graphify-out/graph.json` exists.
-- If the graph is missing, invoke the Graphify skill and build a structural code-only graph with `graphify extract . --code-only` before broad repository exploration.
-- Treat the graph as an index, never as source of truth: open and verify the exact returned source before edits or definitive claims.
-- After code modifications, refresh with `graphify extract . --code-only`; this intentionally avoids semantic LLM passes during routine development.
-- Keep generated `graphify-out/` artifacts local and uncommitted. Do not run docs/PDF/image/video semantic extraction unless the task explicitly needs it.
+This repository uses Graphify as the default structural index for codebase work. The project skill is checked in at `.agents/skills/graphify/SKILL.md`.
+
+Before implementing or diagnosing any non-trivial task:
+
+1. Confirm Graphify is available with `graphify --version`. In Codex, use `$graphify` when the project skill command is available; do not use a leading slash in PowerShell.
+2. If `graphify-out/graph.json` does not exist, build the low-cost structural graph with:
+   `graphify . --code-only --no-viz`
+3. If the graph exists and source files changed since the last graph build, refresh it with:
+   `graphify update .`
+4. Ask one or more scoped questions with `graphify query "<task-specific question>"`; use `graphify explain "<node>"` and `graphify path "<from>" "<to>"` when relationships or impact are unclear.
+5. Read and verify only the source files returned by the graph before editing. Do not scan the whole repository or load broad file trees into context just to discover architecture.
+6. After code changes, run `graphify update .` again so the next Work/agent can reuse the current index.
+
+Use code-only mode by default because it is deterministic and avoids semantic LLM extraction. Run docs/PDF/image/video extraction only when the task explicitly depends on those assets. The graph is an index, not source of truth: always verify exact source before making edits or claims. If Graphify is unavailable, state the blocker, use a narrow `rg` fallback only, and record that fallback in the final report.
