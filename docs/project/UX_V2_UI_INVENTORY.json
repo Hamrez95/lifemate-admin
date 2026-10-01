@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-28T10:37:32.565Z",
+  "generatedAt": "2026-10-01T05:39:22.781Z",
   "scope": [
     "app",
     "src"
@@ -9,12 +9,12 @@
     "cssFiles": 80,
     "cssModules": 72,
     "globalCssFiles": 8,
-    "rawColorLiterals": 44
+    "rawColorLiterals": 51
   },
   "rawColorHotspots": [
     {
       "file": "app/design-system.css",
-      "count": 44
+      "count": 51
     }
   ],
   "componentHitFiles": {
@@ -95,13 +95,16 @@
       "app/ai/error.tsx",
       "app/ai/page.tsx",
       "app/analytics/cohorts/page.tsx",
+      "app/analytics/funnel/error.tsx",
       "app/analytics/funnel/page.tsx",
       "app/analytics/growth/error.tsx",
       "app/analytics/growth/page.tsx",
       "app/analytics/page.tsx",
       "app/commerce/catalog/CatalogMutationControls.tsx",
+      "app/commerce/catalog/error.tsx",
       "app/commerce/entitlements/adjustments/AdjustmentForm.tsx",
       "app/commerce/entitlements/adjustments/page.tsx",
+      "app/commerce/error.tsx",
       "app/commerce/operations/PaymentOperationsControls.tsx",
       "app/commerce/plans/PlanCreateForm.tsx",
       "app/commerce/plans/[planId]/PlanCatalogControls.tsx",
@@ -124,16 +127,24 @@
       "app/marketing/campaigns/[campaignId]/page.tsx",
       "app/marketing/campaigns/page.tsx",
       "app/marketing/channels/ChannelStatusControl.tsx",
+      "app/marketing/channels/error.tsx",
       "app/marketing/content-calendar/page.tsx",
       "app/marketing/content-studio/page.tsx",
+      "app/marketing/error.tsx",
       "app/marketing/page.tsx",
+      "app/operations/cocoon/content/error.tsx",
       "app/operations/cocoon/content/page.tsx",
+      "app/operations/cocoon/error.tsx",
+      "app/operations/cocoon/readiness/error.tsx",
+      "app/operations/error.tsx",
       "app/operations/platform-controls/page.tsx",
+      "app/operations/releases/error.tsx",
       "app/operations/releases/page.tsx",
       "app/privacy/page.tsx",
       "app/privacy/preference-purposes/page.tsx",
       "app/profile/error.tsx",
       "app/relationships/AccessGrantActions.tsx",
+      "app/relationships/error.tsx",
       "app/relationships/ledger/page.tsx",
       "app/relationships/page.tsx",
       "app/research/page.tsx",
@@ -141,6 +152,7 @@
       "app/security/audit/page.tsx",
       "app/security/break-glass/BreakGlassForms.tsx",
       "app/security/elevated-health/page.tsx",
+      "app/security/error.tsx",
       "app/security/page.tsx",
       "app/security/retention/RetentionControls.tsx",
       "app/security/roles/[roleCode]/StaffMembershipControls.tsx",
@@ -150,8 +162,12 @@
       "app/settings/error.tsx",
       "app/support/[ticketId]/SupportConversationPanel.tsx",
       "app/support/[ticketId]/TicketOperations.tsx",
+      "app/support/[ticketId]/error.tsx",
+      "app/support/error.tsx",
       "app/users/[accountId]/UserActionMenu.tsx",
+      "app/users/[accountId]/error.tsx",
       "app/users/[accountId]/page.tsx",
+      "app/users/error.tsx",
       "src/components/admin-data-table/admin-pagination.tsx",
       "src/components/admin-data-table/admin-table-filter-bar.tsx",
       "src/components/auth/AdminLoginFlow.tsx",
@@ -162,6 +178,7 @@
       "src/components/shell/GlobalCommandPalette.tsx",
       "src/components/shell/NotificationCenter.tsx",
       "src/components/shell/OperatorMenu.tsx",
+      "src/components/shell/Sidebar.tsx",
       "src/components/shell/Topbar.tsx",
       "src/components/ui/AppearanceControl.tsx",
       "src/components/ui/DirectionControl.tsx",

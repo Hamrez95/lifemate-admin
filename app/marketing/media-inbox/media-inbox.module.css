@@ -56,7 +56,7 @@
   color: var(--text-primary);
   font-weight: 800;
   text-decoration: none;
-  var(--lm-surface-raised)-space: nowrap;
+  white-space: nowrap;
 }
 
 .backLink:focus-visible {
@@ -89,6 +89,6 @@
   }
 
   .backLink {
-    var(--lm-surface-raised)-space: normal;
+    white-space: normal;
   }
 }

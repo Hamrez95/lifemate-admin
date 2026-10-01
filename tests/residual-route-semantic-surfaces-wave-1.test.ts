@@ -7,24 +7,22 @@ const read = (relativePath: string) => readFileSync(path.join(root, relativePath
 
 describe("ADM-UX-05 Residual route semantic-surface wave 1", () => {
   it("keeps analytics, marketing, PWA and standalone states theme-safe", () => {
-    const files = [
-      "app/analytics/cohorts/cohorts-reference.module.css",
-      "app/marketing/marketing.module.css",
-      "app/marketing/content-calendar/calendar.module.css",
-      "app/pwa.css",
-      "app/standalone-state.module.css",
-    ];
+    const cohortsCss = read("app/analytics/cohorts/cohorts-reference.module.css");
+    const marketingCss = read("app/marketing/marketing.module.css");
+    const calendarCss = read("app/marketing/content-calendar/calendar.module.css");
+    const pwaCss = read("app/pwa.css");
+    const standaloneCss = read("app/standalone-state.module.css");
+    const files = [cohortsCss, marketingCss, calendarCss, pwaCss, standaloneCss];
 
-    for (const file of files) {
-      const css = read(file);
+    for (const css of files) {
       expect(css).toContain("var(--lm-surface-raised)");
       expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b|rgba\(/);
     }
 
-    expect(read(files[0])).toContain("var(--lm-orange-soft)");
-    expect(read(files[1])).toContain("var(--lm-focus)");
-    expect(read(files[2])).toContain("var(--lm-danger)");
-    expect(read(files[3])).toContain("var(--lm-green-deep)");
-    expect(read(files[4])).toContain("@media (max-width: 520px)");
+    expect(cohortsCss).toContain("var(--lm-orange-soft)");
+    expect(marketingCss).toContain("var(--lm-focus)");
+    expect(calendarCss).toContain("var(--lm-danger)");
+    expect(pwaCss).toContain("var(--lm-green-deep)");
+    expect(standaloneCss).toContain("@media (max-width: 520px)");
   });
 });

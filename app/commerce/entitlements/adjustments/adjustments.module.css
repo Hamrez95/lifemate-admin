@@ -184,7 +184,7 @@
   direction: ltr;
   margin: 0.5rem 0 0;
   font-size: 0.72rem;
-  var(--lm-surface-raised)-space: pre-wrap;
+  white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 

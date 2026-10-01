@@ -194,7 +194,7 @@
 .results span {
   overflow: hidden;
   text-overflow: ellipsis;
-  var(--lm-surface-raised)-space: nowrap;
+  white-space: nowrap;
 }
 
 .results mark {

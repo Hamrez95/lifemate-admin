@@ -15,7 +15,12 @@
   background:
     radial-gradient(circle at 8% 16%, var(--lm-violet-soft), transparent 28%),
     radial-gradient(circle at 90% 12%, var(--lm-orange-soft), transparent 34%),
-    linear-gradient(135deg, var(--lm-surface-raised), var(--lm-orange-soft) 54%, var(--lm-green-soft));
+    linear-gradient(
+      135deg,
+      var(--lm-surface-raised),
+      var(--lm-orange-soft) 54%,
+      var(--lm-green-soft)
+    );
   box-shadow: var(--lm-shadow);
   padding: 25px;
 }
@@ -299,7 +304,8 @@
 .summaryFact {
   grid-column: 1 / -1;
   background:
-    radial-gradient(circle at 6% 50%, var(--lm-orange-soft), transparent 26%), var(--lm-surface-raised) !important;
+    radial-gradient(circle at 6% 50%, var(--lm-orange-soft), transparent 26%),
+    var(--lm-surface-raised) !important;
 }
 
 .sectionHeading {
@@ -458,8 +464,9 @@
 .primaryButton:focus-visible,
 .backLink:focus-visible,
 .requesterRow a:focus-visible {
-  outline: 3px solid var(--lm-blue-soft);
+  outline: none;
   outline-offset: 2px;
+  box-shadow: var(--lm-focus);
 }
 
 .field > small {
@@ -543,7 +550,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  background: radial-gradient(circle at 94% 20%, var(--lm-violet-soft), transparent 30%), var(--lm-surface-raised);
+  background:
+    radial-gradient(circle at 94% 20%, var(--lm-violet-soft), transparent 30%),
+    var(--lm-surface-raised);
   padding: 16px;
 }
 

@@ -39,7 +39,7 @@
 }
 
 .panel header a {
-  var(--lm-surface-raised)-space: nowrap;
+  white-space: nowrap;
 }
 
 .panel ul {
