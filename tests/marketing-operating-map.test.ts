@@ -4,10 +4,7 @@ import { describe, expect, it } from "vitest";
 
 describe("Marketing operating map", () => {
   it("keeps the marketing flow discoverable without fabricating blocked capabilities", () => {
-    const source = readFileSync(
-      path.join(process.cwd(), "app/marketing/page.tsx"),
-      "utf8",
-    );
+    const source = readFileSync(path.join(process.cwd(), "app/marketing/page.tsx"), "utf8");
 
     for (const href of [
       "/marketing/campaigns",

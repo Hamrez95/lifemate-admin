@@ -193,7 +193,7 @@
 
 .auth-message {
   border-color: var(--lm-border-strong);
-  background: var(--lm-surface-raised)7ef;
+  background: var(--lm-surface-raised) 7ef;
   color: var(--lm-orange);
 }
 
@@ -205,13 +205,13 @@
 
 .auth-message[data-tone="error"] {
   border-color: var(--lm-border-strong);
-  background: var(--lm-surface-raised)4f4;
+  background: var(--lm-surface-raised) 4f4;
   color: var(--lm-danger);
 }
 
 .auth-message[data-tone="forbidden"] {
   border-color: var(--lm-border-strong);
-  background: var(--lm-surface-raised)9ed;
+  background: var(--lm-surface-raised) 9ed;
   color: var(--lm-orange);
 }
 

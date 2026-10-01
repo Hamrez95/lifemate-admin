@@ -74,7 +74,7 @@
 .notice {
   border: 1px solid var(--lm-orange);
   border-radius: 12px;
-  background: var(--lm-surface-raised)8ee;
+  background: var(--lm-surface-raised) 8ee;
   padding: 10px 12px;
 }
 .form label {

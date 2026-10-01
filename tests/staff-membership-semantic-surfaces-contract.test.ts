@@ -7,7 +7,9 @@ const read = (relativePath: string) => readFileSync(path.join(root, relativePath
 
 describe("ADM-UX-05 Staff membership semantic surfaces", () => {
   it("keeps role membership actions and dialog feedback theme-safe", () => {
-    const membershipCss = read("app/security/roles/[roleCode]/staff-membership-controls.module.css");
+    const membershipCss = read(
+      "app/security/roles/[roleCode]/staff-membership-controls.module.css",
+    );
     const research = read("docs/qa/BUFFER_REFERENCE_2026-09-26.md");
 
     expect(membershipCss).toContain("var(--lm-surface-raised)");

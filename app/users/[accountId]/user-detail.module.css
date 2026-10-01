@@ -469,15 +469,13 @@
   border: 1px solid var(--lm-border);
   border-radius: 16px;
   background:
-    radial-gradient(circle at 90% 0, var(--lm-orange-soft), transparent 34%),
-    var(--lm-surface-soft);
+    radial-gradient(circle at 90% 0, var(--lm-orange-soft), transparent 34%), var(--lm-surface-soft);
   padding: 13px;
 }
 
 .subsection:nth-child(2) {
   background:
-    radial-gradient(circle at 90% 0, var(--lm-violet-soft), transparent 34%),
-    var(--lm-surface-soft);
+    radial-gradient(circle at 90% 0, var(--lm-violet-soft), transparent 34%), var(--lm-surface-soft);
 }
 
 .subsection h4 {
