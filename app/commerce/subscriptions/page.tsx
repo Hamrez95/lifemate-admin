@@ -16,6 +16,7 @@ import {
   type CommerceSubscriptionRow,
 } from "@/src/lib/admin-api/commerce-overview";
 import { requireAdminAccess } from "@/src/lib/admin-api/server";
+import { formatPersianDateTime } from "@/src/lib/time-zone";
 
 import {
   CommerceDependencyGrid,
@@ -43,15 +44,6 @@ const statusLabels: Record<string, string> = {
   Expired: "منقضی",
   Refunded: "بازپرداخت‌شده",
 };
-
-const dateTimeFormatter = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
-  timeZone: "Asia/Tehran",
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-});
 
 function one(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
@@ -87,12 +79,6 @@ function apiParams(query: SubscriptionQuery): URLSearchParams {
 function pageHref(query: SubscriptionQuery, page: number): string {
   const params = apiParams({ ...query, page: Math.max(1, page) });
   return `/commerce/subscriptions?${params.toString()}`;
-}
-
-function formatDateTime(value: string | null): string {
-  if (!value) return "—";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "—" : dateTimeFormatter.format(date);
 }
 
 function SubscriptionMetrics({ data }: { data: CommerceOverviewResponse }) {
@@ -147,16 +133,16 @@ const columns: readonly AdminTableColumn<CommerceSubscriptionRow>[] = [
     header: "وضعیت",
     render: (row) => statusLabels[row.status] ?? row.status,
   },
-  { key: "start", header: "شروع", render: (row) => formatDateTime(row.startsAtUtc) },
+  { key: "start", header: "شروع", render: (row) => formatPersianDateTime(row.startsAtUtc) },
   {
     key: "period-end",
     header: "پایان دوره",
-    render: (row) => formatDateTime(row.currentPeriodEndUtc),
+    render: (row) => formatPersianDateTime(row.currentPeriodEndUtc),
   },
   {
     key: "cancelled",
     header: "لغو",
-    render: (row) => formatDateTime(row.cancelledAtUtc),
+    render: (row) => formatPersianDateTime(row.cancelledAtUtc),
     hideOnMobile: true,
   },
   {
@@ -233,7 +219,7 @@ function RenewalHighlights({ data }: { data: CommerceOverviewResponse }) {
                 </span>
               </div>
               <time dateTime={row.currentPeriodEndUtc}>
-                {formatDateTime(row.currentPeriodEndUtc)}
+                {formatPersianDateTime(row.currentPeriodEndUtc)}
               </time>
             </li>
           ))}
@@ -327,7 +313,7 @@ async function SubscriptionsContent({ query }: { query: SubscriptionQuery }) {
         total={data.subscriptions.total}
         freshness={{
           status: data.freshness.status,
-          label: `آخرین snapshot: ${formatDateTime(data.freshness.asOfUtc)}`,
+          label: `آخرین snapshot: ${formatPersianDateTime(data.freshness.asOfUtc)}`,
         }}
         pagination={{
           page: data.page,

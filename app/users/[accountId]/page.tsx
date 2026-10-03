@@ -14,6 +14,7 @@ import {
   type UserDetailResponse,
   type UserDetailSection,
 } from "@/src/lib/admin-api/user-detail";
+import { formatPersianDate, formatPersianDateTime } from "@/src/lib/time-zone";
 
 import { UserActionMenu } from "./UserActionMenu";
 import styles from "./user-detail.module.css";
@@ -51,22 +52,6 @@ const tabs = [
 
 type UserDetailTab = (typeof tabs)[number]["id"];
 
-const dateFormatter = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
-  timeZone: "Asia/Tehran",
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-});
-
-const dateTimeFormatter = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
-  timeZone: "Asia/Tehran",
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-});
-
 type UserDetailPageProps = {
   params: Promise<{ accountId: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -83,18 +68,6 @@ function parseTab(value: string | undefined): UserDetailTab {
 function parsePositiveInteger(value: string | undefined, fallback: number): number {
   const parsed = Number(value);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
-}
-
-function formatDate(value: string | null | undefined): string {
-  if (!value) return "—";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "—" : dateFormatter.format(date);
-}
-
-function formatDateTime(value: string | null | undefined): string {
-  if (!value) return "—";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "—" : dateTimeFormatter.format(date);
 }
 
 function labelStatus(value: string): string {
@@ -184,7 +157,7 @@ function AccountCard({ data }: { data: UserDetailResponse }) {
         </div>
         <div className={styles.definitionRow}>
           <dt>تاریخ عضویت</dt>
-          <dd>{formatDate(account.createdAtUtc)}</dd>
+          <dd>{formatPersianDate(account.createdAtUtc)}</dd>
         </div>
       </dl>
     </SectionFrame>
@@ -246,8 +219,8 @@ function ProductsCard({ data }: { data: UserDetailResponse }) {
               <span className={styles.softBadge}>{labelStatus(product.status)}</span>
             </div>
             <small>
-              عضویت: {formatDate(product.enrolledAtUtc)} · آخرین فعالیت:{" "}
-              {formatDateTime(product.lastActiveAtUtc)}
+              عضویت: {formatPersianDate(product.enrolledAtUtc)} · آخرین فعالیت:{" "}
+              {formatPersianDateTime(product.lastActiveAtUtc)}
             </small>
           </li>
         ))}
@@ -285,7 +258,7 @@ function CommerceCard({ data }: { data: UserDetailResponse }) {
                   </div>
                   <small>
                     پلن: {subscription.planName} · پایان دوره:{" "}
-                    {formatDate(subscription.currentPeriodEndUtc)}
+                    {formatPersianDate(subscription.currentPeriodEndUtc)}
                   </small>
                 </li>
               ))}
@@ -304,7 +277,7 @@ function CommerceCard({ data }: { data: UserDetailResponse }) {
                     <strong>{entitlement.featureCode}</strong>
                     <span className={styles.softBadge}>{labelStatus(entitlement.status)}</span>
                   </div>
-                  <small>انقضا: {formatDate(entitlement.expiresAtUtc)}</small>
+                  <small>انقضا: {formatPersianDate(entitlement.expiresAtUtc)}</small>
                 </li>
               ))}
             </ul>
@@ -383,7 +356,7 @@ function OverviewActivityPreview({
               <strong>{event.action}</strong>
               <span className={styles.softBadge}>{event.result}</span>
             </div>
-            <small>{formatDateTime(event.occurredAtUtc)}</small>
+            <small>{formatPersianDateTime(event.occurredAtUtc)}</small>
           </li>
         ))}
       </ul>
@@ -487,7 +460,7 @@ function ActivityTimeline({ data }: { data: UserActivityResponse }) {
               <strong>{event.action}</strong>
               <span className={styles.softBadge}>{event.result}</span>
             </div>
-            <time dateTime={event.occurredAtUtc}>{formatDateTime(event.occurredAtUtc)}</time>
+            <time dateTime={event.occurredAtUtc}>{formatPersianDateTime(event.occurredAtUtc)}</time>
           </div>
         </li>
       ))}
@@ -530,7 +503,7 @@ async function ActivityTab({ accountId, page }: { accountId: string; page: numbe
       <div className={styles.timelineHeader}>
         <span className={styles.softBadge}>کل رویدادها: {data.total.toLocaleString("fa-IR")}</span>
         <span className={styles.softBadge}>
-          آخرین دریافت: {formatDateTime(data.freshness.asOfUtc)}
+          آخرین دریافت: {formatPersianDateTime(data.freshness.asOfUtc)}
         </span>
       </div>
       <ActivityTimeline data={data} />
@@ -640,7 +613,7 @@ async function UserDetailContent({
   const account = data.account.data;
   if (!account) return <AdminPageState state="unavailable" />;
   const displayName = data.person.state === "ready" ? data.person.data?.displayName : null;
-  const freshness = formatDateTime(data.freshness.asOfUtc);
+  const freshness = formatPersianDateTime(data.freshness.asOfUtc);
 
   return (
     <div className={styles.page}>

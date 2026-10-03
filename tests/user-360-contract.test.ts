@@ -8,6 +8,15 @@ function source(path: string): string {
 }
 
 describe("ADM-USR-002 / ADM-USR-004 User 360 detail", () => {
+  it("uses the shared Jalali/Tehran formatter for every User 360 timestamp", () => {
+    const page = source("app/users/[accountId]/page.tsx");
+
+    expect(page).toContain('from "@/src/lib/time-zone"');
+    expect(page).toContain("formatPersianDate");
+    expect(page).toContain("formatPersianDateTime");
+    expect(page).not.toContain("new Intl.DateTimeFormat");
+  });
+
   it("reads User Detail and its activity timeline through the Admin API only", () => {
     const client = source("src/lib/admin-api/user-detail.ts");
     expect(client).toContain("/api/v1/users/${accountId}");
