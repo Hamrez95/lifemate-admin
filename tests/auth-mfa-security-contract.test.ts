@@ -39,6 +39,9 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(login).toContain('provider: "google"');
     expect(login).toContain("signInWithOAuth");
     expect(login).toContain("/auth/callback");
+    expect(login).toContain("useSearchParams");
+    expect(login).toContain('searchParams.get("auth") === "failed"');
+    expect(login).toContain("ورود Google تکمیل نشد");
     expect(login).toContain("هویت شما برای");
     expect(login).toContain("Command Center دعوت نشده است");
     expect(login).toContain("تأیید TOTP");

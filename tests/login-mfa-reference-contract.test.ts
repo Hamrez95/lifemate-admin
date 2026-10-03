@@ -39,6 +39,7 @@ describe("Login/MFA reference design contract", () => {
     expect(flow).toContain('type="button"');
     expect(flow).toContain("disabled={pending}");
     expect(flow).toContain("تأیید TOTP");
+    expect(flow).toContain("ورود Google تکمیل نشد");
     expect(styles).toContain(".auth-oauth-button");
     expect(styles).toContain(".auth-provider-divider");
   });

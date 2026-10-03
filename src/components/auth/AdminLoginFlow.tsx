@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
 import { getPublicRuntimeConfig } from "@/src/lib/runtime-config";
@@ -45,6 +45,7 @@ function friendlyAuthError(code?: string): string {
 
 export function AdminLoginFlow() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const config = useMemo(() => getPublicRuntimeConfig(), []);
   const [step, setStep] = useState<Step>("checking");
@@ -56,7 +57,11 @@ export function AdminLoginFlow() {
   const [factorId, setFactorId] = useState<string | null>(null);
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
   const [pending, setPending] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(() =>
+    searchParams.get("auth") === "failed"
+      ? "ورود Google تکمیل نشد. اگر provider فعال است، دوباره تلاش کنید یا از مسیر workforce استفاده کنید."
+      : null,
+  );
 
   const continueToCommandCenter = useCallback(() => {
     router.replace("/");
