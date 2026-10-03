@@ -29,6 +29,9 @@ describe("Commerce references 10/11", () => {
     expect(page).toContain('admin.permissions.includes("commerce.read")');
     expect(page).toContain("Trial configuration · Core #412");
     expect(page).toContain("تغییر مستقیم Subscription از Command Center تعریف نشده است");
+    expect(page).toContain('from "@/src/lib/time-zone"');
+    expect(page).toContain("formatPersianDateTime");
+    expect(page).not.toContain("new Intl.DateTimeFormat");
     expect(page).not.toContain("use server");
     expect(page).not.toContain(".from(");
   });
