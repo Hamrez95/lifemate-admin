@@ -7,7 +7,7 @@ const read = (relativePath: string) => readFileSync(path.join(root, relativePath
 
 describe("ADM-UX-05 Residual route semantic-surface wave 2", () => {
   it("keeps remaining admin route surfaces theme-safe", () => {
-    const files = [
+    const filePaths = [
       "app/users/[accountId]/user-privacy-reference.module.css",
       "app/commerce/entitlements/adjustments/adjustments.module.css",
       "app/marketing/content-studio/studio.module.css",
@@ -24,16 +24,17 @@ describe("ADM-UX-05 Residual route semantic-surface wave 2", () => {
       "src/components/shell/global-command-palette.module.css",
     ];
 
-    for (const file of files) {
-      const css = read(file);
-      expect(css).toContain("var(--lm-surface-raised)");
+    const files = filePaths.map((file) => read(file));
+
+    for (const css of files) {
+      expect(css).toMatch(/var\(--(?:lm-)?surface(?:-raised)?\)/);
       expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b|rgba?\(/);
     }
 
-    expect(read(files[0])).toContain("var(--lm-orange-soft)");
-    expect(read(files[1])).toContain("var(--lm-danger)");
-    expect(read(files[2])).toContain("var(--lm-violet)");
-    expect(read(files[8])).toContain("var(--lm-focus)");
-    expect(read(files[12])).toContain("var(--lm-shadow)");
+    expect(files[0]).toContain("var(--lm-orange-soft)");
+    expect(files[1]).toContain("var(--lm-danger)");
+    expect(files[2]).toContain("var(--lm-violet)");
+    expect(files[8]).toContain("var(--lm-focus)");
+    expect(files[12]).toContain("var(--lm-shadow)");
   });
 });

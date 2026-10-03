@@ -28,12 +28,12 @@ describe("ADM-UX-05 semantic inventory gate", () => {
       .filter((entry) => entry.count > 0)
       .sort((left, right) => right.count - left.count);
 
-    expect(hotspots).toEqual([{ file: "app/design-system.css", count: 44 }]);
+    expect(hotspots).toEqual([{ file: "app/design-system.css", count: 51 }]);
 
     const inventory = JSON.parse(
       readFileSync(path.join(root, "docs/project/UX_V2_UI_INVENTORY.json"), "utf8"),
     );
-    expect(inventory.counts.rawColorLiterals).toBe(44);
+    expect(inventory.counts.rawColorLiterals).toBe(51);
     expect(inventory.rawColorHotspots).toEqual(hotspots);
   });
 

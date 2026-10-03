@@ -259,7 +259,12 @@
   align-items: center;
   border: 1px solid var(--lm-danger);
   border-radius: 22px;
-  background: linear-gradient(135deg, var(--lm-orange-soft), var(--lm-surface) 56%, var(--lm-orange-soft));
+  background: linear-gradient(
+    135deg,
+    var(--lm-orange-soft),
+    var(--lm-surface) 56%,
+    var(--lm-orange-soft)
+  );
   padding: 20px 22px;
 }
 

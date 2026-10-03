@@ -10,7 +10,12 @@
   background:
     radial-gradient(circle at 8% 10%, var(--lm-violet-soft), transparent 27%),
     radial-gradient(circle at 92% 90%, var(--lm-orange-soft), transparent 30%),
-    linear-gradient(135deg, var(--lm-surface) 0%, var(--lm-green-soft) 54%, var(--lm-orange-soft) 100%);
+    linear-gradient(
+      135deg,
+      var(--lm-surface) 0%,
+      var(--lm-green-soft) 54%,
+      var(--lm-orange-soft) 100%
+    );
   box-shadow: var(--lm-shadow);
   padding: 24px 28px;
 }

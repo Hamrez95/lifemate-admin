@@ -17,7 +17,12 @@
   background:
     radial-gradient(circle at 10% 12%, var(--lm-green-soft), transparent 30%),
     radial-gradient(circle at 93% 12%, var(--lm-violet-soft), transparent 33%),
-    linear-gradient(135deg, var(--lm-surface) 0%, var(--lm-blue-soft) 52%, var(--lm-green-soft) 100%);
+    linear-gradient(
+      135deg,
+      var(--lm-surface) 0%,
+      var(--lm-blue-soft) 52%,
+      var(--lm-green-soft) 100%
+    );
   box-shadow: var(--lm-shadow);
   padding: 26px;
 }

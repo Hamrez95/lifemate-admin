@@ -8,7 +8,9 @@ const read = (relativePath: string) => readFileSync(path.join(root, relativePath
 
 describe("ADM-UX-05 Commerce transaction semantic surfaces", () => {
   it("keeps payment detail states and refund controls theme-safe", () => {
-    const transactionCss = read("app/commerce/transactions/[transactionId]/transaction-detail.module.css");
+    const transactionCss = read(
+      "app/commerce/transactions/[transactionId]/transaction-detail.module.css",
+    );
     const research = read("docs/qa/BUFFER_REFERENCE_2026-09-26.md");
 
     expect(transactionCss).toContain("var(--lm-surface)");

@@ -148,7 +148,7 @@
   color: var(--lm-blue);
   font-size: 0.76rem;
   font-weight: 800;
-  var(--lm-surface-raised)-space: nowrap;
+  white-space: nowrap;
 }
 
 .statusBadge[data-status="Active"] {

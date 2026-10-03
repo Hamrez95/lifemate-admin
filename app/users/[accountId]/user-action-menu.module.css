@@ -72,7 +72,11 @@
 .trigger {
   flex: 0 0 auto;
   border: 1px solid var(--lm-danger);
-  background: linear-gradient(135deg, color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised)), color-mix(in srgb, var(--lm-danger) 14%, var(--lm-surface-raised)));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised)),
+    color-mix(in srgb, var(--lm-danger) 14%, var(--lm-surface-raised))
+  );
   color: var(--lm-danger);
   box-shadow: var(--lm-shadow-sm);
 }
@@ -94,8 +98,9 @@
 .confirm:focus-visible,
 .cancel:focus-visible,
 .reasonField textarea:focus-visible {
-  outline: 3px solid var(--lm-blue-soft);
+  outline: none;
   outline-offset: 2px;
+  box-shadow: var(--lm-focus);
 }
 
 .trigger:disabled,
@@ -182,7 +187,11 @@
   place-items: center;
   border: 1px solid var(--lm-danger);
   border-radius: 15px;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised)), color-mix(in srgb, var(--lm-danger) 14%, var(--lm-surface-raised)));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--lm-danger) 10%, var(--lm-surface-raised)),
+    color-mix(in srgb, var(--lm-danger) 14%, var(--lm-surface-raised))
+  );
   color: var(--lm-danger);
   font-size: 20px;
   font-weight: 900;
