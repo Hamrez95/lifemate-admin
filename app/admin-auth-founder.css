@@ -181,6 +181,36 @@
   box-shadow: 0 9px 22px var(--lm-shadow-sm);
 }
 
+.auth-provider-divider {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  color: var(--lm-text-muted);
+  font-size: 10px;
+  text-align: center;
+}
+
+.auth-provider-divider::before,
+.auth-provider-divider::after {
+  height: 1px;
+  background: var(--lm-border);
+  content: "";
+}
+
+.auth-oauth-button {
+  border: 1px solid var(--lm-border-strong);
+  background: var(--lm-surface-raised);
+  color: var(--lm-text);
+  box-shadow: none;
+}
+
+.auth-oauth-button:hover:not(:disabled) {
+  border-color: var(--lm-blue);
+  background: var(--lm-blue-soft);
+  color: var(--lm-text);
+}
+
 .primary-button:disabled::before {
   width: 15px;
   height: 15px;

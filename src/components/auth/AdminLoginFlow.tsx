@@ -179,6 +179,25 @@ export function AdminLoginFlow() {
     }
   }
 
+  async function signInWithGoogle() {
+    setPending(true);
+    setMessage(null);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: { access_type: "offline", prompt: "select_account" },
+      },
+    });
+
+    if (error) {
+      setPending(false);
+      setMessage(
+        "ورود Google در این محیط فعال نیست یا هویت شما برای Command Center دعوت نشده است.",
+      );
+    }
+  }
+
   async function activateFounder(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setPending(true);
@@ -291,9 +310,21 @@ export function AdminLoginFlow() {
               <button type="submit" className="primary-button" disabled={pending}>
                 {pending ? "در حال ورود..." : "ادامه به تأیید دومرحله‌ای"}
               </button>
+              <div className="auth-provider-divider" aria-hidden="true">
+                <span>یا</span>
+              </div>
+              <button
+                type="button"
+                className="primary-button auth-oauth-button"
+                onClick={signInWithGoogle}
+                disabled={pending}
+              >
+                ورود با Google برای کارکنان دعوت‌شده
+              </button>
               <p className="auth-help">
                 Command Center ثبت‌نام عمومی ندارد. فقط هویت‌های دعوت‌شده با Role فعال می‌توانند پس
-                از تأیید TOTP و رسیدن نشست به AAL2 وارد شوند.
+                از تأیید TOTP و رسیدن نشست به AAL2 وارد شوند. فعال‌بودن Google در Supabase و اتصال
+                هویت به عضویت Admin پیش‌شرط ورود است.
               </p>
             </form>
           ) : (

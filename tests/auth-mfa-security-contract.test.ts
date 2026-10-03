@@ -32,6 +32,20 @@ describe("ADM-QA-001 authentication and MFA security contract", () => {
     expect(login).not.toContain("SUPABASE_SERVICE_ROLE");
   });
 
+  it("uses the real Supabase Google OAuth callback without bypassing Admin membership", () => {
+    const login = source("src/components/auth/AdminLoginFlow.tsx");
+    const callback = source("app/auth/callback/route.ts");
+
+    expect(login).toContain('provider: "google"');
+    expect(login).toContain("signInWithOAuth");
+    expect(login).toContain("/auth/callback");
+    expect(login).toContain("هویت شما برای");
+    expect(login).toContain("Command Center دعوت نشده است");
+    expect(login).toContain("تأیید TOTP");
+    expect(callback).toContain("exchangeCodeForSession");
+    expect(callback).toContain('Cache-Control", "private, no-store');
+  });
+
   it("keeps non-invited or role-less identities fail-closed", () => {
     const login = source("src/components/auth/AdminLoginFlow.tsx");
     expect(login).toContain('data.access_state === "pending_role"');

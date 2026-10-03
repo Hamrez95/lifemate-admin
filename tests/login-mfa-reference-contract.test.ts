@@ -31,6 +31,18 @@ describe("Login/MFA reference design contract", () => {
     expect(flow).not.toMatch(/service_role|DATABASE_URL|SUPABASE_SERVICE_ROLE/i);
   });
 
+  it("keeps Google sign-in explicit, keyboard-accessible and subordinate to MFA", () => {
+    const flow = source("src/components/auth/AdminLoginFlow.tsx");
+    const styles = source("app/admin-auth-founder.css");
+
+    expect(flow).toContain('className="primary-button auth-oauth-button"');
+    expect(flow).toContain('type="button"');
+    expect(flow).toContain("disabled={pending}");
+    expect(flow).toContain("تأیید TOTP");
+    expect(styles).toContain(".auth-oauth-button");
+    expect(styles).toContain(".auth-provider-divider");
+  });
+
   it("keeps submit controls disabled while pending and renders a visual spinner", () => {
     const flow = source("src/components/auth/AdminLoginFlow.tsx");
     const styles = source("app/admin-auth-founder.css");
