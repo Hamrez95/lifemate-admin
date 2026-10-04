@@ -4,6 +4,7 @@ import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react
 import Image from "next/image";
 
 import { createBrowserSupabaseClient } from "@/src/lib/supabase/client";
+import { getVerifiedTotpFactors, isLastVerifiedTotpFactor } from "@/src/lib/auth/mfa-policy";
 
 type Factor = {
   id: string;
@@ -24,19 +25,22 @@ export function SecurityFactorsPanel() {
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageTone, setMessageTone] = useState<"error" | "success" | null>(null);
 
   const loadFactors = useCallback(async () => {
     setLoading(true);
+    setLoadError(false);
     try {
       const { data, error } = await supabase.auth.mfa.listFactors();
       if (error) throw error;
-      setFactors((data.totp ?? []).filter((factor) => factor.status === "verified"));
+      setFactors(getVerifiedTotpFactors(data.totp));
     } catch {
-      setMessage("عامل‌های امنیتی قابل بارگذاری نیستند. دوباره تلاش کنید.");
-      setMessageTone("error");
+      setLoadError(true);
+      setMessage(null);
+      setMessageTone(null);
     } finally {
       setLoading(false);
     }
@@ -104,17 +108,26 @@ export function SecurityFactorsPanel() {
   }
 
   async function removeFactor(factorId: string) {
-    if (factors.length <= 1) {
-      setMessage("برای حفظ ورود امن، آخرین عامل TOTP قابل حذف نیست.");
-      setMessageTone("error");
-      return;
-    }
     if (!window.confirm("این عامل TOTP حذف شود؟ این کار قابل بازگشت نیست.")) return;
 
     setPending(true);
     setMessage(null);
     setMessageTone(null);
     try {
+      const { data, error: listError } = await supabase.auth.mfa.listFactors();
+      if (listError) throw listError;
+      const currentFactors = getVerifiedTotpFactors(data.totp);
+      setFactors(currentFactors);
+      if (!currentFactors.some((factor) => factor.id === factorId)) {
+        setMessage("فهرست عامل‌ها تغییر کرده است. وضعیت تازه را بررسی کنید.");
+        setMessageTone("error");
+        return;
+      }
+      if (isLastVerifiedTotpFactor(currentFactors, factorId)) {
+        setMessage("برای حفظ ورود امن، آخرین عامل TOTP قابل حذف نیست.");
+        setMessageTone("error");
+        return;
+      }
       const { error } = await supabase.auth.mfa.unenroll({ factorId });
       if (error) throw error;
       setMessage("عامل TOTP حذف شد.");
@@ -146,6 +159,26 @@ export function SecurityFactorsPanel() {
         <p className="profile-security-card__state" role="status" aria-live="polite">
           در حال بارگذاری عامل‌های امن...
         </p>
+      ) : loadError ? (
+        <div className="profile-password-message" data-tone="error" role="alert">
+          <p>وضعیت عامل‌های امنیتی مشخص نیست؛ تا دریافت وضعیت تازه امکان تغییر غیرفعال است.</p>
+          <button
+            type="button"
+            className="text-button"
+            onClick={() => {
+              setMessage(null);
+              setMessageTone(null);
+              void loadFactors();
+            }}
+            disabled={pending}
+          >
+            تلاش دوباره
+          </button>
+        </div>
+      ) : factors.length === 0 ? (
+        <p className="profile-security-card__state" role="status">
+          عامل TOTP تأییدشده‌ای برای این حساب پیدا نشد. می‌توانید از همین‌جا یک عامل امن ثبت کنید.
+        </p>
       ) : (
         <div className="security-factor-list" aria-label="عامل‌های TOTP فعال">
           {factors.map((factor, index) => (
@@ -155,7 +188,7 @@ export function SecurityFactorsPanel() {
               </span>
               <span className="security-factor__copy">
                 <strong>{factor.friendly_name || `Authenticator ${index + 1}`}</strong>
-                <small>{index === 0 ? "عامل اصلی" : "عامل پشتیبان"} · تأییدشده</small>
+                <small>عامل ورود TOTP · تأییدشده</small>
               </span>
               <button
                 type="button"
@@ -183,7 +216,7 @@ export function SecurityFactorsPanel() {
           type="button"
           className="primary-button profile-security-card__action"
           onClick={startBackupEnrollment}
-          disabled={pending || loading}
+          disabled={pending || loading || loadError}
           title={
             loading
               ? "عامل‌های امنیتی در حال بارگذاری هستند"
