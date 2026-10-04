@@ -22,7 +22,10 @@ describe("Admin profile security contract", () => {
     expect(panel).toContain('factorType: "totp"');
     expect(panel).toContain("mfa.challengeAndVerify");
     expect(panel).toContain("mfa.unenroll");
-    expect(panel).toContain("factors.length <= 1");
+    expect(panel).toContain("isLastVerifiedTotpFactor(currentFactors, factorId)");
+    expect(panel).toContain("mfa.listFactors");
+    expect(panel).toContain("loadError");
+    expect(panel).toContain("فهرست عامل‌ها تغییر کرده است");
     expect(panel).not.toContain("console.log");
     expect(panel).not.toContain("console.error");
   });
