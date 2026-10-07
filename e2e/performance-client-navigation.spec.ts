@@ -212,6 +212,25 @@ async function measureClientTransition(
 }
 
 test.describe("PERF-01 authenticated client navigation evidence", () => {
+  test("supports keyboard activation of Sidebar workspaces", async ({ page }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== "desktop-chromium",
+      "Keyboard activation is verified in the desktop browser; mobile keeps touch navigation coverage.",
+    );
+
+    await signInWithMfa(page);
+    const operationsLink = page.locator('aside.sidebar a.nav-item[href="/operations"]').first();
+    await expect(operationsLink).toBeVisible();
+    await operationsLink.focus();
+    await expect(operationsLink).toBeFocused();
+
+    await Promise.all([
+      page.waitForURL("**/operations", { waitUntil: "commit" }),
+      operationsLink.press("Enter"),
+    ]);
+    await expect(operationsLink).toHaveAttribute("aria-current", "page");
+  });
+
   test("measures real Sidebar Link transitions without changing navigation behavior", async ({
     page,
   }, testInfo) => {

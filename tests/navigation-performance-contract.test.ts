@@ -22,11 +22,16 @@ describe("PERF-02 navigation feedback contract", () => {
 
   it("measures real sidebar transitions in the production performance harness", () => {
     const performanceSpec = source("e2e/performance-baseline.spec.ts");
+    const navigationSpec = source("e2e/performance-client-navigation.spec.ts");
+    const workflow = source(".github/workflows/performance-audit.yml");
 
     expect(performanceSpec).toContain("records active navigation feedback latency");
     expect(performanceSpec).toContain('page.waitForURL(`**${target}`, { waitUntil: "commit" })');
     expect(performanceSpec).toContain('metric: "sidebar-click-to-aria-current-ms"');
     expect(performanceSpec).toContain("containsRealUserData: false");
     expect(performanceSpec).toContain('aria-current="page"');
+    expect(navigationSpec).toContain("supports keyboard activation of Sidebar workspaces");
+    expect(navigationSpec).toContain('operationsLink.press("Enter")');
+    expect(workflow).toContain('"e2e/performance-client-navigation.spec.ts"');
   });
 });

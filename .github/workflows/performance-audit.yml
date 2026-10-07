@@ -6,6 +6,7 @@ on:
       - "app/**"
       - "src/**"
       - "e2e/performance-baseline.spec.ts"
+      - "e2e/performance-client-navigation.spec.ts"
       - "e2e/helpers/sign-in.ts"
       - "scripts/qa/**"
       - "playwright.performance.config.ts"
