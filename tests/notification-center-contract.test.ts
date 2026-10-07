@@ -8,6 +8,14 @@ function source(path: string): string {
 }
 
 describe("ADM-PLAT-003 Admin Notification Center / Alerts", () => {
+  it("formats notification timestamps with the shared Persian calendar and timezone contract", () => {
+    const component = source("src/components/shell/NotificationCenter.tsx");
+
+    expect(component).toContain('import { formatPersianDateTime } from "../../lib/time-zone"');
+    expect(component).toContain("return formatPersianDateTime(value)");
+    expect(component).not.toContain("new Intl.DateTimeFormat");
+  });
+
   it("keeps browser notification data behind same-origin server routes", () => {
     const client = source("src/lib/admin-api/notifications.ts");
     const route = source("app/api/admin/notifications/route.ts");
