@@ -53,6 +53,27 @@ async function expectNoSeriousA11yViolations(page: Page) {
 }
 
 test.describe("ADM-QA-001 dual-theme RTL/LTR regression matrix", () => {
+  test("system appearance follows OS color-scheme changes", async ({ page }) => {
+    test.setTimeout(60_000);
+    await signInWithMfa(page);
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.evaluate(() => {
+      localStorage.setItem("lifemate-command-center-direction", "rtl");
+      localStorage.setItem("lifemate-command-center-appearance", "system");
+    });
+    await page.reload({ waitUntil: "domcontentloaded" });
+
+    const documentElement = page.locator("html");
+    await expect(documentElement).toHaveAttribute("dir", "rtl");
+    await expect(documentElement).toHaveAttribute("data-appearance", "system");
+    await expect(documentElement).toHaveAttribute("data-theme", "light");
+
+    await page.emulateMedia({ colorScheme: "dark" });
+    await expect(documentElement).toHaveAttribute("data-theme", "dark");
+    await page.emulateMedia({ colorScheme: "light" });
+    await expect(documentElement).toHaveAttribute("data-theme", "light");
+  });
+
   test("representative authenticated routes remain usable across all presentation modes", async ({
     page,
   }) => {
