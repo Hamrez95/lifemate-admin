@@ -18,11 +18,11 @@ function tsxFiles(relativeDir: string): string[] {
 }
 
 describe("Persian calendar UI contract", () => {
-  it("keeps every user-visible app DateTimeFormat on the Persian/Jalali calendar", () => {
+  it("keeps every user-visible app and component DateTimeFormat on the Persian/Jalali calendar", () => {
     expect(new Intl.DateTimeFormat("fa-IR").resolvedOptions().calendar).toBe("persian");
 
     const offenders: string[] = [];
-    for (const file of tsxFiles("app")) {
+    for (const file of [...tsxFiles("app"), ...tsxFiles("src/components")]) {
       const source = readFileSync(path.join(root, file), "utf8");
       const formatterCalls = source.matchAll(
         /new Intl\.DateTimeFormat\(([^\n]*)(?:\n[\s\S]{0,320})?/g,

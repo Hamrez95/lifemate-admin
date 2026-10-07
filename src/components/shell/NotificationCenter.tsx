@@ -18,6 +18,7 @@ import type {
   NotificationSeverity,
   NotificationSource,
 } from "@/src/lib/admin-api/notifications";
+import { formatPersianDateTime } from "../../lib/time-zone";
 
 import styles from "./notification-center.module.css";
 
@@ -70,12 +71,6 @@ const severityIcons: Record<NotificationSeverity, string> = {
 };
 
 const numberFormat = new Intl.NumberFormat("fa-IR");
-const dateFormat = new Intl.DateTimeFormat("fa-IR", {
-  month: "short",
-  day: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-});
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -119,8 +114,7 @@ function stale(iso: string): boolean {
 }
 
 function formatDate(value: string): string {
-  const timestamp = Date.parse(value);
-  return Number.isNaN(timestamp) ? "—" : dateFormat.format(new Date(timestamp));
+  return formatPersianDateTime(value);
 }
 
 function countLabel(data: NotificationCountData): string | null {

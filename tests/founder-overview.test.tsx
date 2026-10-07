@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { FounderOverview } from "../src/components/dashboard/FounderOverview";
 import type { FounderOverviewData } from "../src/lib/admin-api/founder-overview";
+import { formatPersianDateTime } from "../src/lib/time-zone";
 
 const fixture: FounderOverviewData = {
   generatedAtUtc: "2026-08-15T21:30:00.000Z",
@@ -127,6 +128,7 @@ describe("FounderOverview", () => {
     expect(html).toContain("role.membership.updated");
     expect(html).toContain("وضعیت سرویس‌ها فعلاً در دسترس نیست");
     expect(html).toContain("WellMate");
+    expect(html).toContain(`تا ${formatPersianDateTime(fixture.generatedAtUtc)}`);
   });
 
   it("labels commerce truthfully as active subscriptions rather than paying users", () => {

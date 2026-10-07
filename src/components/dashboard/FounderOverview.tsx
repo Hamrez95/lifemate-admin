@@ -5,16 +5,12 @@ import type {
   ExecutiveValueState,
   FounderOverviewData,
 } from "@/src/lib/admin-api/founder-overview";
+import { formatPersianDateTime } from "../../lib/time-zone";
 import { Page, StatusBadge } from "../ui/Primitives";
 
 import styles from "./FounderOverview.module.css";
 
 const numberFormat = new Intl.NumberFormat("fa-IR");
-const dateTimeFormat = new Intl.DateTimeFormat("fa-IR", {
-  timeZone: "Asia/Tehran",
-  dateStyle: "short",
-  timeStyle: "short",
-});
 
 const sourceLabels = {
   support: "پشتیبانی",
@@ -40,8 +36,7 @@ function stateLabel(state: ExecutiveValueState): string {
 }
 
 function freshnessLabel(value: string | null): string {
-  if (!value || Number.isNaN(Date.parse(value))) return "زمان منبع: —";
-  return `تا ${dateTimeFormat.format(new Date(value))}`;
+  return `تا ${formatPersianDateTime(value)}`;
 }
 
 function metricValue(value: number | null): string {
