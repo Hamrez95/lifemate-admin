@@ -31,6 +31,12 @@ describe("PERF-02 navigation feedback contract", () => {
     expect(performanceSpec).toContain("containsRealUserData: false");
     expect(performanceSpec).toContain('aria-current="page"');
     expect(navigationSpec).toContain("supports keyboard activation of Sidebar workspaces");
+    expect(navigationSpec).toContain(
+      'localStorage.setItem("lifemate-command-center-direction", "rtl")',
+    );
+    expect(navigationSpec).toContain(
+      'localStorage.setItem("lifemate-command-center-appearance", "dark")',
+    );
     expect(navigationSpec).toContain('operationsLink.press("Enter")');
     expect(workflow).toContain('"e2e/performance-client-navigation.spec.ts"');
   });

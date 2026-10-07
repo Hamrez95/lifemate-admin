@@ -219,6 +219,14 @@ test.describe("PERF-01 authenticated client navigation evidence", () => {
     );
 
     await signInWithMfa(page);
+    await page.evaluate(() => {
+      localStorage.setItem("lifemate-command-center-direction", "rtl");
+      localStorage.setItem("lifemate-command-center-appearance", "dark");
+    });
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
     const operationsLink = page.locator('aside.sidebar a.nav-item[href="/operations"]').first();
     await expect(operationsLink).toBeVisible();
     await operationsLink.focus();
