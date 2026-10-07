@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useAdminSession } from "@/src/components/auth/AdminSessionProvider";
 import { LifeMateLogo } from "@/src/components/brand/LifeMateLogo";
@@ -24,17 +24,28 @@ export function Sidebar({ activeSlug }: SidebarProps) {
   const admin = useAdminSession();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<{
+    from: string;
+    to: string;
+  } | null>(null);
+  useEffect(() => {
+    if (!pendingNavigation) return;
+    const timeout = window.setTimeout(() => setPendingNavigation(null), 5000);
+    return () => window.clearTimeout(timeout);
+  }, [pathname, pendingNavigation]);
+
+  const activePathname = pendingNavigation?.from === pathname ? pendingNavigation.to : pathname;
   const routeActiveSlug =
-    pathname === "/"
+    activePathname === "/"
       ? ""
-      : pathname.startsWith("/research") || pathname.startsWith("/experiments")
+      : activePathname.startsWith("/research") || activePathname.startsWith("/experiments")
         ? "analytics"
-        : pathname.startsWith("/operations/cocoon")
+        : activePathname.startsWith("/operations/cocoon")
           ? "operations"
-          : pathname.startsWith("/security")
+          : activePathname.startsWith("/security")
             ? "security"
-            : (pathname.split("/")[1] ?? "");
-  const resolvedActiveSlug = routeActiveSlug || activeSlug;
+            : (activePathname.split("/")[1] ?? "");
+  const resolvedActiveSlug = activePathname === "/" ? "" : routeActiveSlug || activeSlug;
   const visibleWorkspaces = workspaces.filter((workspace) =>
     canAccessWorkspace(workspace, admin.permissions),
   );
@@ -44,17 +55,25 @@ export function Sidebar({ activeSlug }: SidebarProps) {
     admin.permissions.includes("experiments.read") ||
     admin.permissions.includes("feedback.read") ||
     admin.permissions.includes("feedback.trends.read");
-  const auditActive = pathname === "/security/audit" || pathname.startsWith("/security/audit/");
-  const researchActive = pathname === "/research" || pathname.startsWith("/research/");
-  const experimentsActive = pathname === "/experiments" || pathname.startsWith("/experiments/");
-  const profileActive = pathname === "/profile" || pathname.startsWith("/profile/");
-  const cocoonActive = pathname.startsWith("/operations/cocoon");
+  const auditActive =
+    activePathname === "/security/audit" || activePathname.startsWith("/security/audit/");
+  const researchActive = activePathname === "/research" || activePathname.startsWith("/research/");
+  const experimentsActive =
+    activePathname === "/experiments" || activePathname.startsWith("/experiments/");
+  const profileActive = activePathname === "/profile" || activePathname.startsWith("/profile/");
+  const cocoonActive = activePathname.startsWith("/operations/cocoon");
+
+  function onNavigateTo(href: string) {
+    return () => {
+      if (href !== pathname) setPendingNavigation({ from: pathname, to: href });
+    };
+  }
 
   function renderWorkspace(workspace: (typeof visibleWorkspaces)[number]) {
     const workspacePath = workspaceHref(workspace);
     const routeMatchesWorkspace =
-      pathname === workspacePath ||
-      (workspacePath !== "/" && pathname.startsWith(`${workspacePath}/`));
+      activePathname === workspacePath ||
+      (workspacePath !== "/" && activePathname.startsWith(`${workspacePath}/`));
     const active = workspace.slug === resolvedActiveSlug || routeMatchesWorkspace;
     const isPrimaryRoute = active && !auditActive && !researchActive && !experimentsActive;
 
@@ -64,6 +83,7 @@ export function Sidebar({ activeSlug }: SidebarProps) {
           className="nav-item"
           data-active={isPrimaryRoute ? "true" : "false"}
           href={workspaceHref(workspace)}
+          onNavigate={onNavigateTo(workspacePath)}
           prefetch={false}
           aria-label={workspace.label}
           aria-current={isPrimaryRoute ? "page" : undefined}
@@ -79,6 +99,7 @@ export function Sidebar({ activeSlug }: SidebarProps) {
             className="nav-item nav-item--subroute"
             data-active={researchActive ? "true" : "false"}
             href="/research"
+            onNavigate={onNavigateTo("/research")}
             prefetch={false}
             aria-label="Research Studio"
             aria-current={researchActive ? "page" : undefined}
@@ -94,6 +115,7 @@ export function Sidebar({ activeSlug }: SidebarProps) {
             className="nav-item nav-item--subroute"
             data-active={experimentsActive ? "true" : "false"}
             href="/experiments"
+            onNavigate={onNavigateTo("/experiments")}
             prefetch={false}
             aria-label="Experiments, Feedback & Advocacy"
             aria-current={experimentsActive ? "page" : undefined}
@@ -109,6 +131,7 @@ export function Sidebar({ activeSlug }: SidebarProps) {
             className="nav-item nav-item--subroute"
             data-active={cocoonActive ? "true" : "false"}
             href="/operations/cocoon"
+            onNavigate={onNavigateTo("/operations/cocoon")}
             prefetch={false}
             aria-label="CocoonMate operations"
             aria-current={cocoonActive ? "page" : undefined}
@@ -124,6 +147,7 @@ export function Sidebar({ activeSlug }: SidebarProps) {
             className="nav-item nav-item--subroute"
             data-active={auditActive ? "true" : "false"}
             href="/security/audit"
+            onNavigate={onNavigateTo("/security/audit")}
             prefetch={false}
             aria-label="گزارش ممیزی"
             aria-current={auditActive ? "page" : undefined}
@@ -195,6 +219,7 @@ export function Sidebar({ activeSlug }: SidebarProps) {
                 className="nav-item"
                 data-active={profileActive ? "true" : "false"}
                 href="/profile"
+                onNavigate={onNavigateTo("/profile")}
                 prefetch={false}
                 aria-label="پروفایل و تغییر رمز عبور"
                 aria-current={profileActive ? "page" : undefined}

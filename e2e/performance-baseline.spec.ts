@@ -246,16 +246,70 @@ async function observeSidebarPrefetch(page: Page) {
 }
 
 test.describe("PERF-01 authenticated production-build baseline", () => {
-  test("keeps selected navigation synchronized with client route transitions", async ({ page }) => {
+  test("records active navigation feedback latency across client route transitions", async ({
+    page,
+  }, testInfo) => {
     await signInWithMfa(page);
     await page.goto("/", { waitUntil: "domcontentloaded" });
 
+    const feedbackSamples: Array<{ route: string; feedbackMs: number }> = [];
     for (const target of ["/finance", "/operations", "/security", "/settings"]) {
       const link = page.locator(`a[href="${target}"]`).first();
       await expect(link).toBeVisible();
+      await page.evaluate((href) => {
+        const anchor = document.querySelector<HTMLAnchorElement>(`a[href="${href}"]`);
+        if (!anchor) throw new Error(`Sidebar link not found for ${href}`);
+        const marker = document.createElement("span");
+        marker.id = "qa-navigation-feedback";
+        document.body.append(marker);
+        let startedAt: number | null = null;
+        const observer = new MutationObserver(() => {
+          if (startedAt !== null && anchor.getAttribute("aria-current") === "page") {
+            marker.dataset.feedbackMs = String(performance.now() - startedAt);
+            observer.disconnect();
+          }
+        });
+        observer.observe(anchor, { attributes: true, attributeFilter: ["aria-current"] });
+        anchor.addEventListener(
+          "click",
+          () => {
+            startedAt = performance.now();
+          },
+          { once: true, capture: true },
+        );
+        window.setTimeout(() => observer.disconnect(), 5000);
+      }, target);
       await Promise.all([page.waitForURL(`**${target}`, { waitUntil: "commit" }), link.click()]);
       await expect(page.locator(`a[href="${target}"][aria-current="page"]`)).toHaveCount(1);
+      const rawFeedbackMs = await page
+        .locator("#qa-navigation-feedback")
+        .getAttribute("data-feedback-ms");
+      expect(rawFeedbackMs).not.toBeNull();
+      const feedbackMs = Number(rawFeedbackMs);
+      expect(Number.isFinite(feedbackMs)).toBe(true);
+      feedbackSamples.push({ route: target, feedbackMs: Number(feedbackMs.toFixed(2)) });
+      await page.locator("#qa-navigation-feedback").evaluate((marker) => marker.remove());
     }
+
+    const directory = path.resolve("artifacts/performance");
+    await mkdir(directory, { recursive: true });
+    const safeProject = testInfo.project.name.replace(/[^a-z0-9-]+/gi, "-").toLowerCase();
+    await writeFile(
+      path.join(directory, `navigation-feedback-${safeProject}.json`),
+      `${JSON.stringify(
+        {
+          schemaVersion: 1,
+          generatedAtUtc: new Date().toISOString(),
+          environment: "synthetic-authenticated-production-build",
+          metric: "sidebar-click-to-aria-current-ms",
+          containsRealUserData: false,
+          samples: feedbackSamples,
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
   });
 
   test("captures repeated route timing and safe server fanout without real-user data", async ({

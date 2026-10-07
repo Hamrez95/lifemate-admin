@@ -13,14 +13,20 @@ describe("PERF-02 navigation feedback contract", () => {
     expect(sidebar).toContain("usePathname");
     expect(sidebar).toContain("routeActiveSlug");
     expect(sidebar).toContain("routeMatchesWorkspace");
+    expect(sidebar).toContain("pendingNavigation");
+    expect(sidebar).toContain("onNavigate={onNavigateTo(workspacePath)}");
+    expect(sidebar).toContain("window.setTimeout(() => setPendingNavigation(null), 5000)");
+    expect(sidebar).toContain("const activePathname =");
     expect(sidebar).toContain('aria-current={isPrimaryRoute ? "page" : undefined}');
   });
 
   it("measures real sidebar transitions in the production performance harness", () => {
     const performanceSpec = source("e2e/performance-baseline.spec.ts");
 
-    expect(performanceSpec).toContain("keeps selected navigation synchronized");
+    expect(performanceSpec).toContain("records active navigation feedback latency");
     expect(performanceSpec).toContain('page.waitForURL(`**${target}`, { waitUntil: "commit" })');
+    expect(performanceSpec).toContain('metric: "sidebar-click-to-aria-current-ms"');
+    expect(performanceSpec).toContain("containsRealUserData: false");
     expect(performanceSpec).toContain('aria-current="page"');
   });
 });
